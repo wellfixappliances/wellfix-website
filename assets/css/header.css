@@ -380,7 +380,7 @@
 /* Big mobile logo size adjustments */
   /* Logo bigger on mobile */
   .logo__img {
-    height: 36px;
+    height: 26px;
   }
 
   /* Hide desktop search on mobile */
@@ -402,7 +402,7 @@
 }
 /* small mobile logo size adjustments */
 @media (max-width: 380px) {
-  .logo__img { height: 30px; }
+  .logo__img { height: 20px; }
   .hdr-cart { padding: 0 10px; }
 }
 
