@@ -377,7 +377,7 @@
     height: 60px;
     gap: 6px;
   }
-
+/* Big mobile logo size adjustments */
   /* Logo bigger on mobile */
   .logo__img {
     height: 36px;
@@ -400,9 +400,9 @@
   .hdr-cart { padding: 0 12px; height: 38px; gap: 6px; }
   .hdr-cart span.label { display: none; }
 }
-
+/* small mobile logo size adjustments */
 @media (max-width: 380px) {
-  .logo__img { height: 40px; }
+  .logo__img { height: 30px; }
   .hdr-cart { padding: 0 10px; }
 }
 
