@@ -1,0 +1,143 @@
+<!-- ============================================================
+     WELLFIX — HEADER COMPONENT
+     Usage: copy this block into any page <body>
+
+     To update:
+     - Phone number: search "+91 85900 04349" and replace
+     - Logo: update src="assets/images/WELLFIX-MAIN-LOGO.png"
+     - Nav links: add/remove <a class="cat-nav-link"> items
+     ============================================================ -->
+
+<!-- Topbar -->
+<div class="topbar">
+  <div class="container topbar__inner">
+    <div class="topbar__links">
+      <a href="#">Track Order</a>
+      <a href="#">Store Locator</a>
+      <a href="#">Help</a>
+    </div>
+    <div class="topbar__center">
+      Free delivery across Kerala &nbsp;·&nbsp;
+      <strong>+91 85900 04349</strong>
+    </div>
+    <div class="topbar__links">
+      <a href="#">100% Genuine</a>
+      <a href="#">Best Price Guarantee</a>
+    </div>
+  </div>
+</div>
+
+<!-- Main Header -->
+<header class="site-header">
+  <div class="container site-header__inner">
+
+    <!-- Logo -->
+    <a href="index.html" class="logo" aria-label="WellFix Appliances Home">
+      <img
+        src="assets/images/WELLFIX-MAIN-LOGO.png"
+        alt="WellFix Appliances"
+        class="logo__img"
+        onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+      <!-- Fallback text logo if image missing -->
+      <div style="display:none; align-items:center; gap:8px;">
+        <div style="width:36px;height:36px;background:var(--color-primary);border-radius:var(--r-md);display:flex;align-items:center;justify-content:center;">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2">
+            <polygon points="12,2 22,7 22,17 12,22 2,17 2,7"/>
+            <circle cx="12" cy="12" r="3" fill="#EEC71D" stroke="none"/>
+          </svg>
+        </div>
+        <div>
+          <div style="font-family:var(--font-display);font-size:18px;font-weight:800;color:var(--color-text);">Well<span style="color:var(--color-primary)">Fix</span></div>
+          <div style="font-size:9px;color:var(--color-text-3);text-transform:uppercase;letter-spacing:.05em;">Appliances · Kerala</div>
+        </div>
+      </div>
+    </a>
+
+    <!-- Search -->
+    <div class="header-search">
+      <select class="header-search__cat" aria-label="Category">
+        <option>All</option>
+        <option>Mixers</option>
+        <option>Stoves</option>
+        <option>Fans</option>
+        <option>Cookers</option>
+        <option>Motors</option>
+        <option>Spare Parts</option>
+      </select>
+      <input
+        class="header-search__input"
+        type="search"
+        placeholder="Search products, brands, spare parts…"
+        aria-label="Search products">
+      <button class="header-search__btn" aria-label="Search">
+        <svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+          <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Actions -->
+    <div class="header-actions">
+      <button class="hdr-action" aria-label="Account">
+        <svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+          <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/>
+          <circle cx="12" cy="7" r="4"/>
+        </svg>
+        <span>Account</span>
+      </button>
+
+      <button class="hdr-action" aria-label="Wishlist">
+        <svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+          <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/>
+        </svg>
+        <span>Wishlist</span>
+        <span class="hdr-action__badge" data-wish-count></span>
+      </button>
+
+      <button class="hdr-cart" aria-label="Cart">
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/>
+          <line x1="3" y1="6" x2="21" y2="6"/>
+          <path d="M16 10a4 4 0 01-8 0"/>
+        </svg>
+        <span class="label">Cart</span>
+        <span class="hdr-cart__count" data-cart-count>2</span>
+      </button>
+    </div>
+
+  </div>
+</header>
+
+<!-- Category Navbar (desktop) -->
+<nav class="cat-navbar" aria-label="Product categories">
+  <div class="container cat-navbar__inner">
+    <button class="cat-navbar__all" aria-label="All categories">
+      <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="16" height="16">
+        <line x1="3" y1="6" x2="21" y2="6"/>
+        <line x1="3" y1="12" x2="21" y2="12"/>
+        <line x1="3" y1="18" x2="21" y2="18"/>
+      </svg>
+      All Categories
+    </button>
+    <div class="cat-navbar__links">
+      <a class="cat-nav-link active" href="#">Mixers &amp; Grinders</a>
+      <a class="cat-nav-link" href="#">Gas Stoves</a>
+      <a class="cat-nav-link" href="#">Fans</a>
+      <a class="cat-nav-link" href="#">Pressure Cookers</a>
+      <a class="cat-nav-link" href="#">Water Motors</a>
+      <a class="cat-nav-link" href="#">Cookware</a>
+      <a class="cat-nav-link" href="#">Spare Parts</a>
+      <a class="cat-nav-link" href="pages/services.html">
+        Services <span class="dot-new">New</span>
+      </a>
+      <a class="cat-nav-link" href="#">Brands</a>
+    </div>
+    <div class="cat-navbar__spacer"></div>
+    <div class="cat-navbar__location">
+      <svg fill="currentColor" viewBox="0 0 24 24">
+        <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+      </svg>
+      Kerala, India
+    </div>
+  </div>
+</nav>
