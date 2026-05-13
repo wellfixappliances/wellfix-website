@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WellFix Admin Panel</title>
+<link rel="icon" href="../assets/images/WELLFIX-FAVICON.png" type="image/png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --green-900: #012a1c; --green-800: #023d29; --green-700: #034732;
+  --green-600: #045a3f; --green-500: #056b4b; --green-400: #068a60;
+  --green-100: #d4f0e6; --green-50: #f0faf5;
+  --gold-400: #e8b429; --gold-300: #f0c842; --gold-100: #fef9e7;
+  --red-600: #c0392b; --red-500: #e74c3c; --red-100: #fdecea;
+  --blue-500: #3b82f6; --blue-100: #eff6ff;
+  --purple-500: #8b5cf6; --purple-100: #f5f3ff;
+  --orange-500: #f97316; --orange-100: #fff7ed;
+  --gray-950: #0a0a0a; --gray-900: #111111; --gray-800: #1a1a1a;
+  --gray-700: #2d2d2d; --gray-600: #404040; --gray-500: #5c5c5c;
+  --gray-400: #767676; --gray-300: #a0a0a0; --gray-200: #c8c8c8;
+  --gray-150: #dedede; --gray-100: #ebebeb; --gray-50: #f5f5f5;
+  --gray-25: #fafafa; --white: #ffffff;
+  --font-display: 'Plus Jakarta Sans', sans-serif;
+  --font-body: 'Outfit', sans-serif;
+  --r-xs: 4px; --r-sm: 6px; --r-md: 10px;
+  --r-lg: 14px; --r-xl: 18px; --r-full: 9999px;
+  --shadow-sm: 0 1px 4px rgba(0,0,0,.07), 0 2px 8px rgba(0,0,0,.04);
+  --shadow-md: 0 4px 12px rgba(0,0,0,.08), 0 2px 4px rgba(0,0,0,.04);
+  --t: 200ms cubic-bezier(0.4,0,0.2,1);
+  --sidebar-w: 240px; --sidebar-collapsed: 64px; --topbar-h: 58px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{font-family:var(--font-body);font-size:13px;color:var(--gray-900);background:var(--gray-25);-webkit-font-smoothing:antialiased;overflow-x:hidden;}
+a{text-decoration:none;color:inherit;}
+button{font-family:var(--font-body);cursor:pointer;border:none;outline:none;background:none;}
+input,select,textarea{font-family:var(--font-body);font-size:13px;outline:none;border:none;}
+ul{list-style:none;}
+img{display:block;max-width:100%;}
+::-webkit-scrollbar{width:5px;height:5px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:var(--gray-200);border-radius:99px;}
+
+.admin-shell{display:flex;min-height:100vh;}
+
+/* SIDEBAR */
+.sidebar{width:var(--sidebar-w);background:var(--green-900);display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;z-index:300;transition:width var(--t),transform var(--t);overflow:hidden;}
+.sidebar.collapsed{width:var(--sidebar-collapsed);}
+.sidebar__brand{display:flex;align-items:center;gap:10px;padding:0 16px;height:var(--topbar-h);border-bottom:1px solid rgba(255,255,255,.07);flex-shrink:0;overflow:hidden;}
+.sidebar__logo-mark{width:32px;height:32px;background:var(--green-700);border-radius:var(--r-sm);display:flex;align-items:center;justify-content:center;flex-shrink:0;border:1px solid rgba(255,255,255,.1);}
+.sidebar__logo-mark svg{width:16px;height:16px;}
+.sidebar__brand-text{overflow:hidden;white-space:nowrap;}
+.sidebar__brand-name{font-family:var(--font-display);font-size:15px;font-weight:800;color:#fff;line-height:1;}
+.sidebar__brand-sub{font-size:10px;color:rgba(255,255,255,.35);margin-top:2px;letter-spacing:.04em;text-transform:uppercase;}
+.sidebar__nav{flex:1;overflow-y:auto;overflow-x:hidden;padding:12px 0;scrollbar-width:none;}
+.sidebar__nav::-webkit-scrollbar{display:none;}
+.nav-group{margin-bottom:4px;}
+.nav-group__label{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:rgba(255,255,255,.2);padding:10px 18px 4px;white-space:nowrap;overflow:hidden;}
+.sidebar.collapsed .nav-group__label{opacity:0;}
+.nav-item{display:flex;align-items:center;gap:11px;padding:9px 16px;color:rgba(255,255,255,.55);font-size:13px;font-weight:500;cursor:pointer;transition:all var(--t);white-space:nowrap;position:relative;}
+.nav-item:hover{background:rgba(255,255,255,.06);color:rgba(255,255,255,.9);}
+.nav-item.active{background:var(--green-700);color:#fff;border-right:2px solid var(--gold-400);}
+.nav-item svg{width:16px;height:16px;flex-shrink:0;}
+.nav-item__label{overflow:hidden;}
+.nav-badge{margin-left:auto;background:var(--red-500);color:#fff;font-size:9px;font-weight:700;min-width:16px;height:16px;border-radius:99px;display:flex;align-items:center;justify-content:center;padding:0 4px;flex-shrink:0;}
+.sidebar.collapsed .nav-item__label,.sidebar.collapsed .nav-badge{display:none;}
+.sidebar.collapsed .nav-item{justify-content:center;padding:10px;}
+.sidebar__bottom{border-top:1px solid rgba(255,255,255,.07);padding:12px 0;flex-shrink:0;}
+.sidebar__user{display:flex;align-items:center;gap:10px;padding:8px 14px;cursor:pointer;transition:background var(--t);border-radius:var(--r-sm);margin:0 8px;overflow:hidden;}
+.sidebar__user:hover{background:rgba(255,255,255,.06);}
+.sidebar__avatar{width:30px;height:30px;border-radius:99px;background:var(--green-700);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--gold-400);border:1px solid rgba(255,255,255,.1);}
+.sidebar__user-info{overflow:hidden;}
+.sidebar__user-name{font-size:12px;font-weight:600;color:#fff;white-space:nowrap;}
+.sidebar__user-role{font-size:10px;color:rgba(255,255,255,.35);white-space:nowrap;}
+.sidebar.collapsed .sidebar__user-info{display:none;}
+.sidebar.collapsed .sidebar__user{justify-content:center;padding:8px;}
+
+/* TOPBAR */
+.topbar-admin{height:var(--topbar-h);background:var(--white);border-bottom:1px solid var(--gray-100);display:flex;align-items:center;padding:0 24px;gap:16px;position:fixed;top:0;right:0;left:var(--sidebar-w);z-index:200;transition:left var(--t);box-shadow:var(--shadow-sm);}
+.topbar__toggle{width:34px;height:34px;border-radius:var(--r-sm);display:flex;align-items:center;justify-content:center;color:var(--gray-500);flex-shrink:0;transition:background var(--t);}
+.topbar__toggle:hover{background:var(--gray-50);color:var(--gray-900);}
+.topbar__toggle svg{width:18px;height:18px;}
+.topbar__breadcrumb{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--gray-400);}
+.topbar__breadcrumb span{color:var(--gray-900);font-weight:600;}
+.topbar__breadcrumb svg{width:12px;height:12px;}
+.topbar__spacer{flex:1;}
+.topbar__search{display:flex;align-items:center;gap:8px;background:var(--gray-50);border:1.5px solid var(--gray-100);border-radius:var(--r-md);padding:0 12px;height:36px;width:220px;transition:border-color var(--t),box-shadow var(--t);}
+.topbar__search:focus-within{border-color:var(--green-400);box-shadow:0 0 0 3px rgba(3,71,50,.07);background:#fff;}
+.topbar__search svg{width:14px;height:14px;color:var(--gray-400);flex-shrink:0;}
+.topbar__search input{flex:1;background:none;font-size:12px;color:var(--gray-900);}
+.topbar__search input::placeholder{color:var(--gray-300);}
+.topbar__actions{display:flex;align-items:center;gap:4px;}
+.topbar__icon-btn{width:34px;height:34px;border-radius:var(--r-sm);display:flex;align-items:center;justify-content:center;color:var(--gray-500);position:relative;transition:background var(--t);}
+.topbar__icon-btn:hover{background:var(--gray-50);color:var(--gray-900);}
+.topbar__icon-btn svg{width:18px;height:18px;}
+.topbar__notif-dot{position:absolute;top:6px;right:6px;width:7px;height:7px;border-radius:99px;background:var(--red-500);border:1.5px solid #fff;}
+.topbar__view-site{display:flex;align-items:center;gap:6px;background:var(--green-700);color:#fff;padding:0 14px;height:34px;border-radius:var(--r-sm);font-size:12px;font-weight:600;transition:background var(--t);}
+.topbar__view-site:hover{background:var(--green-600);}
+.topbar__view-site svg{width:13px;height:13px;}
+
+/* MAIN */
+.main-content{margin-left:var(--sidebar-w);min-height:100vh;transition:margin-left var(--t);display:flex;flex-direction:column;}
+.main-content.expanded{margin-left:var(--sidebar-collapsed);}
+.page-body{margin-top:var(--topbar-h);padding:24px;flex:1;}
+.admin-page{display:none;}
+.admin-page.is-active{display:block;}
+
+/* PAGE HEADER */
+.pg-header{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:24px;flex-wrap:wrap;}
+.pg-header__left h1{font-family:var(--font-display);font-size:22px;font-weight:800;color:var(--gray-900);margin-bottom:3px;}
+.pg-header__left p{font-size:13px;color:var(--gray-400);}
+.pg-header__actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;gap:6px;font-family:var(--font-display);font-size:13px;font-weight:600;padding:0 16px;height:36px;border-radius:var(--r-sm);cursor:pointer;border:none;transition:all var(--t);white-space:nowrap;}
+.btn-primary{background:var(--green-700);color:#fff;}
+.btn-primary:hover{background:var(--green-600);}
+.btn-secondary{background:var(--white);color:var(--gray-700);border:1.5px solid var(--gray-150);}
+.btn-secondary:hover{border-color:var(--green-400);color:var(--green-700);}
+.btn-danger{background:var(--red-100);color:var(--red-600);}
+.btn-danger:hover{background:var(--red-500);color:#fff;}
+.btn-gold{background:var(--gold-400);color:var(--gray-900);}
+.btn-gold:hover{background:var(--gold-300);}
+.btn svg{width:14px;height:14px;}
+.btn-sm{height:30px;font-size:12px;padding:0 12px;}
+.btn-lg{height:42px;font-size:14px;padding:0 20px;}
+.btn-icon{width:32px;height:32px;padding:0;display:flex;align-items:center;justify-content:center;border-radius:var(--r-sm);border:1.5px solid var(--gray-150);background:var(--white);color:var(--gray-500);transition:all var(--t);cursor:pointer;}
+.btn-icon:hover{border-color:var(--green-400);color:var(--green-700);}
+.btn-icon svg{width:14px;height:14px;}
+
+/* STATS */
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px;}
+.stat-card{background:var(--white);border:1.5px solid var(--gray-100);border-radius:var(--r-lg);padding:20px;display:flex;flex-direction:column;gap:12px;transition:box-shadow var(--t),border-color var(--t);}
+.stat-card:hover{box-shadow:var(--shadow-md);border-color:var(--gray-150);}
+.stat-card__top{display:flex;align-items:flex-start;justify-content:space-between;}
+.stat-card__icon{width:40px;height:40px;border-radius:var(--r-md);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.stat-card__icon svg{width:20px;height:20px;}
+.stat-card__icon.green{background:var(--green-50);color:var(--green-700);}
+.stat-card__icon.gold{background:var(--gold-100);color:#a07010;}
+.stat-card__icon.blue{background:var(--blue-100);color:var(--blue-500);}
+.stat-card__icon.red{background:var(--red-100);color:var(--red-600);}
+.stat-card__icon.purple{background:var(--purple-100);color:var(--purple-500);}
+.stat-card__icon.orange{background:var(--orange-100);color:var(--orange-500);}
+.stat-card__change{font-size:11px;font-weight:600;padding:2px 7px;border-radius:99px;}
+.stat-card__change.up{background:var(--green-50);color:var(--green-600);}
+.stat-card__change.down{background:var(--red-100);color:var(--red-600);}
+.stat-card__val{font-family:var(--font-display);font-size:26px;font-weight:800;color:var(--gray-900);line-height:1;}
+.stat-card__label{font-size:12px;color:var(--gray-400);margin-top:2px;}
+
+/* CARD */
+.card{background:var(--white);border:1.5px solid var(--gray-100);border-radius:var(--r-lg);overflow:hidden;}
+.card-header{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--gray-100);gap:12px;}
+.card-title{font-family:var(--font-display);font-size:14px;font-weight:700;color:var(--gray-900);}
+.card-body{padding:20px;}
+.card-body--0{padding:0;}
+
+/* TABLE */
+.tbl-wrap{overflow-x:auto;}
+table{width:100%;border-collapse:collapse;}
+th{text-align:left;padding:10px 16px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--gray-400);background:var(--gray-25);border-bottom:1px solid var(--gray-100);white-space:nowrap;}
+td{padding:12px 16px;font-size:13px;color:var(--gray-700);border-bottom:1px solid var(--gray-50);vertical-align:middle;}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:var(--gray-25);}
+.td-name{font-weight:600;color:var(--gray-900);}
+.td-img{width:38px;height:38px;border-radius:var(--r-sm);object-fit:cover;background:var(--gray-50);border:1px solid var(--gray-100);}
+
+/* STATUS */
+.status{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:600;padding:3px 9px;border-radius:99px;white-space:nowrap;}
+.status::before{content:'';width:6px;height:6px;border-radius:99px;flex-shrink:0;}
+.status-active{background:var(--green-50);color:var(--green-600);}
+.status-active::before{background:var(--green-500);}
+.status-pending{background:var(--gold-100);color:#9a7000;}
+.status-pending::before{background:var(--gold-400);}
+.status-inactive{background:var(--gray-50);color:var(--gray-500);}
+.status-inactive::before{background:var(--gray-300);}
+.status-danger{background:var(--red-100);color:var(--red-600);}
+.status-danger::before{background:var(--red-500);}
+.status-delivered{background:var(--blue-100);color:var(--blue-500);}
+.status-delivered::before{background:var(--blue-500);}
+
+/* FORMS */
+.form-grid{display:grid;gap:16px;}
+.form-grid-2{grid-template-columns:1fr 1fr;}
+.form-grid-3{grid-template-columns:1fr 1fr 1fr;}
+.form-group{display:flex;flex-direction:column;gap:6px;}
+.form-label{font-size:12px;font-weight:600;color:var(--gray-700);letter-spacing:.01em;}
+.form-label span{color:var(--red-500);margin-left:2px;}
+.form-input,.form-select,.form-textarea{border:1.5px solid var(--gray-150);border-radius:var(--r-sm);padding:0 12px;height:38px;font-size:13px;color:var(--gray-900);background:var(--white);width:100%;transition:border-color var(--t),box-shadow var(--t);}
+.form-input:focus,.form-select:focus,.form-textarea:focus{border-color:var(--green-500);box-shadow:0 0 0 3px rgba(3,71,50,.08);}
+.form-textarea{height:auto;padding:10px 12px;resize:vertical;min-height:90px;}
+.form-hint{font-size:11px;color:var(--gray-400);margin-top:2px;}
+
+/* FILTER BAR */
+.filter-bar{display:flex;align-items:center;gap:10px;padding:14px 20px;border-bottom:1px solid var(--gray-100);flex-wrap:wrap;}
+.filter-search{display:flex;align-items:center;gap:8px;background:var(--gray-50);border:1.5px solid var(--gray-100);border-radius:var(--r-sm);padding:0 10px;height:34px;flex:1;min-width:160px;max-width:280px;transition:border-color var(--t);}
+.filter-search:focus-within{border-color:var(--green-500);background:#fff;}
+.filter-search svg{width:14px;height:14px;color:var(--gray-400);flex-shrink:0;}
+.filter-search input{flex:1;background:none;font-size:12px;color:var(--gray-900);}
+.filter-search input::placeholder{color:var(--gray-300);}
+.filter-select{border:1.5px solid var(--gray-150);border-radius:var(--r-sm);padding:0 10px;height:34px;font-size:12px;color:var(--gray-700);background:var(--white);cursor:pointer;-webkit-appearance:none;appearance:none;min-width:120px;}
+.filter-spacer{flex:1;}
+
+/* PAGINATION */
+.pagination{display:flex;align-items:center;gap:4px;padding:14px 20px;border-top:1px solid var(--gray-100);justify-content:flex-end;}
+.pg-btn{width:30px;height:30px;border-radius:var(--r-xs);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;color:var(--gray-500);border:1.5px solid var(--gray-100);background:var(--white);cursor:pointer;transition:all var(--t);}
+.pg-btn:hover{border-color:var(--green-500);color:var(--green-700);}
+.pg-btn.active{background:var(--green-700);border-color:var(--green-700);color:#fff;}
+.pg-btn svg{width:12px;height:12px;}
+
+/* UPLOAD AREA */
+.upload-area{border:2px dashed var(--gray-200);border-radius:var(--r-lg);padding:32px;text-align:center;cursor:pointer;transition:all var(--t);background:var(--gray-25);}
+.upload-area:hover{border-color:var(--green-400);background:var(--green-50);}
+.upload-area svg{width:32px;height:32px;color:var(--gray-300);margin:0 auto 10px;}
+.upload-area p{font-size:13px;color:var(--gray-400);}
+.upload-area span{color:var(--green-600);font-weight:600;}
+
+/* TOAST */
+.toast{position:fixed;bottom:24px;right:24px;z-index:999;background:var(--gray-900);color:#fff;padding:12px 18px;border-radius:var(--r-md);font-size:13px;font-weight:500;display:flex;align-items:center;gap:10px;box-shadow:var(--shadow-md);transform:translateY(100px);opacity:0;transition:all 0.3s cubic-bezier(0,0,0.2,1);pointer-events:none;max-width:320px;}
+.toast.show{transform:translateY(0);opacity:1;pointer-events:all;}
+.toast svg{width:16px;height:16px;color:var(--green-400);flex-shrink:0;}
+
+/* TABS */
+.tabs{display:flex;gap:0;border-bottom:1.5px solid var(--gray-100);margin-bottom:20px;}
+.tab-btn{padding:10px 18px;font-size:13px;font-weight:600;color:var(--gray-400);border-bottom:2px solid transparent;cursor:pointer;transition:all var(--t);margin-bottom:-1.5px;white-space:nowrap;}
+.tab-btn:hover{color:var(--gray-700);}
+.tab-btn.active{color:var(--green-700);border-bottom-color:var(--green-700);}
+
+/* TOGGLE */
+.toggle{position:relative;width:36px;height:20px;flex-shrink:0;}
+.toggle input{opacity:0;width:0;height:0;}
+.toggle-slider{position:absolute;inset:0;background:var(--gray-200);border-radius:99px;cursor:pointer;transition:background var(--t);}
+.toggle-slider::before{content:'';position:absolute;width:14px;height:14px;left:3px;bottom:3px;background:#fff;border-radius:99px;transition:transform var(--t);}
+.toggle input:checked + .toggle-slider{background:var(--green-600);}
+.toggle input:checked + .toggle-slider::before{transform:translateX(16px);}
+
+/* DASHBOARD */
+.dash-grid{display:grid;grid-template-columns:1fr 360px;gap:20px;}
+.dash-chart-bars{display:flex;align-items:flex-end;gap:4px;height:120px;padding:0 4px;}
+.dash-bar{flex:1;border-radius:4px 4px 0 0;background:var(--green-100);min-width:8px;transition:background var(--t);cursor:pointer;position:relative;}
+.dash-bar:hover{background:var(--green-500);}
+.dash-bar.peak{background:var(--green-600);}
+.dash-bar-label{position:absolute;bottom:-18px;left:50%;transform:translateX(-50%);font-size:9px;color:var(--gray-300);white-space:nowrap;}
+.chart-wrap{position:relative;padding-bottom:20px;}
+.order-row-mini{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--gray-50);}
+.order-row-mini:last-child{border-bottom:none;}
+.order-num{font-size:12px;font-weight:700;color:var(--gray-900);min-width:60px;}
+.order-customer{font-size:12px;color:var(--gray-600);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.order-amount{font-size:12px;font-weight:700;color:var(--gray-900);white-space:nowrap;}
+
+/* ACTIVITY */
+.activity-item{display:flex;align-items:flex-start;gap:12px;padding:12px 0;border-bottom:1px solid var(--gray-50);}
+.activity-item:last-child{border-bottom:none;}
+.activity-dot{width:8px;height:8px;border-radius:99px;margin-top:5px;flex-shrink:0;}
+.activity-dot.green{background:var(--green-500);}
+.activity-dot.gold{background:var(--gold-400);}
+.activity-dot.blue{background:var(--blue-500);}
+.activity-dot.red{background:var(--red-500);}
+.activity-text{font-size:12px;color:var(--gray-600);line-height:1.5;}
+.activity-text strong{color:var(--gray-900);font-weight:600;}
+.activity-time{font-size:11px;color:var(--gray-300);margin-top:2px;}
+
+/* PRODUCTS */
+.product-row-img{width:40px;height:40px;border-radius:var(--r-sm);object-fit:contain;background:var(--gray-50);padding:4px;border:1px solid var(--gray-100);}
+.stock-bar{width:60px;height:5px;background:var(--gray-100);border-radius:99px;overflow:hidden;}
+.stock-bar__fill{height:100%;border-radius:99px;}
+.stock-bar__fill.high{background:var(--green-500);}
+.stock-bar__fill.medium{background:var(--gold-400);}
+.stock-bar__fill.low{background:var(--red-500);}
+
+/* MODAL */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:500;align-items:flex-start;justify-content:center;padding:40px 16px;overflow-y:auto;}
+.modal-overlay.open{display:flex;}
+.modal{background:var(--white);border-radius:var(--r-xl);width:100%;max-width:760px;box-shadow:0 20px 60px rgba(0,0,0,.2);animation:modalIn 0.2s cubic-bezier(0,0,0.2,1);margin:auto;}
+@keyframes modalIn{from{transform:translateY(20px);opacity:0;}to{transform:translateY(0);opacity:1;}}
+.modal-header{display:flex;align-items:center;justify-content:space-between;padding:18px 24px;border-bottom:1px solid var(--gray-100);}
+.modal-title{font-family:var(--font-display);font-size:16px;font-weight:800;}
+.modal-close{width:30px;height:30px;border-radius:99px;background:var(--gray-50);color:var(--gray-500);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all var(--t);}
+.modal-close:hover{background:var(--red-100);color:var(--red-600);}
+.modal-close svg{width:14px;height:14px;}
+.modal-body{padding:24px;}
+.modal-footer{display:flex;align-items:center;justify-content:flex-end;gap:10px;padding:16px 24px;border-top:1px solid var(--gray-100);}
+
+/* ORDERS */
+.order-status-tabs{display:flex;gap:6px;flex-wrap:wrap;}
+.o-tab{display:flex;align-items:center;gap:6px;padding:6px 14px;border-radius:99px;font-size:12px;font-weight:600;cursor:pointer;border:1.5px solid var(--gray-150);background:var(--white);color:var(--gray-500);transition:all var(--t);}
+.o-tab:hover{border-color:var(--green-400);color:var(--green-700);}
+.o-tab.active{background:var(--green-700);border-color:var(--green-700);color:#fff;}
+.o-tab-count{background:rgba(255,255,255,.25);color:inherit;font-size:10px;font-weight:700;min-width:18px;height:18px;border-radius:99px;display:flex;align-items:center;justify-content:center;padding:0 4px;}
+.o-tab:not(.active) .o-tab-count{background:var(--gray-100);}
+
+/* SERVICES */
+.service-card-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+.service-stat-card{background:var(--white);border:1.5px solid var(--gray-100);border-radius:var(--r-lg);padding:18px;}
+.service-stat-card h4{font-size:13px;font-weight:700;margin-bottom:4px;}
+.service-stat-card .big{font-family:var(--font-display);font-size:28px;font-weight:800;color:var(--green-700);}
+.service-stat-card p{font-size:11px;color:var(--gray-400);}
+
+/* HOMEPAGE MANAGER */
+.section-manager-item{display:flex;align-items:center;gap:14px;background:var(--white);border:1.5px solid var(--gray-100);border-radius:var(--r-lg);padding:14px 16px;transition:box-shadow var(--t);}
+.section-manager-item:hover{box-shadow:var(--shadow-sm);}
+.drag-handle{color:var(--gray-300);cursor:grab;flex-shrink:0;}
+.drag-handle svg{width:16px;height:16px;}
+.section-manager-item__icon{width:36px;height:36px;border-radius:var(--r-sm);background:var(--green-50);color:var(--green-700);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.section-manager-item__icon svg{width:17px;height:17px;}
+.section-manager-item__info{flex:1;min-width:0;}
+.section-manager-item__name{font-size:13px;font-weight:600;color:var(--gray-900);}
+.section-manager-item__desc{font-size:11px;color:var(--gray-400);margin-top:1px;}
+.section-manager-item__actions{display:flex;align-items:center;gap:8px;flex-shrink:0;}
+
+/* ANALYTICS */
+.analytics-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+.progress-row{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+.progress-label{font-size:12px;color:var(--gray-600);width:90px;flex-shrink:0;}
+.progress-bar{flex:1;height:8px;background:var(--gray-100);border-radius:99px;overflow:hidden;}
+.progress-fill{height:100%;border-radius:99px;background:var(--green-500);}
+.progress-pct{font-size:12px;font-weight:600;color:var(--gray-700);width:36px;text-align:right;flex-shrink:0;}
+
+/* MEDIA */
+.media-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:12px;}
+.media-item{border:1.5px solid var(--gray-100);border-radius:var(--r-md);overflow:hidden;cursor:pointer;transition:all var(--t);background:var(--gray-25);}
+.media-item:hover{border-color:var(--green-400);box-shadow:var(--shadow-sm);}
+.media-item.selected{border-color:var(--green-600);box-shadow:0 0 0 3px rgba(3,71,50,.12);}
+.media-item__img{aspect-ratio:1;background:var(--gray-50);}
+.media-item__img img{width:100%;height:100%;object-fit:cover;}
+.media-item__name{font-size:10px;color:var(--gray-500);padding:6px 8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+
+/* SETTINGS */
+.settings-layout{display:grid;grid-template-columns:200px 1fr;gap:20px;}
+.settings-nav{display:flex;flex-direction:column;gap:2px;}
+.settings-nav-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:var(--r-sm);font-size:13px;font-weight:500;color:var(--gray-600);cursor:pointer;transition:all var(--t);}
+.settings-nav-item:hover{background:var(--gray-50);color:var(--gray-900);}
+.settings-nav-item.active{background:var(--green-50);color:var(--green-700);font-weight:600;}
+.settings-nav-item svg{width:15px;height:15px;flex-shrink:0;}
+
+/* SIDEBAR OVERLAY (mobile) */
+.sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:290;}
+
+/* RESPONSIVE */
+@media(max-width:1100px){.stats-grid{grid-template-columns:repeat(2,1fr);}.dash-grid{grid-template-columns:1fr;}.analytics-grid{grid-template-columns:1fr;}}
+@media(max-width:900px){.sidebar{transform:translateX(-100%);}.sidebar.mob-open{transform:translateX(0);width:var(--sidebar-w)!important;}.sidebar-overlay{display:block;opacity:0;pointer-events:none;transition:opacity var(--t);}.sidebar-overlay.show{opacity:1;pointer-events:all;}.main-content{margin-left:0!important;}.topbar-admin{left:0!important;}.page-body{padding:16px;}.stats-grid{grid-template-columns:repeat(2,1fr);gap:12px;}.service-card-grid{grid-template-columns:repeat(2,1fr);}.settings-layout{grid-template-columns:1fr;}}
+@media(max-width:600px){.stats-grid{grid-template-columns:1fr;}.form-grid-2,.form-grid-3{grid-template-columns:1fr;}.service-card-grid{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+<div class="toast" id="toast">
+  <svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+  <span id="toastMsg">Saved successfully</span>
+</div>
+
+<div class="admin-shell">
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar__brand">
+    <div class="sidebar__logo-mark">
+      <svg fill="none" stroke="#e8b429" stroke-width="2" viewBox="0 0 24 24"><polygon points="12,2 22,7 22,17 12,22 2,17 2,7"/><circle cx="12" cy="12" r="3" fill="#e8b429" stroke="none"/></svg>
+    </div>
+    <div class="sidebar__brand-text">
+      <div class="sidebar__brand-name">WellFix</div>
+      <div class="sidebar__brand-sub">Admin Panel</div>
+    </div>
+  </div>
+  <nav class="sidebar__nav">
+    <div class="nav-group">
+      <div class="nav-group__label">Main</div>
+      <div class="nav-item active" data-page="dashboard"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg><span class="nav-item__label">Dashboard</span></div>
+      <div class="nav-item" data-page="analytics"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg><span class="nav-item__label">Analytics</span></div>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group__label">Catalogue</div>
+      <div class="nav-item" data-page="products"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg><span class="nav-item__label">Products</span></div>
+      <div class="nav-item" data-page="categories"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg><span class="nav-item__label">Categories</span></div>
+      <div class="nav-item" data-page="brands"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M8.56 2.75c4.37 6.03 6.02 9.42 8.03 17.72m2.54-15.38c-3.72 4.35-8.94 5.66-16.88 5.85"/></svg><span class="nav-item__label">Brands</span></div>
+      <div class="nav-item" data-page="inventory"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/></svg><span class="nav-item__label">Inventory</span></div>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group__label">Commerce</div>
+      <div class="nav-item" data-page="orders"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg><span class="nav-item__label">Orders</span><span class="nav-badge">12</span></div>
+      <div class="nav-item" data-page="customers"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg><span class="nav-item__label">Customers</span></div>
+      <div class="nav-item" data-page="coupons"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg><span class="nav-item__label">Coupons</span></div>
+      <div class="nav-item" data-page="reviews"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><span class="nav-item__label">Reviews</span></div>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group__label">Services</div>
+      <div class="nav-item" data-page="services"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg><span class="nav-item__label">Bookings</span><span class="nav-badge">5</span></div>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group__label">Content</div>
+      <div class="nav-item" data-page="homepage"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg><span class="nav-item__label">Homepage</span></div>
+      <div class="nav-item" data-page="banners"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg><span class="nav-item__label">Banners</span></div>
+      <div class="nav-item" data-page="blog"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg><span class="nav-item__label">Blog</span></div>
+      <div class="nav-item" data-page="media"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg><span class="nav-item__label">Media Library</span></div>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group__label">System</div>
+      <div class="nav-item" data-page="seo"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><span class="nav-item__label">SEO</span></div>
+      <div class="nav-item" data-page="settings"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg><span class="nav-item__label">Settings</span></div>
+    </div>
+  </nav>
+  <div class="sidebar__bottom">
+    <div class="sidebar__user">
+      <div class="sidebar__avatar">A</div>
+      <div class="sidebar__user-info">
+        <div class="sidebar__user-name">Admin</div>
+        <div class="sidebar__user-role">Super Admin</div>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<div class="main-content" id="mainContent">
+  <div class="topbar-admin" id="topbarAdmin">
+    <button class="topbar__toggle" id="sidebarToggle">
+      <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
+    <div class="topbar__breadcrumb">
+      WellFix
+      <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+      <span id="breadcrumbTitle">Dashboard</span>
+    </div>
+    <div class="topbar__spacer"></div>
+    <div class="topbar__search">
+      <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input type="search" placeholder="Search anything…">
+    </div>
+    <div class="topbar__actions">
+      <button class="topbar__icon-btn">
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+        <span class="topbar__notif-dot"></span>
+      </button>
+      <button class="topbar__icon-btn">
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+      </button>
+    </div>
+    <a href="../index.html" target="_blank" class="topbar__view-site">
+      <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+      View Site
+    </a>
+  </div>
+
+  <div class="page-body">
+
+    <!-- DASHBOARD -->
+    <div class="admin-page is-active" id="page-dashboard">
+      <div class="pg-header">
+        <div class="pg-header__left"><h1>Dashboard</h1><p>Welcome back — here's what's happening today</p></div>
+        <div class="pg-header__actions">
+          <button class="btn btn-secondary"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Export</button>
+          <button class="btn btn-primary" onclick="openProductModal()"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add Product</button>
+        </div>
+      </div>
+      <div class="stats-grid">
+        <div class="stat-card"><div class="stat-card__top"><div class="stat-card__icon green"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg></div><span class="stat-card__change up">+18%</span></div><div><div class="stat-card__val">₹84,220</div><div class="stat-card__label">Revenue this month</div></div></div>
+        <div class="stat-card"><div class="stat-card__top"><div class="stat-card__icon blue"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg></div><span class="stat-card__change up">+9%</span></div><div><div class="stat-card__val">143</div><div class="stat-card__label">Total Orders</div></div></div>
+        <div class="stat-card"><div class="stat-card__top"><div class="stat-card__icon gold"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></div><span class="stat-card__change up">+23%</span></div><div><div class="stat-card__val">1,247</div><div class="stat-card__label">Total Customers</div></div></div>
+        <div class="stat-card"><div class="stat-card__top"><div class="stat-card__icon purple"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg></div><span class="stat-card__change up">+5</span></div><div><div class="stat-card__val">38</div><div class="stat-card__label">Service Bookings</div></div></div>
+      </div>
+      <div class="dash-grid">
+        <div>
+          <div class="card" style="margin-bottom:20px;">
+            <div class="card-header"><span class="card-title">Revenue Overview</span><div style="display:flex;gap:8px;"><button class="btn btn-secondary btn-sm">Weekly</button><button class="btn btn-primary btn-sm">Monthly</button></div></div>
+            <div class="card-body">
+              <div style="display:flex;gap:24px;margin-bottom:16px;">
+                <div><div style="font-family:var(--font-display);font-size:22px;font-weight:800;color:var(--gray-900);">₹84,220</div><div style="font-size:11px;color:var(--gray-400);">This Month</div></div>
+                <div><div style="font-family:var(--font-display);font-size:22px;font-weight:800;color:var(--gray-300);">₹71,480</div><div style="font-size:11px;color:var(--gray-400);">Last Month</div></div>
+              </div>
+              <div class="chart-wrap"><div class="dash-chart-bars" id="revenueChart"></div></div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header"><span class="card-title">Recent Orders</span><button class="btn btn-secondary btn-sm" onclick="navigate('orders')">View All</button></div>
+            <div class="card-body--0"><div style="padding:0 20px;" id="recentOrdersList"></div></div>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:20px;">
+          <div class="card"><div class="card-header"><span class="card-title">Live Activity</span></div><div class="card-body"><div id="activityFeed"></div></div></div>
+          <div class="card"><div class="card-header"><span class="card-title">Top Categories</span></div><div class="card-body"><div id="topCats"></div></div></div>
+          <div class="card">
+            <div class="card-header"><span class="card-title">Quick Actions</span></div>
+            <div class="card-body" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+              <button class="btn btn-primary btn-sm" style="justify-content:flex-start;" onclick="openProductModal()"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add Product</button>
+              <button class="btn btn-secondary btn-sm" style="justify-content:flex-start;" onclick="navigate('orders')"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/></svg>Orders</button>
+              <button class="btn btn-secondary btn-sm" style="justify-content:flex-start;" onclick="navigate('services')"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg>Bookings</button>
+              <button class="btn btn-secondary btn-sm" style="justify-content:flex-start;" onclick="navigate('media')"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>Media</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PRODUCTS -->
+    <div class="admin-page" id="page-products">
+      <div class="pg-header">
+        <div class="pg-header__left"><h1>Products</h1><p>Manage your product catalogue</p></div>
+        <div class="pg-header__actions">
+          <button class="btn btn-secondary"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Import CSV</button>
+          <button class="btn btn-primary" onclick="openProductModal()"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add Product</button>
+        </div>
+      </div>
+      <div class="card">
+        <div class="filter-bar">
+          <div class="filter-search"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><input type="search" placeholder="Search products…"></div>
+          <select class="filter-select"><option>All Categories</option><option>Mixers</option><option>Stoves</option><option>Fans</option><option>Cookers</option></select>
+          <select class="filter-select"><option>All Brands</option><option>Sujata</option><option>Preethi</option><option>Prestige</option></select>
+          <select class="filter-select"><option>All Status</option><option>Active</option><option>Inactive</option></select>
+        </div>
+        <div class="tbl-wrap"><table><thead><tr><th><input type="checkbox"></th><th>Product</th><th>Brand</th><th>Price</th><th>Stock</th><th>Status</th><th>Warranty</th><th>Actions</th></tr></thead><tbody id="productsTbody"></tbody></table></div>
+        <div class="pagination"><span style="font-size:12px;color:var(--gray-400);margin-right:8px;">Showing 1–12 of 12</span><button class="pg-btn"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button><button class="pg-btn active">1</button><button class="pg-btn">2</button><button class="pg-btn"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></button></div>
+      </div>
+    </div>
+
+    <!-- ORDERS -->
+    <div class="admin-page" id="page-orders">
+      <div class="pg-header">
+        <div class="pg-header__left"><h1>Orders</h1><p>Manage and track all customer orders</p></div>
+        <div class="pg-header__actions"><button class="btn btn-secondary">Export</button></div>
+      </div>
+      <div style="margin-bottom:16px;">
+        <div class="order-status-tabs">
+          <div class="o-tab active">All <span class="o-tab-count">143</span></div>
+          <div class="o-tab">Pending <span class="o-tab-count">12</span></div>
+          <div class="o-tab">Confirmed <span class="o-tab-count">28</span></div>
+          <div class="o-tab">Processing <span class="o-tab-count">19</span></div>
+          <div class="o-tab">Delivered <span class="o-tab-count">76</span></div>
+          <div class="o-tab">Cancelled <span class="o-tab-count">8</span></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="filter-bar">
+          <div class="filter-search"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><input type="search" placeholder="Search order, customer…"></div>
+          <select class="filter-select"><option>All Payment</option><option>COD</option><option>Online</option></select>
+          <select class="filter-select"><option>Date Range</option><option>Today</option><option>This Week</option><option>This Month</option></select>
+        </div>
+        <div class="tbl-wrap"><table><thead><tr><th>Order ID</th><th>Customer</th><th>Items</th><th>Amount</th><th>Payment</th><th>Status</th><th>Date</th><th>Actions</th></tr></thead><tbody id="ordersTbody"></tbody></table></div>
+        <div class="pagination"><span style="font-size:12px;color:var(--gray-400);margin-right:8px;">Showing 1–10 of 143</span><button class="pg-btn"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button><button class="pg-btn active">1</button><button class="pg-btn">2</button><button class="pg-btn">3</button><button class="pg-btn"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></button></div>
+      </div>
+    </div>
+
+    <!-- SERVICES -->
+    <div class="admin-page" id="page-services">
+      <div class="pg-header">
+        <div class="pg-header__left"><h1>Service Bookings</h1><p>Manage repair bookings and technician assignments</p></div>
+        <div class="pg-header__actions"><a href="https://wa.me/918590004349" target="_blank" class="btn btn-gold"><svg fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347zM12 2C6.477 2 2 6.477 2 12c0 1.89.525 3.66 1.438 5.168L2 22l4.978-1.413A9.955 9.955 0 0012 22c5.523 0 10-4.477 10-10S17.523 2 12 2z"/></svg>WhatsApp</a></div>
+      </div>
+      <div class="service-card-grid" style="margin-bottom:20px;">
+        <div class="service-stat-card"><h4>New Bookings</h4><div class="big">5</div><p>Awaiting confirmation</p></div>
+        <div class="service-stat-card"><h4>In Progress</h4><div class="big" style="color:var(--blue-500);">12</div><p>Currently being serviced</p></div>
+        <div class="service-stat-card"><h4>Completed Today</h4><div class="big" style="color:var(--gold-400);">8</div><p>Jobs finished today</p></div>
+      </div>
+      <div class="card">
+        <div class="filter-bar">
+          <div class="filter-search"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><input type="search" placeholder="Search bookings…"></div>
+          <select class="filter-select"><option>All Services</option><option>Mixer Repair</option><option>Washing Machine</option><option>Gas Stove</option><option>Fan Repair</option></select>
+          <select class="filter-select"><option>All Status</option><option>New</option><option>Assigned</option><option>In Progress</option><option>Completed</option></select>
+        </div>
+        <div class="tbl-wrap"><table><thead><tr><th>Booking ID</th><th>Customer</th><th>Service Type</th><th>Location</th><th>Date</th><th>Status</th><th>Actions</th></tr></thead><tbody id="servicesTbody"></tbody></table></div>
+      </div>
+    </div>
+
+    <!-- HOMEPAGE MANAGER -->
+    <div class="admin-page" id="page-homepage">
+      <div class="pg-header">
+        <div class="pg-header__left"><h1>Homepage Manager</h1><p>Control what appears on your homepage — drag to reorder</p></div>
+        <div class="pg-header__actions"><button class="btn btn-secondary">Preview</button><button class="btn btn-primary" onclick="showToast('Homepage saved!')">Save Changes</button></div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:10px;" id="sectionManager"></div>
+    </div>
+
+    <!-- BANNERS -->
+    <div class="admin-page" id="page-banners">
+      <div class="pg-header">
+        <div class="pg-header__left"><h1>Banner Management</h1><p>Upload and manage homepage hero banners</p></div>
+        <div class="pg-header__actions"><button class="btn btn-primary" onclick="showToast('Banner added!')"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add Banner</button></div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px;">
+        <div class="card">
+          <div style="aspect-ratio:16/7;background:var(--green-700);border-radius:var(--r-md) var(--r-md) 0 0;overflow:hidden;position:relative;">
+            <img src="https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=600&q=60" style="width:100%;height:100%;object-fit:cover;opacity:.7;">
+            <div style="position:absolute;bottom:10px;left:12px;color:#fff;font-size:12px;font-weight:700;">Premium Kitchen Appliances</div>
+          </div>
+          <div class="card-body" style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;">
+            <div><div style="font-size:13px;font-weight:600;">Main Hero Banner</div><span class="status status-active">Active</span></div>
+            <div style="display:flex;gap:6px;">
+              <button class="btn-icon" onclick="showToast('Edit banner')"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+              <button class="btn-icon" onclick="showToast('Banner removed')" style="border-color:var(--red-100);color:var(--red-500);"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg></button>
+            </div>
+          </div>
+        </div>
+        <div class="card" style="border:2px dashed var(--gray-150);display:flex;align-items:center;justify-content:center;min-height:160px;cursor:pointer;" onclick="showToast('Add new banner')" onmouseover="this.style.borderColor='var(--green-400)'" onmouseout="this.style.borderColor='var(--gray-150)'">
+          <div style="text-align:center;color:var(--gray-300);"><svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" style="width:32px;height:32px;margin:0 auto 8px;"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg><div style="font-size:13px;font-weight:600;">Add New Banner</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MEDIA -->
+    <div class="admin-page" id="page-media">
+      <div class="pg-header">
+        <div class="pg-header__left"><h1>Media Library</h1><p>All uploaded images and files</p></div>
+        <div class="pg-header__actions"><button class="btn btn-secondary">New Folder</button><button class="btn btn-primary" onclick="showToast('Upload dialog')"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>Upload</button></div>
+      </div>
+      <div class="upload-area" style="margin-bottom:20px;" onclick="showToast('Select files')"><svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg><p>Drag files here or <span>browse to upload</span></p><p style="font-size:11px;margin-top:4px;">PNG, JPG, WebP — max 5MB</p></div>
+      <div class="card">
+        <div class="filter-bar"><div class="filter-search"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><input type="search" placeholder="Search files…"></div><select class="filter-select"><option>All Folders</option><option>Products</option><option>Banners</option><option>Blog</option></select></div>
+        <div class="card-body"><div class="media-grid" id="mediaGrid"></div></div>
+      </div>
+    </div>
+
+    <!-- ANALYTICS -->
+    <div class="admin-page" id="page-analytics">
+      <div class="pg-header">
+        <div class="pg-header__left"><h1>Analytics</h1><p>Sales, traffic and performance overview</p></div>
+        <div class="pg-header__actions"><select class="filter-select"><option>Last 30 Days</option><option>Last 7 Days</option><option>This Month</option><option>This Year</option></select></div>
+      </div>
+      <div class="stats-grid" style="margin-bottom:20px;">
+        <div class="stat-card"><div class="stat-card__top"><div class="stat-card__icon green"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg></div><span class="stat-card__change up">+18%</span></div><div><div class="stat-card__val">₹84,220</div><div class="stat-card__label">Total Revenue</div></div></div>
+        <div class="stat-card"><div class="stat-card__top"><div class="stat-card__icon blue"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></div><span class="stat-card__change up">+12%</span></div><div><div class="stat-card__val">3,482</div><div class="stat-card__label">Website Visitors</div></div></div>
+        <div class="stat-card"><div class="stat-card__top"><div class="stat-card__icon gold"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div><span class="stat-card__change up">+4%</span></div><div><div class="stat-card__val">4.1%</div><div class="stat-card__label">Conversion Rate</div></div></div>
+        <div class="stat-card"><div class="stat-card__top"><div class="stat-card__icon orange"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/></svg></div><span class="stat-card__change up">+9%</span></div><div><div class="stat-card__val">₹589</div><div class="stat-card__label">Avg Order Value</div></div></div>
+      </div>
+      <div class="analytics-grid">
+        <div class="card"><div class="card-header"><span class="card-title">Sales by Category</span></div><div class="card-body" id="catAnalytics"></div></div>
+        <div class="card"><div class="card-header"><span class="card-title">Top Products</span></div><div class="card-body--0"><table><thead><tr><th>Product</th><th>Sales</th><th>Revenue</th></tr></thead><tbody id="topProductsTbody"></tbody></table></div></div>
+      </div>
+    </div>
+
+    <!-- CATEGORIES -->
+    <div class="admin-page" id="page-categories">
+      <div class="pg-header"><div class="pg-header__left"><h1>Categories</h1><p>Manage product categories</p></div><div class="pg-header__actions"><button class="btn btn-primary" onclick="showToast('Add category')"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add Category</button></div></div>
+      <div class="card"><div class="tbl-wrap"><table><thead><tr><th>Category</th><th>Parent</th><th>Products</th><th>Status</th><th>Actions</th></tr></thead><tbody id="catTbody"></tbody></table></div></div>
+    </div>
+
+    <!-- CUSTOMERS -->
+    <div class="admin-page" id="page-customers">
+      <div class="pg-header"><div class="pg-header__left"><h1>Customers</h1><p>1,247 registered customers</p></div><div class="pg-header__actions"><button class="btn btn-secondary">Export</button></div></div>
+      <div class="card">
+        <div class="filter-bar"><div class="filter-search"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><input type="search" placeholder="Search customers…"></div><select class="filter-select"><option>All Locations</option><option>Thrissur</option><option>Kochi</option><option>Calicut</option></select></div>
+        <div class="tbl-wrap"><table><thead><tr><th>Customer</th><th>Phone</th><th>Location</th><th>Orders</th><th>Total Spent</th><th>Last Order</th><th>Actions</th></tr></thead><tbody id="customersTbody"></tbody></table></div>
+      </div>
+    </div>
+
+    <!-- REVIEWS -->
+    <div class="admin-page" id="page-reviews">
+      <div class="pg-header"><div class="pg-header__left"><h1>Reviews</h1><p>Customer reviews and ratings</p></div></div>
+      <div class="card"><div class="tbl-wrap"><table><thead><tr><th>Customer</th><th>Product</th><th>Rating</th><th>Review</th><th>Date</th><th>Status</th><th>Actions</th></tr></thead><tbody id="reviewsTbody"></tbody></table></div></div>
+    </div>
+
+    <!-- INVENTORY -->
+    <div class="admin-page" id="page-inventory">
+      <div class="pg-header"><div class="pg-header__left"><h1>Inventory</h1><p>Stock levels and low stock alerts</p></div><div class="pg-header__actions"><button class="btn btn-secondary">Export</button><button class="btn btn-primary" onclick="showToast('Stock updated!')">Update Stock</button></div></div>
+      <div class="card"><div class="tbl-wrap"><table><thead><tr><th>Product</th><th>SKU</th><th>In Stock</th><th>Reserved</th><th>Available</th><th>Status</th><th>Actions</th></tr></thead><tbody id="inventoryTbody"></tbody></table></div></div>
+    </div>
+
+    <!-- BRANDS -->
+    <div class="admin-page" id="page-brands">
+      <div class="pg-header"><div class="pg-header__left"><h1>Brands</h1><p>Manage product brands</p></div><div class="pg-header__actions"><button class="btn btn-primary" onclick="showToast('Add brand')">Add Brand</button></div></div>
+      <div id="brandsContainer"></div>
+    </div>
+
+    <!-- COUPONS -->
+    <div class="admin-page" id="page-coupons">
+      <div class="pg-header"><div class="pg-header__left"><h1>Coupons & Offers</h1><p>Discount codes and promotional offers</p></div><div class="pg-header__actions"><button class="btn btn-primary" onclick="showToast('Create coupon')">Create Coupon</button></div></div>
+      <div class="card"><div class="tbl-wrap"><table><thead><tr><th>Code</th><th>Type</th><th>Discount</th><th>Used</th><th>Expires</th><th>Status</th><th>Actions</th></tr></thead><tbody>
+        <tr><td class="td-name">WELLFIX20</td><td>Percentage</td><td>20% off</td><td>48/100</td><td>31 Dec 2025</td><td><span class="status status-active">Active</span></td><td><button class="btn-icon" onclick="showToast('Edit coupon')"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button></td></tr>
+        <tr><td class="td-name">SERVICE150</td><td>Fixed</td><td>₹150 off</td><td>12/50</td><td>15 Jan 2026</td><td><span class="status status-active">Active</span></td><td><button class="btn-icon" onclick="showToast('Edit coupon')"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button></td></tr>
+        <tr><td class="td-name">SUMMER10</td><td>Percentage</td><td>10% off</td><td>100/100</td><td>31 Aug 2025</td><td><span class="status status-inactive">Expired</span></td><td><button class="btn-icon"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button></td></tr>
+      </tbody></table></div></div>
+    </div>
+
+    <!-- BLOG -->
+    <div class="admin-page" id="page-blog">
+      <div class="pg-header"><div class="pg-header__left"><h1>Blog</h1><p>Create and manage blog posts</p></div><div class="pg-header__actions"><button class="btn btn-primary" onclick="showToast('Opening editor…')">Write Post</button></div></div>
+      <div class="card"><div class="tbl-wrap"><table><thead><tr><th>Title</th><th>Category</th><th>Author</th><th>Views</th><th>Status</th><th>Date</th><th>Actions</th></tr></thead><tbody>
+        <tr><td class="td-name">5 Signs Your Mixer Needs Repair</td><td>Tips</td><td>Admin</td><td>1,240</td><td><span class="status status-active">Published</span></td><td>10 May 2025</td><td><button class="btn-icon" onclick="showToast('Edit post')"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button></td></tr>
+        <tr><td class="td-name">Best Gas Stoves in Kerala 2025</td><td>Reviews</td><td>Admin</td><td>892</td><td><span class="status status-active">Published</span></td><td>8 May 2025</td><td><button class="btn-icon" onclick="showToast('Edit post')"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button></td></tr>
+        <tr><td class="td-name">How to Choose a Pressure Cooker</td><td>Guides</td><td>Admin</td><td>0</td><td><span class="status status-pending">Draft</span></td><td>—</td><td><button class="btn-icon" onclick="showToast('Edit post')"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button></td></tr>
+      </tbody></table></div></div>
+    </div>
+
+    <!-- SEO -->
+    <div class="admin-page" id="page-seo">
+      <div class="pg-header"><div class="pg-header__left"><h1>SEO Settings</h1><p>Meta tags, Open Graph and sitemap</p></div><div class="pg-header__actions"><button class="btn btn-primary" onclick="showToast('SEO settings saved!')">Save Changes</button></div></div>
+      <div class="tabs"><button class="tab-btn active">Homepage</button><button class="tab-btn">Products</button><button class="tab-btn">Blog</button><button class="tab-btn">Local SEO</button></div>
+      <div class="card"><div class="card-body"><div class="form-grid" style="gap:20px;">
+        <div class="form-group"><label class="form-label">Meta Title <span>*</span></label><input class="form-input" value="WellFix Appliances – Home & Kitchen Appliances Kerala"><div class="form-hint">Recommended: 50–60 characters</div></div>
+        <div class="form-group"><label class="form-label">Meta Description <span>*</span></label><textarea class="form-textarea">Kerala's most trusted home and kitchen appliance shop. 100% genuine products, best prices, free delivery across Kerala.</textarea><div class="form-hint">Recommended: 150–160 characters</div></div>
+        <div class="form-group"><label class="form-label">Focus Keywords</label><input class="form-input" value="appliances kerala, mixer grinder kerala, kitchen appliances"></div>
+        <div class="form-group"><label class="form-label">Open Graph Image</label><div class="upload-area" style="padding:16px;" onclick="showToast('Choose OG image')"><p>Click to upload OG image (1200×630px recommended)</p></div></div>
+      </div></div></div>
+    </div>
+
+    <!-- SETTINGS -->
+    <div class="admin-page" id="page-settings">
+      <div class="pg-header"><div class="pg-header__left"><h1>Settings</h1><p>Store configuration and preferences</p></div><div class="pg-header__actions"><button class="btn btn-primary" onclick="showToast('Settings saved!')">Save Changes</button></div></div>
+      <div class="settings-layout">
+        <div class="card" style="padding:8px;">
+          <div class="settings-nav">
+            <div class="settings-nav-item active"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>Store</div>
+            <div class="settings-nav-item"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>Payment</div>
+            <div class="settings-nav-item"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/></svg>Shipping</div>
+            <div class="settings-nav-item"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07"/></svg>Notifications</div>
+            <div class="settings-nav-item"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>Admin Users</div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header"><span class="card-title">Store Information</span></div>
+          <div class="card-body">
+            <div class="form-grid form-grid-2" style="gap:16px;">
+              <div class="form-group"><label class="form-label">Store Name</label><input class="form-input" value="WellFix Appliances"></div>
+              <div class="form-group"><label class="form-label">Phone Number</label><input class="form-input" value="+91 85900 04349"></div>
+              <div class="form-group"><label class="form-label">WhatsApp Number</label><input class="form-input" value="+91 85900 04349"></div>
+              <div class="form-group"><label class="form-label">Email</label><input class="form-input" value="info@wellfixappliances.com"></div>
+              <div class="form-group" style="grid-column:1/-1;"><label class="form-label">Address</label><textarea class="form-textarea" style="min-height:60px;">Kerala, India</textarea></div>
+              <div class="form-group"><label class="form-label">Business Hours</label><input class="form-input" value="Mon–Sat: 9:00 AM – 7:00 PM"></div>
+              <div class="form-group"><label class="form-label">Currency</label><select class="form-select"><option>INR (₹)</option></select></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /page-body -->
+</div><!-- /main-content -->
+</div><!-- /admin-shell -->
+
+<!-- ADD PRODUCT MODAL -->
+<div class="modal-overlay" id="productModal">
+  <div class="modal">
+    <div class="modal-header"><div class="modal-title">Add New Product</div><button class="modal-close" onclick="closeProductModal()"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
+    <div class="modal-body">
+      <div class="tabs" style="margin-bottom:16px;"><button class="tab-btn active">Basic Info</button><button class="tab-btn">Pricing</button><button class="tab-btn">Images</button><button class="tab-btn">SEO</button></div>
+      <div class="form-grid form-grid-2" style="gap:14px;">
+        <div class="form-group" style="grid-column:1/-1;"><label class="form-label">Product Name <span>*</span></label><input class="form-input" placeholder="e.g. Sujata Powermatic Plus 900W"></div>
+        <div class="form-group"><label class="form-label">Brand <span>*</span></label><select class="form-select"><option>Select Brand</option><option>Sujata</option><option>Preethi</option><option>Butterfly</option><option>Prestige</option><option>Pigeon</option><option>Havells</option><option>Kirloskar</option></select></div>
+        <div class="form-group"><label class="form-label">Category <span>*</span></label><select class="form-select"><option>Select Category</option><option>Mixers & Grinders</option><option>Gas Stoves</option><option>Fans</option><option>Pressure Cookers</option><option>Water Motors</option><option>Cookware</option></select></div>
+        <div class="form-group"><label class="form-label">Selling Price (₹) <span>*</span></label><input class="form-input" type="number" placeholder="3499"></div>
+        <div class="form-group"><label class="form-label">MRP / Original Price (₹)</label><input class="form-input" type="number" placeholder="4500"></div>
+        <div class="form-group"><label class="form-label">Stock Quantity</label><input class="form-input" type="number" placeholder="50"></div>
+        <div class="form-group"><label class="form-label">Warranty</label><input class="form-input" placeholder="e.g. 2 Year"></div>
+        <div class="form-group" style="grid-column:1/-1;"><label class="form-label">Description</label><textarea class="form-textarea" placeholder="Product description…"></textarea></div>
+        <div class="form-group" style="grid-column:1/-1;"><label class="form-label">Product Images</label><div class="upload-area" onclick="showToast('Select product images')"><svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg><p>Drag images here or <span>click to browse</span></p><p style="font-size:11px;margin-top:4px;">Upload up to 6 images — PNG, JPG, WebP</p></div></div>
+        <div class="form-group"><label class="form-label">Badge</label><select class="form-select"><option value="">No Badge</option><option>hot</option><option>sale</option><option>new</option></select></div>
+        <div class="form-group"><label class="form-label">Status</label><select class="form-select"><option>Active</option><option>Inactive</option><option>Draft</option></select></div>
+      </div>
+    </div>
+    <div class="modal-footer"><button class="btn btn-secondary" onclick="closeProductModal()">Cancel</button><button class="btn btn-secondary">Save as Draft</button><button class="btn btn-primary" onclick="saveProduct()"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Publish Product</button></div>
+  </div>
+</div>
+<script>
+const PRODUCTS=[{id:1,name:'Sujata Powermatic Plus 900W',brand:'Sujata',cat:'Mixers',price:3499,old:4500,stock:24,warranty:'2 Year',badge:'hot',img:'https://m.media-amazon.com/images/I/51NVCzNibvL.jpg'},{id:2,name:'Preethi Blue Leaf Gold 750W',brand:'Preethi',cat:'Mixers',price:2799,old:3800,stock:18,warranty:'2 Year',badge:'sale',img:'https://m.media-amazon.com/images/I/61jBgFOp6xL.jpg'},{id:3,name:'Butterfly Rapid 3-Burner Stove',brand:'Butterfly',cat:'Gas Stoves',price:2200,old:2800,stock:31,warranty:'1 Year',badge:'',img:'https://m.media-amazon.com/images/I/7115Tw3ysWL.jpg'},{id:4,name:'Prestige IRIS LPG 2-Burner',brand:'Prestige',cat:'Gas Stoves',price:1850,old:2400,stock:12,warranty:'1 Year',badge:'',img:'https://m.media-amazon.com/images/I/51JyelsZUKL.jpg'},{id:5,name:'Havells Steamer Ceiling Fan',brand:'Havells',cat:'Fans',price:1650,old:2200,stock:8,warranty:'2 Year',badge:'new',img:'https://m.media-amazon.com/images/I/21954ou6hSL.jpg'},{id:6,name:'Prestige Popular Cooker 5L',brand:'Prestige',cat:'Cookers',price:1250,old:1600,stock:42,warranty:'5 Year',badge:'hot',img:'https://cdn.ae1stcry.com/brainbees/images/products/583x720/9ab0dae708715a.webp'},{id:7,name:'Kirloskar Water Motor 0.5HP',brand:'Kirloskar',cat:'Motors',price:3200,old:4000,stock:5,warranty:'1 Year',badge:'',img:'https://5.imimg.com/data5/SELLER/Default/2021/4/EH/QF/RI/89703121/domestic-water-pump-500x500.jpg'},{id:8,name:'Butterfly Non-Stick Tawa 250mm',brand:'Butterfly',cat:'Cookware',price:550,old:750,stock:60,warranty:'6 Month',badge:'sale',img:'https://m.media-amazon.com/images/I/81Am4mpaHrL.jpg'}];
+const ORDERS=[{id:'#WF-1042',customer:'Rahul Menon',items:2,amount:'₹6,298',payment:'COD',status:'pending',date:'13 May'},{id:'#WF-1041',customer:'Priya Krishnan',items:1,amount:'₹2,799',payment:'Online',status:'confirmed',date:'13 May'},{id:'#WF-1040',customer:'Anil Jose',items:3,amount:'₹5,450',payment:'COD',status:'processing',date:'12 May'},{id:'#WF-1039',customer:'Meera Nair',items:1,amount:'₹1,650',payment:'Online',status:'delivered',date:'11 May'},{id:'#WF-1038',customer:'Suresh Kumar',items:2,amount:'₹4,900',payment:'COD',status:'delivered',date:'10 May'},{id:'#WF-1037',customer:'Deepa Thomas',items:1,amount:'₹1,250',payment:'Online',status:'cancelled',date:'9 May'}];
+const SERVICES=[{id:'#SV-205',customer:'Rajan P',service:'Mixer Repair',location:'Thrissur',date:'13 May',status:'new'},{id:'#SV-204',customer:'Latha R',service:'Washing Machine',location:'Kochi',date:'13 May',status:'assigned'},{id:'#SV-203',customer:'Biju M',service:'Gas Stove Repair',location:'Calicut',date:'12 May',status:'in-progress'},{id:'#SV-202',customer:'Sona T',service:'Fan Repair',location:'Thrissur',date:'12 May',status:'completed'},{id:'#SV-201',customer:'Anoop K',service:'Cooker Repair',location:'Kochi',date:'11 May',status:'completed'}];
+const CATEGORIES=[{name:'Mixers & Grinders',parent:'—',products:24},{name:'Gas Stoves',parent:'—',products:31},{name:'Fans',parent:'—',products:18},{name:'Pressure Cookers',parent:'—',products:12},{name:'Water Motors',parent:'—',products:8},{name:'Cookware & Pans',parent:'—',products:42},{name:'Spare Parts',parent:'—',products:15},{name:'Sujata Mixers',parent:'Mixers & Grinders',products:6}];
+const CUSTOMERS=[{name:'Rahul Menon',phone:'+91 98765 43210',loc:'Thrissur',orders:4,spent:'₹14,200',last:'13 May'},{name:'Priya Krishnan',phone:'+91 87654 32109',loc:'Ernakulam',orders:2,spent:'₹5,450',last:'13 May'},{name:'Anil Jose',phone:'+91 76543 21098',loc:'Kochi',orders:7,spent:'₹21,800',last:'12 May'},{name:'Meera Nair',phone:'+91 65432 10987',loc:'Calicut',orders:1,spent:'₹1,650',last:'11 May'},{name:'Suresh Kumar',phone:'+91 54321 09876',loc:'Thrissur',orders:3,spent:'₹8,900',last:'10 May'}];
+const HOMEPAGE_SECTIONS=[{icon:'M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z',name:'Hero Banners',desc:'Main hero section with 3 banner cards',enabled:true},{icon:'M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z',name:'Offer Strip',desc:'Free delivery, warranty, price guarantee strip',enabled:true},{icon:'M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z',name:'Category Pills',desc:'Horizontal scrollable category row',enabled:true},{icon:'M13 2L3 14h9l-1 8 10-12h-9l1-8z',name:'Flash Sale',desc:'Countdown timer with sale products',enabled:true},{icon:'M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z',name:'Trending Products',desc:'Main product grid section',enabled:true},{icon:'M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z',name:'Brand Bar',desc:'Brand logos horizontal strip',enabled:true},{icon:'M3 3h18v7a9 9 0 01-18 0V3z',name:'Promo Banners',desc:'2-column promotional banner grid',enabled:true},{icon:'M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z',name:'Services Section',desc:'Repair services with WhatsApp booking',enabled:true},{icon:'M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-4 4v-4z',name:'Customer Reviews',desc:'Testimonials section',enabled:false}];
+
+const sidebar=document.getElementById('sidebar'),mainContent=document.getElementById('mainContent'),topbarAdmin=document.getElementById('topbarAdmin'),sidebarOverlay=document.getElementById('sidebarOverlay');
+let sidebarCollapsed=false;
+document.getElementById('sidebarToggle').addEventListener('click',()=>{if(window.innerWidth<=900){sidebar.classList.toggle('mob-open');sidebarOverlay.classList.toggle('show');}else{sidebarCollapsed=!sidebarCollapsed;sidebar.classList.toggle('collapsed',sidebarCollapsed);mainContent.classList.toggle('expanded',sidebarCollapsed);topbarAdmin.style.left=sidebarCollapsed?'var(--sidebar-collapsed)':'var(--sidebar-w)';}});
+sidebarOverlay.addEventListener('click',()=>{sidebar.classList.remove('mob-open');sidebarOverlay.classList.remove('show');});
+
+const PAGE_TITLES={dashboard:'Dashboard',products:'Products',orders:'Orders',customers:'Customers',services:'Service Bookings',categories:'Categories',brands:'Brands',inventory:'Inventory',coupons:'Coupons & Offers',reviews:'Reviews',homepage:'Homepage Manager',banners:'Banners',blog:'Blog',media:'Media Library',analytics:'Analytics',seo:'SEO Settings',settings:'Settings'};
+function navigate(page){document.querySelectorAll('.admin-page').forEach(p=>p.classList.remove('is-active'));document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));const pg=document.getElementById('page-'+page);if(pg)pg.classList.add('is-active');const ni=document.querySelector(`.nav-item[data-page="${page}"]`);if(ni)ni.classList.add('active');document.getElementById('breadcrumbTitle').textContent=PAGE_TITLES[page]||page;if(window.innerWidth<=900){sidebar.classList.remove('mob-open');sidebarOverlay.classList.remove('show');}window.scrollTo(0,0);}
+document.querySelectorAll('.nav-item[data-page]').forEach(item=>item.addEventListener('click',()=>navigate(item.dataset.page)));
+document.querySelectorAll('.o-tab').forEach(tab=>tab.addEventListener('click',()=>{document.querySelectorAll('.o-tab').forEach(t=>t.classList.remove('active'));tab.classList.add('active');}));
+
+function showToast(msg){const t=document.getElementById('toast');document.getElementById('toastMsg').textContent=msg||'Done!';t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2800);}
+function openProductModal(){document.getElementById('productModal').classList.add('open');document.body.style.overflow='hidden';}
+function closeProductModal(){document.getElementById('productModal').classList.remove('open');document.body.style.overflow='';}
+function saveProduct(){closeProductModal();showToast('Product published successfully!');}
+document.getElementById('productModal').addEventListener('click',e=>{if(e.target===e.currentTarget)closeProductModal();});
+
+function ab(onEdit,onDel){return`<div style="display:flex;gap:4px;"><button class="btn-icon" onclick="${onEdit}"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button><button class="btn-icon" onclick="${onDel}" style="border-color:var(--red-100);color:var(--red-500);"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg></button></div>`;}
+
+function renderProducts(){const t=document.getElementById('productsTbody');if(!t)return;t.innerHTML=PRODUCTS.map(p=>{const pct=Math.round((p.stock/60)*100),lvl=pct>40?'high':pct>15?'medium':'low';return`<tr><td><input type="checkbox"></td><td><div style="display:flex;align-items:center;gap:10px;"><img src="${p.img}" class="product-row-img" onerror="this.style.display='none'"><div><div class="td-name">${p.name}</div><div style="font-size:11px;color:var(--gray-400);">${p.cat}</div></div></div></td><td>${p.brand}</td><td><div style="font-weight:700;">₹${p.price.toLocaleString('en-IN')}</div><div style="font-size:11px;text-decoration:line-through;color:var(--gray-300);">₹${p.old.toLocaleString('en-IN')}</div></td><td><div style="display:flex;align-items:center;gap:8px;"><div class="stock-bar"><div class="stock-bar__fill ${lvl}" style="width:${pct}%"></div></div><span style="font-size:12px;font-weight:600;">${p.stock}</span></div></td><td><span class="status status-active">Active</span></td><td>${p.warranty}</td><td>${ab('showToast("Edit product")','showToast("Removed")')}</td></tr>`;}).join('');}
+
+function renderOrders(){const t=document.getElementById('ordersTbody');if(!t)return;const sm={pending:'status-pending',confirmed:'status-active',processing:'status-delivered',delivered:'status-active',cancelled:'status-danger'};t.innerHTML=ORDERS.map(o=>`<tr><td class="td-name">${o.id}</td><td>${o.customer}</td><td>${o.items} item${o.items>1?'s':''}</td><td style="font-weight:700;">${o.amount}</td><td>${o.payment}</td><td><span class="status ${sm[o.status]||'status-inactive'}">${o.status.charAt(0).toUpperCase()+o.status.slice(1)}</span></td><td>${o.date}</td><td>${ab('showToast("Order details")','')}</td></tr>`).join('');}
+
+function renderServices(){const t=document.getElementById('servicesTbody');if(!t)return;const sm={new:'status-danger',assigned:'status-pending','in-progress':'status-delivered',completed:'status-active'};t.innerHTML=SERVICES.map(s=>`<tr><td class="td-name">${s.id}</td><td>${s.customer}</td><td>${s.service}</td><td>${s.location}</td><td>${s.date}</td><td><span class="status ${sm[s.status]||'status-inactive'}">${s.status.charAt(0).toUpperCase()+s.status.slice(1)}</span></td><td><div style="display:flex;gap:6px;"><button class="btn btn-primary btn-sm" onclick="showToast('Assigned!')">Assign</button><a href="https://wa.me/918590004349" target="_blank" class="btn btn-gold btn-sm">WA</a></div></td></tr>`).join('');}
+
+function renderCategories(){const t=document.getElementById('catTbody');if(!t)return;t.innerHTML=CATEGORIES.map(c=>`<tr><td class="td-name">${c.name}</td><td style="color:var(--gray-400);">${c.parent}</td><td>${c.products}</td><td><span class="status status-active">Active</span></td><td>${ab('showToast("Edit category")','showToast("Removed")')}</td></tr>`).join('');}
+
+function renderCustomers(){const t=document.getElementById('customersTbody');if(!t)return;t.innerHTML=CUSTOMERS.map(c=>`<tr><td class="td-name">${c.name}</td><td>${c.phone}</td><td>${c.loc}</td><td>${c.orders}</td><td style="font-weight:700;">${c.spent}</td><td>${c.last}</td><td><button class="btn btn-secondary btn-sm" onclick="showToast('View customer')">View</button></td></tr>`).join('');}
+
+function renderReviews(){const t=document.getElementById('reviewsTbody');if(!t)return;const rv=[{customer:'Rahul Menon',product:'Sujata Mixer',rating:5,text:'Great product!',date:'10 May',status:'approved'},{customer:'Priya Krishnan',product:'WM Repair Service',rating:5,text:'Very professional.',date:'9 May',status:'approved'},{customer:'Anil Jose',product:'Prestige Cooker 5L',rating:4,text:'Good quality.',date:'8 May',status:'pending'}];t.innerHTML=rv.map(r=>`<tr><td class="td-name">${r.customer}</td><td>${r.product}</td><td>${'★'.repeat(r.rating)}${'☆'.repeat(5-r.rating)}</td><td>${r.text}</td><td>${r.date}</td><td><span class="status ${r.status==='approved'?'status-active':'status-pending'}">${r.status}</span></td><td>${ab('showToast("Edit review")','showToast("Removed")')}</td></tr>`).join('');}
+
+function renderInventory(){const t=document.getElementById('inventoryTbody');if(!t)return;t.innerHTML=PRODUCTS.map((p,i)=>{const res=Math.floor(Math.random()*5),av=p.stock-res,st=av>10?'status-active':av>3?'status-pending':'status-danger',sl=av>10?'In Stock':av>3?'Low Stock':'Critical';return`<tr><td><div style="display:flex;align-items:center;gap:8px;"><img src="${p.img}" class="product-row-img" style="width:32px;height:32px;" onerror="this.style.display='none'"><span class="td-name">${p.name}</span></div></td><td style="color:var(--gray-400);">SKU-${1000+i}</td><td style="font-weight:700;">${p.stock}</td><td>${res}</td><td style="font-weight:700;">${av}</td><td><span class="status ${st}">${sl}</span></td><td><button class="btn btn-secondary btn-sm" onclick="showToast('Update stock')">Update</button></td></tr>`;}).join('');}
+
+function renderHomepageSections(){const el=document.getElementById('sectionManager');if(!el)return;el.innerHTML=HOMEPAGE_SECTIONS.map(s=>`<div class="section-manager-item"><span class="drag-handle"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="16" height="16"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg></span><div class="section-manager-item__icon"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="${s.icon}"/></svg></div><div class="section-manager-item__info"><div class="section-manager-item__name">${s.name}</div><div class="section-manager-item__desc">${s.desc}</div></div><div class="section-manager-item__actions"><button class="btn btn-secondary btn-sm" onclick="showToast('Edit ${s.name}')">Edit</button><label class="toggle"><input type="checkbox" ${s.enabled?'checked':''} onchange="showToast('Section toggled')"><span class="toggle-slider"></span></label></div></div>`).join('');}
+
+function renderMedia(){const el=document.getElementById('mediaGrid');if(!el)return;const imgs=['https://m.media-amazon.com/images/I/51NVCzNibvL.jpg','https://m.media-amazon.com/images/I/7115Tw3ysWL.jpg','https://m.media-amazon.com/images/I/21954ou6hSL.jpg','https://m.media-amazon.com/images/I/81Am4mpaHrL.jpg','https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=200&q=60','https://images.unsplash.com/photo-1585771724684-38269d6639fd?w=200&q=60','https://images.unsplash.com/photo-1484154218962-a197022b5858?w=200&q=60','https://images.unsplash.com/photo-1581578731548-c64695cc6952?w=200&q=60'];const names=['sujata-mixer.jpg','butterfly-stove.jpg','havells-fan.jpg','tawa.jpg','hero-banner.jpg','mixer-banner.jpg','stove-banner.jpg','service-tech.jpg'];el.innerHTML=imgs.map((src,i)=>`<div class="media-item" onclick="this.classList.toggle('selected')"><div class="media-item__img"><img src="${src}" onerror="this.parentElement.style.background='var(--gray-100)'"></div><div class="media-item__name">${names[i]}</div></div>`).join('');}
+
+function renderChart(){const el=document.getElementById('revenueChart');if(!el)return;const vals=[45,60,38,72,55,80,65,90,70,85,78,95],months=['Jun','Jul','Aug','Sep','Oct','Nov','Dec','Jan','Feb','Mar','Apr','May'],max=Math.max(...vals);el.innerHTML=vals.map((v,i)=>`<div class="dash-bar ${v===max?'peak':''}" style="height:${Math.round((v/max)*100)}%;"><span class="dash-bar-label">${months[i]}</span></div>`).join('');}
+
+function renderRecentOrders(){const el=document.getElementById('recentOrdersList');if(!el)return;const sc={pending:'var(--gold-400)',confirmed:'var(--green-500)',processing:'var(--blue-500)',delivered:'var(--green-600)',cancelled:'var(--red-500)'};el.innerHTML=ORDERS.slice(0,5).map(o=>`<div class="order-row-mini"><div class="order-num">${o.id}</div><div class="order-customer">${o.customer}</div><span style="font-size:11px;font-weight:600;color:${sc[o.status]};white-space:nowrap;">${o.status}</span><div class="order-amount">${o.amount}</div></div>`).join('');}
+
+function renderActivity(){const el=document.getElementById('activityFeed');if(!el)return;el.innerHTML=[{dot:'green',text:'<strong>New order #WF-1042</strong> from Rahul Menon — ₹6,298',time:'2 min ago'},{dot:'blue',text:'<strong>Service booking</strong> for Mixer Repair — Thrissur',time:'14 min ago'},{dot:'gold',text:'<strong>Product review</strong> submitted for Sujata Mixer',time:'1 hr ago'},{dot:'green',text:'<strong>Order #WF-1041</strong> payment confirmed',time:'2 hr ago'},{dot:'red',text:'<strong>Low stock alert:</strong> Kirloskar Motor — 5 left',time:'3 hr ago'}].map(a=>`<div class="activity-item"><div class="activity-dot ${a.dot}"></div><div><div class="activity-text">${a.text}</div><div class="activity-time">${a.time}</div></div></div>`).join('');}
+
+function renderTopCats(){const el=document.getElementById('topCats');if(!el)return;el.innerHTML=[{name:'Mixers & Grinders',pct:38},{name:'Gas Stoves',pct:26},{name:'Pressure Cookers',pct:18},{name:'Fans',pct:11},{name:'Water Motors',pct:7}].map(c=>`<div class="progress-row"><div class="progress-label">${c.name}</div><div class="progress-bar"><div class="progress-fill" style="width:${c.pct}%"></div></div><div class="progress-pct">${c.pct}%</div></div>`).join('');}
+
+function renderAnalytics(){const el=document.getElementById('catAnalytics');if(!el)return;el.innerHTML=[{name:'Mixers & Grinders',pct:38,rev:'₹31,800'},{name:'Gas Stoves',pct:26,rev:'₹21,900'},{name:'Cookers',pct:18,rev:'₹15,160'},{name:'Fans',pct:11,rev:'₹9,260'},{name:'Others',pct:7,rev:'₹6,100'}].map(c=>`<div class="progress-row"><div class="progress-label" style="width:130px;">${c.name}</div><div class="progress-bar"><div class="progress-fill" style="width:${c.pct}%"></div></div><div class="progress-pct" style="width:60px;text-align:right;">${c.rev}</div></div>`).join('');const tb=document.getElementById('topProductsTbody');if(tb)tb.innerHTML=PRODUCTS.slice(0,5).map((p,i)=>`<tr><td><div style="display:flex;align-items:center;gap:8px;"><span style="width:18px;height:18px;border-radius:99px;background:var(--green-50);color:var(--green-700);font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;">${i+1}</span><span class="td-name" style="max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${p.name}</span></div></td><td>${20-i*3}</td><td style="font-weight:700;">₹${((20-i*3)*p.price/1000).toFixed(0)}k</td></tr>`).join('');}
+
+function renderBrands(){const el=document.getElementById('brandsContainer');if(!el)return;const brands=['Sujata','Preethi','Butterfly','Prestige','Pigeon','Havells','Kirloskar','Orient'];el.innerHTML=`<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:16px;">${brands.map(b=>`<div class="card" style="padding:20px;text-align:center;"><div style="font-family:var(--font-display);font-size:18px;font-weight:800;color:var(--gray-700);margin-bottom:6px;">${b}</div><div style="font-size:12px;color:var(--gray-400);">${Math.floor(Math.random()*30+6)} Products</div><div style="display:flex;gap:6px;justify-content:center;margin-top:12px;"><button class="btn btn-secondary btn-sm" onclick="showToast('Edit ${b}')">Edit</button><button class="btn btn-secondary btn-sm" style="color:var(--red-500);" onclick="showToast('Removed')">Remove</button></div></div>`).join('')}<div class="card" style="padding:20px;text-align:center;border:2px dashed var(--gray-150);display:flex;align-items:center;justify-content:center;cursor:pointer;min-height:100px;" onclick="showToast('Add brand')" onmouseover="this.style.borderColor='var(--green-400)'" onmouseout="this.style.borderColor='var(--gray-150)'"><div style="color:var(--gray-300);"><div style="font-size:24px;margin-bottom:4px;">+</div><div style="font-size:13px;font-weight:600;">Add Brand</div></div></div></div>`;}
+
+renderProducts();renderOrders();renderServices();renderCategories();renderCustomers();renderReviews();renderInventory();renderHomepageSections();renderMedia();renderChart();renderRecentOrders();renderActivity();renderTopCats();renderAnalytics();renderBrands();
+</script>
+</body>
+</html>
