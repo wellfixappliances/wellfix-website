@@ -199,7 +199,6 @@ window.toggleWish = function(id, btn) {
     btn.classList.add('is-wished');
     btn.innerHTML = `<svg fill="currentColor" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>`;
   }
-  // Update wishlist badge
   document.querySelectorAll('[data-wish-count]').forEach(el => el.textContent = state.wishlist.size || '');
 };
 
@@ -272,6 +271,45 @@ function initScrollReveal() {
   els.forEach(el => obs.observe(el));
 }
 
+/* ── MOBILE SEARCH OVERLAY ─────────────────────────────────── */
+function initMobileSearch() {
+  const overlay  = document.getElementById('mobSearchOverlay');
+  const openBtn  = document.getElementById('mobSearchOpen');
+  const closeBtn = document.getElementById('mobSearchClose');
+  const backdrop = document.getElementById('mobSearchBackdrop');
+  const mobInput = document.getElementById('mobSearchInput');
+
+  if (!overlay) return;
+
+  function openSearch() {
+    overlay.classList.add('is-open');
+    document.body.style.overflow = 'hidden';
+    setTimeout(() => mobInput && mobInput.focus(), 250);
+  }
+
+  function closeSearch() {
+    overlay.classList.remove('is-open');
+    document.body.style.overflow = '';
+  }
+
+  if (openBtn)  openBtn.addEventListener('click', openSearch);
+  if (closeBtn) closeBtn.addEventListener('click', closeSearch);
+  if (backdrop) backdrop.addEventListener('click', closeSearch);
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') closeSearch();
+  });
+
+  document.querySelectorAll('.mob-search-hint').forEach(hint => {
+    hint.addEventListener('click', () => {
+      if (mobInput) {
+        mobInput.value = hint.textContent;
+        mobInput.focus();
+      }
+    });
+  });
+}
+
 /* ── INIT ──────────────────────────────────────────────────── */
 document.addEventListener('DOMContentLoaded', () => {
   renderFlashProducts();
@@ -281,4 +319,5 @@ document.addEventListener('DOMContentLoaded', () => {
   initCatPills();
   initScrollReveal();
   updateCartUI();
+  initMobileSearch();
 });
