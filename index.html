@@ -1,1 +1,1300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WellFix Appliances – Home & Kitchen Appliances Kerala</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,300&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+/* ── DESIGN TOKENS ──────────────────────────────── */
+:root {
+  --c-bg:        #F7F6F2;
+  --c-surface:   #FFFFFF;
+  --c-dark:      #141414;
+  --c-mid:       #3A3A3A;
+  --c-muted:     #767676;
+  --c-border:    #E8E6E0;
+  --c-accent:    #034732;
+  --c-accent2:   #056048;
+  --c-gold:      #C8960C;
+  --c-gold-lt:   #FFF4D6;
+  --c-red:       #D93B2B;
+  --c-red-lt:    #FFF0EE;
+  --radius-sm:   6px;
+  --radius-md:   12px;
+  --radius-lg:   18px;
+  --radius-xl:   24px;
+  --shadow-xs:   0 1px 3px rgba(0,0,0,.06);
+  --shadow-sm:   0 2px 10px rgba(0,0,0,.07);
+  --shadow-md:   0 8px 30px rgba(0,0,0,.09);
+  --shadow-lg:   0 20px 60px rgba(0,0,0,.12);
+  --font-body:   'DM Sans', sans-serif;
+  --font-display:'DM Serif Display', serif;
+  --t: .2s ease;
+}
 
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--font-body);
+  background: var(--c-bg);
+  color: var(--c-dark);
+  font-size: 15px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+img { display: block; max-width: 100%; }
+a { text-decoration: none; color: inherit; }
+button { font-family: var(--font-body); cursor: pointer; border: none; outline: none; }
+ul { list-style: none; }
+
+/* ── UTILITY ──────────────────────────────────── */
+.container { max-width: 1320px; margin: 0 auto; padding: 0 24px; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0,0,0,0); }
+
+/* ── TOP BAR ──────────────────────────────────── */
+.topbar {
+  background: var(--c-dark);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 400;
+  letter-spacing: .02em;
+  padding: 9px 0;
+  text-align: center;
+  position: relative;
+}
+.topbar .container { display: flex; align-items: center; justify-content: space-between; }
+.topbar-links { display: flex; gap: 20px; }
+.topbar-links a { color: rgba(255,255,255,.65); font-size: 12px; transition: color var(--t); }
+.topbar-links a:hover { color: #fff; }
+.topbar-center { color: rgba(255,255,255,.85); }
+.topbar-center strong { color: #fff; }
+
+/* ── HEADER ───────────────────────────────────── */
+header {
+  background: var(--c-surface);
+  border-bottom: 1px solid var(--c-border);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+.header-inner {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  padding: 14px 24px;
+  max-width: 1320px;
+  margin: 0 auto;
+}
+
+/* Logo */
+.logo { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+.logo-mark {
+  width: 38px; height: 38px;
+  background: var(--c-accent);
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.logo-mark svg { width: 22px; height: 22px; fill: none; stroke: #fff; stroke-width: 2; }
+.logo-mark .dot { fill: #EEC71D; stroke: none; }
+.logo-mark .arc-gold { stroke: #EEC71D; }
+.logo-wordmark { line-height: 1; }
+.logo-name { font-size: 20px; font-weight: 700; letter-spacing: -.3px; color: var(--c-dark); }
+.logo-name span { color: var(--c-accent); }
+.logo-tagline { font-size: 10px; color: var(--c-muted); font-weight: 400; letter-spacing: .05em; text-transform: uppercase; margin-top: 1px; }
+
+/* Search */
+.search-form {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  background: var(--c-bg);
+  border: 1.5px solid var(--c-border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  transition: border-color var(--t), box-shadow var(--t);
+  max-width: 600px;
+}
+.search-form:focus-within {
+  border-color: var(--c-accent);
+  box-shadow: 0 0 0 3px rgba(3,71,50,.08);
+}
+.search-select {
+  border: none; background: none;
+  font-family: var(--font-body); font-size: 13px; color: var(--c-mid);
+  padding: 0 12px; height: 44px;
+  border-right: 1px solid var(--c-border);
+  cursor: pointer; outline: none;
+  -webkit-appearance: none; appearance: none;
+}
+.search-input {
+  flex: 1; border: none; background: none;
+  font-family: var(--font-body); font-size: 14px; color: var(--c-dark);
+  padding: 0 14px; height: 44px; outline: none;
+}
+.search-input::placeholder { color: var(--c-muted); }
+.search-btn {
+  background: var(--c-accent); color: #fff;
+  width: 48px; height: 44px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px;
+  transition: background var(--t);
+  flex-shrink: 0;
+}
+.search-btn:hover { background: var(--c-accent2); }
+
+/* Header Actions */
+.header-actions {
+  display: flex; align-items: center; gap: 6px; flex-shrink: 0;
+}
+.hdr-btn {
+  display: flex; flex-direction: column; align-items: center; gap: 3px;
+  padding: 8px 14px; border-radius: var(--radius-md);
+  background: none; color: var(--c-dark);
+  font-size: 11px; font-weight: 500; letter-spacing: .02em;
+  transition: background var(--t);
+  position: relative; cursor: pointer;
+}
+.hdr-btn:hover { background: var(--c-bg); }
+.hdr-btn i { font-size: 20px; color: var(--c-mid); }
+.hdr-badge {
+  position: absolute; top: 4px; right: 8px;
+  background: var(--c-accent); color: #fff;
+  font-size: 9px; font-weight: 700;
+  min-width: 16px; height: 16px; border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  padding: 0 3px;
+}
+.hdr-cart-btn {
+  display: flex; align-items: center; gap: 8px;
+  background: var(--c-accent); color: #fff;
+  padding: 0 18px; height: 44px; border-radius: var(--radius-md);
+  font-size: 13px; font-weight: 600;
+  transition: background var(--t);
+}
+.hdr-cart-btn:hover { background: var(--c-accent2); }
+.hdr-cart-btn i { font-size: 16px; }
+
+/* ── NAV BAR ──────────────────────────────────── */
+.navbar {
+  background: var(--c-surface);
+  border-bottom: 1px solid var(--c-border);
+}
+.nav-inner {
+  display: flex; align-items: center;
+  max-width: 1320px; margin: 0 auto; padding: 0 24px;
+}
+.nav-all-btn {
+  display: flex; align-items: center; gap: 8px;
+  background: var(--c-accent); color: #fff;
+  padding: 0 18px; height: 44px;
+  font-size: 13px; font-weight: 600;
+  border-radius: 0;
+  flex-shrink: 0;
+  transition: background var(--t);
+}
+.nav-all-btn:hover { background: var(--c-accent2); }
+.nav-links {
+  display: flex; align-items: center; overflow-x: auto;
+  -webkit-overflow-scrolling: touch; scrollbar-width: none;
+}
+.nav-links::-webkit-scrollbar { display: none; }
+.nav-link {
+  display: flex; align-items: center; gap: 5px;
+  padding: 0 16px; height: 44px; white-space: nowrap;
+  font-size: 13px; font-weight: 500; color: var(--c-mid);
+  position: relative; cursor: pointer;
+  transition: color var(--t);
+}
+.nav-link:hover { color: var(--c-accent); }
+.nav-link .badge-hot {
+  background: var(--c-red); color: #fff;
+  font-size: 8px; font-weight: 700; text-transform: uppercase;
+  padding: 1px 5px; border-radius: 3px; letter-spacing: .04em;
+}
+.nav-spacer { flex: 1; }
+.nav-location {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 12px; color: var(--c-muted); padding: 0 12px;
+  flex-shrink: 0;
+}
+.nav-location i { color: var(--c-accent); }
+
+/* ── HERO SECTION ─────────────────────────────── */
+.hero { background: #0F0F0F; overflow: hidden; }
+.hero-grid { display: grid; grid-template-columns: 1fr 1fr; min-height: 520px; }
+.hero-main {
+  position: relative; overflow: hidden;
+}
+.hero-main-img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  opacity: .75;
+}
+.hero-main-overlay {
+  position: absolute; inset: 0;
+  background: linear-gradient(120deg, rgba(3,71,50,.85) 0%, rgba(3,71,50,.3) 60%, transparent 100%);
+  display: flex; flex-direction: column; justify-content: flex-end;
+  padding: 52px 48px;
+}
+.hero-tag {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: rgba(238,199,29,.15); border: 1px solid rgba(238,199,29,.35);
+  color: #EEC71D; font-size: 11px; font-weight: 600;
+  padding: 5px 12px; border-radius: 20px; letter-spacing: .06em; text-transform: uppercase;
+  margin-bottom: 18px; width: fit-content;
+}
+.hero-tag i { font-size: 10px; }
+.hero-h1 {
+  font-family: var(--font-display);
+  font-size: 54px; line-height: 1.05;
+  color: #fff; margin-bottom: 16px;
+}
+.hero-h1 em { color: #EEC71D; font-style: normal; }
+.hero-desc { color: rgba(255,255,255,.7); font-size: 15px; max-width: 400px; margin-bottom: 30px; line-height: 1.7; }
+.hero-cta-row { display: flex; align-items: center; gap: 14px; }
+.btn-solid {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: #EEC71D; color: #141414;
+  padding: 0 26px; height: 48px; border-radius: var(--radius-md);
+  font-size: 14px; font-weight: 700; letter-spacing: -.01em;
+  transition: background var(--t), transform var(--t);
+}
+.btn-solid:hover { background: #f5d44a; transform: translateY(-1px); }
+.btn-ghost {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: rgba(255,255,255,.12); color: #fff;
+  padding: 0 22px; height: 48px; border-radius: var(--radius-md);
+  font-size: 14px; font-weight: 500;
+  border: 1px solid rgba(255,255,255,.2);
+  transition: background var(--t);
+}
+.btn-ghost:hover { background: rgba(255,255,255,.2); }
+.hero-trust { display: flex; gap: 20px; margin-top: 28px; }
+.trust-item { display: flex; align-items: center; gap: 7px; color: rgba(255,255,255,.6); font-size: 12px; }
+.trust-item i { color: #EEC71D; font-size: 14px; }
+
+/* Hero Side Panels */
+.hero-side { display: grid; grid-template-rows: 1fr 1fr; }
+.hero-panel {
+  position: relative; overflow: hidden; cursor: pointer;
+}
+.hero-panel img {
+  width: 100%; height: 100%; object-fit: cover;
+  transition: transform .5s ease;
+}
+.hero-panel:hover img { transform: scale(1.04); }
+.hero-panel-overlay {
+  position: absolute; inset: 0;
+  background: linear-gradient(to top, rgba(0,0,0,.6) 0%, transparent 50%);
+  display: flex; flex-direction: column; justify-content: flex-end;
+  padding: 22px 24px;
+}
+.panel-label {
+  font-size: 10px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: .08em; color: rgba(255,255,255,.6); margin-bottom: 4px;
+}
+.panel-title { font-size: 18px; font-weight: 700; color: #fff; margin-bottom: 6px; }
+.panel-link {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 12px; font-weight: 600; color: #EEC71D;
+}
+
+/* ── PROMO STRIP ──────────────────────────────── */
+.promo-strip {
+  background: var(--c-accent);
+  padding: 0;
+  overflow: hidden;
+}
+.promo-strip-inner {
+  display: flex; align-items: stretch;
+  max-width: 1320px; margin: 0 auto;
+  padding: 0 24px;
+}
+.promo-item {
+  flex: 1; display: flex; align-items: center; gap: 14px;
+  padding: 18px 24px;
+  border-right: 1px solid rgba(255,255,255,.12);
+  cursor: default;
+}
+.promo-item:last-child { border-right: none; }
+.promo-icon {
+  width: 42px; height: 42px; border-radius: 10px;
+  background: rgba(255,255,255,.12);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px; color: #EEC71D;
+  flex-shrink: 0;
+}
+.promo-text h4 { font-size: 13px; font-weight: 600; color: #fff; margin-bottom: 2px; }
+.promo-text p { font-size: 11px; color: rgba(255,255,255,.6); }
+
+/* ── SECTION HEADER ───────────────────────────── */
+.sec-header {
+  display: flex; align-items: flex-end; justify-content: space-between;
+  margin-bottom: 24px;
+}
+.sec-title { font-size: 24px; font-weight: 700; letter-spacing: -.3px; }
+.sec-title span { color: var(--c-accent); }
+.sec-sub { font-size: 13px; color: var(--c-muted); margin-top: 4px; }
+.sec-link {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 13px; font-weight: 600; color: var(--c-accent);
+  border: 1.5px solid var(--c-border);
+  padding: 8px 16px; border-radius: var(--radius-sm);
+  transition: border-color var(--t), background var(--t);
+}
+.sec-link:hover { border-color: var(--c-accent); background: rgba(3,71,50,.04); }
+
+/* ── CATEGORY STRIP ───────────────────────────── */
+.categories-section { padding: 48px 0 32px; }
+.cat-strip { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 8px; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+.cat-strip::-webkit-scrollbar { display: none; }
+.cat-card {
+  flex-shrink: 0;
+  display: flex; flex-direction: column; align-items: center; gap: 10px;
+  cursor: pointer;
+  padding: 20px 16px;
+  background: var(--c-surface);
+  border: 1.5px solid var(--c-border);
+  border-radius: var(--radius-lg);
+  width: 110px;
+  transition: border-color var(--t), box-shadow var(--t), transform var(--t);
+}
+.cat-card:hover {
+  border-color: var(--c-accent);
+  box-shadow: 0 6px 24px rgba(3,71,50,.1);
+  transform: translateY(-3px);
+}
+.cat-img-wrap {
+  width: 58px; height: 58px;
+  border-radius: var(--radius-md);
+  overflow: hidden; background: var(--c-bg);
+  display: flex; align-items: center; justify-content: center;
+}
+.cat-img-wrap img { width: 100%; height: 100%; object-fit: cover; }
+.cat-name { font-size: 12px; font-weight: 600; color: var(--c-mid); text-align: center; }
+.cat-card.active { border-color: var(--c-accent); background: rgba(3,71,50,.04); }
+.cat-card.active .cat-name { color: var(--c-accent); }
+
+/* ── FLASH SALE ───────────────────────────────── */
+.flash-section { padding: 32px 0; }
+.flash-banner {
+  background: var(--c-dark);
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  padding: 28px 32px;
+}
+.flash-top {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 24px;
+}
+.flash-left { display: flex; align-items: center; gap: 16px; }
+.flash-icon-wrap {
+  width: 44px; height: 44px; background: var(--c-red);
+  border-radius: 10px; display: flex; align-items: center; justify-content: center;
+  font-size: 20px; color: #fff;
+}
+.flash-title-text h3 { font-size: 22px; font-weight: 700; color: #fff; margin-bottom: 2px; }
+.flash-title-text p { font-size: 12px; color: rgba(255,255,255,.45); }
+.timer { display: flex; align-items: center; gap: 6px; }
+.time-unit { text-align: center; }
+.time-val {
+  background: rgba(255,255,255,.1); color: #fff;
+  font-size: 22px; font-weight: 700; font-variant-numeric: tabular-nums;
+  padding: 8px 12px; border-radius: var(--radius-sm);
+  min-width: 52px; display: block; text-align: center;
+  letter-spacing: .04em;
+}
+.time-label { font-size: 10px; color: rgba(255,255,255,.35); text-align: center; margin-top: 4px; display: block; }
+.time-sep { color: rgba(255,255,255,.3); font-size: 22px; font-weight: 300; margin-top: -8px; }
+.flash-view-all {
+  background: rgba(255,255,255,.08); color: rgba(255,255,255,.8);
+  font-size: 13px; font-weight: 500; padding: 10px 20px;
+  border-radius: var(--radius-sm); transition: background var(--t);
+  white-space: nowrap;
+}
+.flash-view-all:hover { background: rgba(255,255,255,.14); }
+.flash-products { display: flex; gap: 12px; overflow-x: auto; padding-bottom: 4px; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+.flash-products::-webkit-scrollbar { display: none; }
+
+/* ── PRODUCT CARD ─────────────────────────────── */
+.product-card {
+  background: var(--c-surface);
+  border: 1.5px solid var(--c-border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  cursor: pointer;
+  transition: box-shadow var(--t), transform var(--t), border-color var(--t);
+  flex-shrink: 0;
+}
+.product-card:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-3px);
+  border-color: rgba(3,71,50,.2);
+}
+.product-card.flash-card { width: 200px; background: rgba(255,255,255,.06); border-color: rgba(255,255,255,.1); color: #fff; }
+.product-card.flash-card:hover { border-color: rgba(238,199,29,.4); }
+.product-card.flash-card .product-name { color: rgba(255,255,255,.9); }
+.product-card.flash-card .product-brand { color: rgba(255,255,255,.4); }
+.product-card.flash-card .price-now { color: #EEC71D; }
+.product-card.flash-card .price-old { color: rgba(255,255,255,.35); }
+.product-card.flash-card .add-cart-btn { background: rgba(238,199,29,.15); color: #EEC71D; border-color: rgba(238,199,29,.25); }
+.product-card.flash-card .add-cart-btn:hover { background: #EEC71D; color: #141414; }
+
+.product-img-wrap {
+  position: relative; overflow: hidden;
+  background: var(--c-bg);
+  padding-top: 100%;
+}
+.product-card.flash-card .product-img-wrap { background: rgba(255,255,255,.04); }
+.product-img-wrap img {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%; object-fit: cover;
+  transition: transform .4s ease;
+}
+.product-card:hover .product-img-wrap img { transform: scale(1.05); }
+.product-badge {
+  position: absolute; top: 10px; left: 10px;
+  background: var(--c-red); color: #fff;
+  font-size: 10px; font-weight: 700; padding: 3px 8px;
+  border-radius: 4px; letter-spacing: .03em;
+}
+.product-badge.new { background: var(--c-accent); }
+.product-badge.hot { background: var(--c-gold); color: #141414; }
+.wishlist-btn {
+  position: absolute; top: 10px; right: 10px;
+  width: 32px; height: 32px; border-radius: 50%;
+  background: rgba(255,255,255,.9); color: var(--c-mid);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px;
+  transition: background var(--t), color var(--t);
+  box-shadow: var(--shadow-xs);
+}
+.wishlist-btn:hover, .wishlist-btn.active { background: var(--c-red-lt); color: var(--c-red); }
+.product-body { padding: 14px; }
+.product-brand { font-size: 10px; font-weight: 600; color: var(--c-accent); text-transform: uppercase; letter-spacing: .06em; margin-bottom: 4px; }
+.product-name { font-size: 14px; font-weight: 600; color: var(--c-dark); margin-bottom: 6px; line-height: 1.35; }
+.stars-row { display: flex; align-items: center; gap: 5px; margin-bottom: 10px; }
+.stars { color: #F5A623; font-size: 11px; }
+.rating-count { font-size: 11px; color: var(--c-muted); }
+.price-row { display: flex; align-items: baseline; gap: 8px; margin-bottom: 10px; }
+.price-now { font-size: 18px; font-weight: 700; color: var(--c-dark); }
+.price-old { font-size: 12px; color: var(--c-muted); text-decoration: line-through; }
+.warranty-tag { font-size: 10px; color: var(--c-accent); font-weight: 500; display: flex; align-items: center; gap: 4px; margin-bottom: 12px; }
+.add-cart-btn {
+  width: 100%; height: 38px;
+  background: var(--c-accent); color: #fff;
+  border-radius: var(--radius-sm);
+  font-size: 13px; font-weight: 600;
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+  border: 1.5px solid transparent;
+  transition: background var(--t);
+}
+.add-cart-btn:hover { background: var(--c-accent2); }
+
+/* Products Grid */
+.products-section { padding: 40px 0; }
+.products-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+.product-card.grid-card {}
+
+/* ── BRAND LOGOS ──────────────────────────────── */
+.brands-section { padding: 40px 0; background: var(--c-surface); border-top: 1px solid var(--c-border); border-bottom: 1px solid var(--c-border); }
+.brands-row { display: flex; align-items: center; justify-content: center; gap: 0; overflow-x: auto; }
+.brand-item {
+  flex: 1; min-width: 120px; text-align: center;
+  padding: 20px 24px;
+  border-right: 1px solid var(--c-border);
+  cursor: pointer; transition: background var(--t);
+}
+.brand-item:last-child { border-right: none; }
+.brand-item:hover { background: var(--c-bg); }
+.brand-name { font-size: 14px; font-weight: 700; color: var(--c-muted); letter-spacing: .03em; text-transform: uppercase; font-size: 13px; }
+.brand-item:hover .brand-name { color: var(--c-accent); }
+.brand-count { font-size: 10px; color: var(--c-muted); margin-top: 2px; }
+
+/* ── SERVICE SECTION ──────────────────────────── */
+.services-section { padding: 60px 0; }
+.services-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.service-feature-card {
+  background: var(--c-surface);
+  border: 1.5px solid var(--c-border);
+  border-radius: var(--radius-xl);
+  padding: 32px;
+  display: flex; gap: 24px;
+  transition: border-color var(--t), box-shadow var(--t);
+}
+.service-feature-card:hover { border-color: var(--c-accent); box-shadow: 0 12px 40px rgba(3,71,50,.08); }
+.service-icon-wrap {
+  width: 56px; height: 56px; flex-shrink: 0;
+  background: rgba(3,71,50,.08); border-radius: var(--radius-md);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 24px; color: var(--c-accent);
+}
+.service-text h4 { font-size: 17px; font-weight: 700; margin-bottom: 8px; }
+.service-text p { font-size: 13px; color: var(--c-muted); line-height: 1.65; margin-bottom: 14px; }
+.service-price { font-size: 13px; font-weight: 600; color: var(--c-accent); display: flex; align-items: center; gap: 6px; }
+.service-hero-card {
+  background: var(--c-accent);
+  border-radius: var(--radius-xl);
+  overflow: hidden; grid-column: 1 / -1;
+  display: grid; grid-template-columns: 1fr 1fr;
+  align-items: center; min-height: 220px;
+}
+.service-hero-text { padding: 40px 40px; }
+.service-hero-text h3 { font-size: 28px; font-weight: 700; color: #fff; margin-bottom: 10px; line-height: 1.2; }
+.service-hero-text p { font-size: 14px; color: rgba(255,255,255,.65); margin-bottom: 24px; }
+.service-hero-img { position: relative; overflow: hidden; height: 100%; min-height: 220px; }
+.service-hero-img img { width: 100%; height: 100%; object-fit: cover; opacity: .6; }
+
+/* ── BANNER GRID ──────────────────────────────── */
+.banners-section { padding: 0 0 48px; }
+.banner-grid { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 16px; }
+.banner-card {
+  border-radius: var(--radius-xl); overflow: hidden;
+  position: relative; cursor: pointer;
+  min-height: 200px;
+}
+.banner-card img { width: 100%; height: 100%; object-fit: cover; transition: transform .5s; }
+.banner-card:hover img { transform: scale(1.04); }
+.banner-card-overlay {
+  position: absolute; inset: 0;
+  background: linear-gradient(to right, rgba(0,0,0,.65) 0%, transparent 70%);
+  padding: 28px 28px; display: flex; flex-direction: column; justify-content: flex-end;
+}
+.banner-tag { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: rgba(255,255,255,.6); margin-bottom: 6px; }
+.banner-title { font-size: 20px; font-weight: 700; color: #fff; margin-bottom: 10px; }
+.banner-cta { font-size: 12px; font-weight: 600; color: #EEC71D; display: flex; align-items: center; gap: 5px; }
+
+/* ── TESTIMONIAL ──────────────────────────────── */
+.reviews-section { padding: 60px 0; background: var(--c-surface); border-top: 1px solid var(--c-border); }
+.reviews-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 32px; }
+.review-card { background: var(--c-bg); border-radius: var(--radius-lg); padding: 24px; border: 1.5px solid var(--c-border); }
+.review-stars { color: #F5A623; font-size: 13px; margin-bottom: 12px; }
+.review-text { font-size: 14px; color: var(--c-mid); line-height: 1.7; margin-bottom: 16px; font-style: italic; }
+.review-author { display: flex; align-items: center; gap: 10px; }
+.author-avatar { width: 36px; height: 36px; border-radius: 50%; background: var(--c-accent); display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; color: #EEC71D; flex-shrink: 0; }
+.author-name { font-size: 13px; font-weight: 600; }
+.author-location { font-size: 11px; color: var(--c-muted); }
+
+/* ── FOOTER ───────────────────────────────────── */
+footer { background: var(--c-dark); color: rgba(255,255,255,.7); padding: 56px 0 0; }
+.footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 40px; padding-bottom: 48px; border-bottom: 1px solid rgba(255,255,255,.08); }
+.footer-brand {}
+.footer-logo { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; }
+.footer-logo-mark {
+  width: 36px; height: 36px; background: var(--c-accent);
+  border-radius: 8px; display: flex; align-items: center; justify-content: center;
+}
+.footer-logo-name { font-size: 18px; font-weight: 700; color: #fff; }
+.footer-desc { font-size: 13px; line-height: 1.8; color: rgba(255,255,255,.5); max-width: 260px; margin-bottom: 24px; }
+.footer-social { display: flex; gap: 10px; }
+.social-btn {
+  width: 36px; height: 36px; border-radius: var(--radius-sm);
+  background: rgba(255,255,255,.06); color: rgba(255,255,255,.6);
+  display: flex; align-items: center; justify-content: center; font-size: 15px;
+  transition: background var(--t), color var(--t);
+}
+.social-btn:hover { background: var(--c-accent); color: #fff; }
+.footer-col h5 { font-size: 13px; font-weight: 700; color: #fff; letter-spacing: .04em; text-transform: uppercase; margin-bottom: 18px; }
+.footer-links { display: flex; flex-direction: column; gap: 10px; }
+.footer-links a { font-size: 13px; color: rgba(255,255,255,.5); transition: color var(--t); }
+.footer-links a:hover { color: #fff; }
+.footer-contact-item { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 12px; }
+.footer-contact-item i { color: var(--c-gold); font-size: 14px; margin-top: 3px; flex-shrink: 0; }
+.footer-contact-item span { font-size: 13px; color: rgba(255,255,255,.55); line-height: 1.5; }
+.footer-bottom {
+  padding: 18px 0; display: flex; align-items: center; justify-content: space-between;
+  font-size: 12px; color: rgba(255,255,255,.3);
+}
+.footer-bottom a { color: rgba(255,255,255,.4); transition: color var(--t); }
+.footer-bottom a:hover { color: #fff; }
+.footer-bottom-links { display: flex; gap: 20px; }
+.wa-float {
+  position: fixed; bottom: 28px; right: 28px; z-index: 999;
+  width: 54px; height: 54px; border-radius: 50%;
+  background: #25D366; color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 24px; box-shadow: 0 6px 24px rgba(37,211,102,.4);
+  transition: transform var(--t), box-shadow var(--t);
+}
+.wa-float:hover { transform: scale(1.08); box-shadow: 0 10px 32px rgba(37,211,102,.5); }
+
+/* ── MOBILE NAV ───────────────────────────────── */
+.mobile-nav {
+  display: none; position: fixed; bottom: 0; left: 0; right: 0;
+  background: var(--c-surface); border-top: 1px solid var(--c-border);
+  z-index: 1000; padding: 0 0 env(safe-area-inset-bottom);
+}
+.mobile-nav-inner { display: flex; }
+.mob-nav-item {
+  flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px;
+  padding: 10px 6px 12px; cursor: pointer;
+  font-size: 10px; font-weight: 500; color: var(--c-muted);
+  transition: color var(--t);
+}
+.mob-nav-item i { font-size: 20px; }
+.mob-nav-item.active { color: var(--c-accent); }
+.mob-cart-item { position: relative; }
+.mob-badge { position: absolute; top: -4px; right: 16px; background: var(--c-accent); color: #fff; font-size: 9px; font-weight: 700; min-width: 15px; height: 15px; border-radius: 8px; display: flex; align-items: center; justify-content: center; padding: 0 3px; }
+
+/* ── RESPONSIVE ───────────────────────────────── */
+@media (max-width: 1100px) {
+  .products-grid { grid-template-columns: repeat(3, 1fr); }
+  .hero-grid { grid-template-columns: 1fr; }
+  .hero-side { grid-template-columns: 1fr 1fr; grid-template-rows: 1fr; min-height: 220px; }
+  .footer-grid { grid-template-columns: 1fr 1fr; }
+  .banner-grid { grid-template-columns: 1fr 1fr; }
+}
+
+@media (max-width: 768px) {
+  .products-grid { grid-template-columns: repeat(2, 1fr); }
+  .services-grid { grid-template-columns: 1fr; }
+  .service-hero-card { grid-template-columns: 1fr; }
+  .service-hero-img { display: none; }
+  .reviews-grid { grid-template-columns: 1fr; }
+  .banner-grid { grid-template-columns: 1fr; }
+  .footer-grid { grid-template-columns: 1fr 1fr; }
+  .brands-row { flex-wrap: wrap; }
+  .brand-item { min-width: 100px; border-bottom: 1px solid var(--c-border); }
+  .mobile-nav { display: block; }
+  body { padding-bottom: 70px; }
+  .wa-float { bottom: 88px; }
+  .topbar .topbar-links { display: none; }
+  .header-inner { gap: 10px; }
+  .hdr-btn span { display: none; }
+  .search-select { display: none; }
+  .hero-main-overlay { padding: 28px 24px; }
+  .hero-h1 { font-size: 36px; }
+  .promo-strip-inner { flex-wrap: wrap; }
+  .promo-item { border-bottom: 1px solid rgba(255,255,255,.1); border-right: none; }
+}
+</style>
+</head>
+<body>
+
+<!-- ── TOP BAR ──────────────────────────────── -->
+<div class="topbar">
+  <div class="container">
+    <div class="topbar-links">
+      <a href="#">Track Order</a>
+      <a href="#">Store Location</a>
+      <a href="#">Help</a>
+    </div>
+    <div class="topbar-center">
+      Free delivery across Kerala &nbsp;·&nbsp; <strong>Call: +91 85900 04349</strong>
+    </div>
+    <div class="topbar-links">
+      <a href="#">100% Genuine Products</a>
+      <a href="#">Best Price Guarantee</a>
+    </div>
+  </div>
+</div>
+
+<!-- ── HEADER ───────────────────────────────── -->
+<header>
+  <div class="header-inner">
+    <!-- Logo -->
+    <a href="#" class="logo">
+      <div class="logo-mark">
+        <svg viewBox="0 0 24 24">
+          <polygon points="12,2 22,7 22,17 12,22 2,17 2,7" stroke="rgba(255,255,255,0.4)" stroke-width="1.5" fill="none"/>
+          <polygon points="12,2 22,7 22,17 12,22 2,17 2,7" stroke="white" stroke-width="1.5" fill="none" stroke-dasharray="14 34" class="arc-gold" style="stroke:#EEC71D"/>
+          <circle cx="12" cy="12" r="4" class="dot"/>
+        </svg>
+      </div>
+      <div class="logo-wordmark">
+        <div class="logo-name">Well<span>fix</span></div>
+        <div class="logo-tagline">Appliances · Kerala</div>
+      </div>
+    </a>
+
+    <!-- Search -->
+    <div class="search-form">
+      <select class="search-select">
+        <option>All Categories</option>
+        <option>Mixers</option>
+        <option>Stoves</option>
+        <option>Fans</option>
+        <option>Cookers</option>
+        <option>Motors</option>
+        <option>Spare Parts</option>
+      </select>
+      <input class="search-input" type="text" placeholder="Search products, brands, spare parts…" aria-label="Search">
+      <button class="search-btn" aria-label="Search">
+        <i class="fa-solid fa-magnifying-glass"></i>
+      </button>
+    </div>
+
+    <!-- Actions -->
+    <div class="header-actions">
+      <button class="hdr-btn">
+        <i class="fa-regular fa-user"></i>
+        <span>Account</span>
+      </button>
+      <button class="hdr-btn">
+        <i class="fa-regular fa-heart"></i>
+        <span>Wishlist</span>
+        <span class="hdr-badge">3</span>
+      </button>
+      <button class="hdr-cart-btn">
+        <i class="fa-solid fa-bag-shopping"></i>
+        Cart (2)
+      </button>
+    </div>
+  </div>
+</header>
+
+<!-- ── NAV BAR ──────────────────────────────── -->
+<nav class="navbar">
+  <div class="nav-inner">
+    <button class="nav-all-btn">
+      <i class="fa-solid fa-bars"></i>
+      &nbsp; All Categories
+    </button>
+    <div class="nav-links">
+      <a class="nav-link" href="#">Mixers &amp; Grinders</a>
+      <a class="nav-link" href="#">Gas Stoves <span class="badge-hot">Sale</span></a>
+      <a class="nav-link" href="#">Fans</a>
+      <a class="nav-link" href="#">Pressure Cookers</a>
+      <a class="nav-link" href="#">Water Motors</a>
+      <a class="nav-link" href="#">Cookware</a>
+      <a class="nav-link" href="#">Spare Parts</a>
+      <a class="nav-link" href="#services">Services <span class="badge-hot">New</span></a>
+      <a class="nav-link" href="#">Brands</a>
+    </div>
+    <div class="nav-spacer"></div>
+    <div class="nav-location">
+      <i class="fa-solid fa-location-dot"></i>
+      Kerala, India
+    </div>
+  </div>
+</nav>
+
+<!-- ── HERO ─────────────────────────────────── -->
+<section class="hero" aria-label="Featured promotions">
+  <div class="hero-grid">
+    <!-- Main hero -->
+    <div class="hero-main">
+      <img class="hero-main-img"
+        src="https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=1200&q=80&auto=format&fit=crop"
+        alt="Kitchen appliances" loading="eager">
+      <div class="hero-main-overlay">
+        <span class="hero-tag"><i class="fa-solid fa-fire-flame-curved"></i> New Arrivals 2025</span>
+        <h1 class="hero-h1">Premium<br>Kitchen<br><em>Appliances</em></h1>
+        <p class="hero-desc">Original brands. Unbeatable prices. Shop warranty on every product — guaranteed across Kerala.</p>
+        <div class="hero-cta-row">
+          <a href="#products" class="btn-solid">
+            Shop Now <i class="fa-solid fa-arrow-right"></i>
+          </a>
+          <a href="#services" class="btn-ghost">
+            Book Service
+          </a>
+        </div>
+        <div class="hero-trust">
+          <div class="trust-item"><i class="fa-solid fa-shield-halved"></i> Shop Warranty</div>
+          <div class="trust-item"><i class="fa-solid fa-check-circle"></i> 100% Original</div>
+          <div class="trust-item"><i class="fa-solid fa-truck-fast"></i> Free Delivery</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Side panels -->
+    <div class="hero-side">
+      <div class="hero-panel">
+        <img src="https://images.unsplash.com/photo-1585771724684-38269d6639fd?w=800&q=80&auto=format&fit=crop"
+          alt="Mixer grinders" loading="eager">
+        <div class="hero-panel-overlay">
+          <div class="panel-label">Top Sellers</div>
+          <div class="panel-title">Mixer Grinders</div>
+          <span class="panel-link">Shop Now <i class="fa-solid fa-arrow-right"></i></span>
+        </div>
+      </div>
+      <div class="hero-panel">
+        <img src="https://images.unsplash.com/photo-1484154218962-a197022b5858?w=800&q=80&auto=format&fit=crop"
+          alt="Kitchen stoves" loading="eager">
+        <div class="hero-panel-overlay">
+          <div class="panel-label">Best Deals</div>
+          <div class="panel-title">Gas Stoves</div>
+          <span class="panel-link">Shop Now <i class="fa-solid fa-arrow-right"></i></span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── PROMO STRIP ───────────────────────────── -->
+<div class="promo-strip">
+  <div class="promo-strip-inner">
+    <div class="promo-item">
+      <div class="promo-icon"><i class="fa-solid fa-truck-fast"></i></div>
+      <div class="promo-text"><h4>Free Delivery</h4><p>On all orders across Kerala</p></div>
+    </div>
+    <div class="promo-item">
+      <div class="promo-icon"><i class="fa-solid fa-shield-halved"></i></div>
+      <div class="promo-text"><h4>Shop + Company Warranty</h4><p>Double protection on every product</p></div>
+    </div>
+    <div class="promo-item">
+      <div class="promo-icon"><i class="fa-solid fa-tag"></i></div>
+      <div class="promo-text"><h4>Best Price Guarantee</h4><p>No one beats our pricing, ever</p></div>
+    </div>
+    <div class="promo-item">
+      <div class="promo-icon"><i class="fa-solid fa-wrench"></i></div>
+      <div class="promo-text"><h4>Doorstep Service</h4><p>Expert repair at your home</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- ── CATEGORIES ────────────────────────────── -->
+<section class="categories-section">
+  <div class="container">
+    <div class="sec-header">
+      <div>
+        <h2 class="sec-title">Browse <span>Categories</span></h2>
+        <p class="sec-sub">Everything for your home — under one roof</p>
+      </div>
+      <a href="#" class="sec-link">View All <i class="fa-solid fa-arrow-right"></i></a>
+    </div>
+    <div class="cat-strip">
+      <div class="cat-card active">
+        <div class="cat-img-wrap">
+          <img src="https://images.unsplash.com/photo-1585771724684-38269d6639fd?w=200&q=80&auto=format&fit=crop" alt="Mixers">
+        </div>
+        <span class="cat-name">Mixers</span>
+      </div>
+      <div class="cat-card">
+        <div class="cat-img-wrap">
+          <img src="https://images.unsplash.com/photo-1484154218962-a197022b5858?w=200&q=80&auto=format&fit=crop" alt="Stoves">
+        </div>
+        <span class="cat-name">Stoves</span>
+      </div>
+      <div class="cat-card">
+        <div class="cat-img-wrap">
+          <img src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=200&q=80&auto=format&fit=crop" alt="Fans">
+        </div>
+        <span class="cat-name">Fans</span>
+      </div>
+      <div class="cat-card">
+        <div class="cat-img-wrap">
+          <img src="https://images.unsplash.com/photo-1606167668584-78701c57f13d?w=200&q=80&auto=format&fit=crop" alt="Pressure Cookers">
+        </div>
+        <span class="cat-name">Cookers</span>
+      </div>
+      <div class="cat-card">
+        <div class="cat-img-wrap">
+          <img src="https://images.unsplash.com/photo-1571175443880-49e1d25b2bc5?w=200&q=80&auto=format&fit=crop" alt="Motors">
+        </div>
+        <span class="cat-name">Water Motors</span>
+      </div>
+      <div class="cat-card">
+        <div class="cat-img-wrap">
+          <img src="https://images.unsplash.com/photo-1574269909862-7e1d70bb8078?w=200&q=80&auto=format&fit=crop" alt="Washing Machine">
+        </div>
+        <span class="cat-name">Washing</span>
+      </div>
+      <div class="cat-card">
+        <div class="cat-img-wrap">
+          <img src="https://images.unsplash.com/photo-1556909172-54557c7e4fb7?w=200&q=80&auto=format&fit=crop" alt="Cookware">
+        </div>
+        <span class="cat-name">Cookware</span>
+      </div>
+      <div class="cat-card">
+        <div class="cat-img-wrap">
+          <img src="https://images.unsplash.com/photo-1581578731548-c64695cc6952?w=200&q=80&auto=format&fit=crop" alt="Spare Parts">
+        </div>
+        <span class="cat-name">Spare Parts</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── FLASH SALE ─────────────────────────────── -->
+<section class="flash-section">
+  <div class="container">
+    <div class="flash-banner">
+      <div class="flash-top">
+        <div class="flash-left">
+          <div class="flash-icon-wrap"><i class="fa-solid fa-bolt"></i></div>
+          <div class="flash-title-text">
+            <h3>Flash Sale</h3>
+            <p>Limited stock — grab it before it's gone</p>
+          </div>
+        </div>
+        <div class="timer">
+          <div class="time-unit"><span class="time-val" id="t-h">02</span><span class="time-label">Hours</span></div>
+          <span class="time-sep">:</span>
+          <div class="time-unit"><span class="time-val" id="t-m">45</span><span class="time-label">Mins</span></div>
+          <span class="time-sep">:</span>
+          <div class="time-unit"><span class="time-val" id="t-s">30</span><span class="time-label">Secs</span></div>
+          &nbsp;&nbsp;
+          <button class="flash-view-all">View All Deals</button>
+        </div>
+      </div>
+      <div class="flash-products" id="flash-products"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ── TRENDING PRODUCTS ──────────────────────── -->
+<section class="products-section" id="products">
+  <div class="container">
+    <div class="sec-header">
+      <div>
+        <h2 class="sec-title">Trending <span>Products</span></h2>
+        <p class="sec-sub">Bestsellers trusted by thousands of Kerala homes</p>
+      </div>
+      <a href="#" class="sec-link">All Products <i class="fa-solid fa-arrow-right"></i></a>
+    </div>
+    <div class="products-grid" id="trending-grid"></div>
+  </div>
+</section>
+
+<!-- ── BRAND LOGOS ────────────────────────────── -->
+<section class="brands-section">
+  <div class="container">
+    <div class="brands-row">
+      <div class="brand-item"><div class="brand-name">Sujata</div><div class="brand-count">24 Products</div></div>
+      <div class="brand-item"><div class="brand-name">Preethi</div><div class="brand-count">18 Products</div></div>
+      <div class="brand-item"><div class="brand-name">Butterfly</div><div class="brand-count">31 Products</div></div>
+      <div class="brand-item"><div class="brand-name">Prestige</div><div class="brand-count">42 Products</div></div>
+      <div class="brand-item"><div class="brand-name">Pigeon</div><div class="brand-count">17 Products</div></div>
+      <div class="brand-item"><div class="brand-name">Havells</div><div class="brand-count">12 Products</div></div>
+      <div class="brand-item"><div class="brand-name">Kirloskar</div><div class="brand-count">8 Products</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ── PROMO BANNERS ──────────────────────────── -->
+<section class="banners-section" style="padding-top:48px;">
+  <div class="container">
+    <div class="banner-grid">
+      <div class="banner-card">
+        <img src="https://images.unsplash.com/photo-1556909172-54557c7e4fb7?w=900&q=80&auto=format&fit=crop" alt="Kitchen sale">
+        <div class="banner-card-overlay">
+          <div class="banner-tag">Limited Time</div>
+          <div class="banner-title">Up to 30% Off<br>on Top Brands</div>
+          <span class="banner-cta">Shop Now <i class="fa-solid fa-arrow-right"></i></span>
+        </div>
+      </div>
+      <div class="banner-card">
+        <img src="https://images.unsplash.com/photo-1585771724684-38269d6639fd?w=500&q=80&auto=format&fit=crop" alt="Mixers">
+        <div class="banner-card-overlay">
+          <div class="banner-tag">Best Sellers</div>
+          <div class="banner-title">Sujata<br>Mixers</div>
+          <span class="banner-cta">Explore <i class="fa-solid fa-arrow-right"></i></span>
+        </div>
+      </div>
+      <div class="banner-card">
+        <img src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=500&q=80&auto=format&fit=crop" alt="Fans">
+        <div class="banner-card-overlay">
+          <div class="banner-tag">New Stock</div>
+          <div class="banner-title">Premium<br>Fans</div>
+          <span class="banner-cta">View All <i class="fa-solid fa-arrow-right"></i></span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── SERVICES ───────────────────────────────── -->
+<section class="services-section" id="services">
+  <div class="container">
+    <div class="sec-header">
+      <div>
+        <h2 class="sec-title">Expert <span>Repair Services</span></h2>
+        <p class="sec-sub">Professional technicians — doorstep service across Kerala</p>
+      </div>
+      <a href="#" class="sec-link">Book Service <i class="fa-solid fa-arrow-right"></i></a>
+    </div>
+    <div class="services-grid">
+      <div class="service-hero-card">
+        <div class="service-hero-text">
+          <h3>Doorstep Repair<br>at Your Convenience</h3>
+          <p>Fast, reliable service for all home appliances. We use only genuine spare parts with full service warranty.</p>
+          <a href="https://wa.me/918590004349?text=Hi%20WellFix!%20I%20want%20to%20book%20a%20repair%20service" class="btn-solid" style="width:fit-content">
+            <i class="fa-brands fa-whatsapp"></i> Book on WhatsApp
+          </a>
+        </div>
+        <div class="service-hero-img">
+          <img src="https://images.unsplash.com/photo-1581578731548-c64695cc6952?w=600&q=80&auto=format&fit=crop" alt="Service technician">
+        </div>
+      </div>
+      <div class="service-feature-card">
+        <div class="service-icon-wrap"><i class="fa-solid fa-blender"></i></div>
+        <div class="service-text">
+          <h4>Mixer &amp; Grinder Repair</h4>
+          <p>All brands serviced — Sujata, Preethi, Butterfly, Pigeon. Jar seals, motor, blades replaced with genuine parts.</p>
+          <span class="service-price"><i class="fa-solid fa-tag"></i> Starting from ₹150</span>
+        </div>
+      </div>
+      <div class="service-feature-card">
+        <div class="service-icon-wrap"><i class="fa-solid fa-shirt"></i></div>
+        <div class="service-text">
+          <h4>Washing Machine Service</h4>
+          <p>Top load &amp; semi-automatic. Motor, drum, pump repair. All brands covered with original spare parts.</p>
+          <span class="service-price"><i class="fa-solid fa-tag"></i> Starting from ₹350</span>
+        </div>
+      </div>
+      <div class="service-feature-card">
+        <div class="service-icon-wrap"><i class="fa-solid fa-fire-burner"></i></div>
+        <div class="service-text">
+          <h4>Gas Stove Repair</h4>
+          <p>All types — LPG, PNG, induction. Burner cleaning, valve replacement, ignition repair. Same-day service.</p>
+          <span class="service-price"><i class="fa-solid fa-tag"></i> Starting from ₹100</span>
+        </div>
+      </div>
+      <div class="service-feature-card">
+        <div class="service-icon-wrap"><i class="fa-solid fa-fan"></i></div>
+        <div class="service-text">
+          <h4>Fan Repair &amp; Service</h4>
+          <p>Ceiling, table, pedestal, and exhaust fans. Capacitor, motor winding, blade balancing — all done at home.</p>
+          <span class="service-price"><i class="fa-solid fa-tag"></i> Starting from ₹120</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── REVIEWS ────────────────────────────────── -->
+<section class="reviews-section">
+  <div class="container">
+    <div class="sec-header">
+      <div>
+        <h2 class="sec-title">What Our <span>Customers Say</span></h2>
+        <p class="sec-sub">Trusted by 5,000+ families across Kerala</p>
+      </div>
+    </div>
+    <div class="reviews-grid">
+      <div class="review-card">
+        <div class="review-stars"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></div>
+        <p class="review-text">"Got a Sujata mixer here at a price nobody else in Kerala was offering. The product is 100% genuine with the full company warranty. WellFix is my go-to shop."</p>
+        <div class="review-author"><div class="author-avatar">RM</div><div><div class="author-name">Rahul Menon</div><div class="author-location">Thrissur, Kerala</div></div></div>
+      </div>
+      <div class="review-card">
+        <div class="review-stars"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></div>
+        <p class="review-text">"Called for washing machine repair, the technician arrived the same day, used original parts, and gave me a service warranty too. Very professional and affordable."</p>
+        <div class="review-author"><div class="author-avatar">PK</div><div><div class="author-name">Priya Krishnan</div><div class="author-location">Ernakulam, Kerala</div></div></div>
+      </div>
+      <div class="review-card">
+        <div class="review-stars"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star-half-stroke"></i></div>
+        <p class="review-text">"Best price on Prestige pressure cooker — checked every shop in Kochi before finding WellFix. Also got a shop warranty on top of the company warranty. Highly recommended."</p>
+        <div class="review-author"><div class="author-avatar">AJ</div><div><div class="author-name">Anil Jose</div><div class="author-location">Kochi, Kerala</div></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── FOOTER ─────────────────────────────────── -->
+<footer>
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <div class="footer-logo">
+          <div class="footer-logo-mark">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+              <polygon points="12,2 22,7 22,17 12,22 2,17 2,7" stroke="rgba(255,255,255,0.3)" stroke-width="1.5"/>
+              <polygon points="12,2 22,7 22,17 12,22 2,17 2,7" stroke="#EEC71D" stroke-width="1.5" stroke-dasharray="14 34"/>
+              <circle cx="12" cy="12" r="3.5" fill="#EEC71D"/>
+            </svg>
+          </div>
+          <span class="footer-logo-name">Wellfix</span>
+        </div>
+        <p class="footer-desc">Kerala's most trusted home and kitchen appliance sales &amp; service shop. Original products, best prices, genuine warranties — since day one.</p>
+        <div class="footer-social">
+          <a href="#" class="social-btn"><i class="fa-brands fa-facebook-f"></i></a>
+          <a href="#" class="social-btn"><i class="fa-brands fa-instagram"></i></a>
+          <a href="https://wa.me/918590004349" class="social-btn"><i class="fa-brands fa-whatsapp"></i></a>
+          <a href="#" class="social-btn"><i class="fa-brands fa-youtube"></i></a>
+        </div>
+      </div>
+      <div class="footer-col">
+        <h5>Shop</h5>
+        <div class="footer-links">
+          <a href="#">Mixers &amp; Grinders</a>
+          <a href="#">Gas Stoves</a>
+          <a href="#">Fans</a>
+          <a href="#">Pressure Cookers</a>
+          <a href="#">Water Motors</a>
+          <a href="#">Cookware &amp; Pans</a>
+          <a href="#">Spare Parts</a>
+        </div>
+      </div>
+      <div class="footer-col">
+        <h5>Services</h5>
+        <div class="footer-links">
+          <a href="#">Mixer Repair</a>
+          <a href="#">Washing Machine Service</a>
+          <a href="#">Gas Stove Repair</a>
+          <a href="#">Fan Service</a>
+          <a href="#">Pressure Cooker Repair</a>
+          <a href="#">Book Service</a>
+        </div>
+      </div>
+      <div class="footer-col">
+        <h5>Contact</h5>
+        <div class="footer-contact-item">
+          <i class="fa-solid fa-phone"></i>
+          <span>+91 85900 04349</span>
+        </div>
+        <div class="footer-contact-item">
+          <i class="fa-brands fa-whatsapp"></i>
+          <span>+91 85900 04349</span>
+        </div>
+        <div class="footer-contact-item">
+          <i class="fa-solid fa-location-dot"></i>
+          <span>Kerala, India</span>
+        </div>
+        <div class="footer-contact-item">
+          <i class="fa-solid fa-clock"></i>
+          <span>Mon – Sat: 9:00 AM – 7:00 PM</span>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2025 WellFix Appliances. All rights reserved.</span>
+      <div class="footer-bottom-links">
+        <a href="#">Privacy Policy</a>
+        <a href="#">Terms of Use</a>
+        <a href="#">Sitemap</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- ── MOBILE BOTTOM NAV ────────────────────── -->
+<nav class="mobile-nav">
+  <div class="mobile-nav-inner">
+    <div class="mob-nav-item active">
+      <i class="fa-solid fa-house"></i>
+      <span>Home</span>
+    </div>
+    <div class="mob-nav-item">
+      <i class="fa-solid fa-grid-2"></i>
+      <span>Categories</span>
+    </div>
+    <div class="mob-nav-item">
+      <i class="fa-solid fa-magnifying-glass"></i>
+      <span>Search</span>
+    </div>
+    <div class="mob-nav-item mob-cart-item">
+      <i class="fa-solid fa-bag-shopping"></i>
+      <span class="mob-badge">2</span>
+      <span>Cart</span>
+    </div>
+    <div class="mob-nav-item">
+      <i class="fa-solid fa-user"></i>
+      <span>Account</span>
+    </div>
+  </div>
+</nav>
+
+<!-- ── WHATSAPP FLOAT ──────────────────────── -->
+<a href="https://wa.me/918590004349?text=Hi%20WellFix!%20I%20need%20help" class="wa-float" title="Chat on WhatsApp">
+  <i class="fa-brands fa-whatsapp"></i>
+</a>
+
+<!-- ── JS ─────────────────────────────────── -->
+<script>
+const PRODUCTS = [
+  {id:1,name:'Sujata Powermatic Plus Mixer',brand:'Sujata',price:3499,old:4500,disc:22,rating:4.8,reviews:245,warranty:'2 Yr',badge:'hot',
+   img:'https://images.unsplash.com/photo-1585771724684-38269d6639fd?w=400&q=80&auto=format&fit=crop'},
+  {id:2,name:'Preethi Blue Leaf Mixer 750W',brand:'Preethi',price:2799,old:3800,disc:26,rating:4.7,reviews:189,warranty:'2 Yr',badge:'sale',
+   img:'https://images.unsplash.com/photo-1556909172-54557c7e4fb7?w=400&q=80&auto=format&fit=crop'},
+  {id:3,name:'Butterfly Rapid 3-Burner Gas Stove',brand:'Butterfly',price:2200,old:2800,disc:21,rating:4.6,reviews:312,warranty:'1 Yr',badge:'',
+   img:'https://images.unsplash.com/photo-1484154218962-a197022b5858?w=400&q=80&auto=format&fit=crop'},
+  {id:4,name:'Prestige IRIS LPG 2-Burner Stove',brand:'Prestige',price:1850,old:2400,disc:23,rating:4.5,reviews:156,warranty:'1 Yr',badge:'',
+   img:'https://images.unsplash.com/photo-1556909172-54557c7e4fb7?w=400&q=80&auto=format&fit=crop'},
+  {id:5,name:'Havells Steamer Ceiling Fan 1200mm',brand:'Havells',price:1650,old:2200,disc:25,rating:4.4,reviews:98,warranty:'2 Yr',badge:'new',
+   img:'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&q=80&auto=format&fit=crop'},
+  {id:6,name:'Prestige Popular Pressure Cooker 5L',brand:'Prestige',price:1250,old:1600,disc:22,rating:4.8,reviews:421,warranty:'5 Yr',badge:'hot',
+   img:'https://images.unsplash.com/photo-1606167668584-78701c57f13d?w=400&q=80&auto=format&fit=crop'},
+  {id:7,name:'Kirloskar Water Motor 0.5HP',brand:'Kirloskar',price:3200,old:4000,disc:20,rating:4.6,reviews:88,warranty:'1 Yr',badge:'',
+   img:'https://images.unsplash.com/photo-1571175443880-49e1d25b2bc5?w=400&q=80&auto=format&fit=crop'},
+  {id:8,name:'Butterfly Non-Stick Tawa 250mm',brand:'Butterfly',price:550,old:750,disc:27,rating:4.4,reviews:133,warranty:'6 Mo',badge:'sale',
+   img:'https://images.unsplash.com/photo-1574269909862-7e1d70bb8078?w=400&q=80&auto=format&fit=crop'},
+];
+
+const wishlist = new Set();
+let cartCount = 2;
+
+const badgeMap = {hot:'HOT',sale:'SALE',new:'NEW',''  :''};
+
+function stars(r){
+  const full = Math.floor(r), half = r%1>=.5, empty = 5-full-(half?1:0);
+  return '<i class="fa-solid fa-star"></i>'.repeat(full)
+    +(half?'<i class="fa-solid fa-star-half-stroke"></i>':'')
+    +'<i class="fa-regular fa-star"></i>'.repeat(empty);
+}
+
+function productCardHTML(p, isFlash=false){
+  const cls = isFlash ? 'product-card flash-card' : 'product-card grid-card';
+  const badgeHTML = p.badge ? `<span class="product-badge ${p.badge}">${badgeMap[p.badge]} -${p.disc}%</span>` : '';
+  const inWish = wishlist.has(p.id);
+  return `<div class="${cls}" data-id="${p.id}">
+    <div class="product-img-wrap">
+      <img src="${p.img}" alt="${p.name}" loading="lazy">
+      ${badgeHTML}
+      <button class="wishlist-btn ${inWish?'active':''}" onclick="toggleWish(${p.id},this)">
+        <i class="fa-${inWish?'solid':'regular'} fa-heart"></i>
+      </button>
+    </div>
+    <div class="product-body">
+      <div class="product-brand">${p.brand}</div>
+      <div class="product-name">${p.name}</div>
+      <div class="stars-row">
+        <span class="stars">${stars(p.rating)}</span>
+        <span class="rating-count">(${p.reviews})</span>
+      </div>
+      <div class="price-row">
+        <span class="price-now">₹${p.price.toLocaleString('en-IN')}</span>
+        <span class="price-old">₹${p.old.toLocaleString('en-IN')}</span>
+      </div>
+      <div class="warranty-tag"><i class="fa-solid fa-shield-halved"></i> ${p.warranty} Warranty</div>
+      <button class="add-cart-btn" onclick="addCart(${p.id})"><i class="fa-solid fa-bag-shopping"></i> Add to Cart</button>
+    </div>
+  </div>`;
+}
+
+function toggleWish(id, btn){
+  if(wishlist.has(id)){ wishlist.delete(id); btn.classList.remove('active'); btn.innerHTML='<i class="fa-regular fa-heart"></i>'; }
+  else { wishlist.add(id); btn.classList.add('active'); btn.innerHTML='<i class="fa-solid fa-heart"></i>'; }
+}
+
+function addCart(id){
+  cartCount++;
+  document.querySelectorAll('.hdr-badge, .mob-badge').forEach(b=>b.textContent=cartCount);
+  const btn = event.target.closest('.add-cart-btn');
+  if(btn){ btn.innerHTML='<i class="fa-solid fa-check"></i> Added'; btn.style.background='#2a9d6e'; setTimeout(()=>{ btn.innerHTML='<i class="fa-solid fa-bag-shopping"></i> Add to Cart'; btn.style.background=''; },1600); }
+}
+
+// Render
+document.getElementById('flash-products').innerHTML = PRODUCTS.slice(0,6).map(p=>productCardHTML(p,true)).join('');
+document.getElementById('trending-grid').innerHTML = PRODUCTS.map(p=>productCardHTML(p,false)).join('');
+
+// Timer
+let secs = 9930;
+setInterval(()=>{
+  secs--; if(secs<0) secs=86400;
+  const h=Math.floor(secs/3600), m=Math.floor((secs%3600)/60), s=secs%60;
+  const pad=n=>String(n).padStart(2,'0');
+  const th=document.getElementById('t-h'), tm=document.getElementById('t-m'), ts=document.getElementById('t-s');
+  if(th) th.textContent=pad(h);
+  if(tm) tm.textContent=pad(m);
+  if(ts) ts.textContent=pad(s);
+},1000);
+
+// Mobile nav active state
+document.querySelectorAll('.mob-nav-item').forEach(item=>{
+  item.addEventListener('click',()=>{
+    document.querySelectorAll('.mob-nav-item').forEach(i=>i.classList.remove('active'));
+    item.classList.add('active');
+  });
+});
+</script>
+</body>
+</html>
