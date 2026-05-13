@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Products — WellFix Admin</title>
+<link rel="icon" href="../frontend/assets/images/WELLFIX-FAVICON.png">
+<link rel="stylesheet" href="assets/css/admin.css">
+</head>
+<body>
+
+<div class="admin-shell">
+  <div id="adminShell"></div>
+  <div class="main-wrap" id="mainWrap">
+    <div class="page-content">
+
+      <div class="pg-hd">
+        <div>
+          <h1>Products</h1>
+          <p id="productCount">Loading products…</p>
+        </div>
+        <div class="pg-hd__actions">
+          <button class="btn btn-secondary" onclick="importCSV()">
+            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Import
+          </button>
+          <button class="btn btn-primary" onclick="openProductModal()">
+            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Add Product
+          </button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="filter-bar">
+          <div class="filter-search">
+            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input type="search" id="searchInput" placeholder="Search products…" oninput="debounce(filterProducts, 300)()">
+          </div>
+          <select class="filter-select" id="catFilter" onchange="filterProducts()">
+            <option value="">All Categories</option>
+          </select>
+          <select class="filter-select" id="brandFilter" onchange="filterProducts()">
+            <option value="">All Brands</option>
+          </select>
+          <select class="filter-select" id="statusFilter" onchange="filterProducts()">
+            <option value="">All Status</option>
+            <option value="true">Active</option>
+            <option value="false">Inactive</option>
+          </select>
+          <div class="filter-spacer"></div>
+          <button class="btn-icon" onclick="exportProducts()" title="Export CSV">
+            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          </button>
+        </div>
+        <div class="tbl-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th><input type="checkbox" id="selectAll" onchange="toggleSelectAll(this)"></th>
+                <th>Product</th>
+                <th>Brand</th>
+                <th>Category</th>
+                <th>Price</th>
+                <th>Stock</th>
+                <th>Status</th>
+                <th>Featured</th>
+                <th style="width:80px;">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="productsTbody">
+              <tr><td colspan="9" style="text-align:center;padding:30px;"><div class="spinner" style="margin:0 auto;"></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="pagination">
+          <span class="pg-info" id="pgInfo"></span>
+          <button class="pg-btn" id="pgPrev" onclick="changePage(-1)">
+            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+          </button>
+          <div id="pgNumbers" style="display:flex;gap:4px;"></div>
+          <button class="pg-btn" id="pgNext" onclick="changePage(1)">
+            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ADD / EDIT PRODUCT MODAL -->
+<div class="modal-overlay" id="productModal">
+  <div class="modal" style="max-width:800px;">
+    <div class="modal-hd">
+      <div class="modal-title" id="modalTitle">Add New Product</div>
+      <button class="modal-close" onclick="closeProductModal()">
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="tabs">
+        <button class="tab-btn is-active" onclick="switchTab('basic', this)">Basic Info</button>
+        <button class="tab-btn" onclick="switchTab('pricing', this)">Pricing & Stock</button>
+        <button class="tab-btn" onclick="switchTab('images', this)">Images</button>
+        <button class="tab-btn" onclick="switchTab('seo', this)">SEO</button>
+      </div>
+
+      <!-- Basic -->
+      <div class="tab-panel is-active" id="tab-basic">
+        <div class="form-grid" style="gap:14px;">
+          <input type="hidden" id="productId">
+          <div class="form-group" style="grid-column:1/-1;">
+            <label class="form-label">Product Name <span class="req">*</span></label>
+            <input class="form-input" id="pName" placeholder="e.g. Sujata Powermatic Plus 900W" oninput="autoSlug()">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Slug</label>
+            <input class="form-input" id="pSlug" placeholder="auto-generated">
+          </div>
+          <div class="form-group">
+            <label class="form-label">SKU</label>
+            <input class="form-input" id="pSKU" placeholder="e.g. SUJ-001">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Brand <span class="req">*</span></label>
+            <select class="form-select" id="pBrand"></select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Category <span class="req">*</span></label>
+            <select class="form-select" id="pCategory"></select>
+          </div>
+          <div class="form-group" style="grid-column:1/-1;">
+            <label class="form-label">Short Description</label>
+            <input class="form-input" id="pShortDesc" placeholder="One-line product summary">
+          </div>
+          <div class="form-group" style="grid-column:1/-1;">
+            <label class="form-label">Full Description</label>
+            <textarea class="form-textarea" id="pDescription" rows="4" placeholder="Detailed product description…" style="min-height:100px;"></textarea>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Warranty</label>
+            <input class="form-input" id="pWarranty" placeholder="e.g. 2 Year">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Badge</label>
+            <select class="form-select" id="pBadge">
+              <option value="">No Badge</option>
+              <option value="hot">🔥 Hot</option>
+              <option value="sale">🏷 Sale</option>
+              <option value="new">✨ New</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Status</label>
+            <select class="form-select" id="pStatus">
+              <option value="true">Active</option>
+              <option value="false">Inactive</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Tags (comma separated)</label>
+            <input class="form-input" id="pTags" placeholder="mixer, grinder, kitchen">
+          </div>
+          <div style="display:flex;gap:20px;align-items:center;grid-column:1/-1;">
+            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;font-weight:500;color:var(--gray-700);">
+              <input type="checkbox" id="pFeatured"> Featured Product
+            </label>
+            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;font-weight:500;color:var(--gray-700);">
+              <input type="checkbox" id="pTrending"> Trending
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pricing -->
+      <div class="tab-panel" id="tab-pricing">
+        <div class="form-grid form-2" style="gap:14px;">
+          <div class="form-group">
+            <label class="form-label">Selling Price (₹) <span class="req">*</span></label>
+            <input class="form-input" type="number" id="pPrice" placeholder="3499" min="0">
+          </div>
+          <div class="form-group">
+            <label class="form-label">MRP / Original Price (₹)</label>
+            <input class="form-input" type="number" id="pMRP" placeholder="4500" min="0">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Cost Price (₹)</label>
+            <input class="form-input" type="number" id="pCostPrice" placeholder="2800" min="0">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Discount %</label>
+            <input class="form-input" type="number" id="pDiscount" placeholder="Auto-calculated" readonly style="background:var(--gray-50);cursor:not-allowed;">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Stock Quantity <span class="req">*</span></label>
+            <input class="form-input" type="number" id="pStock" placeholder="50" min="0">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Low Stock Alert Threshold</label>
+            <input class="form-input" type="number" id="pLowStock" placeholder="5" min="0">
+            <div class="form-hint">Alert when stock falls to this level</div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Weight (kg)</label>
+            <input class="form-input" type="number" id="pWeight" placeholder="2.5" step="0.1">
+          </div>
+        </div>
+        <div style="background:var(--green-50);border:1.5px solid var(--green-100);border-radius:var(--r-md);padding:14px;margin-top:16px;" id="marginCalc" style="display:none;">
+          <div style="font-size:12px;font-weight:700;color:var(--green-700);margin-bottom:6px;">Margin Calculator</div>
+          <div style="display:flex;gap:24px;font-size:13px;color:var(--gray-600);">
+            <div>Margin: <strong id="calcMargin" style="color:var(--green-700);">—</strong></div>
+            <div>Margin %: <strong id="calcMarginPct" style="color:var(--green-700);">—</strong></div>
+            <div>Discount: <strong id="calcDiscount" style="color:var(--red-600);">—</strong></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Images -->
+      <div class="tab-panel" id="tab-images">
+        <div class="alert alert-warning" style="margin-bottom:14px;">
+          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          First image uploaded will be the main product image. Recommended: 800×800px, WebP or JPG.
+        </div>
+        <div class="img-gallery" id="imgGallery">
+          <div class="img-slot img-add" id="imgAdd" onclick="document.getElementById('imgFileInput').click()">
+            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            <span>Add Image</span>
+          </div>
+        </div>
+        <input type="file" id="imgFileInput" accept="image/*" multiple style="display:none;" onchange="handleImageUpload(this)">
+        <div style="margin-top:12px;font-size:12px;color:var(--gray-400);">Click an image to set as main. Click × to remove.</div>
+        <div id="imgUploadProgress" style="display:none;margin-top:10px;">
+          <div style="font-size:12px;color:var(--green-700);margin-bottom:4px;" id="imgUploadMsg">Uploading…</div>
+          <div style="height:4px;background:var(--gray-100);border-radius:99px;overflow:hidden;">
+            <div id="imgProgressBar" style="height:100%;background:var(--green-600);width:0%;transition:width .3s;border-radius:99px;"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SEO -->
+      <div class="tab-panel" id="tab-seo">
+        <div class="form-grid" style="gap:14px;">
+          <div class="form-group">
+            <label class="form-label">SEO Title</label>
+            <input class="form-input" id="pSEOTitle" placeholder="Leave blank to use product name">
+            <div class="form-hint">Recommended: 50–60 characters</div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">SEO Description</label>
+            <textarea class="form-textarea" id="pSEODesc" placeholder="Meta description for search engines…" style="min-height:80px;"></textarea>
+            <div class="form-hint">Recommended: 150–160 characters</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <div class="modal-ft">
+      <button class="btn btn-secondary" onclick="closeProductModal()">Cancel</button>
+      <button class="btn btn-secondary" onclick="saveProduct('draft')">Save Draft</button>
+      <button class="btn btn-primary" id="saveProductBtn" onclick="saveProduct('active')">
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+        Publish Product
+      </button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../backend/config/supabase.js"></script>
+<script src="assets/js/shell.js"></script>
+<script>
+let allProducts = [], brands = [], categories = [];
+let currentPage = 1; const perPage = 15;
+let editingImages = [];
+let editingProductId = null;
+
+(async () => {
+  await AdminShell.init('Products');
+  await Promise.all([loadFilters(), loadProducts()]);
+  // Check if coming from dashboard "Add Product" button
+  if (new URLSearchParams(location.search).get('action') === 'add') {
+    openProductModal();
+  }
+})();
+
+async function loadFilters() {
+  [brands, categories] = await Promise.all([WF.brands.getAll(), WF.categories.getAll()]);
+  const brandSel = document.getElementById('brandFilter');
+  const catSel = document.getElementById('catFilter');
+  const pBrand = document.getElementById('pBrand');
+  const pCat = document.getElementById('pCategory');
+  brands.forEach(b => {
+    brandSel.innerHTML += `<option value="${b.id}">${b.name}</option>`;
+    pBrand.innerHTML += `<option value="${b.id}">${b.name}</option>`;
+  });
+  pBrand.innerHTML = '<option value="">Select Brand</option>' + pBrand.innerHTML;
+  categories.forEach(c => {
+    catSel.innerHTML += `<option value="${c.id}">${c.name}</option>`;
+    pCat.innerHTML += `<option value="${c.id}">${c.name}</option>`;
+  });
+  pCat.innerHTML = '<option value="">Select Category</option>' + pCat.innerHTML;
+}
+
+async function loadProducts() {
+  document.getElementById('productsTbody').innerHTML = `<tr><td colspan="9" style="text-align:center;padding:30px;"><div class="spinner" style="margin:0 auto;"></div></td></tr>`;
+  allProducts = await WF.products.getAll({ active: null });
+  document.getElementById('productCount').textContent = `${allProducts.length} products total`;
+  filterProducts();
+}
+
+function filterProducts() {
+  const q = document.getElementById('searchInput').value.toLowerCase();
+  const cat = document.getElementById('catFilter').value;
+  const brand = document.getElementById('brandFilter').value;
+  const status = document.getElementById('statusFilter').value;
+  let filtered = allProducts.filter(p => {
+    if (q && !p.name.toLowerCase().includes(q) && !p.brand?.name.toLowerCase().includes(q)) return false;
+    if (cat && p.category_id !== cat) return false;
+    if (brand && p.brand_id !== brand) return false;
+    if (status !== '' && String(p.is_active) !== status) return false;
+    return true;
+  });
+  renderProductsTable(filtered);
+}
+
+function renderProductsTable(products) {
+  const start = (currentPage - 1) * perPage;
+  const page = products.slice(start, start + perPage);
+  const tbody = document.getElementById('productsTbody');
+  if (!page.length) {
+    tbody.innerHTML = `<tr><td colspan="9" style="text-align:center;padding:30px;color:var(--gray-300);">No products found</td></tr>`;
+    return;
+  }
+  tbody.innerHTML = page.map(p => {
+    const primaryImg = p.images?.find(i => i.is_primary) || p.images?.[0];
+    const stock = p.stock_qty || 0;
+    const lowThresh = p.low_stock_threshold || 5;
+    const pct = Math.min(100, Math.round((stock / 60) * 100));
+    const lvl = pct > 40 ? 'high' : pct > 15 ? 'medium' : 'low';
+    const disc = p.mrp && p.price ? Math.round(((p.mrp - p.price) / p.mrp) * 100) : 0;
+    return `<tr>
+      <td><input type="checkbox" class="row-check" value="${p.id}"></td>
+      <td>
+        <div style="display:flex;align-items:center;gap:10px;">
+          ${primaryImg ? `<img src="${primaryImg.url}" class="td-img" alt="${p.name}">` : `<div class="td-img" style="display:flex;align-items:center;justify-content:center;font-size:18px;">📦</div>`}
+          <div>
+            <div class="td-bold" style="max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${p.name}</div>
+            ${p.badge ? `<span class="badge badge-pending" style="font-size:9px;">${p.badge.toUpperCase()}</span>` : ''}
+          </div>
+        </div>
+      </td>
+      <td>${p.brand?.name || '—'}</td>
+      <td>${p.category?.name || '—'}</td>
+      <td>
+        <div style="font-weight:700;">${formatCurrency(p.price)}</div>
+        ${disc > 0 ? `<div style="font-size:11px;color:var(--red-500);">-${disc}% off</div>` : ''}
+      </td>
+      <td>
+        <div style="display:flex;align-items:center;gap:7px;">
+          <div class="stock-bar"><div class="stock-fill ${lvl}" style="width:${pct}%"></div></div>
+          <span style="font-size:12px;font-weight:600;">${stock}</span>
+        </div>
+      </td>
+      <td>${renderBadge(p.is_active ? 'active' : 'inactive')}</td>
+      <td>
+        <div style="display:flex;gap:6px;">
+          <label class="toggle"><input type="checkbox" ${p.is_featured ? 'checked' : ''} onchange="toggleFeatured('${p.id}', this.checked)"><span class="toggle-track"></span></label>
+        </div>
+      </td>
+      <td>${actionBtns(`editProduct('${p.id}')`, `deleteProduct('${p.id}', '${p.name.replace(/'/g, "\\'")}')`)}</td>
+    </tr>`;
+  }).join('');
+
+  // Pagination
+  const total = allProducts.length;
+  document.getElementById('pgInfo').textContent = `Showing ${start + 1}–${Math.min(start + perPage, total)} of ${total}`;
+  const pages = Math.ceil(total / perPage);
+  document.getElementById('pgNumbers').innerHTML = Array.from({length: Math.min(5, pages)}, (_, i) => {
+    const pg = i + 1;
+    return `<button class="pg-btn ${pg === currentPage ? 'is-active' : ''}" onclick="goPage(${pg})">${pg}</button>`;
+  }).join('');
+}
+
+function changePage(dir) { currentPage = Math.max(1, currentPage + dir); filterProducts(); }
+function goPage(pg) { currentPage = pg; filterProducts(); }
+
+// ── Product Modal ─────────────────────────────────────────────
+function openProductModal(productData = null) {
+  editingProductId = productData?.id || null;
+  editingImages = [];
+  document.getElementById('modalTitle').textContent = productData ? 'Edit Product' : 'Add New Product';
+  clearProductForm();
+  if (productData) fillProductForm(productData);
+  switchTab('basic', document.querySelector('.tab-btn'));
+  document.getElementById('productModal').classList.add('is-open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeProductModal() {
+  document.getElementById('productModal').classList.remove('is-open');
+  document.body.style.overflow = '';
+  editingProductId = null;
+  editingImages = [];
+}
+document.getElementById('productModal').addEventListener('click', e => {
+  if (e.target === e.currentTarget) closeProductModal();
+});
+
+function clearProductForm() {
+  ['pName','pSlug','pSKU','pShortDesc','pDescription','pWarranty','pSEOTitle','pSEODesc','pTags','pPrice','pMRP','pCostPrice','pStock','pLowStock','pWeight'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = '';
+  });
+  document.getElementById('productId').value = '';
+  document.getElementById('pBadge').value = '';
+  document.getElementById('pStatus').value = 'true';
+  document.getElementById('pFeatured').checked = false;
+  document.getElementById('pTrending').checked = false;
+  document.getElementById('imgGallery').innerHTML = `<div class="img-slot img-add" id="imgAdd" onclick="document.getElementById('imgFileInput').click()"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg><span>Add Image</span></div>`;
+}
+
+function fillProductForm(p) {
+  document.getElementById('productId').value = p.id;
+  document.getElementById('pName').value = p.name || '';
+  document.getElementById('pSlug').value = p.slug || '';
+  document.getElementById('pSKU').value = p.sku || '';
+  document.getElementById('pShortDesc').value = p.short_description || '';
+  document.getElementById('pDescription').value = p.description || '';
+  document.getElementById('pWarranty').value = p.warranty || '';
+  document.getElementById('pBadge').value = p.badge || '';
+  document.getElementById('pStatus').value = String(p.is_active !== false);
+  document.getElementById('pFeatured').checked = p.is_featured || false;
+  document.getElementById('pTrending').checked = p.is_trending || false;
+  document.getElementById('pPrice').value = p.price || '';
+  document.getElementById('pMRP').value = p.mrp || '';
+  document.getElementById('pCostPrice').value = p.cost_price || '';
+  document.getElementById('pStock').value = p.stock_qty || '';
+  document.getElementById('pLowStock').value = p.low_stock_threshold || '';
+  document.getElementById('pWeight').value = p.weight || '';
+  document.getElementById('pSEOTitle').value = p.seo_title || '';
+  document.getElementById('pSEODesc').value = p.seo_description || '';
+  document.getElementById('pTags').value = (p.tags || []).join(', ');
+  if (p.brand_id) document.getElementById('pBrand').value = p.brand_id;
+  if (p.category_id) document.getElementById('pCategory').value = p.category_id;
+  // Load images
+  editingImages = p.images || [];
+  renderImageGallery();
+}
+
+function renderImageGallery() {
+  const gallery = document.getElementById('imgGallery');
+  const addSlot = `<div class="img-slot img-add" id="imgAdd" onclick="document.getElementById('imgFileInput').click()"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg><span>Add Image</span></div>`;
+  gallery.innerHTML = editingImages.map((img, i) => `
+    <div class="img-slot ${img.is_primary ? 'is-primary' : ''}" onclick="setPrimaryImage(${i})" data-index="${i}">
+      <img src="${img.url}" alt="Product image">
+      <div class="img-slot__del" onclick="removeImage(event, ${i})">×</div>
+    </div>`).join('') + (editingImages.length < 6 ? addSlot : '');
+}
+
+function setPrimaryImage(index) {
+  editingImages = editingImages.map((img, i) => ({ ...img, is_primary: i === index }));
+  renderImageGallery();
+}
+
+function removeImage(e, index) {
+  e.stopPropagation();
+  editingImages.splice(index, 1);
+  if (!editingImages.find(i => i.is_primary) && editingImages.length) editingImages[0].is_primary = true;
+  renderImageGallery();
+}
+
+async function handleImageUpload(input) {
+  const files = Array.from(input.files);
+  if (!files.length) return;
+  const progress = document.getElementById('imgUploadProgress');
+  const progressBar = document.getElementById('imgProgressBar');
+  const msg = document.getElementById('imgUploadMsg');
+  progress.style.display = 'block';
+  for (let i = 0; i < files.length; i++) {
+    msg.textContent = `Uploading ${i + 1} of ${files.length}…`;
+    progressBar.style.width = `${Math.round(((i) / files.length) * 100)}%`;
+    try {
+      const { url } = await uploadFile(files[i], 'products');
+      editingImages.push({ url, is_primary: editingImages.length === 0, sort_order: editingImages.length });
+      renderImageGallery();
+    } catch (err) {
+      toast('Upload failed: ' + err.message, true);
+    }
+  }
+  progressBar.style.width = '100%';
+  msg.textContent = 'Upload complete!';
+  setTimeout(() => { progress.style.display = 'none'; progressBar.style.width = '0%'; }, 1500);
+  input.value = '';
+}
+
+function autoSlug() {
+  const name = document.getElementById('pName').value;
+  if (!editingProductId) document.getElementById('pSlug').value = slugify(name);
+}
+
+// Price calculations
+document.addEventListener('input', e => {
+  if (['pPrice', 'pMRP', 'pCostPrice'].includes(e.target.id)) {
+    const price = parseFloat(document.getElementById('pPrice').value) || 0;
+    const mrp = parseFloat(document.getElementById('pMRP').value) || 0;
+    const cost = parseFloat(document.getElementById('pCostPrice').value) || 0;
+    if (price && mrp) {
+      const disc = Math.round(((mrp - price) / mrp) * 100);
+      document.getElementById('pDiscount').value = disc + '%';
+    }
+    if (price && cost) {
+      const margin = price - cost;
+      const marginPct = Math.round((margin / price) * 100);
+      const el = document.getElementById('marginCalc');
+      el.style.display = 'block';
+      document.getElementById('calcMargin').textContent = formatCurrency(margin);
+      document.getElementById('calcMarginPct').textContent = marginPct + '%';
+      document.getElementById('calcDiscount').textContent = mrp ? Math.round(((mrp - price) / mrp) * 100) + '%' : '—';
+    }
+  }
+});
+
+async function saveProduct(status) {
+  const name = document.getElementById('pName').value.trim();
+  const price = parseFloat(document.getElementById('pPrice').value);
+  const brand_id = document.getElementById('pBrand').value;
+  const category_id = document.getElementById('pCategory').value;
+  if (!name) { toast('Product name is required', true); switchTab('basic', document.querySelectorAll('.tab-btn')[0]); return; }
+  if (!price || price <= 0) { toast('Valid price is required', true); switchTab('pricing', document.querySelectorAll('.tab-btn')[1]); return; }
+
+  const btn = document.getElementById('saveProductBtn');
+  btn.disabled = true; btn.innerHTML = '<div class="spinner" style="width:14px;height:14px;"></div> Saving…';
+
+  const productData = {
+    name,
+    slug: document.getElementById('pSlug').value || slugify(name),
+    sku: document.getElementById('pSKU').value || null,
+    short_description: document.getElementById('pShortDesc').value || null,
+    description: document.getElementById('pDescription').value || null,
+    warranty: document.getElementById('pWarranty').value || null,
+    badge: document.getElementById('pBadge').value || null,
+    is_active: status === 'active' ? true : (document.getElementById('pStatus').value === 'true'),
+    is_featured: document.getElementById('pFeatured').checked,
+    is_trending: document.getElementById('pTrending').checked,
+    price,
+    mrp: parseFloat(document.getElementById('pMRP').value) || null,
+    cost_price: parseFloat(document.getElementById('pCostPrice').value) || null,
+    stock_qty: parseInt(document.getElementById('pStock').value) || 0,
+    low_stock_threshold: parseInt(document.getElementById('pLowStock').value) || 5,
+    weight: parseFloat(document.getElementById('pWeight').value) || null,
+    brand_id: brand_id || null,
+    category_id: category_id || null,
+    seo_title: document.getElementById('pSEOTitle').value || null,
+    seo_description: document.getElementById('pSEODesc').value || null,
+    tags: document.getElementById('pTags').value.split(',').map(t => t.trim()).filter(Boolean),
+  };
+
+  try {
+    let savedProduct;
+    if (editingProductId) {
+      savedProduct = await WF.products.update(editingProductId, productData);
+      // Sync images
+      await db.from('product_images').delete().eq('product_id', editingProductId);
+    } else {
+      savedProduct = await WF.products.create(productData);
+    }
+    // Save images
+    for (const img of editingImages) {
+      await db.from('product_images').insert({
+        product_id: savedProduct.id,
+        url: img.url,
+        is_primary: img.is_primary || false,
+        sort_order: img.sort_order || 0
+      });
+    }
+    toast(editingProductId ? 'Product updated!' : 'Product published!');
+    closeProductModal();
+    await loadProducts();
+  } catch (err) {
+    toast('Error: ' + err.message, true);
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '<svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Publish Product';
+  }
+}
+
+async function editProduct(id) {
+  const product = await WF.products.getById(id);
+  openProductModal(product);
+}
+
+async function deleteProduct(id, name) {
+  if (!confirmDialog(`Delete "${name}"? This cannot be undone.`)) return;
+  try {
+    await WF.products.delete(id);
+    toast('Product deleted');
+    await loadProducts();
+  } catch (e) { toast('Error: ' + e.message, true); }
+}
+
+async function toggleFeatured(id, featured) {
+  try {
+    await WF.products.update(id, { is_featured: featured });
+    toast(featured ? 'Marked as featured' : 'Removed from featured');
+  } catch (e) { toast('Error: ' + e.message, true); }
+}
+
+function switchTab(tabId, btn) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('is-active'));
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('is-active'));
+  document.getElementById('tab-' + tabId).classList.add('is-active');
+  if (btn) btn.classList.add('is-active');
+}
+
+function toggleSelectAll(el) {
+  document.querySelectorAll('.row-check').forEach(c => c.checked = el.checked);
+}
+
+function exportProducts() {
+  const rows = [['Name', 'Brand', 'Category', 'Price', 'MRP', 'Stock', 'Status']];
+  allProducts.forEach(p => rows.push([p.name, p.brand?.name || '', p.category?.name || '', p.price, p.mrp || '', p.stock_qty, p.is_active ? 'Active' : 'Inactive']));
+  const csv = rows.map(r => r.map(c => `"${c}"`).join(',')).join('\n');
+  const a = document.createElement('a');
+  a.href = 'data:text/csv,' + encodeURIComponent(csv);
+  a.download = 'wellfix-products.csv';
+  a.click();
+  toast('Products exported as CSV');
+}
+
+function importCSV() { toast('CSV import: upload a file with columns: name, price, brand, category, stock', false); }
+</script>
+</body>
+</html>
