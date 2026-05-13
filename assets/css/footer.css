@@ -27,12 +27,14 @@
   align-items: center;
   gap: var(--sp-2);
   margin-bottom: var(--sp-3);
+  padding-left: 0;
 }
 .footer-brand__logo img {
-  height: 32px;
+  height: 48px;
   width: auto;
   filter: brightness(0) invert(1);
-  opacity: .85;
+  opacity: .9;
+  margin-left: -2px;
 }
 .footer-brand__desc {
   font-size: var(--text-sm);
