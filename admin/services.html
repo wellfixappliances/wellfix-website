@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bookings — WellFix Admin</title>
+<link rel="icon" href="../frontend/assets/images/WELLFIX-FAVICON.png">
+<link rel="stylesheet" href="assets/css/admin.css">
+</head>
+<body>
+<div class="admin-shell">
+  <div id="adminShell"></div>
+  <div class="main-wrap" id="mainWrap">
+    <div class="page-content">
+      <div class="pg-hd">
+        <div><h1>Service Bookings</h1><p>Manage repair & service bookings</p></div>
+        <div class="pg-hd__actions">
+          <a href="https://wa.me/918590004349" target="_blank" class="btn btn-gold">
+            <svg fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347zM12 2C6.477 2 2 6.477 2 12c0 1.89.525 3.66 1.438 5.168L2 22l4.978-1.413A9.955 9.955 0 0012 22c5.523 0 10-4.477 10-10S17.523 2 12 2z"/></svg>
+            WhatsApp Channel
+          </a>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:20px;" id="serviceStats">
+        <div class="stat-card"><div class="stat-card__top"><div class="stat-card__icon red"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div></div><div class="stat-card__val" id="newCount">—</div><div class="stat-card__label">New Bookings</div></div>
+        <div class="stat-card"><div class="stat-card__top"><div class="stat-card__icon blue"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div></div><div class="stat-card__val" id="inProgressCount">—</div><div class="stat-card__label">In Progress</div></div>
+        <div class="stat-card"><div class="stat-card__top"><div class="stat-card__icon green"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div></div><div class="stat-card__val" id="completedCount">—</div><div class="stat-card__label">Completed</div></div>
+      </div>
+      <div class="card">
+        <div class="filter-bar">
+          <div class="filter-search"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><input type="search" id="sSearch" placeholder="Search bookings…" oninput="renderTable()"></div>
+          <select class="filter-select" id="sStatusFilter" onchange="renderTable()">
+            <option value="">All Status</option><option value="new">New</option><option value="assigned">Assigned</option><option value="in_progress">In Progress</option><option value="completed">Completed</option><option value="cancelled">Cancelled</option>
+          </select>
+        </div>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>Booking ID</th><th>Customer</th><th>Service</th><th>Location</th><th>Date</th><th>Status</th><th>Actions</th></tr></thead>
+            <tbody id="servicesTbody"><tr><td colspan="7" style="text-align:center;padding:30px;"><div class="spinner" style="margin:0 auto;"></div></td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../backend/config/supabase.js"></script>
+<script src="assets/js/shell.js"></script>
+<script>
+let allBookings = [];
+(async () => {
+  await AdminShell.init('Service Bookings');
+  allBookings = await WF.services.getAll();
+  document.getElementById('newCount').textContent = allBookings.filter(b => b.status === 'new').length;
+  document.getElementById('inProgressCount').textContent = allBookings.filter(b => b.status === 'in_progress').length;
+  document.getElementById('completedCount').textContent = allBookings.filter(b => b.status === 'completed').length;
+  renderTable();
+})();
+function renderTable() {
+  const q = document.getElementById('sSearch').value.toLowerCase();
+  const st = document.getElementById('sStatusFilter').value;
+  const filtered = allBookings.filter(b => {
+    if (st && b.status !== st) return false;
+    if (q && !b.customer_name.toLowerCase().includes(q) && !b.booking_number.toLowerCase().includes(q)) return false;
+    return true;
+  });
+  document.getElementById('servicesTbody').innerHTML = filtered.length ? filtered.map(b => `<tr>
+    <td class="td-bold">${b.booking_number}</td>
+    <td><div style="font-weight:600;">${b.customer_name}</div><div style="font-size:11px;color:var(--gray-400);">${b.customer_phone}</div></td>
+    <td>${b.service_type}<br><span style="font-size:11px;color:var(--gray-400);">${b.appliance_brand||''}</span></td>
+    <td style="font-size:12px;">${b.customer_address||'—'}</td>
+    <td>${formatDate(b.preferred_date||b.created_at)}</td>
+    <td>${renderBadge(b.status)}</td>
+    <td>
+      <div style="display:flex;gap:4px;">
+        <select class="filter-select" style="height:28px;font-size:11px;min-width:110px;" onchange="updateStatus('${b.id}', this.value)">
+          ${['new','assigned','in_progress','completed','cancelled'].map(s=>`<option value="${s}" ${b.status===s?'selected':''}>${s.replace('_',' ')}</option>`).join('')}
+        </select>
+        <a href="https://wa.me/${(b.customer_phone||'').replace(/\D/g,'')}?text=Hi%20${encodeURIComponent(b.customer_name)}!%20Your%20WellFix%20booking%20${b.booking_number}%20update." target="_blank" class="btn-icon" title="WhatsApp">
+          <svg fill="currentColor" viewBox="0 0 24 24" style="width:13px;height:13px;"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347zM12 2C6.477 2 2 6.477 2 12c0 1.89.525 3.66 1.438 5.168L2 22l4.978-1.413A9.955 9.955 0 0012 22c5.523 0 10-4.477 10-10S17.523 2 12 2z"/></svg>
+        </a>
+      </div>
+    </td>
+  </tr>`).join('') : `<tr><td colspan="7" style="text-align:center;padding:30px;color:var(--gray-300);">No bookings found</td></tr>`;
+}
+async function updateStatus(id, status) {
+  await WF.services.update(id, { status });
+  toast('Status updated!');
+  const b = allBookings.find(b => b.id === id);
+  if (b) b.status = status;
+  document.getElementById('newCount').textContent = allBookings.filter(b => b.status === 'new').length;
+  document.getElementById('inProgressCount').textContent = allBookings.filter(b => b.status === 'in_progress').length;
+  document.getElementById('completedCount').textContent = allBookings.filter(b => b.status === 'completed').length;
+}
+</script>
+</body>
+</html>

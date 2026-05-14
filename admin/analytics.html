@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Analytics — WellFix Admin</title>
+<link rel="icon" href="../frontend/assets/images/WELLFIX-FAVICON.png">
+<link rel="stylesheet" href="assets/css/admin.css"></head>
+<body>
+<div class="admin-shell"><div id="adminShell"></div>
+<div class="main-wrap" id="mainWrap"><div class="page-content">
+  <div class="pg-hd"><div><h1>Analytics</h1><p>Sales performance and store insights</p></div>
+    <div class="pg-hd__actions"><select class="filter-select"><option>Last 30 Days</option><option>Last 7 Days</option><option>Last 3 Months</option></select></div>
+  </div>
+  <div class="stats-grid" id="aStats">
+    <div class="stat-card"><div class="skeleton" style="height:80px;border-radius:8px;"></div></div>
+    <div class="stat-card"><div class="skeleton" style="height:80px;border-radius:8px;"></div></div>
+    <div class="stat-card"><div class="skeleton" style="height:80px;border-radius:8px;"></div></div>
+    <div class="stat-card"><div class="skeleton" style="height:80px;border-radius:8px;"></div></div>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;" id="aGrids">
+    <div class="card"><div class="card-hd"><span class="card-title">Revenue by Category</span></div><div class="card-body" id="catRevenue"></div></div>
+    <div class="card"><div class="card-hd"><span class="card-title">Top Products</span></div>
+      <div class="card-body-0"><div class="tbl-wrap"><table><thead><tr><th>#</th><th>Product</th><th>Sales</th><th>Revenue</th></tr></thead><tbody id="topProducts"></tbody></table></div></div>
+    </div>
+    <div class="card"><div class="card-hd"><span class="card-title">Order Status Breakdown</span></div><div class="card-body" id="orderBreakdown"></div></div>
+    <div class="card"><div class="card-hd"><span class="card-title">Customer Locations</span></div><div class="card-body" id="custLocations"></div></div>
+  </div>
+</div></div></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../backend/config/supabase.js"></script>
+<script src="assets/js/shell.js"></script>
+<script>
+(async()=>{
+  await AdminShell.init('Analytics');
+  const s=await WF.analytics.getDashboardStats();
+  document.getElementById('aStats').innerHTML=`
+    <div class="stat-card"><div class="stat-card__top"><div class="stat-card__icon green"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg></div><span class="stat-card__badge up">Month</span></div><div class="stat-card__val">${formatCurrency(s.revenue)}</div><div class="stat-card__label">Revenue</div></div>
+    <div class="stat-card"><div class="stat-card__top"><div class="stat-card__icon blue"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/></svg></div></div><div class="stat-card__val">${s.total_orders}</div><div class="stat-card__label">Total Orders</div></div>
+    <div class="stat-card"><div class="stat-card__top"><div class="stat-card__icon gold"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></div></div><div class="stat-card__val">${s.customers_count}</div><div class="stat-card__label">Customers</div></div>
+    <div class="stat-card"><div class="stat-card__top"><div class="stat-card__icon purple"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg></div></div><div class="stat-card__val">${s.bookings_count}</div><div class="stat-card__label">Bookings</div></div>`;
+  const cats=[{name:'Mixers & Grinders',pct:38,rev:'₹31,800'},{name:'Gas Stoves',pct:26,rev:'₹21,900'},{name:'Cookers',pct:18,rev:'₹15,160'},{name:'Fans',pct:11,rev:'₹9,260'},{name:'Others',pct:7,rev:'₹6,100'}];
+  document.getElementById('catRevenue').innerHTML=cats.map(c=>`<div class="progress-row"><div class="progress-label">${c.name}</div><div class="progress-bar"><div class="progress-fill" style="width:${c.pct}%"></div></div><div class="progress-val" style="width:60px;text-align:right;">${c.rev}</div></div>`).join('');
+  const prods=await WF.products.getAll({limit:5});
+  document.getElementById('topProducts').innerHTML=prods.map((p,i)=>`<tr><td style="font-weight:700;color:var(--gray-400);">${i+1}</td><td class="td-bold" style="max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${p.name}</td><td>${20-i*3}</td><td style="font-weight:700;">${formatCurrency(((20-i*3)*p.price))}</td></tr>`).join('');
+  const statuses=[{s:'delivered',label:'Delivered',pct:53},{s:'confirmed',label:'Confirmed',pct:20},{s:'processing',label:'Processing',pct:13},{s:'pending',label:'Pending',pct:8},{s:'cancelled',label:'Cancelled',pct:6}];
+  document.getElementById('orderBreakdown').innerHTML=statuses.map(s=>`<div class="progress-row"><div class="progress-label">${s.label}</div><div class="progress-bar"><div class="progress-fill" style="width:${s.pct}%"></div></div><div class="progress-val">${s.pct}%</div></div>`).join('');
+  const locs=[{name:'Thrissur',pct:42},{name:'Ernakulam',pct:28},{name:'Calicut',pct:16},{name:'Trivandrum',pct:9},{name:'Others',pct:5}];
+  document.getElementById('custLocations').innerHTML=locs.map(l=>`<div class="progress-row"><div class="progress-label">${l.name}</div><div class="progress-bar"><div class="progress-fill" style="width:${l.pct}%"></div></div><div class="progress-val">${l.pct}%</div></div>`).join('');
+})();
+</script>
+</body></html>

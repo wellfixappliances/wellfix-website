@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Inventory — WellFix Admin</title>
+<link rel="icon" href="../frontend/assets/images/WELLFIX-FAVICON.png">
+<link rel="stylesheet" href="assets/css/admin.css"></head>
+<body>
+<div class="admin-shell"><div id="adminShell"></div>
+<div class="main-wrap" id="mainWrap"><div class="page-content">
+  <div class="pg-hd"><div><h1>Inventory</h1><p>Monitor and update stock levels</p></div>
+    <div class="pg-hd__actions">
+      <button class="btn btn-secondary" onclick="exportInventory()">Export</button>
+      <button class="btn btn-primary" onclick="toast('Select products to bulk update stock')">Bulk Update</button>
+    </div>
+  </div>
+  <div id="lowStockAlert" style="display:none;" class="alert alert-danger" style="margin-bottom:16px;">
+    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+    <span id="lowStockMsg"></span>
+  </div>
+  <div class="card">
+    <div class="filter-bar">
+      <div class="filter-search"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><input type="search" id="invSearch" placeholder="Search products…" oninput="renderInventory()"></div>
+      <select class="filter-select" id="invFilter" onchange="renderInventory()">
+        <option value="">All Stock</option><option value="low">Low Stock</option><option value="out">Out of Stock</option>
+      </select>
+    </div>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>Product</th><th>SKU</th><th>In Stock</th><th>Reserved</th><th>Available</th><th>Stock Status</th><th>Actions</th></tr></thead>
+        <tbody id="invTbody"><tr><td colspan="7" style="text-align:center;padding:30px;"><div class="spinner" style="margin:0 auto;"></div></td></tr></tbody>
+      </table>
+    </div>
+  </div>
+</div></div></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../backend/config/supabase.js"></script>
+<script src="assets/js/shell.js"></script>
+<script>
+let allProducts=[];
+(async()=>{
+  await AdminShell.init('Inventory');
+  allProducts=await WF.products.getAll({active:null});
+  const lowCount=allProducts.filter(p=>p.stock_qty<=(p.low_stock_threshold||5)).length;
+  if(lowCount>0){document.getElementById('lowStockAlert').style.display='flex';document.getElementById('lowStockMsg').textContent=`${lowCount} product(s) are low on stock — review and restock soon.`;}
+  renderInventory();
+})();
+function renderInventory(){
+  const q=document.getElementById('invSearch').value.toLowerCase();
+  const f=document.getElementById('invFilter').value;
+  const filtered=allProducts.filter(p=>{
+    if(q&&!p.name.toLowerCase().includes(q))return false;
+    if(f==='low'&&p.stock_qty>(p.low_stock_threshold||5))return false;
+    if(f==='out'&&p.stock_qty!==0)return false;
+    return true;
+  });
+  document.getElementById('invTbody').innerHTML=filtered.length?filtered.map((p,i)=>{
+    const pct=Math.min(100,Math.round((p.stock_qty/60)*100));
+    const lvl=p.stock_qty===0?'low':pct>40?'high':pct>15?'medium':'low';
+    const statusLabel=p.stock_qty===0?'Out of Stock':p.stock_qty<=(p.low_stock_threshold||5)?'Low Stock':'In Stock';
+    const statusBadge=p.stock_qty===0?'badge-danger':p.stock_qty<=(p.low_stock_threshold||5)?'badge-pending':'badge-active';
+    return`<tr>
+      <td class="td-bold" style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${p.name}</td>
+      <td style="font-size:12px;color:var(--gray-400);">${p.sku||'SKU-'+String(i+100)}</td>
+      <td><strong>${p.stock_qty}</strong></td>
+      <td style="color:var(--gray-400);">0</td>
+      <td><strong>${p.stock_qty}</strong></td>
+      <td><span class="badge ${statusBadge}">${statusLabel}</span></td>
+      <td>
+        <div style="display:flex;align-items:center;gap:6px;">
+          <input type="number" class="form-input" style="width:70px;height:28px;font-size:12px;" value="${p.stock_qty}" id="stock_${p.id}" min="0">
+          <button class="btn btn-primary btn-sm" onclick="updateStock('${p.id}')">Update</button>
+        </div>
+      </td>
+    </tr>`;
+  }).join(''):`<tr><td colspan="7" style="text-align:center;padding:30px;color:var(--gray-300);">No products found</td></tr>`;
+}
+async function updateStock(id){
+  const newQty=parseInt(document.getElementById('stock_'+id).value)||0;
+  await WF.products.update(id,{stock_qty:newQty});
+  const p=allProducts.find(p=>p.id===id);if(p)p.stock_qty=newQty;
+  toast('Stock updated!');
+  renderInventory();
+}
+function exportInventory(){
+  const rows=[['Product','SKU','Stock','Status']];
+  allProducts.forEach((p,i)=>rows.push([p.name,p.sku||'SKU-'+i,p.stock_qty,p.stock_qty===0?'Out of Stock':p.stock_qty<=5?'Low Stock':'In Stock']));
+  const csv=rows.map(r=>r.map(v=>`"${v}"`).join(',')).join('\n');
+  const a=document.createElement('a');a.href='data:text/csv,'+encodeURIComponent(csv);a.download='wellfix-inventory.csv';a.click();
+  toast('Inventory exported');
+}
+</script>
+</body></html>

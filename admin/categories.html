@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Categories — WellFix Admin</title>
+<link rel="icon" href="../frontend/assets/images/WELLFIX-FAVICON.png">
+<link rel="stylesheet" href="assets/css/admin.css"></head>
+<body>
+<div class="admin-shell"><div id="adminShell"></div>
+<div class="main-wrap" id="mainWrap"><div class="page-content">
+  <div class="pg-hd">
+    <div><h1>Categories</h1><p>Manage product categories</p></div>
+    <div class="pg-hd__actions"><button class="btn btn-primary" onclick="openCatModal()">Add Category</button></div>
+  </div>
+  <div class="card">
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>Category</th><th>Slug</th><th>Parent</th><th>Status</th><th>Actions</th></tr></thead>
+        <tbody id="catTbody"><tr><td colspan="5" style="text-align:center;padding:30px;"><div class="spinner" style="margin:0 auto;"></div></td></tr></tbody>
+      </table>
+    </div>
+  </div>
+</div></div></div>
+
+<div class="modal-overlay" id="catModal">
+  <div class="modal" style="max-width:480px;">
+    <div class="modal-hd"><div class="modal-title" id="catModalTitle">Add Category</div><button class="modal-close" onclick="closeCatModal()"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
+    <div class="modal-body">
+      <input type="hidden" id="catId">
+      <div class="form-grid" style="gap:12px;">
+        <div class="form-group"><label class="form-label">Name <span class="req">*</span></label><input class="form-input" id="catName" placeholder="e.g. Mixers & Grinders" oninput="document.getElementById('catSlug').value=slugify(this.value)"></div>
+        <div class="form-group"><label class="form-label">Slug</label><input class="form-input" id="catSlug" placeholder="auto-generated"></div>
+        <div class="form-group"><label class="form-label">Parent Category</label><select class="form-select" id="catParent"><option value="">None (Top Level)</option></select></div>
+        <div class="form-group"><label class="form-label">Description</label><textarea class="form-textarea" id="catDesc" rows="2"></textarea></div>
+        <div class="form-group"><label class="form-label">Sort Order</label><input class="form-input" type="number" id="catSort" value="0"></div>
+      </div>
+    </div>
+    <div class="modal-ft"><button class="btn btn-secondary" onclick="closeCatModal()">Cancel</button><button class="btn btn-primary" onclick="saveCat()">Save Category</button></div>
+  </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../backend/config/supabase.js"></script>
+<script src="assets/js/shell.js"></script>
+<script>
+let cats=[];
+(async()=>{
+  await AdminShell.init('Categories');
+  await loadCats();
+})();
+async function loadCats(){
+  const {data}=await db.from('categories').select('*, parent:parent_id(name)').order('sort_order');
+  cats=data||[];
+  const sel=document.getElementById('catParent');
+  sel.innerHTML='<option value="">None (Top Level)</option>'+cats.map(c=>`<option value="${c.id}">${c.name}</option>`).join('');
+  document.getElementById('catTbody').innerHTML=cats.length?cats.map(c=>`<tr>
+    <td class="td-bold">${c.name}</td>
+    <td style="font-size:12px;color:var(--gray-400);">${c.slug}</td>
+    <td>${c.parent?.name||'—'}</td>
+    <td>${renderBadge(c.is_active?'active':'inactive')}</td>
+    <td>${actionBtns(`editCat('${c.id}')`,`deleteCat('${c.id}')`)}</td>
+  </tr>`).join(''):`<tr><td colspan="5" style="text-align:center;padding:30px;color:var(--gray-300);">No categories yet</td></tr>`;
+}
+function openCatModal(data=null){
+  document.getElementById('catId').value=data?.id||'';
+  document.getElementById('catName').value=data?.name||'';
+  document.getElementById('catSlug').value=data?.slug||'';
+  document.getElementById('catDesc').value=data?.description||'';
+  document.getElementById('catSort').value=data?.sort_order||0;
+  document.getElementById('catParent').value=data?.parent_id||'';
+  document.getElementById('catModalTitle').textContent=data?'Edit Category':'Add Category';
+  document.getElementById('catModal').classList.add('is-open');
+  document.body.style.overflow='hidden';
+}
+function closeCatModal(){document.getElementById('catModal').classList.remove('is-open');document.body.style.overflow='';}
+document.getElementById('catModal').addEventListener('click',e=>{if(e.target===e.currentTarget)closeCatModal();});
+async function saveCat(){
+  const name=document.getElementById('catName').value.trim();
+  if(!name){toast('Name required',true);return;}
+  const id=document.getElementById('catId').value;
+  const data={name,slug:document.getElementById('catSlug').value||slugify(name),description:document.getElementById('catDesc').value||null,sort_order:parseInt(document.getElementById('catSort').value)||0,parent_id:document.getElementById('catParent').value||null,is_active:true};
+  try{
+    if(id)await WF.categories.update(id,data);
+    else await WF.categories.create(data);
+    toast('Category saved! Frontend updated.');
+    closeCatModal();await loadCats();
+  }catch(e){toast('Error: '+e.message,true);}
+}
+async function editCat(id){const c=cats.find(c=>c.id===id);openCatModal(c);}
+async function deleteCat(id){
+  if(!confirmDialog('Delete this category?'))return;
+  await WF.categories.delete(id);toast('Category deleted');await loadCats();
+}
+</script>
+</body></html>

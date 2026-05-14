@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Reviews — WellFix Admin</title>
+<link rel="icon" href="../frontend/assets/images/WELLFIX-FAVICON.png">
+<link rel="stylesheet" href="assets/css/admin.css"></head>
+<body>
+<div class="admin-shell"><div id="adminShell"></div>
+<div class="main-wrap" id="mainWrap"><div class="page-content">
+  <div class="pg-hd"><div><h1>Reviews</h1><p>Approve and manage customer reviews</p></div></div>
+  <div class="card">
+    <div class="filter-bar">
+      <div class="filter-search"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><input type="search" id="rSearch" placeholder="Search reviews…" oninput="renderReviews()"></div>
+      <select class="filter-select" id="rStatusFilter" onchange="renderReviews()"><option value="">All</option><option value="false">Pending</option><option value="true">Approved</option></select>
+    </div>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>Customer</th><th>Product</th><th>Rating</th><th>Review</th><th>Date</th><th>Status</th><th>Actions</th></tr></thead>
+        <tbody id="reviewsTbody"><tr><td colspan="7" style="text-align:center;padding:30px;"><div class="spinner" style="margin:0 auto;"></div></td></tr></tbody>
+      </table>
+    </div>
+  </div>
+</div></div></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../backend/config/supabase.js"></script>
+<script src="assets/js/shell.js"></script>
+<script>
+let allReviews=[];
+(async()=>{
+  await AdminShell.init('Reviews');
+  allReviews = await WF.reviews.getAll();
+  renderReviews();
+})();
+function renderReviews(){
+  const q=document.getElementById('rSearch').value.toLowerCase();
+  const st=document.getElementById('rStatusFilter').value;
+  const f=allReviews.filter(r=>{
+    if(st!==''&&String(r.is_approved)!==st)return false;
+    if(q&&!r.customer_name.toLowerCase().includes(q))return false;
+    return true;
+  });
+  document.getElementById('reviewsTbody').innerHTML=f.length?f.map(r=>`<tr>
+    <td class="td-bold">${r.customer_name}</td>
+    <td style="font-size:12px;color:var(--gray-500);">${r.product?.name||'—'}</td>
+    <td><span style="color:var(--gold-400);font-size:14px;">${'★'.repeat(r.rating)}${'☆'.repeat(5-r.rating)}</span></td>
+    <td style="max-width:200px;font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${r.body||r.title||'—'}</td>
+    <td>${formatDate(r.created_at)}</td>
+    <td>${renderBadge(r.is_approved?'approved':'pending')}</td>
+    <td><div style="display:flex;gap:4px;">
+      ${!r.is_approved?`<button class="btn btn-primary btn-sm" onclick="approveReview('${r.id}')">Approve</button>`:''}
+      <button class="btn-icon danger" onclick="deleteReview('${r.id}')"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg></button>
+    </div></td>
+  </tr>`).join(''):`<tr><td colspan="7" style="text-align:center;padding:30px;color:var(--gray-300);">No reviews found</td></tr>`;
+}
+async function approveReview(id){
+  await WF.reviews.approve(id);
+  const r=allReviews.find(r=>r.id===id); if(r)r.is_approved=true;
+  toast('Review approved! Now visible on website.');
+  renderReviews();
+}
+async function deleteReview(id){
+  if(!confirmDialog('Delete this review?'))return;
+  await WF.reviews.delete(id);
+  allReviews=allReviews.filter(r=>r.id!==id);
+  toast('Review deleted');
+  renderReviews();
+}
+</script>
+</body></html>

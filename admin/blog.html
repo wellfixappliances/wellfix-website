@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Blog — WellFix Admin</title>
+<link rel="icon" href="../frontend/assets/images/WELLFIX-FAVICON.png">
+<link rel="stylesheet" href="assets/css/admin.css">
+<style>
+.editor-toolbar{display:flex;flex-wrap:wrap;gap:4px;padding:10px;background:var(--gray-25);border:1.5px solid var(--gray-150);border-bottom:none;border-radius:var(--r-sm) var(--r-sm) 0 0;}
+.editor-toolbar button{height:28px;padding:0 8px;font-size:12px;font-weight:600;border:1.5px solid var(--gray-150);border-radius:var(--r-xs);background:var(--white);color:var(--gray-700);cursor:pointer;transition:all var(--t);}
+.editor-toolbar button:hover{border-color:var(--green-400);color:var(--green-700);}
+.editor-toolbar button.active{background:var(--green-700);color:#fff;border-color:var(--green-700);}
+.editor-toolbar .sep{width:1px;height:24px;background:var(--gray-150);margin:0 4px;}
+#blogEditor{min-height:300px;border:1.5px solid var(--gray-150);border-radius:0 0 var(--r-sm) var(--r-sm);padding:16px;font-size:14px;line-height:1.7;outline:none;color:var(--gray-900);}
+#blogEditor:focus{border-color:var(--green-500);box-shadow:0 0 0 3px rgba(3,71,50,.07);}
+#blogEditor h1,#blogEditor h2,#blogEditor h3{font-family:var(--font-display);font-weight:700;margin:16px 0 8px;}
+#blogEditor h1{font-size:24px;}#blogEditor h2{font-size:20px;}#blogEditor h3{font-size:16px;}
+#blogEditor img{max-width:100%;border-radius:var(--r-md);margin:8px 0;}
+#blogEditor table{width:100%;border-collapse:collapse;margin:12px 0;}
+#blogEditor td,#blogEditor th{border:1px solid var(--gray-150);padding:8px;font-size:13px;}
+</style>
+</head>
+<body>
+<div class="admin-shell"><div id="adminShell"></div>
+<div class="main-wrap" id="mainWrap"><div class="page-content">
+
+<div id="listView">
+  <div class="pg-hd">
+    <div><h1>Blog</h1><p>Manage blog posts and articles</p></div>
+    <div class="pg-hd__actions"><button class="btn btn-primary" onclick="openEditor()">Write New Post</button></div>
+  </div>
+  <div class="card">
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>Title</th><th>Category</th><th>Views</th><th>Status</th><th>Date</th><th>Actions</th></tr></thead>
+        <tbody id="blogTbody"><tr><td colspan="6" style="text-align:center;padding:30px;"><div class="spinner" style="margin:0 auto;"></div></td></tr></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div id="editorView" style="display:none;">
+  <div class="pg-hd">
+    <div><h1 id="editorTitle">New Post</h1></div>
+    <div class="pg-hd__actions">
+      <button class="btn btn-secondary" onclick="closeEditor()">← Back</button>
+      <button class="btn btn-secondary" onclick="savePost('draft')">Save Draft</button>
+      <button class="btn btn-primary" onclick="savePost('published')">Publish</button>
+    </div>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 280px;gap:20px;">
+    <div>
+      <input type="hidden" id="postId">
+      <div class="form-group" style="margin-bottom:12px;">
+        <input class="form-input" id="postTitle" placeholder="Post title…" style="height:48px;font-size:18px;font-weight:700;font-family:var(--font-display);" oninput="document.getElementById('postSlug').value=slugify(this.value)">
+      </div>
+      <div class="editor-toolbar">
+        <button onclick="fmt('bold')" title="Bold"><b>B</b></button>
+        <button onclick="fmt('italic')" title="Italic"><i>I</i></button>
+        <button onclick="fmt('underline')" title="Underline"><u>U</u></button>
+        <div class="sep"></div>
+        <button onclick="fmtBlock('h1')">H1</button>
+        <button onclick="fmtBlock('h2')">H2</button>
+        <button onclick="fmtBlock('h3')">H3</button>
+        <button onclick="fmtBlock('p')">P</button>
+        <div class="sep"></div>
+        <button onclick="fmt('insertUnorderedList')">• List</button>
+        <button onclick="fmt('insertOrderedList')">1. List</button>
+        <div class="sep"></div>
+        <button onclick="insertLink()">Link</button>
+        <button onclick="insertImage()">Image</button>
+        <button onclick="insertTable()">Table</button>
+        <div class="sep"></div>
+        <button onclick="fmt('undo')">↩</button>
+        <button onclick="fmt('redo')">↪</button>
+      </div>
+      <div id="blogEditor" contenteditable="true" spellcheck="true">Start writing your post here…</div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:14px;">
+      <div class="card"><div class="card-hd"><span class="card-title">Post Settings</span></div><div class="card-body">
+        <div class="form-group" style="margin-bottom:12px;"><label class="form-label">Slug</label><input class="form-input" id="postSlug"></div>
+        <div class="form-group" style="margin-bottom:12px;"><label class="form-label">Category</label><select class="form-select" id="postCategory"><option>Tips & Guides</option><option>Product Reviews</option><option>News</option><option>How-To</option></select></div>
+        <div class="form-group" style="margin-bottom:12px;"><label class="form-label">Excerpt</label><textarea class="form-textarea" id="postExcerpt" style="min-height:60px;"></textarea></div>
+        <div class="form-group"><label class="form-label">Status</label><select class="form-select" id="postStatus"><option value="draft">Draft</option><option value="published">Published</option></select></div>
+      </div></div>
+      <div class="card"><div class="card-hd"><span class="card-title">SEO</span></div><div class="card-body">
+        <div class="form-group" style="margin-bottom:12px;"><label class="form-label">SEO Title</label><input class="form-input" id="postSEOTitle"></div>
+        <div class="form-group"><label class="form-label">SEO Description</label><textarea class="form-textarea" id="postSEODesc" style="min-height:60px;"></textarea></div>
+      </div></div>
+      <div class="card"><div class="card-hd"><span class="card-title">Featured Image</span></div><div class="card-body">
+        <div class="upload-zone" onclick="document.getElementById('featImgInput').click()"><svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg><p>Upload <span>featured image</span></p></div>
+        <input type="file" id="featImgInput" accept="image/*" style="display:none;" onchange="uploadFeatImage(this)">
+        <input type="hidden" id="postFeatImg">
+        <img id="featImgPreview" style="width:100%;margin-top:8px;border-radius:var(--r-md);display:none;">
+      </div></div>
+    </div>
+  </div>
+</div>
+
+</div></div></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../backend/config/supabase.js"></script>
+<script src="assets/js/shell.js"></script>
+<script>
+let posts=[];
+(async()=>{
+  await AdminShell.init('Blog');
+  posts=await WF.blog.getAll();
+  renderPosts();
+})();
+function renderPosts(){
+  document.getElementById('blogTbody').innerHTML=posts.length?posts.map(p=>`<tr>
+    <td class="td-bold">${p.title}</td>
+    <td>${p.category||'—'}</td>
+    <td>${p.views||0}</td>
+    <td>${renderBadge(p.status)}</td>
+    <td>${formatDate(p.status==='published'?p.published_at:p.created_at)}</td>
+    <td>${actionBtns(`editPost('${p.id}')`,`deletePost('${p.id}')`)}</td>
+  </tr>`).join(''):`<tr><td colspan="6" style="text-align:center;padding:30px;color:var(--gray-300);">No posts yet</td></tr>`;
+}
+function openEditor(data=null){
+  document.getElementById('listView').style.display='none';
+  document.getElementById('editorView').style.display='block';
+  document.getElementById('postId').value=data?.id||'';
+  document.getElementById('postTitle').value=data?.title||'';
+  document.getElementById('postSlug').value=data?.slug||'';
+  document.getElementById('postExcerpt').value=data?.excerpt||'';
+  document.getElementById('postStatus').value=data?.status||'draft';
+  document.getElementById('postCategory').value=data?.category||'Tips & Guides';
+  document.getElementById('postSEOTitle').value=data?.seo_title||'';
+  document.getElementById('postSEODesc').value=data?.seo_description||'';
+  document.getElementById('postFeatImg').value=data?.featured_image||'';
+  document.getElementById('blogEditor').innerHTML=data?.content||'Start writing your post here…';
+  if(data?.featured_image){document.getElementById('featImgPreview').src=data.featured_image;document.getElementById('featImgPreview').style.display='block';}
+  else document.getElementById('featImgPreview').style.display='none';
+  document.getElementById('editorTitle').textContent=data?'Edit Post':'New Post';
+}
+function closeEditor(){document.getElementById('editorView').style.display='none';document.getElementById('listView').style.display='block';}
+async function editPost(id){const p=posts.find(p=>p.id===id);openEditor(p);}
+async function deletePost(id){
+  if(!confirmDialog('Delete this post?'))return;
+  await WF.blog.delete(id);posts=posts.filter(p=>p.id!==id);toast('Post deleted');renderPosts();
+}
+async function savePost(status){
+  const title=document.getElementById('postTitle').value.trim();
+  if(!title){toast('Title required',true);return;}
+  const content=document.getElementById('blogEditor').innerHTML;
+  const postData={
+    title,slug:document.getElementById('postSlug').value||slugify(title),
+    content,excerpt:document.getElementById('postExcerpt').value||null,
+    status,category:document.getElementById('postCategory').value,
+    seo_title:document.getElementById('postSEOTitle').value||null,
+    seo_description:document.getElementById('postSEODesc').value||null,
+    featured_image:document.getElementById('postFeatImg').value||null,
+    id:document.getElementById('postId').value||undefined,
+    published_at:status==='published'?new Date().toISOString():null
+  };
+  try{
+    const saved=await WF.blog.save(postData);
+    toast(status==='published'?'Post published! Live on website.':'Saved as draft.');
+    posts=await WF.blog.getAll();renderPosts();closeEditor();
+  }catch(e){toast('Error: '+e.message,true);}
+}
+async function uploadFeatImage(input){
+  const file=input.files[0];if(!file)return;
+  try{
+    const{url}=await uploadFile(file,'blog');
+    document.getElementById('postFeatImg').value=url;
+    document.getElementById('featImgPreview').src=url;
+    document.getElementById('featImgPreview').style.display='block';
+    toast('Image uploaded!');
+  }catch(e){toast('Upload failed',true);}
+  input.value='';
+}
+function fmt(cmd){document.execCommand(cmd,false,null);document.getElementById('blogEditor').focus();}
+function fmtBlock(tag){document.execCommand('formatBlock',false,tag);document.getElementById('blogEditor').focus();}
+function insertLink(){const url=prompt('Enter URL:');if(url)document.execCommand('createLink',false,url);}
+function insertImage(){const url=prompt('Enter image URL:');if(url)document.execCommand('insertImage',false,url);}
+function insertTable(){document.execCommand('insertHTML',false,'<table><tr><th>Header 1</th><th>Header 2</th></tr><tr><td>Cell 1</td><td>Cell 2</td></tr></table>');}
+</script>
+</body></html>

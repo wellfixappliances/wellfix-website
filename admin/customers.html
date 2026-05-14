@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Customers — WellFix Admin</title>
+<link rel="icon" href="../frontend/assets/images/WELLFIX-FAVICON.png">
+<link rel="stylesheet" href="assets/css/admin.css"></head>
+<body>
+<div class="admin-shell"><div id="adminShell"></div>
+<div class="main-wrap" id="mainWrap"><div class="page-content">
+  <div class="pg-hd">
+    <div><h1>Customers</h1><p id="custCount">Loading…</p></div>
+    <div class="pg-hd__actions">
+      <button class="btn btn-secondary" onclick="exportCustomers()">Export CSV</button>
+    </div>
+  </div>
+  <div class="card">
+    <div class="filter-bar">
+      <div class="filter-search"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><input type="search" id="cSearch" placeholder="Search name, phone…" oninput="renderCustomers()"></div>
+      <select class="filter-select" id="cDistrict" onchange="renderCustomers()"><option value="">All Locations</option><option>Thrissur</option><option>Ernakulam</option><option>Calicut</option><option>Trivandrum</option></select>
+    </div>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>Customer</th><th>Phone</th><th>Location</th><th>Orders</th><th>Total Spent</th><th>Joined</th><th>Actions</th></tr></thead>
+        <tbody id="custTbody"><tr><td colspan="7" style="text-align:center;padding:30px;"><div class="spinner" style="margin:0 auto;"></div></td></tr></tbody>
+      </table>
+    </div>
+    <div class="pagination"><span class="pg-info" id="pgInfo"></span></div>
+  </div>
+</div></div></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../backend/config/supabase.js"></script>
+<script src="assets/js/shell.js"></script>
+<script>
+let customers=[];
+(async()=>{
+  await AdminShell.init('Customers');
+  customers = await WF.customers.getAll();
+  document.getElementById('custCount').textContent=`${customers.length} registered customers`;
+  renderCustomers();
+})();
+function renderCustomers(){
+  const q=document.getElementById('cSearch').value.toLowerCase();
+  const d=document.getElementById('cDistrict').value;
+  const f=customers.filter(c=>{
+    if(q&&!c.name.toLowerCase().includes(q)&&!(c.phone||'').includes(q))return false;
+    if(d&&c.district!==d)return false;
+    return true;
+  });
+  document.getElementById('pgInfo').textContent=`${f.length} customers`;
+  document.getElementById('custTbody').innerHTML=f.length?f.map(c=>`<tr>
+    <td><div class="td-bold">${c.name}</div><div style="font-size:11px;color:var(--gray-400);">${c.email||''}</div></td>
+    <td>${c.phone||'—'}</td>
+    <td>${c.district||c.city||'—'}</td>
+    <td style="font-weight:700;">${c.total_orders||0}</td>
+    <td style="font-weight:700;">${formatCurrency(c.total_spent||0)}</td>
+    <td>${formatDate(c.created_at)}</td>
+    <td>
+      ${c.phone?`<a href="https://wa.me/${(c.phone||'').replace(/\D/g,'')}" target="_blank" class="btn btn-gold btn-sm">WhatsApp</a>`:'—'}
+    </td>
+  </tr>`).join(''):`<tr><td colspan="7" style="text-align:center;padding:30px;color:var(--gray-300);">No customers found</td></tr>`;
+}
+function exportCustomers(){
+  const rows=[['Name','Phone','Email','District','Orders','Spent','Joined']];
+  customers.forEach(c=>rows.push([c.name,c.phone||'',c.email||'',c.district||'',c.total_orders||0,c.total_spent||0,formatDate(c.created_at)]));
+  const csv=rows.map(r=>r.map(v=>`"${v}"`).join(',')).join('\n');
+  const a=document.createElement('a');a.href='data:text/csv,'+encodeURIComponent(csv);a.download='wellfix-customers.csv';a.click();
+  toast('Customers exported');
+}
+</script>
+</body></html>

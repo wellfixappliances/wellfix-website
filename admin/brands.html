@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Brands — WellFix Admin</title>
+<link rel="icon" href="../frontend/assets/images/WELLFIX-FAVICON.png">
+<link rel="stylesheet" href="assets/css/admin.css"></head>
+<body>
+<div class="admin-shell"><div id="adminShell"></div>
+<div class="main-wrap" id="mainWrap"><div class="page-content">
+  <div class="pg-hd"><div><h1>Brands</h1><p>Manage product brands</p></div>
+    <div class="pg-hd__actions"><button class="btn btn-primary" onclick="openBrandModal()">Add Brand</button></div>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:16px;" id="brandsGrid">
+    <div class="skeleton" style="height:120px;border-radius:14px;"></div>
+    <div class="skeleton" style="height:120px;border-radius:14px;"></div>
+    <div class="skeleton" style="height:120px;border-radius:14px;"></div>
+  </div>
+</div></div></div>
+<div class="modal-overlay" id="brandModal">
+  <div class="modal" style="max-width:400px;">
+    <div class="modal-hd"><div class="modal-title" id="brandModalTitle">Add Brand</div><button class="modal-close" onclick="closeBrandModal()"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
+    <div class="modal-body">
+      <input type="hidden" id="brandId">
+      <div class="form-grid" style="gap:12px;">
+        <div class="form-group"><label class="form-label">Brand Name <span class="req">*</span></label><input class="form-input" id="brandName" oninput="document.getElementById('brandSlug').value=slugify(this.value)"></div>
+        <div class="form-group"><label class="form-label">Slug</label><input class="form-input" id="brandSlug"></div>
+        <div class="form-group"><label class="form-label">Description</label><textarea class="form-textarea" id="brandDesc" rows="2"></textarea></div>
+      </div>
+    </div>
+    <div class="modal-ft"><button class="btn btn-secondary" onclick="closeBrandModal()">Cancel</button><button class="btn btn-primary" onclick="saveBrand()">Save Brand</button></div>
+  </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../backend/config/supabase.js"></script>
+<script src="assets/js/shell.js"></script>
+<script>
+let brands=[];
+(async()=>{
+  await AdminShell.init('Brands');
+  await loadBrands();
+})();
+async function loadBrands(){
+  brands=await WF.brands.getAll();
+  document.getElementById('brandsGrid').innerHTML=brands.map(b=>`
+    <div class="card" style="padding:18px;text-align:center;">
+      <div style="font-family:var(--font-display);font-size:20px;font-weight:800;color:var(--gray-700);margin-bottom:6px;">${b.name}</div>
+      <div style="font-size:11px;color:var(--gray-400);margin-bottom:12px;">${b.slug}</div>
+      ${renderBadge(b.is_active?'active':'inactive')}
+      <div style="display:flex;gap:6px;justify-content:center;margin-top:12px;">
+        <button class="btn btn-secondary btn-sm" onclick="editBrand('${b.id}')">Edit</button>
+        <button class="btn btn-sm btn-danger" onclick="deleteBrand('${b.id}','${b.name}')">Delete</button>
+      </div>
+    </div>`).join('')+`
+    <div class="card" style="border:2px dashed var(--gray-150);display:flex;align-items:center;justify-content:center;min-height:120px;cursor:pointer;" onclick="openBrandModal()" onmouseover="this.style.borderColor='var(--green-400)'" onmouseout="this.style.borderColor='var(--gray-150)'">
+      <div style="text-align:center;color:var(--gray-300);"><div style="font-size:28px;margin-bottom:4px;">+</div><div style="font-size:13px;font-weight:600;">Add Brand</div></div>
+    </div>`;
+}
+function openBrandModal(data=null){
+  document.getElementById('brandId').value=data?.id||'';
+  document.getElementById('brandName').value=data?.name||'';
+  document.getElementById('brandSlug').value=data?.slug||'';
+  document.getElementById('brandDesc').value=data?.description||'';
+  document.getElementById('brandModalTitle').textContent=data?'Edit Brand':'Add Brand';
+  document.getElementById('brandModal').classList.add('is-open');document.body.style.overflow='hidden';
+}
+function closeBrandModal(){document.getElementById('brandModal').classList.remove('is-open');document.body.style.overflow='';}
+document.getElementById('brandModal').addEventListener('click',e=>{if(e.target===e.currentTarget)closeBrandModal();});
+async function saveBrand(){
+  const name=document.getElementById('brandName').value.trim();if(!name){toast('Name required',true);return;}
+  const id=document.getElementById('brandId').value;
+  const data={name,slug:document.getElementById('brandSlug').value||slugify(name),description:document.getElementById('brandDesc').value||null,is_active:true};
+  try{if(id)await WF.brands.update(id,data);else await WF.brands.create(data);toast('Brand saved!');closeBrandModal();await loadBrands();}
+  catch(e){toast('Error: '+e.message,true);}
+}
+function editBrand(id){const b=brands.find(b=>b.id===id);openBrandModal(b);}
+async function deleteBrand(id,name){
+  if(!confirmDialog(`Delete brand "${name}"?`))return;
+  const{error}=await db.from('brands').delete().eq('id',id);
+  if(error){toast('Error: '+error.message,true);return;}
+  toast('Brand deleted');await loadBrands();
+}
+</script>
+</body></html>

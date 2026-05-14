@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>SEO — WellFix Admin</title>
+<link rel="icon" href="../frontend/assets/images/WELLFIX-FAVICON.png">
+<link rel="stylesheet" href="assets/css/admin.css"></head>
+<body>
+<div class="admin-shell"><div id="adminShell"></div>
+<div class="main-wrap" id="mainWrap"><div class="page-content">
+  <div class="pg-hd"><div><h1>SEO Settings</h1><p>Meta tags, Open Graph, sitemap</p></div>
+    <div class="pg-hd__actions"><button class="btn btn-primary" onclick="saveSEO()">Save SEO Settings</button></div>
+  </div>
+  <div class="tabs">
+    <button class="tab-btn is-active" onclick="switchSEOTab('homepage',this)">Homepage</button>
+    <button class="tab-btn" onclick="switchSEOTab('products',this)">Products</button>
+    <button class="tab-btn" onclick="switchSEOTab('blog',this)">Blog</button>
+    <button class="tab-btn" onclick="switchSEOTab('local',this)">Local SEO</button>
+  </div>
+  <div id="seo-homepage" class="seo-tab-panel card is-active">
+    <div class="card-hd"><span class="card-title">Homepage SEO</span></div>
+    <div class="card-body"><div class="form-grid" style="gap:14px;">
+      <div class="form-group"><label class="form-label">Meta Title <span class="req">*</span></label><input class="form-input" id="seo_meta_title" value="WellFix Appliances – Home &amp; Kitchen Appliances Kerala"><div class="form-hint" id="titleCount">58 characters — optimal</div></div>
+      <div class="form-group"><label class="form-label">Meta Description <span class="req">*</span></label><textarea class="form-textarea" id="seo_meta_desc" style="min-height:80px;">Kerala's most trusted home and kitchen appliance shop. 100% genuine products, best prices, free delivery across Kerala.</textarea><div class="form-hint" id="descCount">117 characters — add more detail</div></div>
+      <div class="form-group"><label class="form-label">Focus Keywords</label><input class="form-input" id="seo_keywords" value="appliances kerala, mixer grinder kerala, kitchen appliances, wellfix"></div>
+      <div class="form-group"><label class="form-label">Canonical URL</label><input class="form-input" id="seo_canonical" value="https://wellfixappliances.github.io/wellfix-website/"></div>
+      <div class="form-group" style="grid-column:1/-1;">
+        <label class="form-label">Open Graph Image (1200×630px)</label>
+        <div class="upload-zone" onclick="toast('Upload OG image')" style="padding:16px;">
+          <p>Click to upload OG image <span>1200×630px recommended</span></p>
+        </div>
+      </div>
+      <div class="form-group"><label class="form-label">Google Analytics ID</label><input class="form-input" id="seo_ga_id" placeholder="G-XXXXXXXXXX"></div>
+      <div class="form-group"><label class="form-label">Google Search Console Verification</label><input class="form-input" id="seo_gsc" placeholder="paste meta tag content value"></div>
+    </div></div>
+  </div>
+  <div id="seo-products" class="seo-tab-panel" style="display:none;">
+    <div class="card"><div class="card-hd"><span class="card-title">Product Pages SEO Template</span></div><div class="card-body"><div class="form-grid" style="gap:12px;">
+      <div class="form-group"><label class="form-label">Title Template</label><input class="form-input" value="{product_name} – Buy Online | WellFix Appliances Kerala"></div>
+      <div class="form-group"><label class="form-label">Description Template</label><textarea class="form-textarea" style="min-height:60px;">Buy {product_name} at best price in Kerala. {brand} authorized dealer. Free delivery, warranty support.</textarea></div>
+    </div></div></div>
+  </div>
+  <div id="seo-blog" class="seo-tab-panel" style="display:none;">
+    <div class="card"><div class="card-hd"><span class="card-title">Blog SEO Settings</span></div><div class="card-body"><div class="form-grid" style="gap:12px;">
+      <div class="form-group"><label class="form-label">Blog Title Prefix</label><input class="form-input" value="WellFix Blog –"></div>
+      <div class="form-group"><label class="form-label">Author Name</label><input class="form-input" value="WellFix Appliances Team"></div>
+    </div></div></div>
+  </div>
+  <div id="seo-local" class="seo-tab-panel" style="display:none;">
+    <div class="card"><div class="card-hd"><span class="card-title">Local SEO (Google My Business)</span></div><div class="card-body"><div class="form-grid form-2" style="gap:12px;">
+      <div class="form-group"><label class="form-label">Business Name</label><input class="form-input" value="WellFix Appliances"></div>
+      <div class="form-group"><label class="form-label">Business Category</label><input class="form-input" value="Appliance Store"></div>
+      <div class="form-group" style="grid-column:1/-1;"><label class="form-label">Full Address</label><input class="form-input" value="Kerala, India"></div>
+      <div class="form-group"><label class="form-label">Phone</label><input class="form-input" value="+91 85900 04349"></div>
+      <div class="form-group"><label class="form-label">Service Area</label><input class="form-input" value="Thrissur, Ernakulam, Calicut, Trivandrum"></div>
+    </div></div></div>
+  </div>
+</div></div></div>
+<style>
+.seo-tab-panel{display:none;} .seo-tab-panel.is-active{display:block;}
+</style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../backend/config/supabase.js"></script>
+<script src="assets/js/shell.js"></script>
+<script>
+(async()=>{await AdminShell.init('SEO');})();
+function switchSEOTab(id,btn){
+  document.querySelectorAll('.seo-tab-panel').forEach(p=>{p.style.display='none';p.classList.remove('is-active');});
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('is-active'));
+  const el=document.getElementById('seo-'+id);
+  if(el){el.style.display='block';el.classList.add('is-active');}
+  btn.classList.add('is-active');
+}
+async function saveSEO(){
+  try{
+    await WF.settings.set('meta_title',document.getElementById('seo_meta_title').value);
+    await WF.settings.set('meta_description',document.getElementById('seo_meta_desc').value);
+    await WF.settings.set('meta_keywords',document.getElementById('seo_keywords').value);
+    toast('SEO settings saved!');
+  }catch(e){toast('Error: '+e.message,true);}
+}
+document.addEventListener('DOMContentLoaded',()=>{
+  const t=document.getElementById('seo_meta_title');const d=document.getElementById('seo_meta_desc');
+  if(t)t.addEventListener('input',()=>{const l=t.value.length;document.getElementById('titleCount').textContent=`${l} characters — ${l<50?'too short':l>60?'too long':'optimal'}`;});
+  if(d)d.addEventListener('input',()=>{const l=d.value.length;document.getElementById('descCount').textContent=`${l} characters — ${l<100?'too short':l>160?'too long':'good'}`;});
+});
+</script>
+</body></html>

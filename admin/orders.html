@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Orders — WellFix Admin</title>
+<link rel="icon" href="../frontend/assets/images/WELLFIX-FAVICON.png">
+<link rel="stylesheet" href="assets/css/admin.css">
+</head>
+<body>
+<div class="admin-shell">
+  <div id="adminShell"></div>
+  <div class="main-wrap" id="mainWrap">
+    <div class="page-content">
+
+      <div class="pg-hd">
+        <div><h1>Orders</h1><p id="orderCount">Loading orders…</p></div>
+        <div class="pg-hd__actions">
+          <button class="btn btn-secondary" onclick="exportOrders()">
+            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Export
+          </button>
+        </div>
+      </div>
+
+      <!-- Status tabs -->
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px;" id="statusTabs">
+        <button class="btn btn-primary btn-sm" data-status="" onclick="filterByStatus('')">All <span id="cnt-all" style="background:rgba(255,255,255,.25);border-radius:99px;padding:0 6px;font-size:11px;"></span></button>
+        <button class="btn btn-secondary btn-sm" data-status="pending" onclick="filterByStatus('pending')">Pending <span id="cnt-pending" style="background:var(--gray-100);border-radius:99px;padding:0 6px;font-size:11px;"></span></button>
+        <button class="btn btn-secondary btn-sm" data-status="confirmed" onclick="filterByStatus('confirmed')">Confirmed</button>
+        <button class="btn btn-secondary btn-sm" data-status="processing" onclick="filterByStatus('processing')">Processing</button>
+        <button class="btn btn-secondary btn-sm" data-status="delivered" onclick="filterByStatus('delivered')">Delivered</button>
+        <button class="btn btn-secondary btn-sm" data-status="cancelled" onclick="filterByStatus('cancelled')">Cancelled</button>
+      </div>
+
+      <div class="card">
+        <div class="filter-bar">
+          <div class="filter-search">
+            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input type="search" id="orderSearch" placeholder="Search order, customer…" oninput="renderOrdersTable()">
+          </div>
+          <select class="filter-select" id="paymentFilter" onchange="renderOrdersTable()">
+            <option value="">All Payment</option>
+            <option value="cod">COD</option>
+            <option value="online">Online</option>
+            <option value="upi">UPI</option>
+          </select>
+          <div class="filter-spacer"></div>
+          <span style="font-size:12px;color:var(--gray-400);" id="revenueTotal"></span>
+        </div>
+        <div class="tbl-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Order ID</th>
+                <th>Customer</th>
+                <th>Items</th>
+                <th>Total</th>
+                <th>Payment</th>
+                <th>Status</th>
+                <th>Date</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="ordersTbody">
+              <tr><td colspan="8" style="text-align:center;padding:30px;"><div class="spinner" style="margin:0 auto;"></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="pagination">
+          <span class="pg-info" id="pgInfo"></span>
+          <div id="pgNums" style="display:flex;gap:4px;"></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- Order detail modal -->
+<div class="modal-overlay" id="orderModal">
+  <div class="modal" style="max-width:620px;">
+    <div class="modal-hd">
+      <div class="modal-title" id="orderModalTitle">Order Details</div>
+      <button class="modal-close" onclick="closeOrderModal()"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>
+    <div class="modal-body" id="orderModalBody"></div>
+    <div class="modal-ft" id="orderModalFt"></div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../backend/config/supabase.js"></script>
+<script src="assets/js/shell.js"></script>
+<script>
+let allOrders = [], currentStatusFilter = '', currentPage = 1; const perPage = 15;
+
+(async () => {
+  await AdminShell.init('Orders');
+  await loadOrders();
+  setupRealtime();
+})();
+
+async function loadOrders() {
+  allOrders = await WF.orders.getAll();
+  document.getElementById('orderCount').textContent = `${allOrders.length} total orders`;
+  document.getElementById('cnt-all').textContent = allOrders.length;
+  document.getElementById('cnt-pending').textContent = allOrders.filter(o => o.status === 'pending').length;
+  renderOrdersTable();
+}
+
+function filterByStatus(status) {
+  currentStatusFilter = status;
+  currentPage = 1;
+  document.querySelectorAll('#statusTabs button').forEach(b => {
+    const isMatch = b.dataset.status === status;
+    b.className = isMatch ? 'btn btn-primary btn-sm' : 'btn btn-secondary btn-sm';
+  });
+  renderOrdersTable();
+}
+
+function renderOrdersTable() {
+  const q = document.getElementById('orderSearch').value.toLowerCase();
+  const pay = document.getElementById('paymentFilter').value;
+  let filtered = allOrders.filter(o => {
+    if (currentStatusFilter && o.status !== currentStatusFilter) return false;
+    if (q && !o.order_number.toLowerCase().includes(q) && !o.customer_name.toLowerCase().includes(q) && !(o.customer_phone || '').includes(q)) return false;
+    if (pay && o.payment_method !== pay) return false;
+    return true;
+  });
+
+  const revenue = filtered.reduce((s, o) => s + parseFloat(o.total || 0), 0);
+  document.getElementById('revenueTotal').textContent = `Total: ${formatCurrency(revenue)}`;
+
+  const start = (currentPage - 1) * perPage;
+  const page = filtered.slice(start, start + perPage);
+  const tbody = document.getElementById('ordersTbody');
+  if (!page.length) { tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;padding:30px;color:var(--gray-300);">No orders found</td></tr>`; return; }
+
+  tbody.innerHTML = page.map(o => `<tr>
+    <td class="td-bold" style="cursor:pointer;color:var(--green-700);" onclick="viewOrder('${o.id}')">${o.order_number}</td>
+    <td>
+      <div style="font-weight:600;">${o.customer_name}</div>
+      <div style="font-size:11px;color:var(--gray-400);">${o.customer_phone}</div>
+    </td>
+    <td>${(o.items || []).length} item${(o.items || []).length !== 1 ? 's' : ''}</td>
+    <td style="font-weight:700;">${formatCurrency(o.total)}</td>
+    <td><span style="font-size:11px;font-weight:600;color:var(--gray-600);text-transform:uppercase;">${o.payment_method}</span></td>
+    <td>${renderBadge(o.status)}</td>
+    <td>${formatDate(o.created_at)}</td>
+    <td>
+      <div style="display:flex;gap:4px;">
+        <button class="btn-icon" onclick="viewOrder('${o.id}')" title="View">
+          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+        </button>
+        <a href="https://wa.me/${(o.customer_phone || '').replace(/\D/g, '')}?text=Hi%20${encodeURIComponent(o.customer_name)}!%20Your%20WellFix%20order%20${o.order_number}%20status%20update."
+           target="_blank" class="btn-icon" title="WhatsApp">
+          <svg fill="currentColor" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347zM12 2C6.477 2 2 6.477 2 12c0 1.89.525 3.66 1.438 5.168L2 22l4.978-1.413A9.955 9.955 0 0012 22c5.523 0 10-4.477 10-10S17.523 2 12 2z"/></svg>
+        </a>
+      </div>
+    </td>
+  </tr>`).join('');
+
+  document.getElementById('pgInfo').textContent = `Showing ${start + 1}–${Math.min(start + perPage, filtered.length)} of ${filtered.length}`;
+  const pages = Math.ceil(filtered.length / perPage);
+  document.getElementById('pgNums').innerHTML = Array.from({ length: Math.min(5, pages) }, (_, i) =>
+    `<button class="pg-btn ${i + 1 === currentPage ? 'is-active' : ''}" onclick="goPage(${i + 1})">${i + 1}</button>`
+  ).join('');
+}
+
+function goPage(pg) { currentPage = pg; renderOrdersTable(); }
+
+async function viewOrder(id) {
+  const order = await WF.orders.getById(id);
+  document.getElementById('orderModalTitle').textContent = `Order ${order.order_number}`;
+  document.getElementById('orderModalBody').innerHTML = `
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;">
+      <div>
+        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--gray-400);margin-bottom:6px;">Customer</div>
+        <div style="font-weight:600;">${order.customer_name}</div>
+        <div style="font-size:12px;color:var(--gray-500);">${order.customer_phone}</div>
+        ${order.customer_email ? `<div style="font-size:12px;color:var(--gray-500);">${order.customer_email}</div>` : ''}
+      </div>
+      <div>
+        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--gray-400);margin-bottom:6px;">Delivery Address</div>
+        <div style="font-size:13px;color:var(--gray-600);line-height:1.6;">${order.shipping_address}<br>${order.shipping_city || ''}${order.shipping_district ? ', ' + order.shipping_district : ''}${order.shipping_pincode ? ' - ' + order.shipping_pincode : ''}</div>
+      </div>
+    </div>
+    <div style="border-top:1px solid var(--gray-100);padding-top:14px;margin-bottom:14px;">
+      <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--gray-400);margin-bottom:10px;">Order Items</div>
+      ${(order.items || []).map(item => `
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--gray-50);">
+          <div style="display:flex;align-items:center;gap:10px;">
+            ${item.product_image ? `<img src="${item.product_image}" style="width:36px;height:36px;border-radius:var(--r-sm);object-fit:contain;background:var(--gray-50);border:1px solid var(--gray-100);">` : ''}
+            <div><div style="font-weight:600;font-size:13px;">${item.product_name}</div><div style="font-size:11px;color:var(--gray-400);">Qty: ${item.quantity} × ${formatCurrency(item.unit_price)}</div></div>
+          </div>
+          <div style="font-weight:700;">${formatCurrency(item.total_price)}</div>
+        </div>`).join('')}
+    </div>
+    <div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end;">
+      <div style="display:flex;gap:24px;font-size:13px;">
+        <span style="color:var(--gray-500);">Subtotal</span><span style="font-weight:600;">${formatCurrency(order.subtotal)}</span>
+      </div>
+      ${parseFloat(order.discount) > 0 ? `<div style="display:flex;gap:24px;font-size:13px;"><span style="color:var(--red-500);">Discount</span><span style="font-weight:600;color:var(--red-500);">-${formatCurrency(order.discount)}</span></div>` : ''}
+      <div style="display:flex;gap:24px;font-size:16px;font-weight:800;font-family:var(--font-display);">
+        <span>Total</span><span>${formatCurrency(order.total)}</span>
+      </div>
+      <div style="font-size:12px;color:var(--gray-500);">Payment: ${order.payment_method.toUpperCase()} — ${renderBadge(order.payment_status)}</div>
+    </div>`;
+  document.getElementById('orderModalFt').innerHTML = `
+    <select class="form-select" id="statusSelect" style="width:160px;height:34px;">
+      ${['pending','confirmed','processing','shipped','delivered','cancelled'].map(s => `<option value="${s}" ${order.status === s ? 'selected' : ''}>${s.charAt(0).toUpperCase() + s.slice(1)}</option>`).join('')}
+    </select>
+    <button class="btn btn-secondary" onclick="closeOrderModal()">Close</button>
+    <button class="btn btn-primary" onclick="updateOrderStatus('${order.id}')">Update Status</button>`;
+  document.getElementById('orderModal').classList.add('is-open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeOrderModal() {
+  document.getElementById('orderModal').classList.remove('is-open');
+  document.body.style.overflow = '';
+}
+document.getElementById('orderModal').addEventListener('click', e => { if (e.target === e.currentTarget) closeOrderModal(); });
+
+async function updateOrderStatus(id) {
+  const status = document.getElementById('statusSelect').value;
+  await WF.orders.updateStatus(id, status);
+  toast('Order status updated!');
+  closeOrderModal();
+  await loadOrders();
+}
+
+function exportOrders() {
+  const rows = [['Order ID', 'Customer', 'Phone', 'Total', 'Payment', 'Status', 'Date']];
+  allOrders.forEach(o => rows.push([o.order_number, o.customer_name, o.customer_phone, o.total, o.payment_method, o.status, formatDate(o.created_at)]));
+  const csv = rows.map(r => r.map(c => `"${c}"`).join(',')).join('\n');
+  const a = document.createElement('a'); a.href = 'data:text/csv,' + encodeURIComponent(csv); a.download = 'wellfix-orders.csv'; a.click();
+  toast('Orders exported');
+}
+
+function setupRealtime() {
+  WF.realtime.onOrdersChange(loadOrders);
+}
+</script>
+</body>
+</html>

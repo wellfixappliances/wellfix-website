@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Admin Users — WellFix Admin</title>
+<link rel="icon" href="../frontend/assets/images/WELLFIX-FAVICON.png">
+<link rel="stylesheet" href="assets/css/admin.css"></head>
+<body>
+<div class="admin-shell"><div id="adminShell"></div>
+<div class="main-wrap" id="mainWrap"><div class="page-content">
+  <div class="pg-hd"><div><h1>Admin Users</h1><p>Manage team access and roles</p></div>
+    <div class="pg-hd__actions"><button class="btn btn-primary" onclick="openInviteModal()">Invite User</button></div>
+  </div>
+
+  <div class="alert alert-warning" style="margin-bottom:20px;">
+    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+    Only Super Admin can manage users. Role changes take effect immediately on next login.
+  </div>
+
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;margin-bottom:24px;">
+    <div class="card" style="padding:16px;"><div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--gray-400);margin-bottom:8px;">Super Admin</div><div style="font-size:12px;color:var(--gray-600);line-height:1.6;">Full access to everything. Can manage all settings, users, products, orders.</div></div>
+    <div class="card" style="padding:16px;"><div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--gray-400);margin-bottom:8px;">Admin</div><div style="font-size:12px;color:var(--gray-600);line-height:1.6;">Full access except user management and billing settings.</div></div>
+    <div class="card" style="padding:16px;"><div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--gray-400);margin-bottom:8px;">Staff</div><div style="font-size:12px;color:var(--gray-600);line-height:1.6;">Can manage orders, service bookings, customers. Cannot change products or settings.</div></div>
+    <div class="card" style="padding:16px;"><div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--gray-400);margin-bottom:8px;">Inventory Manager</div><div style="font-size:12px;color:var(--gray-600);line-height:1.6;">Can view and update product stock levels only.</div></div>
+    <div class="card" style="padding:16px;"><div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--gray-400);margin-bottom:8px;">Content Editor</div><div style="font-size:12px;color:var(--gray-600);line-height:1.6;">Can manage blog posts, banners, reviews, homepage sections.</div></div>
+  </div>
+
+  <div class="card">
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>User</th><th>Email</th><th>Role</th><th>Status</th><th>Joined</th><th>Actions</th></tr></thead>
+        <tbody id="usersTbody"><tr><td colspan="6" style="text-align:center;padding:30px;"><div class="spinner" style="margin:0 auto;"></div></td></tr></tbody>
+      </table>
+    </div>
+  </div>
+</div></div></div>
+
+<div class="modal-overlay" id="inviteModal">
+  <div class="modal" style="max-width:420px;">
+    <div class="modal-hd"><div class="modal-title">Invite Team Member</div><button class="modal-close" onclick="closeInviteModal()"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
+    <div class="modal-body">
+      <div class="form-grid" style="gap:12px;">
+        <div class="form-group"><label class="form-label">Full Name</label><input class="form-input" id="inviteName" placeholder="Team member name"></div>
+        <div class="form-group"><label class="form-label">Email Address <span class="req">*</span></label><input class="form-input" id="inviteEmail" type="email" placeholder="email@example.com"></div>
+        <div class="form-group"><label class="form-label">Role</label>
+          <select class="form-select" id="inviteRole">
+            <option value="staff">Staff</option>
+            <option value="admin">Admin</option>
+            <option value="inventory">Inventory Manager</option>
+            <option value="content">Content Editor</option>
+          </select>
+        </div>
+      </div>
+      <div style="background:var(--green-50);border:1.5px solid var(--green-100);border-radius:var(--r-md);padding:12px;margin-top:14px;font-size:12px;color:var(--green-700);">
+        The user will receive an email to set their password and activate their account.
+      </div>
+    </div>
+    <div class="modal-ft"><button class="btn btn-secondary" onclick="closeInviteModal()">Cancel</button><button class="btn btn-primary" id="inviteBtn" onclick="inviteUser()">Send Invite</button></div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../backend/config/supabase.js"></script>
+<script src="assets/js/shell.js"></script>
+<script>
+(async()=>{
+  const user=await AdminShell.init('Admin Users','admin');
+  await loadUsers();
+})();
+async function loadUsers(){
+  const{data:profiles}=await db.from('profiles').select('*').order('created_at');
+  document.getElementById('usersTbody').innerHTML=(profiles||[]).map(p=>`<tr>
+    <td><div style="display:flex;align-items:center;gap:8px;">
+      <div style="width:28px;height:28px;border-radius:99px;background:var(--green-700);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--gold-400);">${(p.full_name||'?').charAt(0).toUpperCase()}</div>
+      <div class="td-bold">${p.full_name||'—'}</div>
+    </div></td>
+    <td style="font-size:12px;color:var(--gray-400);">—</td>
+    <td>
+      <select class="filter-select" style="height:28px;font-size:11px;" onchange="updateRole('${p.id}',this.value)">
+        ${['super_admin','admin','staff','inventory','content'].map(r=>`<option value="${r}" ${p.role===r?'selected':''}>${r.replace('_',' ')}</option>`).join('')}
+      </select>
+    </td>
+    <td>${renderBadge(p.is_active?'active':'inactive')}</td>
+    <td>${formatDate(p.created_at)}</td>
+    <td>
+      <button class="btn btn-secondary btn-sm" onclick="toggleUserStatus('${p.id}',${!p.is_active})">${p.is_active?'Deactivate':'Activate'}</button>
+    </td>
+  </tr>`).join('');
+}
+async function updateRole(id,role){
+  await db.from('profiles').update({role}).eq('id',id);
+  toast('Role updated successfully');
+}
+async function toggleUserStatus(id,active){
+  await db.from('profiles').update({is_active:active}).eq('id',id);
+  toast(active?'User activated':'User deactivated');
+  await loadUsers();
+}
+function openInviteModal(){document.getElementById('inviteModal').classList.add('is-open');document.body.style.overflow='hidden';}
+function closeInviteModal(){document.getElementById('inviteModal').classList.remove('is-open');document.body.style.overflow='';}
+document.getElementById('inviteModal').addEventListener('click',e=>{if(e.target===e.currentTarget)closeInviteModal();});
+async function inviteUser(){
+  const email=document.getElementById('inviteEmail').value.trim();
+  const name=document.getElementById('inviteName').value.trim();
+  const role=document.getElementById('inviteRole').value;
+  if(!email){toast('Email required',true);return;}
+  const btn=document.getElementById('inviteBtn');btn.disabled=true;btn.textContent='Sending…';
+  try{
+    await db.auth.admin?.inviteUserByEmail(email,{data:{full_name:name,role}});
+    toast(`Invite sent to ${email}`);closeInviteModal();
+  }catch(e){
+    toast('Use Supabase Dashboard → Auth → Users → Invite to add users. Error: '+e.message,true);
+  }finally{btn.disabled=false;btn.textContent='Send Invite';}
+}
+</script>
+</body></html>

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Homepage Manager — WellFix Admin</title>
+<link rel="icon" href="../frontend/assets/images/WELLFIX-FAVICON.png">
+<link rel="stylesheet" href="assets/css/admin.css"></head>
+<body>
+<div class="admin-shell"><div id="adminShell"></div>
+<div class="main-wrap" id="mainWrap"><div class="page-content">
+  <div class="pg-hd"><div><h1>Homepage Manager</h1><p>Control what appears on your homepage — toggle sections on/off</p></div>
+    <div class="pg-hd__actions">
+      <a href="../frontend/index.html" target="_blank" class="btn btn-secondary">Preview Site</a>
+      <button class="btn btn-primary" onclick="saveHomepage()">Save Changes</button>
+    </div>
+  </div>
+  <div style="display:flex;flex-direction:column;gap:10px;" id="sectionList">
+    <div style="text-align:center;padding:30px;"><div class="spinner" style="margin:0 auto;"></div></div>
+  </div>
+</div></div></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../backend/config/supabase.js"></script>
+<script src="assets/js/shell.js"></script>
+<script>
+let sections=[];
+const sectionIcons={
+  offer_strip:'M13 2L3 14h9l-1 8 10-12h-9l1-8z',
+  hero_banners:'M3 3h18v18H3z',
+  categories:'M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z',
+  flash_sale:'M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z',
+  trending_products:'M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z',
+  brand_bar:'M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2z',
+  promo_banners:'M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z',
+  services:'M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z',
+  reviews:'M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-4 4v-4z',
+};
+(async()=>{
+  await AdminShell.init('Homepage');
+  sections=await WF.homepage.getSections();
+  renderSections();
+})();
+function renderSections(){
+  document.getElementById('sectionList').innerHTML=sections.map((s,i)=>`
+    <div class="section-item" id="section_${s.id}">
+      <span class="section-item__drag"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="15" height="15"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg></span>
+      <div class="section-item__icon"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="${sectionIcons[s.section_key]||'M12 12h.01'}"/></svg></div>
+      <div class="section-item__info">
+        <div class="section-item__name">${s.title||s.section_key}</div>
+        <div class="section-item__desc">Section key: ${s.section_key} · Order: ${s.sort_order}</div>
+      </div>
+      <div class="section-item__actions">
+        <span style="font-size:11px;color:var(--gray-400);">${s.is_visible?'Visible':'Hidden'}</span>
+        <label class="toggle"><input type="checkbox" ${s.is_visible?'checked':''} onchange="toggleSection('${s.id}',this.checked)"><span class="toggle-track"></span></label>
+      </div>
+    </div>`).join('');
+}
+async function toggleSection(id,visible){
+  await WF.homepage.updateSection(id,{is_visible:visible});
+  const s=sections.find(s=>s.id===id);if(s)s.is_visible=visible;
+  toast(visible?'Section enabled — visible on website':'Section hidden from website');
+}
+async function saveHomepage(){toast('Homepage layout saved! Changes live on website.');}
+</script>
+</body></html>
