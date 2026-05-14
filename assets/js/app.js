@@ -312,12 +312,85 @@ function initMobileSearch() {
 
 /* ── INIT ──────────────────────────────────────────────────── */
 document.addEventListener('DOMContentLoaded', () => {
-  renderFlashProducts();
-  renderTrendingProducts();
   startTimer(9930);
   initMobileNav();
   initCatPills();
   initScrollReveal();
   updateCartUI();
   initMobileSearch();
+  loadFromSupabase();
 });
+
+async function loadFromSupabase() {
+  try {
+    const { data: products, error } = await db
+      .from('products')
+      .select(`
+        *,
+        images:product_images(url, is_primary),
+        brand:brands(name),
+        category:categories(name)
+      `)
+      .eq('is_active', true)
+      .order('created_at', { ascending: false })
+      .limit(20);
+
+    if (error || !products || !products.length) {
+      renderFlashProducts();
+      renderTrendingProducts();
+      return;
+    }
+
+    // Flash products = items with badge
+    const flashItems = products.filter(p => p.badge === 'sale' || p.badge === 'hot');
+    const flashEl = document.getElementById('flashProductsTrack')
+                 || document.querySelector('.flash__track')
+                 || document.querySelector('[data-flash]');
+
+    if (flashEl && flashItems.length) {
+      flashEl.innerHTML = flashItems.map(p => buildCard(p)).join('');
+    } else {
+      renderFlashProducts();
+    }
+
+    // Trending = all products
+    const trendEl = document.getElementById('trendingProductsGrid')
+                 || document.querySelector('.products__grid')
+                 || document.querySelector('[data-trending]');
+
+    if (trendEl) {
+      trendEl.innerHTML = products.map(p => buildCard(p)).join('');
+    } else {
+      renderTrendingProducts();
+    }
+
+  } catch(e) {
+    // Fallback to static data if Supabase fails
+    renderFlashProducts();
+    renderTrendingProducts();
+  }
+}
+
+function buildCard(p) {
+  const img = p.images?.find(i => i.is_primary)?.url || p.images?.[0]?.url;
+  const disc = p.mrp ? Math.round(((p.mrp - p.price) / p.mrp) * 100) : 0;
+  return `
+    <div class="product-card">
+      <div class="product-card__img-wrap">
+        ${img
+          ? `<img src="${img}" alt="${p.name}" loading="lazy" class="product-card__img">`
+          : `<div class="product-card__img" style="display:flex;align-items:center;justify-content:center;font-size:40px;background:#f5f5f5;height:160px;">📦</div>`
+        }
+        ${p.badge ? `<span class="product-card__badge badge--${p.badge}">${p.badge.toUpperCase()}</span>` : ''}
+      </div>
+      <div class="product-card__body">
+        <div class="product-card__brand">${p.brand?.name || ''}</div>
+        <div class="product-card__name">${p.name}</div>
+        <div class="product-card__price-row">
+          <span class="product-card__price">₹${Number(p.price).toLocaleString('en-IN')}</span>
+          ${p.mrp ? `<span class="product-card__mrp">₹${Number(p.mrp).toLocaleString('en-IN')}</span>` : ''}
+          ${disc > 0 ? `<span class="product-card__disc">${disc}% off</span>` : ''}
+        </div>
+      </div>
+    </div>`;
+}
