@@ -550,3 +550,150 @@ tr:hover td{background:var(--gray-25);}
   th,td{padding:8px 10px;font-size:11px;}
   .hide-mobile{display:none!important;}
 }
+
+/* ============================================================
+   WELLFIX ADMIN — MOBILE APP-LIKE INTERFACE FIX
+   Add this to the END of admin.css
+   ============================================================ */
+
+/* ── PREVENT ZOOM/SCROLL ON MOBILE ── */
+@media (max-width: 900px) {
+  html {
+    touch-action: pan-y;
+    -ms-touch-action: pan-y;
+    overflow-x: hidden;
+  }
+  body {
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    position: relative;
+  }
+  /* Prevent horizontal scroll */
+  .admin-shell, .main-wrap, .page-content {
+    max-width: 100vw;
+    overflow-x: hidden;
+  }
+  /* Fixed sidebar never shows on mobile unless toggled */
+  .sidebar {
+    transform: translateX(-100%);
+    box-shadow: var(--shadow-lg);
+  }
+  .sidebar.is-mobile-open {
+    transform: translateX(0);
+  }
+  /* Topbar full width on mobile */
+  .topbar {
+    left: 0 !important;
+    right: 0;
+    padding: 0 12px;
+  }
+  .topbar__search { display: none; }
+  .topbar__view-site span { display: none; }
+  /* Main content padding for bottom nav */
+  .main-wrap {
+    margin-left: 0 !important;
+    width: 100% !important;
+  }
+  .page-content {
+    padding: 12px 12px 72px 12px;
+  }
+  /* Page header compact */
+  .pg-hd {
+    margin-bottom: 14px;
+  }
+  .pg-hd h1 { font-size: 16px; }
+  .pg-hd p { font-size: 11px; }
+  /* Stats 2 column */
+  .stats-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 14px;
+  }
+  .stat-card { padding: 12px; }
+  .stat-card__val { font-size: 18px; }
+  /* Tables scroll horizontally */
+  .tbl-wrap { overflow-x: auto; }
+  /* Cards full width */
+  .card { border-radius: var(--r-md); }
+  /* Hide non-essential table columns */
+  .hide-mobile { display: none !important; }
+  /* Modals full screen on mobile */
+  .modal-overlay { padding: 0; align-items: flex-end; }
+  .modal {
+    max-width: 100% !important;
+    border-radius: var(--r-xl) var(--r-xl) 0 0;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+  /* Form inputs larger touch targets */
+  .form-input, .form-select, .form-textarea {
+    height: 42px;
+    font-size: 14px;
+  }
+  .form-textarea { height: auto; }
+  /* Buttons larger on mobile */
+  .btn { height: 38px; font-size: 13px; }
+  .btn-sm { height: 32px; font-size: 12px; }
+  /* Filter bar wrap properly */
+  .filter-bar { padding: 8px 10px; gap: 6px; }
+  .filter-search { max-width: 100%; flex: 1; }
+}
+
+/* ── MOBILE BOTTOM NAV ── */
+.mobile-bottom-nav {
+  display: none;
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  background: var(--white);
+  border-top: 1px solid var(--gray-100);
+  z-index: 400;
+  padding: 4px 0 env(safe-area-inset-bottom, 4px);
+  box-shadow: 0 -4px 16px rgba(0,0,0,.06);
+}
+@media (max-width: 900px) {
+  .mobile-bottom-nav { display: flex; }
+}
+.mob-nav-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  padding: 5px 2px;
+  color: var(--gray-400);
+  font-size: 9px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: color var(--t);
+  text-decoration: none;
+  position: relative;
+  min-width: 0;
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: .02em;
+}
+.mob-nav-item.is-active { color: var(--green-700); }
+.mob-nav-item svg { width: 22px; height: 22px; flex-shrink: 0; }
+.mob-nav-item.is-active svg { stroke-width: 2.5; }
+.mob-nav-badge {
+  position: absolute;
+  top: 3px; right: calc(50% - 20px);
+  background: var(--red-500); color: #fff;
+  font-size: 8px; font-weight: 700;
+  min-width: 14px; height: 14px;
+  border-radius: 99px;
+  display: flex; align-items: center; justify-content: center;
+  padding: 0 3px;
+  border: 1.5px solid #fff;
+}
+
+/* ── ACTIVE NAV INDICATOR ── */
+.mob-nav-item.is-active::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 20%; right: 20%;
+  height: 2px;
+  background: var(--green-700);
+  border-radius: 0 0 3px 3px;
+}
