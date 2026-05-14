@@ -105,12 +105,12 @@ function addToCart(id, name, price, img, btn) {
   else state.cartItems.push({ id, name, price: Number(price), img, qty: 1 });
   saveCart();
   updateCartUI();
-  // Button feedback
+  // Button feedback - clean text only, no SVG swap
   if (btn) {
-    const orig = btn.innerHTML;
+    const orig = btn.textContent;
     btn.classList.add('is-added');
-    btn.innerHTML = `<svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Added`;
-    setTimeout(() => { btn.classList.remove('is-added'); btn.innerHTML = orig; }, 1800);
+    btn.textContent = '✓ Added';
+    setTimeout(() => { btn.classList.remove('is-added'); btn.textContent = orig; }, 1800);
   }
   showCartToast(name);
 }
