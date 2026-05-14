@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Contact Us — WellFix Appliances</title>
+  <link rel="icon" href="../assets/images/WELLFIX-FAVICON.png">
+  <link rel="stylesheet" href="../assets/css/main.css">
+  <style>
+    .contact-page{padding:var(--sp-6) 0 var(--sp-12);}
+    .contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:var(--sp-8);align-items:start;}
+    @media(max-width:768px){.contact-grid{grid-template-columns:1fr;}}
+    .contact-card{background:var(--color-surface);border:1.5px solid var(--color-border);border-radius:var(--r-xl);padding:var(--sp-6);}
+    .contact-info-item{display:flex;align-items:flex-start;gap:var(--sp-3);padding:var(--sp-4) 0;border-bottom:1px solid var(--color-border);}
+    .contact-info-item:last-child{border-bottom:none;}
+    .contact-info-icon{width:40px;height:40px;background:var(--green-50);color:var(--color-primary);border-radius:var(--r-md);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+    .contact-info-icon svg{width:18px;height:18px;}
+    .contact-info-label{font-size:var(--text-xs);font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--color-text-3);margin-bottom:4px;}
+    .contact-info-val{font-size:var(--text-base);font-weight:600;color:var(--color-text);}
+    .contact-info-sub{font-size:var(--text-xs);color:var(--color-text-3);margin-top:2px;}
+    .form-group{display:flex;flex-direction:column;gap:5px;margin-bottom:var(--sp-3);}
+    .form-label{font-size:var(--text-xs);font-weight:700;text-transform:uppercase;letter-spacing:.03em;color:var(--color-text-2);}
+    .form-input,.form-select{border:1.5px solid var(--color-border-strong);border-radius:var(--r-sm);padding:0 12px;height:42px;font-size:var(--text-base);color:var(--color-text);background:var(--color-surface);width:100%;outline:none;transition:border-color .2s;}
+    .form-input:focus,.form-select:focus{border-color:var(--color-primary);box-shadow:0 0 0 3px rgba(3,71,50,.07);}
+    .form-textarea{border:1.5px solid var(--color-border-strong);border-radius:var(--r-sm);padding:10px 12px;font-size:var(--text-base);color:var(--color-text);width:100%;outline:none;resize:vertical;min-height:110px;transition:border-color .2s;}
+    .form-textarea:focus{border-color:var(--color-primary);}
+    .wa-contact-btn{display:flex;align-items:center;justify-content:center;gap:8px;background:#25d366;color:#fff;border-radius:var(--r-md);padding:14px 20px;font-size:var(--text-base);font-weight:600;text-decoration:none;transition:background .2s;margin-top:var(--sp-3);}
+    .wa-contact-btn:hover{background:#1da855;}
+  </style>
+</head>
+<body>
+<div class="topbar"><div class="container topbar__inner"><div class="topbar__links"><a href="../index.html">Home</a></div><div class="topbar__center">Free delivery across Kerala · <strong>+91 85900 04349</strong></div><div class="topbar__links"><a href="#">100% Genuine</a></div></div></div>
+<header class="site-header">
+  <div class="container site-header__inner">
+    <a href="../index.html" class="logo"><img src="../assets/images/WELLFIX-MAIN-LOGO.png" alt="WellFix" class="logo__img" onerror="this.style.display='none'"></a>
+    <div style="flex:1;"></div>
+    <div class="header-actions">
+      <a href="cart.html" class="hdr-cart"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg><span class="label">Cart</span><span class="hdr-cart__count" data-cart-count>0</span></a>
+    </div>
+  </div>
+</header>
+<main class="contact-page">
+  <div class="container">
+    <div style="margin-bottom:var(--sp-6);">
+      <div class="sec-hd__title" style="font-family:var(--font-display);font-size:var(--text-4xl);font-weight:800;margin-bottom:8px;">Contact <span style="color:var(--color-primary);">Us</span></div>
+      <p style="color:var(--color-text-2);">We are here to help. Reach out via WhatsApp, call or email.</p>
+    </div>
+    <div class="contact-grid">
+      <!-- Contact Info -->
+      <div>
+        <div class="contact-card" style="margin-bottom:var(--sp-4);">
+          <div class="contact-info-item">
+            <div class="contact-info-icon"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.18 9.84"/></svg></div>
+            <div><div class="contact-info-label">Phone</div><div class="contact-info-val">+91 85900 04349</div><div class="contact-info-sub">Mon – Sat, 9 AM – 7 PM</div></div>
+          </div>
+          <div class="contact-info-item">
+            <div class="contact-info-icon"><svg fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347zM12 2C6.477 2 2 6.477 2 12c0 1.89.525 3.66 1.438 5.168L2 22l4.978-1.413A9.955 9.955 0 0012 22c5.523 0 10-4.477 10-10S17.523 2 12 2z"/></svg></div>
+            <div><div class="contact-info-label">WhatsApp</div><div class="contact-info-val">+91 85900 04349</div><div class="contact-info-sub">Fastest response</div></div>
+          </div>
+          <div class="contact-info-item">
+            <div class="contact-info-icon"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg></div>
+            <div><div class="contact-info-label">Location</div><div class="contact-info-val">Kerala, India</div><div class="contact-info-sub">Serving all districts</div></div>
+          </div>
+          <div class="contact-info-item">
+            <div class="contact-info-icon"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+            <div><div class="contact-info-label">Hours</div><div class="contact-info-val">Mon – Sat: 9 AM – 7 PM</div><div class="contact-info-sub">Sunday: Closed</div></div>
+          </div>
+        </div>
+        <a href="https://wa.me/918590004349?text=Hi WellFix! I need help." target="_blank" class="wa-contact-btn">
+          <svg fill="currentColor" viewBox="0 0 24 24" width="20" height="20"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347zM12 2C6.477 2 2 6.477 2 12c0 1.89.525 3.66 1.438 5.168L2 22l4.978-1.413A9.955 9.955 0 0012 22c5.523 0 10-4.477 10-10S17.523 2 12 2z"/></svg>
+          Chat on WhatsApp
+        </a>
+        <a href="pages/services.html" class="btn btn-secondary" style="width:100%;justify-content:center;margin-top:var(--sp-2);">Book a Repair Service</a>
+      </div>
+      <!-- Contact Form -->
+      <div class="contact-card">
+        <div style="font-family:var(--font-display);font-size:var(--text-xl);font-weight:700;margin-bottom:var(--sp-4);">Send a Message</div>
+        <div id="formSuccess" style="display:none;background:var(--green-50);border:1px solid var(--green-100);border-radius:var(--r-md);padding:14px;color:var(--green-700);font-size:var(--text-sm);font-weight:600;margin-bottom:var(--sp-3);">Message sent! We will get back to you shortly.</div>
+        <div class="form-group"><label class="form-label">Your Name *</label><input class="form-input" id="cName" placeholder="Full name"></div>
+        <div class="form-group"><label class="form-label">Phone Number *</label><input class="form-input" id="cPhone" type="tel" placeholder="+91 98765 43210"></div>
+        <div class="form-group"><label class="form-label">Email</label><input class="form-input" id="cEmail" type="email" placeholder="Optional"></div>
+        <div class="form-group">
+          <label class="form-label">Subject</label>
+          <select class="form-select" id="cSubject">
+            <option>Product Enquiry</option><option>Order Support</option><option>Repair Service</option><option>Complaint</option><option>Other</option>
+          </select>
+        </div>
+        <div class="form-group"><label class="form-label">Message *</label><textarea class="form-textarea" id="cMessage" placeholder="How can we help you?"></textarea></div>
+        <button class="btn btn-primary btn-lg" style="width:100%;justify-content:center;" onclick="sendMessage()">Send Message</button>
+      </div>
+    </div>
+  </div>
+</main>
+<footer class="site-footer"><div class="container"><div class="site-footer__bottom"><p>© 2025 WellFix Appliances. All rights reserved.</p></div></div></footer>
+<a href="https://wa.me/918590004349" target="_blank" class="wa-fab"><svg fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347zM12 2C6.477 2 2 6.477 2 12c0 1.89.525 3.66 1.438 5.168L2 22l4.978-1.413A9.955 9.955 0 0012 22c5.523 0 10-4.477 10-10S17.523 2 12 2z"/></svg></a>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../backend/config/supabase.js"></script>
+<script src="../assets/js/app.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => updateCartUI());
+async function sendMessage() {
+  const name = document.getElementById('cName').value.trim();
+  const phone = document.getElementById('cPhone').value.trim();
+  const message = document.getElementById('cMessage').value.trim();
+  if (!name || !phone || !message) { alert('Please fill Name, Phone and Message'); return; }
+  try {
+    await db.from('contact_messages').insert({ name, phone, email: document.getElementById('cEmail').value || null, subject: document.getElementById('cSubject').value, message });
+    document.getElementById('formSuccess').style.display = 'block';
+    document.getElementById('cName').value = ''; document.getElementById('cPhone').value = ''; document.getElementById('cEmail').value = ''; document.getElementById('cMessage').value = '';
+  } catch(e) {
+    // Fallback to WhatsApp if table doesn't exist
+    const msg = `New message from ${name} (${phone}): ${message}`;
+    window.open(`https://wa.me/918590004349?text=${encodeURIComponent(msg)}`, '_blank');
+    document.getElementById('formSuccess').style.display = 'block';
+  }
+}
+</script>
+</body>
+</html>
