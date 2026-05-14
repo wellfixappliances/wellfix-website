@@ -9,8 +9,8 @@
 // 4. Replace the values below
 // ============================================================
 
-const SUPABASE_URL = 'YOUR_SUPABASE_URL';         // e.g. https://abcdefgh.supabase.co
-const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY'; // Your public anon key
+const SUPABASE_URL = 'https://qjzaoiejqtjaipyraike.supabase.co';         // e.g. https://abcdefgh.supabase.co
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFqemFvaWVqcXRqYWlweXJhaWtlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg3MjcyMjIsImV4cCI6MjA5NDMwMzIyMn0.llAb5lQ5noGQ3e-Ev1XINRWSFd0f4hOIclLURawfzL4'; // Your public anon key
 
 // DO NOT change below this line
 const { createClient } = supabase;
