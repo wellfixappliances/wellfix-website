@@ -1,19 +1,44 @@
 // ============================================================
-// WELLFIX ERP — ADMIN SHELL JS (COMPLETE FIXED VERSION)
-// Fixes: mobile bottom nav, full width, correct paths
+// WELLFIX ERP — ADMIN SHELL JS
+// Full RBAC — role-based access control
 // ============================================================
 'use strict';
 
 const BASE = '/wellfix-website';
 
+// All pages and their labels
+const ALL_PAGES = {
+  dashboard:  'Dashboard',
+  analytics:  'Analytics',
+  products:   'Products',
+  categories: 'Categories',
+  brands:     'Brands',
+  inventory:  'Inventory',
+  orders:     'Orders',
+  customers:  'Customers',
+  coupons:    'Coupons',
+  reviews:    'Reviews',
+  services:   'Bookings',
+  homepage:   'Homepage',
+  banners:    'Banners',
+  blog:       'Blog',
+  media:      'Media',
+  seo:        'SEO',
+  users:      'Users',
+  settings:   'Settings'
+};
+
 const AdminShell = {
   user: null,
+  permissions: {},
 
-  async init(pageTitle = 'Dashboard') {
+  async init(pageTitle = 'Dashboard', requiredPage = null) {
     const { data: { session } } = await db.auth.getSession();
     if (!session) { window.location.href = BASE + '/admin/login.html'; return null; }
 
-    const { data: profile } = await db.from('profiles').select('*').eq('id', session.user.id).single();
+    const { data: profile } = await db.from('profiles')
+      .select('*').eq('id', session.user.id).single();
+
     if (!profile || !profile.is_active) {
       await db.auth.signOut();
       window.location.href = BASE + '/admin/login.html';
@@ -21,15 +46,51 @@ const AdminShell = {
     }
 
     this.user = { ...session.user, profile };
+
+    // Get permissions — use custom if set, else role defaults
+    this.permissions = profile.permissions || this._defaultPermissions(profile.role);
+
+    // Check if current page is allowed
+    const currentPage = requiredPage || window.location.pathname.split('/').pop().replace('.html', '');
+    if (currentPage !== 'dashboard' && !this.permissions[currentPage]) {
+      // Not allowed — redirect to dashboard with message
+      sessionStorage.setItem('wf_access_denied', currentPage);
+      window.location.href = BASE + '/admin/dashboard.html';
+      return null;
+    }
+
     this._renderShell(pageTitle);
     this._updateUserUI();
+
+    // Show access denied message if redirected
+    const denied = sessionStorage.getItem('wf_access_denied');
+    if (denied) {
+      sessionStorage.removeItem('wf_access_denied');
+      setTimeout(() => toast('Access denied: You do not have permission to view ' + (ALL_PAGES[denied] || denied), true), 500);
+    }
+
     return this.user;
+  },
+
+  _defaultPermissions(role) {
+    const perms = {
+      super_admin: { dashboard:true, analytics:true, products:true, categories:true, brands:true, inventory:true, orders:true, customers:true, coupons:true, reviews:true, services:true, homepage:true, banners:true, blog:true, media:true, seo:true, users:true, settings:true },
+      admin:       { dashboard:true, analytics:true, products:true, categories:true, brands:true, inventory:true, orders:true, customers:true, coupons:true, reviews:true, services:true, homepage:true, banners:true, blog:true, media:true, seo:true, users:false, settings:false },
+      staff:       { dashboard:true, analytics:false, products:true, categories:false, brands:false, inventory:false, orders:true, customers:true, coupons:false, reviews:false, services:true, homepage:false, banners:false, blog:false, media:false, seo:false, users:false, settings:false },
+      pos_staff:   { dashboard:true, analytics:false, products:true, categories:false, brands:false, inventory:false, orders:true, customers:true, coupons:true, reviews:false, services:false, homepage:false, banners:false, blog:false, media:false, seo:false, users:false, settings:false },
+      accountant:  { dashboard:true, analytics:true, products:false, categories:false, brands:false, inventory:false, orders:true, customers:true, coupons:false, reviews:false, services:false, homepage:false, banners:false, blog:false, media:false, seo:false, users:false, settings:false },
+      inventory:   { dashboard:true, analytics:false, products:true, categories:false, brands:false, inventory:true, orders:false, customers:false, coupons:false, reviews:false, services:false, homepage:false, banners:false, blog:false, media:false, seo:false, users:false, settings:false },
+      content:     { dashboard:true, analytics:false, products:false, categories:true, brands:true, inventory:false, orders:false, customers:false, coupons:false, reviews:true, services:false, homepage:true, banners:true, blog:true, media:true, seo:false, users:false, settings:false },
+    };
+    return perms[role] || perms['staff'];
   },
 
   _renderShell(pageTitle) {
     const shell = document.getElementById('adminShell');
     if (!shell) return;
     const currentPage = window.location.pathname.split('/').pop().replace('.html', '');
+    const p = this.permissions;
+    const role = this.user?.profile?.role;
 
     const navGroups = [
       { group: 'Main', items: [
@@ -64,27 +125,32 @@ const AdminShell = {
       ]},
     ];
 
-    const sidebarNav = navGroups.map(g => `
-      <div class="nav-section-label">${g.group}</div>
-      ${g.items.map(item => `
-        <a href="${BASE}/admin/${item.page}.html"
-           class="nav-link ${currentPage === item.page ? 'is-active' : ''}"
-           data-tooltip="${item.label}">
-          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="15" height="15">
-            <path d="${item.d}"/>
-          </svg>
-          <span class="nav-link__text">${item.label}</span>
-          ${item.badge ? `<span class="nav-badge" id="badge-${item.page}" style="display:none;">0</span>` : ''}
-        </a>`).join('')}`).join('');
+    // Only show nav items user has permission for
+    const sidebarNav = navGroups.map(g => {
+      const allowedItems = g.items.filter(item => p[item.page]);
+      if (!allowedItems.length) return '';
+      return `
+        <div class="nav-section-label">${g.group}</div>
+        ${allowedItems.map(item => `
+          <a href="${BASE}/admin/${item.page}.html"
+             class="nav-link ${currentPage === item.page ? 'is-active' : ''}"
+             data-tooltip="${item.label}">
+            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="15" height="15">
+              <path d="${item.d}"/>
+            </svg>
+            <span class="nav-link__text">${item.label}</span>
+            ${item.badge ? `<span class="nav-badge" id="badge-${item.page}" style="display:none;"></span>` : ''}
+          </a>`).join('')}`;
+    }).join('');
 
-    // Mobile bottom nav — 5 most important pages
-    const mobileNav = [
+    // Mobile bottom nav — show only allowed pages (max 5)
+    const mobilePages = [
       { page: 'dashboard', label: 'Home', d: 'M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z' },
       { page: 'products', label: 'Products', d: 'M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4zM3 6h18' },
-      { page: 'orders', label: 'Orders', d: 'M9 11l3 3L22 4M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11', badge: 'orders' },
-      { page: 'services', label: 'Bookings', d: 'M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z', badge: 'services' },
+      { page: 'orders', label: 'Orders', d: 'M9 11l3 3L22 4M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11', badge: true },
+      { page: 'services', label: 'Bookings', d: 'M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z', badge: true },
       { page: 'analytics', label: 'More', d: 'M4 6h16M4 12h16M4 18h7' },
-    ];
+    ].filter(item => p[item.page]);
 
     shell.innerHTML = `
       <div class="sidebar-overlay" id="sidebarOverlay"></div>
@@ -92,7 +158,6 @@ const AdminShell = {
         <svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
         <span id="toastMsg"></span>
       </div>
-
       <aside class="sidebar" id="sidebar">
         <div class="sidebar__brand">
           <div class="sidebar__logo">
@@ -103,7 +168,7 @@ const AdminShell = {
           </div>
           <div class="sidebar__brand-info">
             <div class="sidebar__brand-name">WellFix</div>
-            <div class="sidebar__brand-role" id="sidebarRole">Admin</div>
+            <div class="sidebar__brand-role" id="sidebarRole">Loading…</div>
           </div>
         </div>
         <nav class="sidebar__nav">${sidebarNav}</nav>
@@ -117,7 +182,6 @@ const AdminShell = {
           </div>
         </div>
       </aside>
-
       <div class="topbar" id="topbar">
         <button class="topbar__menu-btn" onclick="AdminShell.toggleSidebar()">
           <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -144,19 +208,15 @@ const AdminShell = {
           <span>View Site</span>
         </a>
       </div>
-
-      <!-- MOBILE BOTTOM NAV -->
+      ${mobilePages.length ? `
       <nav class="mobile-bottom-nav">
-        ${mobileNav.map(item => `
-          <a href="${BASE}/admin/${item.page}.html"
-             class="mob-nav-item ${currentPage === item.page ? 'is-active' : ''}">
+        ${mobilePages.map(item => `
+          <a href="${BASE}/admin/${item.page}.html" class="mob-nav-item ${currentPage === item.page ? 'is-active' : ''}">
             ${item.badge ? `<span class="mob-nav-badge" id="mob-badge-${item.page}" style="display:none;"></span>` : ''}
-            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="22" height="22">
-              <path d="${item.d}"/>
-            </svg>
+            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="22" height="22"><path d="${item.d}"/></svg>
             ${item.label}
           </a>`).join('')}
-      </nav>`;
+      </nav>` : ''}`;
 
     document.getElementById('sidebarOverlay').addEventListener('click', () => this.closeSidebar());
     this._loadBadges();
@@ -165,7 +225,7 @@ const AdminShell = {
   _updateUserUI() {
     const p = this.user?.profile;
     if (!p) return;
-    const name = p.full_name || this.user.email?.split('@')[0] || 'Admin';
+    const name = p.full_name || this.user.email?.split('@')[0] || 'User';
     const role = (p.role || 'staff').replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
     const elName = document.getElementById('userName');
     const elAvatar = document.getElementById('userAvatar');
@@ -181,11 +241,11 @@ const AdminShell = {
         db.from('orders').select('id', { count: 'exact' }).eq('status', 'pending'),
         db.from('service_bookings').select('id', { count: 'exact' }).eq('status', 'new')
       ]);
-      ['orders','services'].forEach(page => {
-        const count = page === 'orders' ? (orders.count || 0) : (bookings.count || 0);
-        const sb = document.getElementById('badge-' + page);
-        const mb = document.getElementById('mob-badge-' + page);
+      const counts = { orders: orders.count || 0, services: bookings.count || 0 };
+      Object.entries(counts).forEach(([page, count]) => {
         if (count > 0) {
+          const sb = document.getElementById('badge-' + page);
+          const mb = document.getElementById('mob-badge-' + page);
           if (sb) { sb.textContent = count; sb.style.display = 'flex'; }
           if (mb) { mb.textContent = count; mb.style.display = 'flex'; }
         }
@@ -216,6 +276,11 @@ const AdminShell = {
   async logout() {
     await db.auth.signOut();
     window.location.href = BASE + '/admin/login.html';
+  },
+
+  // Check if current user can access a specific page
+  can(page) {
+    return this.permissions[page] === true;
   }
 };
 
@@ -228,7 +293,7 @@ function toast(msg, isError = false) {
   el.className = 'toast' + (isError ? ' is-error' : '');
   el.classList.add('is-show');
   clearTimeout(el._timer);
-  el._timer = setTimeout(() => el.classList.remove('is-show'), 3000);
+  el._timer = setTimeout(() => el.classList.remove('is-show'), 3500);
 }
 function formatCurrency(v) { return '₹' + Number(v || 0).toLocaleString('en-IN'); }
 function formatDate(d) { if (!d) return '—'; return new Date(d).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }); }
