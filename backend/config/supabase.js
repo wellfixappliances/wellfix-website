@@ -452,3 +452,62 @@ const WF = {
 // Expose globally
 window.WF = WF;
 window.db = db;
+
+// ============================================================
+// WELLFIX — API HELPERS
+// ============================================================
+const WF = {
+  products: {
+    getAll: async (filters={}) => {
+      let q = db.from('products').select('*, images:product_images(url,is_primary), brand:brands(name,slug), category:categories(name,slug)').eq('is_active',true);
+      if (filters.category_id) q = q.eq('category_id', filters.category_id);
+      if (filters.badge) q = q.eq('badge', filters.badge);
+      if (filters.featured) q = q.eq('is_featured', true);
+      const { data } = await q.order('created_at',{ascending:false});
+      return data || [];
+    },
+    getById: async (id) => {
+      const { data } = await db.from('products').select('*, images:product_images(*), brand:brands(*), category:categories(*)').eq('id',id).single();
+      return data;
+    },
+    search: async (term) => {
+      const { data } = await db.from('products').select('*, images:product_images(url,is_primary), brand:brands(name), category:categories(name)').eq('is_active',true).ilike('name','%'+term+'%').limit(20);
+      return data || [];
+    }
+  },
+  categories: {
+    getAll: async () => { const { data } = await db.from('categories').select('*').eq('is_active',true).order('sort_order'); return data || []; }
+  },
+  brands: {
+    getAll: async () => { const { data } = await db.from('brands').select('*').eq('is_active',true).order('name'); return data || []; }
+  },
+  orders: {
+    create: async (order) => { const { data, error } = await db.from('orders').insert(order).select().single(); if (error) throw error; return data; },
+    addItems: async (items) => { await db.from('order_items').insert(items); }
+  },
+  reviews: {
+    getByProduct: async (id) => { const { data } = await db.from('reviews').select('*').eq('product_id',id).eq('is_approved',true).order('created_at',{ascending:false}); return data || []; },
+    getHomepage: async () => { const { data } = await db.from('reviews').select('*').eq('is_approved',true).eq('is_featured',true).limit(6); return data || []; },
+    submit: async (r) => { const { error } = await db.from('reviews').insert(r); if (error) throw error; }
+  },
+  coupons: {
+    validate: async (code, subtotal) => {
+      const { data, error } = await db.from('coupons').select('*').eq('code',code).eq('is_active',true).single();
+      if (error || !data) throw new Error('Invalid coupon code');
+      if (data.ends_at && new Date(data.ends_at) < new Date()) throw new Error('Coupon has expired');
+      if (data.min_order_amount && subtotal < data.min_order_amount) throw new Error('Minimum order ₹'+data.min_order_amount+' required');
+      if (data.usage_limit && data.used_count >= data.usage_limit) throw new Error('Coupon usage limit reached');
+      return data;
+    }
+  },
+  homepage: {
+    getSections: async () => { const { data } = await db.from('homepage_sections').select('*').order('sort_order'); return data || []; },
+    updateSection: async (id, updates) => { await db.from('homepage_sections').update(updates).eq('id',id); }
+  },
+  banners: {
+    getActive: async () => { const { data } = await db.from('banners').select('*').eq('is_active',true).order('sort_order'); return data || []; }
+  },
+  settings: {
+    get: async () => { const { data } = await db.from('site_settings').select('*').single(); return data; }
+  }
+};
