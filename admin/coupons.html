@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Coupons — WellFix Admin</title>
+<link rel="icon" href="/wellfix-website/frontend/assets/images/WELLFIX-FAVICON.png">
+<link rel="stylesheet" href="assets/css/admin.css">
+</head>
+<body>
+<div class="admin-shell"><div id="adminShell"></div>
+<div class="main-wrap" id="mainWrap"><div class="page-content">
+  <div class="pg-hd">
+    <div><h1>Coupons & Offers</h1><p>Create and manage discount codes</p></div>
+    <div class="pg-hd__actions">
+      <button class="btn btn-primary" onclick="openCouponModal()">
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Create Coupon
+      </button>
+    </div>
+  </div>
+  <div class="card">
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>Code</th><th>Type</th><th>Discount</th><th>Min Order</th><th>Used</th><th>Expires</th><th>Status</th><th>Actions</th></tr></thead>
+        <tbody id="couponsTbody"><tr><td colspan="8" style="text-align:center;padding:30px;"><div class="spinner" style="margin:0 auto;"></div></td></tr></tbody>
+      </table>
+    </div>
+  </div>
+</div></div></div>
+
+<div class="modal-overlay" id="couponModal">
+  <div class="modal" style="max-width:480px;">
+    <div class="modal-hd">
+      <div class="modal-title" id="couponModalTitle">Create Coupon</div>
+      <button class="modal-close" onclick="closeCouponModal()"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="couponId">
+      <div class="form-grid form-2" style="gap:13px;">
+        <div class="form-group" style="grid-column:1/-1;">
+          <label class="form-label">Coupon Code <span class="req">*</span></label>
+          <input class="form-input" id="cCode" placeholder="e.g. WELLFIX20" style="text-transform:uppercase;">
+          <div class="form-hint">Customer will enter this code at checkout</div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Discount Type</label>
+          <select class="form-select" id="cType">
+            <option value="percentage">Percentage (%)</option>
+            <option value="fixed">Fixed Amount (₹)</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Discount Value <span class="req">*</span></label>
+          <input class="form-input" type="number" id="cValue" placeholder="20">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Min Order Amount (₹)</label>
+          <input class="form-input" type="number" id="cMinOrder" placeholder="500">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Max Discount (₹)</label>
+          <input class="form-input" type="number" id="cMaxDisc" placeholder="Optional">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Usage Limit</label>
+          <input class="form-input" type="number" id="cLimit" placeholder="100">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Status</label>
+          <select class="form-select" id="cStatus">
+            <option value="true">Active</option>
+            <option value="false">Inactive</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Expires On</label>
+          <input class="form-input" type="date" id="cExpiry">
+        </div>
+      </div>
+    </div>
+    <div class="modal-ft">
+      <button class="btn btn-secondary" onclick="closeCouponModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveCoupon()">Save Coupon</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="/wellfix-website/backend/config/supabase.js"></script>
+<script src="assets/js/shell.js"></script>
+<script>
+let coupons = [];
+(async () => {
+  await AdminShell.init('Coupons');
+  await loadCoupons();
+})();
+
+async function loadCoupons() {
+  coupons = await WF.coupons.getAll();
+  const tbody = document.getElementById('couponsTbody');
+  if (!coupons.length) {
+    tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;padding:30px;color:var(--gray-300);">No coupons yet. Create your first coupon.</td></tr>`;
+    return;
+  }
+  tbody.innerHTML = coupons.map(c => `<tr>
+    <td class="td-bold" style="font-family:monospace;letter-spacing:.05em;font-size:13px;">${c.code}</td>
+    <td>${c.type === 'percentage' ? 'Percentage' : 'Fixed Amount'}</td>
+    <td style="font-weight:700;">${c.type === 'percentage' ? c.value + '%' : '₹' + c.value}</td>
+    <td>${c.min_order_amount ? '₹' + c.min_order_amount : '—'}</td>
+    <td>${c.used_count || 0}${c.usage_limit ? ' / ' + c.usage_limit : ''}</td>
+    <td>${c.ends_at ? new Date(c.ends_at).toLocaleDateString('en-IN') : '—'}</td>
+    <td>${renderBadge(c.is_active ? 'active' : 'inactive')}</td>
+    <td>${actionBtns(`editCoupon('${c.id}')`, `deleteCoupon('${c.id}')`)}</td>
+  </tr>`).join('');
+}
+
+function openCouponModal(data = null) {
+  document.getElementById('couponId').value = data?.id || '';
+  document.getElementById('cCode').value = data?.code || '';
+  document.getElementById('cType').value = data?.type || 'percentage';
+  document.getElementById('cValue').value = data?.value || '';
+  document.getElementById('cMinOrder').value = data?.min_order_amount || '';
+  document.getElementById('cMaxDisc').value = data?.max_discount || '';
+  document.getElementById('cLimit').value = data?.usage_limit || '';
+  document.getElementById('cStatus').value = String(data?.is_active !== false);
+  document.getElementById('cExpiry').value = data?.ends_at ? data.ends_at.split('T')[0] : '';
+  document.getElementById('couponModalTitle').textContent = data ? 'Edit Coupon' : 'Create Coupon';
+  document.getElementById('couponModal').classList.add('is-open');
+  document.body.style.overflow = 'hidden';
+}
+function closeCouponModal() {
+  document.getElementById('couponModal').classList.remove('is-open');
+  document.body.style.overflow = '';
+}
+document.getElementById('couponModal').addEventListener('click', e => { if (e.target === e.currentTarget) closeCouponModal(); });
+
+async function saveCoupon() {
+  const code = document.getElementById('cCode').value.trim().toUpperCase();
+  const value = parseFloat(document.getElementById('cValue').value);
+  if (!code || !value) { toast('Code and discount value are required', true); return; }
+  const id = document.getElementById('couponId').value;
+  const data = {
+    code, value,
+    type: document.getElementById('cType').value,
+    min_order_amount: parseFloat(document.getElementById('cMinOrder').value) || 0,
+    max_discount: parseFloat(document.getElementById('cMaxDisc').value) || null,
+    usage_limit: parseInt(document.getElementById('cLimit').value) || null,
+    is_active: document.getElementById('cStatus').value === 'true',
+    ends_at: document.getElementById('cExpiry').value ? new Date(document.getElementById('cExpiry').value).toISOString() : null,
+  };
+  try {
+    if (id) { await db.from('coupons').update(data).eq('id', id); }
+    else { await db.from('coupons').insert(data); }
+    toast('Coupon saved!');
+    closeCouponModal();
+    await loadCoupons();
+  } catch (e) { toast('Error: ' + e.message, true); }
+}
+function editCoupon(id) { const c = coupons.find(c => c.id === id); openCouponModal(c); }
+async function deleteCoupon(id) {
+  if (!confirmDialog('Delete this coupon?')) return;
+  await db.from('coupons').delete().eq('id', id);
+  toast('Coupon deleted');
+  await loadCoupons();
+}
+</script>
+</body></html>
