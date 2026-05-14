@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Cart — WellFix Appliances</title>
+  <link rel="icon" href="../assets/images/WELLFIX-FAVICON.png">
+  <link rel="stylesheet" href="../assets/css/main.css">
+  <style>
+    .cart-page { padding: var(--sp-5) 0 var(--sp-12); }
+    .cart-layout { display: grid; grid-template-columns: 1fr 360px; gap: var(--sp-6); align-items: start; }
+    @media(max-width:900px){ .cart-layout { grid-template-columns: 1fr; } }
+    .cart-card { background: var(--color-surface); border: 1.5px solid var(--color-border); border-radius: var(--r-lg); overflow: hidden; }
+    .cart-card__header { padding: var(--sp-4) var(--sp-5); border-bottom: 1px solid var(--color-border); display: flex; align-items: center; justify-content: space-between; }
+    .cart-card__title { font-family: var(--font-display); font-size: var(--text-lg); font-weight: var(--weight-bold); }
+    .cart-item { display: flex; gap: var(--sp-3); padding: var(--sp-4) var(--sp-5); border-bottom: 1px solid var(--color-border); align-items: center; }
+    .cart-item:last-child { border-bottom: none; }
+    .cart-item__img { width: 70px; height: 70px; border-radius: var(--r-md); object-fit: contain; background: var(--gray-25); border: 1px solid var(--color-border); padding: 6px; flex-shrink: 0; }
+    .cart-item__img-placeholder { width: 70px; height: 70px; border-radius: var(--r-md); background: var(--gray-25); border: 1px solid var(--color-border); display: flex; align-items: center; justify-content: center; font-size: 28px; flex-shrink: 0; }
+    .cart-item__info { flex: 1; min-width: 0; }
+    .cart-item__name { font-size: var(--text-base); font-weight: var(--weight-semi); color: var(--color-text); margin-bottom: 4px; }
+    .cart-item__meta { font-size: var(--text-xs); color: var(--color-text-3); margin-bottom: 8px; }
+    .cart-item__price { font-family: var(--font-display); font-size: var(--text-lg); font-weight: var(--weight-bold); color: var(--color-text); }
+    .qty-control { display: flex; align-items: center; gap: 0; border: 1.5px solid var(--color-border); border-radius: var(--r-sm); overflow: hidden; }
+    .qty-btn { width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; background: var(--gray-50); cursor: pointer; border: none; font-size: 16px; font-weight: 700; color: var(--color-text); transition: background .15s; }
+    .qty-btn:hover { background: var(--green-50); color: var(--color-primary); }
+    .qty-num { width: 36px; height: 32px; display: flex; align-items: center; justify-content: center; font-size: var(--text-base); font-weight: var(--weight-semi); border-left: 1px solid var(--color-border); border-right: 1px solid var(--color-border); }
+    .cart-item__actions { display: flex; flex-direction: column; align-items: flex-end; gap: var(--sp-2); flex-shrink: 0; }
+    .remove-btn { font-size: var(--text-xs); color: var(--color-text-3); cursor: pointer; background: none; border: none; transition: color .15s; }
+    .remove-btn:hover { color: var(--color-danger); }
+
+    /* Summary */
+    .order-summary { background: var(--color-surface); border: 1.5px solid var(--color-border); border-radius: var(--r-lg); overflow: hidden; position: sticky; top: 80px; }
+    .order-summary__header { padding: var(--sp-4) var(--sp-5); border-bottom: 1px solid var(--color-border); }
+    .order-summary__title { font-family: var(--font-display); font-size: var(--text-lg); font-weight: var(--weight-bold); }
+    .order-summary__body { padding: var(--sp-4) var(--sp-5); }
+    .summary-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; font-size: var(--text-base); color: var(--color-text-2); }
+    .summary-row.total { font-family: var(--font-display); font-size: var(--text-2xl); font-weight: var(--weight-bold); color: var(--color-text); border-top: 1.5px solid var(--color-border); margin-top: 8px; padding-top: 14px; }
+    .summary-row.free { color: var(--green-600); font-weight: var(--weight-semi); }
+    .coupon-row { display: flex; gap: var(--sp-2); margin: var(--sp-3) 0; }
+    .coupon-input { flex: 1; height: 38px; border: 1.5px solid var(--color-border); border-radius: var(--r-sm); padding: 0 12px; font-size: var(--text-sm); outline: none; }
+    .coupon-input:focus { border-color: var(--color-primary); }
+    .trust-badges { display: flex; flex-direction: column; gap: 8px; padding: var(--sp-4) var(--sp-5); border-top: 1px solid var(--color-border); }
+    .trust-badge { display: flex; align-items: center; gap: var(--sp-2); font-size: var(--text-xs); color: var(--color-text-3); }
+    .trust-badge svg { width: 14px; height: 14px; color: var(--green-600); flex-shrink: 0; }
+
+    /* Empty cart */
+    .empty-cart { text-align: center; padding: var(--sp-12) var(--sp-4); }
+    .empty-cart svg { width: 64px; height: 64px; color: var(--gray-200); margin: 0 auto var(--sp-4); }
+    .empty-cart h2 { font-size: var(--text-3xl); font-weight: var(--weight-bold); margin-bottom: var(--sp-2); }
+    .empty-cart p { color: var(--color-text-3); margin-bottom: var(--sp-5); }
+  </style>
+</head>
+<body>
+
+<div class="topbar"><div class="container topbar__inner"><div class="topbar__links"><a href="../index.html">Home</a></div><div class="topbar__center">Free delivery above ₹999 · <strong>+91 85900 04349</strong></div><div class="topbar__links"><a href="#">100% Genuine</a></div></div></div>
+
+<header class="site-header">
+  <div class="container site-header__inner">
+    <a href="../index.html" class="logo"><img src="../assets/images/WELLFIX-MAIN-LOGO.png" alt="WellFix" class="logo__img" onerror="this.style.display='none'"></a>
+    <div style="flex:1;"></div>
+    <div class="header-actions">
+      <a href="cart.html" class="hdr-cart">
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+        <span class="label">Cart</span>
+        <span class="hdr-cart__count" data-cart-count>0</span>
+      </a>
+    </div>
+  </div>
+</header>
+
+<main class="cart-page">
+  <div class="container">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:var(--sp-4);font-size:var(--text-sm);color:var(--color-text-3);">
+      <a href="../index.html" style="color:var(--color-text-3);">Home</a>
+      <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="12" height="12"><polyline points="9 18 15 12 9 6"/></svg>
+      <span style="color:var(--color-text);font-weight:600;">My Cart</span>
+    </div>
+
+    <div id="cartContent">
+      <!-- Rendered by JS -->
+    </div>
+  </div>
+</main>
+
+<a href="https://wa.me/918590004349" target="_blank" class="wa-fab"><svg fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347zM12 2C6.477 2 2 6.477 2 12c0 1.89.525 3.66 1.438 5.168L2 22l4.978-1.413A9.955 9.955 0 0012 22c5.523 0 10-4.477 10-10S17.523 2 12 2z"/></svg></a>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../backend/config/supabase.js"></script>
+<script src="../assets/js/app.js"></script>
+<script>
+let cart = [];
+
+document.addEventListener('DOMContentLoaded', () => {
+  updateCartUI();
+  renderCart();
+});
+
+function renderCart() {
+  cart = JSON.parse(localStorage.getItem('wf_cart') || '[]');
+  const container = document.getElementById('cartContent');
+
+  if (!cart.length) {
+    container.innerHTML = `
+      <div class="empty-cart">
+        <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+        <h2>Your cart is empty</h2>
+        <p>Add some products to get started</p>
+        <a href="products.html" class="btn btn-primary btn-lg">Browse Products</a>
+      </div>`;
+    return;
+  }
+
+  const subtotal = cart.reduce((s, i) => s + (i.price * (i.qty || 1)), 0);
+  const shipping = subtotal >= 999 ? 0 : 60;
+  const total = subtotal + shipping;
+
+  container.innerHTML = `
+    <div class="cart-layout">
+      <div>
+        <div class="cart-card">
+          <div class="cart-card__header">
+            <div class="cart-card__title">My Cart (${cart.length} item${cart.length !== 1 ? 's' : ''})</div>
+            <button onclick="clearCart()" style="font-size:var(--text-xs);color:var(--color-text-3);background:none;border:none;cursor:pointer;">Clear all</button>
+          </div>
+          ${cart.map(item => `
+            <div class="cart-item" id="item-${item.id}">
+              ${item.img
+                ? `<img class="cart-item__img" src="${item.img}" alt="${item.name}">`
+                : `<div class="cart-item__img-placeholder">📦</div>`}
+              <div class="cart-item__info">
+                <div class="cart-item__name">${item.name}</div>
+                <div class="cart-item__meta">Unit price: ₹${Number(item.price).toLocaleString('en-IN')}</div>
+                <div class="qty-control">
+                  <button class="qty-btn" onclick="changeQty('${item.id}',-1)">−</button>
+                  <div class="qty-num">${item.qty || 1}</div>
+                  <button class="qty-btn" onclick="changeQty('${item.id}',1)">+</button>
+                </div>
+              </div>
+              <div class="cart-item__actions">
+                <div class="cart-item__price">₹${Number(item.price * (item.qty || 1)).toLocaleString('en-IN')}</div>
+                <button class="remove-btn" onclick="removeItem('${item.id}')">Remove</button>
+              </div>
+            </div>`).join('')}
+        </div>
+      </div>
+
+      <div class="order-summary">
+        <div class="order-summary__header"><div class="order-summary__title">Order Summary</div></div>
+        <div class="order-summary__body">
+          <div class="summary-row"><span>Subtotal (${cart.length} items)</span><span>₹${subtotal.toLocaleString('en-IN')}</span></div>
+          <div class="summary-row ${shipping === 0 ? 'free' : ''}">
+            <span>Delivery</span>
+            <span>${shipping === 0 ? 'FREE' : '₹' + shipping}</span>
+          </div>
+          ${shipping > 0 ? `<div style="font-size:11px;color:var(--color-text-3);margin-top:-6px;padding-bottom:8px;">Add ₹${(999-subtotal).toLocaleString('en-IN')} more for free delivery</div>` : ''}
+
+          <div class="coupon-row">
+            <input class="coupon-input" id="couponInput" placeholder="Enter coupon code">
+            <button class="btn btn-secondary btn-sm" onclick="applyCoupon()">Apply</button>
+          </div>
+          <div id="couponMsg" style="font-size:11px;margin-top:-6px;"></div>
+
+          <div class="summary-row total"><span>Total</span><span>₹${total.toLocaleString('en-IN')}</span></div>
+          <a href="checkout.html" class="btn btn-primary btn-lg" style="width:100%;justify-content:center;margin-top:var(--sp-3);">
+            Proceed to Checkout →
+          </a>
+          <a href="products.html" class="btn btn-secondary btn-sm" style="width:100%;justify-content:center;margin-top:var(--sp-2);">Continue Shopping</a>
+        </div>
+        <div class="trust-badges">
+          <div class="trust-badge"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>100% Secure Checkout</div>
+          <div class="trust-badge"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/></svg>Genuine Products Only</div>
+          <div class="trust-badge"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>Free delivery above ₹999</div>
+        </div>
+      </div>
+    </div>`;
+}
+
+function changeQty(id, delta) {
+  const item = cart.find(i => i.id === id);
+  if (!item) return;
+  item.qty = Math.max(1, (item.qty || 1) + delta);
+  localStorage.setItem('wf_cart', JSON.stringify(cart));
+  renderCart();
+  updateCartUI();
+}
+
+function removeItem(id) {
+  cart = cart.filter(i => i.id !== id);
+  localStorage.setItem('wf_cart', JSON.stringify(cart));
+  renderCart();
+  updateCartUI();
+}
+
+function clearCart() {
+  if (!confirm('Clear all items from cart?')) return;
+  localStorage.removeItem('wf_cart');
+  renderCart();
+  updateCartUI();
+}
+
+async function applyCoupon() {
+  const code = document.getElementById('couponInput').value.trim().toUpperCase();
+  const msgEl = document.getElementById('couponMsg');
+  if (!code) { msgEl.style.color = 'var(--color-danger)'; msgEl.textContent = 'Enter a coupon code'; return; }
+  try {
+    const subtotal = cart.reduce((s, i) => s + (i.price * (i.qty || 1)), 0);
+    const coupon = await WF.coupons.validate(code, subtotal);
+    const discount = coupon.type === 'percentage'
+      ? Math.min(subtotal * coupon.value / 100, coupon.max_discount || Infinity)
+      : coupon.value;
+    msgEl.style.color = 'var(--green-600)';
+    msgEl.textContent = `Coupon applied! You save ₹${discount.toLocaleString('en-IN')}`;
+    sessionStorage.setItem('wf_coupon', JSON.stringify({ code, discount, coupon_id: coupon.id }));
+  } catch (e) {
+    msgEl.style.color = 'var(--color-danger)';
+    msgEl.textContent = e.message;
+  }
+}
+</script>
+</body>
+</html>
