@@ -3,283 +3,170 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <meta name="description" content="Shop all home and kitchen appliances — WellFix Appliances Kerala">
-  <title>Products — WellFix Appliances</title>
-  <link rel="icon" href="../assets/images/WELLFIX-FAVICON.png" type="image/png">
+  <title>All Products — WellFix Appliances</title>
+  <link rel="icon" href="../assets/images/WELLFIX-FAVICON.png">
   <link rel="stylesheet" href="../assets/css/main.css">
   <style>
-    .products-page { padding: var(--sp-5) 0 var(--sp-12); }
-    .products-layout { display: grid; grid-template-columns: 220px 1fr; gap: var(--sp-6); align-items: start; }
-    @media(max-width:900px){ .products-layout { grid-template-columns: 1fr; } }
-
-    /* Filter sidebar */
-    .filter-sidebar { background: var(--color-surface); border: 1.5px solid var(--color-border); border-radius: var(--r-lg); padding: var(--sp-4); position: sticky; top: 80px; }
-    .filter-sidebar__title { font-family: var(--font-display); font-size: var(--text-base); font-weight: var(--weight-bold); color: var(--color-text); margin-bottom: var(--sp-4); display: flex; align-items: center; justify-content: space-between; }
-    .filter-sidebar__title button { font-size: var(--text-xs); color: var(--color-primary); cursor: pointer; background: none; border: none; }
-    .filter-group { margin-bottom: var(--sp-4); padding-bottom: var(--sp-4); border-bottom: 1px solid var(--color-border); }
-    .filter-group:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
-    .filter-group__label { font-size: var(--text-sm); font-weight: var(--weight-bold); color: var(--color-text-2); text-transform: uppercase; letter-spacing: .06em; margin-bottom: var(--sp-2); }
-    .filter-option { display: flex; align-items: center; gap: var(--sp-2); padding: 5px 0; cursor: pointer; }
-    .filter-option input { width: 15px; height: 15px; cursor: pointer; accent-color: var(--color-primary); }
-    .filter-option span { font-size: var(--text-sm); color: var(--color-text-2); }
-    .filter-option:hover span { color: var(--color-primary); }
-
-    /* Mobile filter toggle */
-    .filter-toggle-btn { display: none; }
-    @media(max-width:900px){
-      .filter-toggle-btn { display: flex; align-items: center; gap: var(--sp-2); background: var(--color-surface); border: 1.5px solid var(--color-border); border-radius: var(--r-md); padding: 8px 14px; font-size: var(--text-sm); font-weight: var(--weight-semi); cursor: pointer; color: var(--color-text); margin-bottom: var(--sp-3); }
-      .filter-toggle-btn svg { width: 15px; height: 15px; }
-      .filter-sidebar { display: none; position: fixed; inset: 0; z-index: 500; border-radius: 0; overflow-y: auto; padding: var(--sp-5); }
-      .filter-sidebar.is-open { display: block; }
-      .filter-sidebar__close { display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--sp-4); }
-      .filter-sidebar__close button { font-size: 22px; background: none; border: none; cursor: pointer; color: var(--color-text); }
-    }
-    @media(min-width:901px){ .filter-sidebar__close { display: none; } }
-
-    /* Toolbar */
-    .products-toolbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--sp-4); flex-wrap: wrap; gap: var(--sp-2); }
-    .products-count { font-size: var(--text-sm); color: var(--color-text-3); }
-    .sort-select { border: 1.5px solid var(--color-border); border-radius: var(--r-sm); padding: 7px 12px; font-size: var(--text-sm); color: var(--color-text); background: var(--color-surface); cursor: pointer; outline: none; }
-    .sort-select:focus { border-color: var(--color-primary); }
-
-    /* Grid */
-    .products-grid-main { display: grid; grid-template-columns: repeat(2,1fr); gap: var(--sp-3); }
-    @media(min-width:640px){ .products-grid-main { grid-template-columns: repeat(3,1fr); } }
-    @media(min-width:1100px){ .products-grid-main { grid-template-columns: repeat(4,1fr); } }
-
-    /* Skeleton */
-    .skel-card { background: var(--color-surface); border: 1.5px solid var(--color-border); border-radius: var(--r-lg); overflow: hidden; }
-    .skel-img { height: 160px; background: linear-gradient(90deg,var(--gray-100) 25%,var(--gray-50) 50%,var(--gray-100) 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; }
-    .skel-body { padding: 12px; }
-    .skel-line { height: 11px; border-radius: 4px; background: linear-gradient(90deg,var(--gray-100) 25%,var(--gray-50) 50%,var(--gray-100) 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; margin-bottom: 7px; }
-    @keyframes shimmer { to { background-position: -200% 0; } }
-
-    /* No results */
-    .no-results { text-align: center; padding: var(--sp-12) var(--sp-4); color: var(--color-text-3); grid-column: 1/-1; }
-    .no-results svg { width: 48px; height: 48px; margin: 0 auto var(--sp-3); opacity: .3; }
-    .no-results h3 { font-size: var(--text-xl); font-weight: var(--weight-bold); margin-bottom: var(--sp-2); }
-
-    /* Breadcrumb */
-    .breadcrumb { display: flex; align-items: center; gap: 6px; font-size: var(--text-sm); color: var(--color-text-3); margin-bottom: var(--sp-4); flex-wrap: wrap; }
-    .breadcrumb a { color: var(--color-text-3); transition: color var(--t-fast); }
-    .breadcrumb a:hover { color: var(--color-primary); }
-    .breadcrumb span { color: var(--color-text); font-weight: var(--weight-semi); }
-
-    /* Price range */
-    .price-range { display: flex; gap: var(--sp-2); align-items: center; }
-    .price-input { width: 80px; height: 32px; border: 1.5px solid var(--color-border); border-radius: var(--r-sm); padding: 0 8px; font-size: var(--text-sm); color: var(--color-text); outline: none; }
-    .price-input:focus { border-color: var(--color-primary); }
-
-    /* Active filters */
-    .active-filters { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: var(--sp-3); }
-    .filter-chip { display: flex; align-items: center; gap: 5px; background: var(--green-50); color: var(--color-primary); border: 1px solid var(--green-100); border-radius: 99px; padding: 4px 10px; font-size: var(--text-xs); font-weight: var(--weight-semi); cursor: pointer; }
-    .filter-chip:hover { background: var(--green-100); }
-    .filter-chip svg { width: 11px; height: 11px; }
+    .pg{padding:var(--sp-5) 0 var(--sp-12);}
+    .pg-layout{display:grid;grid-template-columns:220px 1fr;gap:var(--sp-5);align-items:start;}
+    @media(max-width:900px){.pg-layout{grid-template-columns:1fr;}}
+    .sidebar{background:var(--color-surface);border:1.5px solid var(--color-border);border-radius:var(--r-lg);padding:var(--sp-4);position:sticky;top:80px;}
+    @media(max-width:900px){.sidebar{display:none;position:fixed;inset:0;z-index:500;border-radius:0;overflow-y:auto;padding:var(--sp-5);}.sidebar.open{display:block;}}
+    .filter-hd{font-size:var(--text-sm);font-weight:var(--weight-bold);color:var(--color-text);margin-bottom:var(--sp-4);display:flex;align-items:center;justify-content:space-between;}
+    .filter-hd button{font-size:var(--text-xs);color:var(--color-primary);background:none;border:none;cursor:pointer;}
+    .filter-section{margin-bottom:var(--sp-4);padding-bottom:var(--sp-4);border-bottom:1px solid var(--color-border);}
+    .filter-section:last-child{border-bottom:none;margin-bottom:0;padding-bottom:0;}
+    .filter-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--color-text-3);margin-bottom:var(--sp-2);}
+    .filter-opt{display:flex;align-items:center;gap:var(--sp-2);padding:4px 0;cursor:pointer;font-size:var(--text-sm);color:var(--color-text-2);}
+    .filter-opt input{accent-color:var(--color-primary);width:14px;height:14px;cursor:pointer;}
+    .filter-opt:hover{color:var(--color-primary);}
+    .price-row{display:flex;gap:var(--sp-2);}
+    .price-inp{width:80px;height:32px;border:1.5px solid var(--color-border-strong);border-radius:var(--r-sm);padding:0 8px;font-size:var(--text-sm);outline:none;}
+    .price-inp:focus{border-color:var(--color-primary);}
+    .toolbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:var(--sp-3);flex-wrap:wrap;gap:8px;}
+    .count{font-size:var(--text-sm);color:var(--color-text-3);}
+    .sort-sel{border:1.5px solid var(--color-border);border-radius:var(--r-sm);padding:6px 10px;font-size:var(--text-sm);background:var(--color-surface);cursor:pointer;outline:none;}
+    .mob-filter-btn{display:none;align-items:center;gap:6px;background:var(--color-surface);border:1.5px solid var(--color-border);border-radius:var(--r-sm);padding:7px 12px;font-size:var(--text-sm);font-weight:600;cursor:pointer;}
+    @media(max-width:900px){.mob-filter-btn{display:flex;}}
+    .chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:var(--sp-3);}
+    .chip{display:flex;align-items:center;gap:4px;background:var(--green-50);color:var(--color-primary);border:1px solid var(--green-100);border-radius:99px;padding:3px 10px;font-size:11px;font-weight:600;cursor:pointer;}
+    .chip:hover{background:var(--green-100);}
+    .no-res{grid-column:1/-1;text-align:center;padding:var(--sp-12) var(--sp-4);color:var(--color-text-3);}
+    .no-res svg{width:48px;height:48px;margin:0 auto var(--sp-3);opacity:.3;}
+    .skel-card{background:var(--color-surface);border:1.5px solid var(--color-border);border-radius:var(--r-lg);overflow:hidden;}
+    .skel{background:linear-gradient(90deg,var(--gray-100) 25%,var(--gray-50) 50%,var(--gray-100) 75%);background-size:200% 100%;animation:shimmer 1.4s infinite;}
+    @keyframes shimmer{to{background-position:-200% 0;}}
   </style>
 </head>
 <body>
-
 <!-- TOPBAR -->
-<div class="topbar">
-  <div class="container topbar__inner">
-    <div class="topbar__links"><a href="../index.html">Home</a><a href="#">Store Locator</a><a href="#">Help</a></div>
-    <div class="topbar__center">Free delivery across Kerala &nbsp;·&nbsp; <strong>+91 85900 04349</strong></div>
-    <div class="topbar__links"><a href="#">100% Genuine</a><a href="#">Best Price Guarantee</a></div>
+<div class="topbar"><div class="container topbar__inner">
+  <div class="topbar__links"><a href="../index.html">Home</a><a href="#">Store Locator</a><a href="#">Help</a></div>
+  <div class="topbar__center">Free delivery across Kerala &nbsp;·&nbsp; <strong>+91 85900 04349</strong></div>
+  <div class="topbar__links"><a href="#">100% Genuine</a><a href="#">Best Price Guarantee</a></div>
+</div></div>
+<!-- HEADER -->
+<header class="site-header"><div class="container site-header__inner">
+  <a href="../index.html" class="logo"><img src="../assets/images/WELLFIX-MAIN-LOGO.png" alt="WellFix" class="logo__img" onerror="this.style.display='none'"></a>
+  <div class="header-search">
+    <select class="header-search__cat" id="catSel"><option value="">All</option></select>
+    <input class="header-search__input" id="searchInp" type="search" placeholder="Search products, brands, spare parts…">
+    <button class="header-search__btn" onclick="doSearch()"><svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></button>
+  </div>
+  <button class="mob-search-btn" id="mobSearchOpen"><svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></button>
+  <div style="flex:1;" class="mob-spacer"></div>
+  <div class="header-actions">
+    <a href="cart.html" class="hdr-cart"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg><span class="label">Cart</span><span class="hdr-cart__count" data-cart-count style="display:none;">0</span></a>
+  </div>
+</div></header>
+<!-- MOBILE SEARCH -->
+<div class="mob-search-overlay" id="mobSearchOverlay">
+  <div class="mob-search-overlay__backdrop" id="mobSearchBackdrop"></div>
+  <div class="mob-search-overlay__panel">
+    <div class="mob-search-overlay__top">
+      <button class="mob-search-back" id="mobSearchClose"><svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg></button>
+      <span class="mob-search-overlay__label">Search WellFix</span>
+    </div>
+    <div class="mob-search-overlay__input-row">
+      <input class="mob-search-overlay__input" id="mobSearchInput" type="search" placeholder="Mixers, stoves, fans…">
+      <button class="mob-search-overlay__go" onclick="doSearch()"><svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></button>
+    </div>
   </div>
 </div>
-
-<!-- HEADER -->
-<header class="site-header">
-  <div class="container site-header__inner">
-    <a href="../index.html" class="logo" aria-label="WellFix Home">
-      <img src="../assets/images/WELLFIX-MAIN-LOGO.png" alt="WellFix Appliances" class="logo__img" onerror="this.style.display='none'">
-    </a>
-    <div class="header-search">
-      <select class="header-search__cat" id="catFilter">
-        <option value="">All</option>
-        <option>Mixers</option><option>Stoves</option><option>Fans</option>
-        <option>Cookers</option><option>Motors</option><option>Spare Parts</option>
-      </select>
-      <input class="header-search__input" type="search" id="headerSearch" placeholder="Search products, brands, spare parts…">
-      <button class="header-search__btn" onclick="doSearch()">
-        <svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-      </button>
-    </div>
-    <button class="mob-search-btn" id="mobSearchOpen">
-      <svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-    </button>
-    <div style="flex:1;" class="mob-spacer"></div>
-    <div class="header-actions">
-      <a href="cart.html" class="hdr-cart">
-        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
-        <span class="label">Cart</span>
-        <span class="hdr-cart__count" data-cart-count>0</span>
-      </a>
-    </div>
-  </div>
-</header>
-
 <!-- CAT NAVBAR -->
-<nav class="cat-navbar">
-  <div class="container cat-navbar__inner">
-    <div class="cat-navbar__links" id="catNavLinks">
-      <a class="cat-nav-link" href="products.html">All Products</a>
-      <a class="cat-nav-link" href="products.html?cat=mixers-grinders">Mixers & Grinders</a>
-      <a class="cat-nav-link" href="products.html?cat=gas-stoves">Gas Stoves</a>
-      <a class="cat-nav-link" href="products.html?cat=fans">Fans</a>
-      <a class="cat-nav-link" href="products.html?cat=pressure-cookers">Pressure Cookers</a>
-      <a class="cat-nav-link" href="products.html?cat=water-motors">Water Motors</a>
-      <a class="cat-nav-link" href="products.html?cat=cookware-pans">Cookware</a>
-      <a class="cat-nav-link" href="products.html?cat=spare-parts">Spare Parts</a>
-    </div>
+<nav class="cat-navbar"><div class="container cat-navbar__inner">
+  <div class="cat-navbar__links" id="catNavLinks">
+    <a class="cat-nav-link" href="products.html">All Products</a>
   </div>
-</nav>
+</div></nav>
 
-<!-- MAIN -->
-<main class="products-page">
-  <div class="container">
+<main class="pg"><div class="container">
+  <!-- Breadcrumb -->
+  <div style="display:flex;align-items:center;gap:6px;font-size:var(--text-sm);color:var(--color-text-3);margin-bottom:var(--sp-4);">
+    <a href="../index.html" style="color:var(--color-text-3);">Home</a>
+    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="11" height="11"><polyline points="9 18 15 12 9 6"/></svg>
+    <span id="breadcrumb" style="color:var(--color-text);font-weight:600;">All Products</span>
+  </div>
 
-    <!-- Breadcrumb -->
-    <div class="breadcrumb">
-      <a href="../index.html">Home</a>
-      <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="12" height="12"><polyline points="9 18 15 12 9 6"/></svg>
-      <span id="breadcrumbCurrent">All Products</span>
+  <div class="toolbar">
+    <div style="display:flex;align-items:center;gap:10px;">
+      <button class="mob-filter-btn" onclick="document.getElementById('filterSidebar').classList.toggle('open')">
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="14" height="14"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+        Filters
+      </button>
+      <span class="count" id="prodCount">Loading…</span>
     </div>
+    <select class="sort-sel" id="sortSel" onchange="renderProducts()">
+      <option value="newest">Newest First</option>
+      <option value="price_asc">Price: Low to High</option>
+      <option value="price_desc">Price: High to Low</option>
+      <option value="name">Name A–Z</option>
+    </select>
+  </div>
 
-    <!-- Mobile filter btn -->
-    <button class="filter-toggle-btn" onclick="toggleFilter()">
-      <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
-      Filters
-      <span id="filterCount" style="background:var(--color-primary);color:#fff;border-radius:99px;padding:1px 7px;font-size:10px;display:none;"></span>
-    </button>
+  <div class="chips" id="activeChips"></div>
 
-    <!-- Active filters -->
-    <div class="active-filters" id="activeFilters"></div>
-
-    <div class="products-layout">
-      <!-- SIDEBAR -->
-      <aside class="filter-sidebar" id="filterSidebar">
-        <div class="filter-sidebar__close">
-          <span style="font-weight:700;font-size:16px;">Filters</span>
-          <button onclick="toggleFilter()">✕</button>
-        </div>
-        <div class="filter-sidebar__title">
-          Filters
-          <button onclick="clearAllFilters()">Clear all</button>
-        </div>
-
-        <!-- Categories -->
-        <div class="filter-group">
-          <div class="filter-group__label">Category</div>
-          <div id="categoriesFilter"></div>
-        </div>
-
-        <!-- Brands -->
-        <div class="filter-group">
-          <div class="filter-group__label">Brand</div>
-          <div id="brandsFilter"></div>
-        </div>
-
-        <!-- Price -->
-        <div class="filter-group">
-          <div class="filter-group__label">Price Range</div>
-          <div class="price-range">
-            <input class="price-input" type="number" id="minPrice" placeholder="Min" onchange="applyFilters()">
-            <span style="color:var(--color-text-3);">—</span>
-            <input class="price-input" type="number" id="maxPrice" placeholder="Max" onchange="applyFilters()">
-          </div>
-        </div>
-
-        <!-- Rating -->
-        <div class="filter-group">
-          <div class="filter-group__label">Badge</div>
-          <label class="filter-option"><input type="checkbox" value="hot" onchange="applyFilters()"><span>Hot</span></label>
-          <label class="filter-option"><input type="checkbox" value="sale" onchange="applyFilters()"><span>On Sale</span></label>
-          <label class="filter-option"><input type="checkbox" value="new" onchange="applyFilters()"><span>New Arrivals</span></label>
-        </div>
-
-        <!-- Mobile apply -->
-        <button class="btn btn-primary" style="width:100%;margin-top:var(--sp-3);display:none;" id="mobileApplyBtn" onclick="toggleFilter()">Show Results</button>
-      </aside>
-
-      <!-- PRODUCTS -->
-      <div>
-        <div class="products-toolbar">
-          <div class="products-count" id="productsCount">Loading…</div>
-          <select class="sort-select" id="sortSelect" onchange="applyFilters()">
-            <option value="newest">Newest First</option>
-            <option value="price_asc">Price: Low to High</option>
-            <option value="price_desc">Price: High to Low</option>
-            <option value="name">Name A-Z</option>
-          </select>
-        </div>
-
-        <div class="products-grid-main" id="productsGrid">
-          <!-- Skeleton -->
-          ${Array(8).fill(0).map(() => `
-          <div class="skel-card">
-            <div class="skel-img"></div>
-            <div class="skel-body">
-              <div class="skel-line" style="width:60%;"></div>
-              <div class="skel-line" style="width:90%;"></div>
-              <div class="skel-line" style="width:45%;"></div>
-            </div>
-          </div>`).join('')}
+  <div class="pg-layout">
+    <!-- SIDEBAR -->
+    <aside class="sidebar" id="filterSidebar">
+      <div class="filter-hd">
+        Filters
+        <button onclick="clearFilters()">Clear all</button>
+      </div>
+      <div style="display:none;" id="filterCloseRow">
+        <button onclick="document.getElementById('filterSidebar').classList.remove('open')" style="width:100%;padding:10px;background:var(--color-primary);color:#fff;border:none;border-radius:var(--r-sm);font-size:14px;font-weight:600;cursor:pointer;margin-bottom:var(--sp-3);">Show Results</button>
+      </div>
+      <div class="filter-section">
+        <div class="filter-label">Category</div>
+        <div id="catFilters"></div>
+      </div>
+      <div class="filter-section">
+        <div class="filter-label">Brand</div>
+        <div id="brandFilters"></div>
+      </div>
+      <div class="filter-section">
+        <div class="filter-label">Price Range</div>
+        <div class="price-row">
+          <input class="price-inp" id="minP" type="number" placeholder="Min" onchange="renderProducts()">
+          <span style="color:var(--color-text-3);align-self:center;">—</span>
+          <input class="price-inp" id="maxP" type="number" placeholder="Max" onchange="renderProducts()">
         </div>
       </div>
-    </div>
+      <div class="filter-section">
+        <div class="filter-label">Badge</div>
+        <label class="filter-opt"><input type="checkbox" value="hot" onchange="renderProducts()"><span>Hot Deals</span></label>
+        <label class="filter-opt"><input type="checkbox" value="sale" onchange="renderProducts()"><span>On Sale</span></label>
+        <label class="filter-opt"><input type="checkbox" value="new" onchange="renderProducts()"><span>New Arrivals</span></label>
+      </div>
+    </aside>
 
+    <!-- GRID -->
+    <div class="products-grid products-grid--4" id="prodGrid">
+      ${Array(8).fill(0).map(() => `<div class="skel-card"><div class="skel" style="height:180px;"></div><div style="padding:12px;"><div class="skel" style="height:10px;width:50%;margin-bottom:8px;border-radius:4px;"></div><div class="skel" style="height:14px;margin-bottom:8px;border-radius:4px;"></div><div class="skel" style="height:12px;width:40%;border-radius:4px;"></div></div></div>`).join('')}
+    </div>
   </div>
-</main>
+</div></main>
 
 <!-- FOOTER -->
-<footer class="site-footer">
-  <div class="container">
-    <div class="site-footer__grid">
-      <div class="footer-brand">
-        <div class="footer-brand__logo">
-          <img src="../assets/images/WELLFIX-MAIN-LOGO.png" alt="WellFix" style="height:28px;filter:brightness(0) invert(1);opacity:.8;" onerror="this.outerHTML='<span style=\'font-family:var(--font-display);font-size:18px;font-weight:800;color:#fff;\'>WellFix</span>'">
-        </div>
-        <p class="footer-brand__desc">Kerala's most trusted home and kitchen appliance shop.</p>
-      </div>
-      <div class="footer-col">
-        <h5 class="footer-col__title">Shop</h5>
-        <div class="footer-links">
-          <a href="products.html?cat=mixers-grinders">Mixers & Grinders</a>
-          <a href="products.html?cat=gas-stoves">Gas Stoves</a>
-          <a href="products.html?cat=fans">Fans</a>
-          <a href="products.html?cat=pressure-cookers">Pressure Cookers</a>
-        </div>
-      </div>
-      <div class="footer-col">
-        <h5 class="footer-col__title">Help</h5>
-        <div class="footer-links">
-          <a href="cart.html">My Cart</a>
-          <a href="services.html">Repair Services</a>
-          <a href="contact.html">Contact Us</a>
-        </div>
-      </div>
-      <div class="footer-col">
-        <h5 class="footer-col__title">Contact</h5>
-        <div class="footer-contact-item"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07"/></svg><span>+91 85900 04349</span></div>
-        <div class="footer-contact-item"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/></svg><span>Kerala, India</span></div>
-      </div>
+<footer class="site-footer"><div class="container">
+  <div class="site-footer__grid">
+    <div class="footer-brand">
+      <div class="footer-brand__logo"><img src="../assets/images/WELLFIX-MAIN-LOGO.png" alt="WellFix" onerror="this.style.display='none'"></div>
+      <p class="footer-brand__desc">Kerala's most trusted home and kitchen appliance shop.</p>
     </div>
-    <div class="site-footer__bottom"><p>© 2025 WellFix Appliances. All rights reserved.</p></div>
+    <div class="footer-col"><h5 class="footer-col__title">Shop</h5><div class="footer-links"><a href="products.html?cat=mixers-grinders">Mixers</a><a href="products.html?cat=gas-stoves">Gas Stoves</a><a href="products.html?cat=fans">Fans</a><a href="products.html?cat=pressure-cookers">Pressure Cookers</a></div></div>
+    <div class="footer-col"><h5 class="footer-col__title">Help</h5><div class="footer-links"><a href="cart.html">My Cart</a><a href="services.html">Repair Services</a><a href="contact.html">Contact Us</a><a href="blog.html">Blog</a></div></div>
+    <div class="footer-col"><h5 class="footer-col__title">Contact</h5><div class="footer-contact-item"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="14" height="14"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07"/></svg><span>+91 85900 04349</span></div></div>
   </div>
-</footer>
+  <div class="site-footer__bottom"><p>© 2025 WellFix Appliances. All rights reserved.</p></div>
+</div></footer>
 
-<a href="https://wa.me/918590004349" target="_blank" class="wa-fab">
-  <svg fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347zM12 2C6.477 2 2 6.477 2 12c0 1.89.525 3.66 1.438 5.168L2 22l4.978-1.413A9.955 9.955 0 0012 22c5.523 0 10-4.477 10-10S17.523 2 12 2z"/></svg>
-</a>
+<a href="https://wa.me/918590004349" target="_blank" class="wa-fab"><svg fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347zM12 2C6.477 2 2 6.477 2 12c0 1.89.525 3.66 1.438 5.168L2 22l4.978-1.413A9.955 9.955 0 0012 22c5.523 0 10-4.477 10-10S17.523 2 12 2z"/></svg></a>
 
 <nav class="mobile-nav">
-  <a class="mobile-nav__item" href="../index.html"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>Home</a>
+  <a class="mobile-nav__item" href="../index.html"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Home</a>
   <a class="mobile-nav__item is-active" href="products.html"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>Products</a>
-  <a class="mobile-nav__item" href="cart.html" style="position:relative;">
-    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/></svg>
-    <span class="mobile-nav__badge" data-cart-badge></span>Cart
-  </a>
+  <a class="mobile-nav__item" href="cart.html" style="position:relative;"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg><span class="mobile-nav__badge" data-cart-badge></span>Cart</a>
   <a class="mobile-nav__item" href="services.html"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg>Services</a>
 </nav>
 
@@ -287,235 +174,108 @@
 <script src="../backend/config/supabase.js"></script>
 <script src="../assets/js/app.js"></script>
 <script>
-let allProducts = [], allCategories = [], allBrands = [];
-let selectedCats = [], selectedBrands = [], selectedBadges = [];
-
-// Parse URL params
+let allProducts = [], allCats = [], allBrands = [];
 const params = new URLSearchParams(location.search);
 const urlCat = params.get('cat');
 const urlSearch = params.get('search');
-const urlFilter = params.get('filter');
 
 document.addEventListener('DOMContentLoaded', async () => {
   updateCartUI();
   initMobileSearch();
-
-  if (urlSearch) {
-    document.getElementById('headerSearch').value = urlSearch;
-  }
-
-  await Promise.all([loadCategories(), loadBrands()]);
-  await loadProducts();
-  highlightActiveNav();
+  if (urlSearch) document.getElementById('searchInp').value = urlSearch;
+  document.getElementById('filterCloseRow').style.display = 'block';
+  await Promise.all([loadCats(), loadBrands(), loadProducts()]);
+  buildCatNav();
 });
 
-async function loadCategories() {
+async function loadCats() {
   const { data } = await db.from('categories').select('*').eq('is_active', true).order('sort_order');
-  allCategories = data || [];
-  const container = document.getElementById('categoriesFilter');
-  container.innerHTML = allCategories.map(c => `
-    <label class="filter-option">
-      <input type="checkbox" value="${c.slug}" ${urlCat === c.slug ? 'checked' : ''} onchange="applyFilters()">
-      <span>${c.name}</span>
-    </label>`).join('');
-  if (urlCat) selectedCats = [urlCat];
+  allCats = data || [];
+  const catSel = document.getElementById('catSel');
+  const catFilters = document.getElementById('catFilters');
+  allCats.forEach(c => {
+    catSel.innerHTML += `<option value="${c.slug}">${c.name}</option>`;
+    catFilters.innerHTML += `<label class="filter-opt"><input type="checkbox" value="${c.slug}" ${urlCat === c.slug ? 'checked' : ''} onchange="renderProducts()"><span>${c.name}</span></label>`;
+  });
+  if (urlCat) {
+    const cat = allCats.find(c => c.slug === urlCat);
+    if (cat) document.getElementById('breadcrumb').textContent = cat.name;
+  }
 }
 
 async function loadBrands() {
   const { data } = await db.from('brands').select('*').eq('is_active', true).order('name');
   allBrands = data || [];
-  const container = document.getElementById('brandsFilter');
-  container.innerHTML = allBrands.map(b => `
-    <label class="filter-option">
-      <input type="checkbox" value="${b.slug || b.name.toLowerCase()}" onchange="applyFilters()">
-      <span>${b.name}</span>
-    </label>`).join('');
+  const brandFilters = document.getElementById('brandFilters');
+  allBrands.forEach(b => {
+    brandFilters.innerHTML += `<label class="filter-opt"><input type="checkbox" value="${b.slug || b.name.toLowerCase()}" onchange="renderProducts()"><span>${b.name}</span></label>`;
+  });
 }
 
 async function loadProducts() {
-  document.getElementById('productsGrid').innerHTML = Array(8).fill(0).map(() => `
-    <div class="skel-card"><div class="skel-img"></div><div class="skel-body">
-      <div class="skel-line" style="width:60%;"></div><div class="skel-line"></div><div class="skel-line" style="width:45%;"></div>
-    </div></div>`).join('');
-
-  let query = db.from('products')
+  const { data } = await db.from('products')
     .select('*, images:product_images(url,is_primary), brand:brands(name,slug), category:categories(name,slug)')
-    .eq('is_active', true);
-
-  if (urlFilter === 'sale') query = query.in('badge', ['sale','hot']);
-
-  const { data } = await query.order('created_at', { ascending: false }).limit(100);
+    .eq('is_active', true).order('created_at', { ascending: false }).limit(200);
   allProducts = data || [];
-  applyFilters();
-
-  // Update breadcrumb
-  if (urlCat) {
-    const cat = allCategories.find(c => c.slug === urlCat);
-    if (cat) document.getElementById('breadcrumbCurrent').textContent = cat.name;
-  } else if (urlSearch) {
-    document.getElementById('breadcrumbCurrent').textContent = `Search: "${urlSearch}"`;
-  } else {
-    document.getElementById('breadcrumbCurrent').textContent = 'All Products';
-  }
+  renderProducts();
 }
 
-function applyFilters() {
-  // Get selected values
-  selectedCats = [...document.querySelectorAll('#categoriesFilter input:checked')].map(i => i.value);
-  selectedBrands = [...document.querySelectorAll('#brandsFilter input:checked')].map(i => i.value);
-  selectedBadges = [...document.querySelectorAll('.filter-group input[type="checkbox"][value="hot"],.filter-group input[type="checkbox"][value="sale"],.filter-group input[type="checkbox"][value="new"]')].filter(i => i.checked).map(i => i.value);
-  const minPrice = parseFloat(document.getElementById('minPrice').value) || 0;
-  const maxPrice = parseFloat(document.getElementById('maxPrice').value) || Infinity;
-  const sort = document.getElementById('sortSelect').value;
-  const search = urlSearch || document.getElementById('headerSearch').value.toLowerCase();
+function buildCatNav() {
+  const nav = document.getElementById('catNavLinks');
+  nav.innerHTML = `<a class="cat-nav-link ${!urlCat ? 'active' : ''}" href="products.html">All Products</a>`;
+  allCats.forEach(c => {
+    nav.innerHTML += `<a class="cat-nav-link ${urlCat === c.slug ? 'active' : ''}" href="products.html?cat=${c.slug}">${c.name}</a>`;
+  });
+}
+
+function renderProducts() {
+  const selCats = [...document.querySelectorAll('#catFilters input:checked')].map(i => i.value);
+  const selBrands = [...document.querySelectorAll('#brandFilters input:checked')].map(i => i.value);
+  const selBadges = [...document.querySelectorAll('.filter-section input[value="hot"],.filter-section input[value="sale"],.filter-section input[value="new"]')].filter(i => i.checked).map(i => i.value);
+  const minP = parseFloat(document.getElementById('minP').value) || 0;
+  const maxP = parseFloat(document.getElementById('maxP').value) || Infinity;
+  const sort = document.getElementById('sortSel').value;
+  const q = (urlSearch || document.getElementById('searchInp').value || '').toLowerCase();
 
   let filtered = allProducts.filter(p => {
-    if (selectedCats.length && !selectedCats.includes(p.category?.slug)) return false;
-    if (selectedBrands.length && !selectedBrands.includes(p.brand?.slug || p.brand?.name?.toLowerCase())) return false;
-    if (selectedBadges.length && !selectedBadges.includes(p.badge)) return false;
-    if (p.price < minPrice || p.price > maxPrice) return false;
-    if (search && !p.name.toLowerCase().includes(search) && !p.brand?.name.toLowerCase().includes(search)) return false;
+    if (selCats.length && !selCats.includes(p.category?.slug)) return false;
+    if (selBrands.length && !selBrands.includes(p.brand?.slug || p.brand?.name?.toLowerCase())) return false;
+    if (selBadges.length && !selBadges.includes(p.badge)) return false;
+    if (p.price < minP || p.price > maxP) return false;
+    if (q && !p.name.toLowerCase().includes(q) && !(p.brand?.name || '').toLowerCase().includes(q)) return false;
     return true;
   });
 
-  // Sort
-  if (sort === 'price_asc') filtered.sort((a,b) => a.price - b.price);
-  else if (sort === 'price_desc') filtered.sort((a,b) => b.price - a.price);
-  else if (sort === 'name') filtered.sort((a,b) => a.name.localeCompare(b.name));
+  if (sort === 'price_asc') filtered.sort((a, b) => a.price - b.price);
+  else if (sort === 'price_desc') filtered.sort((a, b) => b.price - a.price);
+  else if (sort === 'name') filtered.sort((a, b) => a.name.localeCompare(b.name));
 
-  renderProducts(filtered);
-  updateActiveFilters();
+  document.getElementById('prodCount').textContent = `${filtered.length} product${filtered.length !== 1 ? 's' : ''}`;
 
-  // Update filter count badge
-  const count = selectedCats.length + selectedBrands.length + selectedBadges.length;
-  const fcEl = document.getElementById('filterCount');
-  if (count > 0) { fcEl.textContent = count; fcEl.style.display = 'inline'; }
-  else fcEl.style.display = 'none';
-}
-
-function renderProducts(products) {
-  const grid = document.getElementById('productsGrid');
-  document.getElementById('productsCount').textContent = `${products.length} product${products.length !== 1 ? 's' : ''} found`;
-
-  if (!products.length) {
-    grid.innerHTML = `<div class="no-results">
-      <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-      <h3>No products found</h3>
-      <p>Try adjusting your filters or search term</p>
-      <button class="btn btn-primary btn-sm" style="margin-top:12px;" onclick="clearAllFilters()">Clear Filters</button>
-    </div>`;
+  const grid = document.getElementById('prodGrid');
+  if (!filtered.length) {
+    grid.innerHTML = `<div class="no-res"><svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><h3 style="font-size:var(--text-xl);font-weight:700;margin-bottom:8px;">No products found</h3><p>Try changing your filters</p><button class="btn btn-primary btn-sm" style="margin-top:12px;" onclick="clearFilters()">Clear Filters</button></div>`;
     return;
   }
 
-  grid.innerHTML = products.map(p => {
-    const img = p.images?.find(i => i.is_primary)?.url || p.images?.[0]?.url;
-    const disc = p.mrp && p.price ? Math.round(((p.mrp - p.price) / p.mrp) * 100) : 0;
-    return `
-      <div class="product-card" onclick="window.location.href='product.html?id=${p.id}'">
-        <div class="product-card__img-wrap">
-          ${img ? `<img class="product-card__img" src="${img}" alt="${p.name}" loading="lazy">` : `<div class="product-card__img" style="display:flex;align-items:center;justify-content:center;font-size:40px;position:absolute;inset:0;">📦</div>`}
-          <div class="product-card__badges">
-            ${p.badge ? `<span class="badge badge--${p.badge}">${p.badge.toUpperCase()}</span>` : ''}
-            ${disc > 0 ? `<span class="badge badge--sale">-${disc}%</span>` : ''}
-          </div>
-          <button class="product-card__wish" onclick="event.stopPropagation()" aria-label="Wishlist">
-            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
-          </button>
-        </div>
-        <div class="product-card__body">
-          <div class="product-card__brand">${p.brand?.name || ''}</div>
-          <div class="product-card__name">${p.name}</div>
-          <div class="product-card__price-row">
-            <span class="product-card__price">₹${Number(p.price).toLocaleString('en-IN')}</span>
-            ${p.mrp ? `<span class="product-card__mrp">₹${Number(p.mrp).toLocaleString('en-IN')}</span>` : ''}
-          </div>
-          ${p.warranty ? `<div class="product-card__warranty">${p.warranty} Warranty</div>` : ''}
-          <button class="product-card__cta" onclick="event.stopPropagation();addToCartFromGrid('${p.id}','${p.name.replace(/'/g,"\\'")}',${p.price},'${img||''}')">
-            <svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" width="13" height="13"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-            Add to Cart
-          </button>
-        </div>
-      </div>`;
-  }).join('');
+  grid.innerHTML = filtered.map(p => productCardHTML(p, false)).join('');
+  updateChips(selCats, selBrands, selBadges);
 }
 
-function updateActiveFilters() {
-  const chips = [];
-  selectedCats.forEach(c => {
-    const cat = allCategories.find(x => x.slug === c);
-    if (cat) chips.push({ label: cat.name, type: 'cat', value: c });
-  });
-  selectedBrands.forEach(b => {
-    const brand = allBrands.find(x => (x.slug || x.name.toLowerCase()) === b);
-    if (brand) chips.push({ label: brand.name, type: 'brand', value: b });
-  });
-  selectedBadges.forEach(b => chips.push({ label: b.toUpperCase(), type: 'badge', value: b }));
-
-  document.getElementById('activeFilters').innerHTML = chips.map(chip => `
-    <span class="filter-chip" onclick="removeFilter('${chip.type}','${chip.value}')">
-      ${chip.label}
-      <svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-    </span>`).join('');
+function updateChips(cats, brands, badges) {
+  const chips = document.getElementById('activeChips');
+  let html = '';
+  cats.forEach(c => { const cat = allCats.find(x => x.slug === c); if (cat) html += `<span class="chip" onclick="removeCat('${c}')">${cat.name} ✕</span>`; });
+  brands.forEach(b => { const br = allBrands.find(x => (x.slug || x.name.toLowerCase()) === b); if (br) html += `<span class="chip" onclick="removeBrand('${b}')">${br.name} ✕</span>`; });
+  badges.forEach(b => html += `<span class="chip" onclick="removeBadge('${b}')">${b.toUpperCase()} ✕</span>`);
+  chips.innerHTML = html;
 }
 
-function removeFilter(type, value) {
-  if (type === 'cat') {
-    document.querySelectorAll('#categoriesFilter input').forEach(i => { if (i.value === value) i.checked = false; });
-  } else if (type === 'brand') {
-    document.querySelectorAll('#brandsFilter input').forEach(i => { if (i.value === value) i.checked = false; });
-  } else if (type === 'badge') {
-    document.querySelectorAll(`.filter-group input[value="${value}"]`).forEach(i => i.checked = false);
-  }
-  applyFilters();
-}
-
-function clearAllFilters() {
-  document.querySelectorAll('.filter-sidebar input[type="checkbox"]').forEach(i => i.checked = false);
-  document.getElementById('minPrice').value = '';
-  document.getElementById('maxPrice').value = '';
-  applyFilters();
-}
-
-function toggleFilter() {
-  const sidebar = document.getElementById('filterSidebar');
-  const btn = document.getElementById('mobileApplyBtn');
-  sidebar.classList.toggle('is-open');
-  btn.style.display = sidebar.classList.contains('is-open') ? 'block' : 'none';
-  document.body.style.overflow = sidebar.classList.contains('is-open') ? 'hidden' : '';
-}
-
-function doSearch() {
-  const q = document.getElementById('headerSearch').value.trim();
-  if (q) window.location.href = `products.html?search=${encodeURIComponent(q)}`;
-}
-
-document.getElementById('headerSearch').addEventListener('keydown', e => {
-  if (e.key === 'Enter') doSearch();
-});
-
-function addToCartFromGrid(id, name, price, img) {
-  const cart = JSON.parse(localStorage.getItem('wf_cart') || '[]');
-  const existing = cart.find(i => i.id === id);
-  if (existing) existing.qty = (existing.qty || 1) + 1;
-  else cart.push({ id, name, price, img, qty: 1 });
-  localStorage.setItem('wf_cart', JSON.stringify(cart));
-  updateCartUI();
-  // Show toast
-  let t = document.getElementById('wf-cart-toast');
-  if (!t) { t = document.createElement('div'); t.id = 'wf-cart-toast'; t.style.cssText = 'position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#1a1a1a;color:#fff;padding:10px 20px;border-radius:8px;font-size:13px;z-index:9999;'; document.body.appendChild(t); }
-  t.textContent = '✓ Added to cart';
-  t.style.opacity = '1';
-  clearTimeout(t._t);
-  t._t = setTimeout(() => t.style.opacity = '0', 2000);
-}
-
-function highlightActiveNav() {
-  if (urlCat) {
-    document.querySelectorAll('.cat-nav-link').forEach(a => {
-      a.classList.toggle('active', a.href.includes(urlCat));
-    });
-  }
-}
+function removeCat(v) { document.querySelectorAll('#catFilters input').forEach(i => { if (i.value === v) i.checked = false; }); renderProducts(); }
+function removeBrand(v) { document.querySelectorAll('#brandFilters input').forEach(i => { if (i.value === v) i.checked = false; }); renderProducts(); }
+function removeBadge(v) { document.querySelectorAll(`.filter-section input[value="${v}"]`).forEach(i => i.checked = false); renderProducts(); }
+function clearFilters() { document.querySelectorAll('.sidebar input[type="checkbox"]').forEach(i => i.checked = false); document.getElementById('minP').value = ''; document.getElementById('maxP').value = ''; renderProducts(); }
+function doSearch() { const q = document.getElementById('searchInp').value.trim() || document.getElementById('mobSearchInput')?.value.trim(); if (q) window.location.href = `products.html?search=${encodeURIComponent(q)}`; }
+document.getElementById('searchInp').addEventListener('keydown', e => { if (e.key === 'Enter') doSearch(); });
 </script>
-</body>
-</html>
+</body></html>
