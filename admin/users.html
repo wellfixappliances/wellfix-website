@@ -6,6 +6,14 @@
 <title>Admin Users — WellFix</title>
 <link rel="icon" href="/wellfix-website/frontend/assets/images/WELLFIX-FAVICON.png">
 <link rel="stylesheet" href="assets/css/admin.css">
+<style>
+.perm-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px;}
+@media(max-width:500px){.perm-grid{grid-template-columns:repeat(2,1fr);}}
+.perm-item{display:flex;align-items:center;justify-content:space-between;background:var(--gray-25);border:1.5px solid var(--gray-100);border-radius:var(--r-sm);padding:8px 10px;gap:8px;}
+.perm-item.is-on{background:var(--green-50);border-color:var(--green-100);}
+.perm-label{font-size:12px;font-weight:500;color:var(--gray-700);}
+.perm-item.is-on .perm-label{color:var(--green-700);}
+</style>
 </head>
 <body>
 <div class="admin-shell">
@@ -14,7 +22,7 @@
 <div class="page-content">
 
 <div class="pg-hd">
-  <div><h1>Admin Users</h1><p>Manage team access and roles</p></div>
+  <div><h1>Admin Users</h1><p>Manage team access, roles and permissions</p></div>
   <div class="pg-hd__actions">
     <button class="btn btn-primary" onclick="openCreateModal()">
       <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
@@ -23,39 +31,50 @@
   </div>
 </div>
 
-<!-- Role explanation cards -->
-<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px;margin-bottom:20px;">
-  <div style="background:var(--white);border:1.5px solid var(--gray-100);border-radius:var(--r-lg);padding:14px;">
-    <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--green-700);margin-bottom:6px;">Super Admin</div>
-    <div style="font-size:11px;color:var(--gray-500);line-height:1.5;">Full access to everything including users, billing, settings</div>
+<!-- Role cards -->
+<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px;margin-bottom:20px;">
+  <div style="background:var(--white);border:1.5px solid var(--gray-100);border-radius:var(--r-lg);padding:12px;">
+    <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--green-700);margin-bottom:5px;">Super Admin</div>
+    <div style="font-size:11px;color:var(--gray-500);line-height:1.5;">Full access to everything</div>
   </div>
-  <div style="background:var(--white);border:1.5px solid var(--gray-100);border-radius:var(--r-lg);padding:14px;">
-    <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--blue-500);margin-bottom:6px;">Admin</div>
-    <div style="font-size:11px;color:var(--gray-500);line-height:1.5;">Full access except user management and billing settings</div>
+  <div style="background:var(--white);border:1.5px solid var(--gray-100);border-radius:var(--r-lg);padding:12px;">
+    <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--blue-500);margin-bottom:5px;">Admin</div>
+    <div style="font-size:11px;color:var(--gray-500);line-height:1.5;">Full except users & settings</div>
   </div>
-  <div style="background:var(--white);border:1.5px solid var(--gray-100);border-radius:var(--r-lg);padding:14px;">
-    <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--gold-400);margin-bottom:6px;">Staff</div>
-    <div style="font-size:11px;color:var(--gray-500);line-height:1.5;">Orders, bookings, customers. Cannot change products or settings</div>
+  <div style="background:var(--white);border:1.5px solid var(--gray-100);border-radius:var(--r-lg);padding:12px;">
+    <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--gold-400);margin-bottom:5px;">Staff</div>
+    <div style="font-size:11px;color:var(--gray-500);line-height:1.5;">Orders, bookings, customers</div>
   </div>
-  <div style="background:var(--white);border:1.5px solid var(--gray-100);border-radius:var(--r-lg);padding:14px;">
-    <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--orange-500);margin-bottom:6px;">POS Staff</div>
-    <div style="font-size:11px;color:var(--gray-500);line-height:1.5;">Point of sale only. Billing, invoicing, receipts</div>
+  <div style="background:var(--white);border:1.5px solid var(--gray-100);border-radius:var(--r-lg);padding:12px;">
+    <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--orange-500);margin-bottom:5px;">POS Staff</div>
+    <div style="font-size:11px;color:var(--gray-500);line-height:1.5;">Billing & invoicing only</div>
   </div>
-  <div style="background:var(--white);border:1.5px solid var(--gray-100);border-radius:var(--r-lg);padding:14px;">
-    <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--purple-500);margin-bottom:6px;">Accountant</div>
-    <div style="font-size:11px;color:var(--gray-500);line-height:1.5;">Invoices, quotations, reports, GST summary</div>
+  <div style="background:var(--white);border:1.5px solid var(--gray-100);border-radius:var(--r-lg);padding:12px;">
+    <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--purple-500);margin-bottom:5px;">Accountant</div>
+    <div style="font-size:11px;color:var(--gray-500);line-height:1.5;">Reports, invoices, orders</div>
   </div>
-  <div style="background:var(--white);border:1.5px solid var(--gray-100);border-radius:var(--r-lg);padding:14px;">
-    <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--gray-500);margin-bottom:6px;">Inventory</div>
-    <div style="font-size:11px;color:var(--gray-500);line-height:1.5;">View and update stock levels only</div>
+  <div style="background:var(--white);border:1.5px solid var(--gray-100);border-radius:var(--r-lg);padding:12px;">
+    <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--gray-500);margin-bottom:5px;">Inventory</div>
+    <div style="font-size:11px;color:var(--gray-500);line-height:1.5;">Stock levels only</div>
   </div>
 </div>
 
 <div class="card">
   <div class="tbl-wrap">
     <table>
-      <thead><tr><th>User</th><th>Role</th><th>Status</th><th>Created</th><th>Actions</th></tr></thead>
-      <tbody id="usersTbody"><tr><td colspan="5" style="text-align:center;padding:30px;"><div class="spinner" style="margin:0 auto;"></div></td></tr></tbody>
+      <thead>
+        <tr>
+          <th>User</th>
+          <th>Role</th>
+          <th>Access</th>
+          <th>Status</th>
+          <th>Created</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody id="usersTbody">
+        <tr><td colspan="6" style="text-align:center;padding:30px;"><div class="spinner" style="margin:0 auto;"></div></td></tr>
+      </tbody>
     </table>
   </div>
 </div>
@@ -64,7 +83,7 @@
 
 <!-- CREATE USER MODAL -->
 <div class="modal-overlay" id="createModal">
-  <div class="modal" style="max-width:480px;">
+  <div class="modal" style="max-width:500px;">
     <div class="modal-hd">
       <div class="modal-title">Create New User</div>
       <button class="modal-close" onclick="closeCreateModal()"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
@@ -72,27 +91,27 @@
     <div class="modal-body">
       <div class="alert alert-warning" style="margin-bottom:14px;">
         <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-        Save the password before closing — you cannot view it again after saving.
+        Save the password before closing — you cannot view it again.
       </div>
-      <div class="form-grid" style="gap:13px;">
+      <div class="form-grid form-2" style="gap:12px;">
         <div class="form-group">
           <label class="form-label">Full Name <span class="req">*</span></label>
           <input class="form-input" id="newName" placeholder="e.g. Rajan Kumar">
         </div>
         <div class="form-group">
-          <label class="form-label">Email Address <span class="req">*</span></label>
-          <input class="form-input" type="email" id="newEmail" placeholder="staff@wellfixappliances.com">
+          <label class="form-label">Email <span class="req">*</span></label>
+          <input class="form-input" type="email" id="newEmail" placeholder="staff@example.com">
         </div>
-        <div class="form-group">
+        <div class="form-group" style="grid-column:1/-1;">
           <label class="form-label">Password <span class="req">*</span></label>
           <div style="position:relative;">
-            <input class="form-input" type="text" id="newPassword" placeholder="Min 8 characters" style="padding-right:100px;">
-            <button onclick="generatePassword()" style="position:absolute;right:8px;top:50%;transform:translateY(-50%);background:var(--green-50);color:var(--green-700);border:none;border-radius:var(--r-sm);padding:4px 10px;font-size:11px;font-weight:600;cursor:pointer;">Generate</button>
+            <input class="form-input" type="text" id="newPassword" placeholder="Min 8 characters" style="padding-right:90px;">
+            <button onclick="generatePassword()" style="position:absolute;right:7px;top:50%;transform:translateY(-50%);background:var(--green-50);color:var(--green-700);border:none;border-radius:var(--r-sm);padding:4px 10px;font-size:11px;font-weight:600;cursor:pointer;">Generate</button>
           </div>
         </div>
-        <div class="form-group">
+        <div class="form-group" style="grid-column:1/-1;">
           <label class="form-label">Role <span class="req">*</span></label>
-          <select class="form-select" id="newRole">
+          <select class="form-select" id="newRole" onchange="loadDefaultPermissions()">
             <option value="staff">Staff</option>
             <option value="admin">Admin</option>
             <option value="pos_staff">POS Staff (Billing)</option>
@@ -103,23 +122,26 @@
         </div>
       </div>
 
-      <!-- Share credentials box -->
-      <div id="credentialsBox" style="display:none;margin-top:16px;background:var(--green-50);border:1.5px solid var(--green-100);border-radius:var(--r-lg);padding:14px;">
-        <div style="font-size:12px;font-weight:700;color:var(--green-700);margin-bottom:10px;">User Created — Share These Credentials</div>
-        <div id="credentialsText" style="font-size:12px;color:var(--gray-700);line-height:1.8;background:#fff;border-radius:var(--r-sm);padding:10px;font-family:monospace;"></div>
+      <!-- Permissions -->
+      <div style="margin-top:14px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+          <div style="font-size:12px;font-weight:700;color:var(--gray-700);">Page Access Permissions</div>
+          <div style="font-size:11px;color:var(--gray-400);">Toggle to customize</div>
+        </div>
+        <div class="perm-grid" id="permGrid"></div>
+      </div>
+
+      <!-- Credentials box -->
+      <div id="credentialsBox" style="display:none;margin-top:14px;background:var(--green-50);border:1.5px solid var(--green-100);border-radius:var(--r-lg);padding:14px;">
+        <div style="font-size:12px;font-weight:700;color:var(--green-700);margin-bottom:8px;">User Created — Share Credentials</div>
+        <div id="credentialsText" style="font-size:11px;color:var(--gray-700);line-height:1.9;background:#fff;border-radius:var(--r-sm);padding:10px;font-family:monospace;white-space:pre-line;"></div>
         <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;">
           <button class="btn btn-primary btn-sm" onclick="copyCredentials()">
             <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
             Copy
           </button>
-          <button class="btn btn-gold btn-sm" onclick="shareWhatsApp()">
-            <svg fill="currentColor" viewBox="0 0 24 24" style="width:13px;height:13px;"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347zM12 2C6.477 2 2 6.477 2 12c0 1.89.525 3.66 1.438 5.168L2 22l4.978-1.413A9.955 9.955 0 0012 22c5.523 0 10-4.477 10-10S17.523 2 12 2z"/></svg>
-            WhatsApp
-          </button>
-          <button class="btn btn-secondary btn-sm" onclick="shareEmail()">
-            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
-            Email
-          </button>
+          <button class="btn btn-gold btn-sm" onclick="shareWhatsApp()">WhatsApp</button>
+          <button class="btn btn-secondary btn-sm" onclick="shareEmail()">Email</button>
         </div>
       </div>
     </div>
@@ -133,75 +155,190 @@
   </div>
 </div>
 
+<!-- EDIT PERMISSIONS MODAL -->
+<div class="modal-overlay" id="editPermModal">
+  <div class="modal" style="max-width:520px;">
+    <div class="modal-hd">
+      <div class="modal-title" id="editPermTitle">Edit Permissions</div>
+      <button class="modal-close" onclick="closeEditPerm()"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="editPermUserId">
+      <div style="margin-bottom:12px;">
+        <label class="form-label">Role</label>
+        <select class="form-select" id="editRole" onchange="loadEditDefaultPerms()" style="margin-top:5px;">
+          <option value="staff">Staff</option>
+          <option value="admin">Admin</option>
+          <option value="pos_staff">POS Staff</option>
+          <option value="accountant">Accountant</option>
+          <option value="inventory">Inventory Manager</option>
+          <option value="content">Content Editor</option>
+          <option value="super_admin">Super Admin</option>
+        </select>
+      </div>
+      <div style="font-size:12px;font-weight:700;color:var(--gray-700);margin-bottom:8px;">Page Access</div>
+      <div class="perm-grid" id="editPermGrid"></div>
+
+      <!-- Reset password section -->
+      <div style="margin-top:16px;padding-top:14px;border-top:1px solid var(--gray-100);">
+        <div style="font-size:12px;font-weight:700;color:var(--gray-700);margin-bottom:8px;">Reset Password</div>
+        <div style="display:flex;gap:8px;">
+          <input class="form-input" type="text" id="newPasswordReset" placeholder="New password (min 8 chars)" style="flex:1;">
+          <button class="btn btn-secondary btn-sm" onclick="generateResetPassword()">Generate</button>
+        </div>
+        <button class="btn btn-danger btn-sm" style="margin-top:8px;width:100%;" onclick="resetUserPassword()">
+          Set New Password
+        </button>
+      </div>
+    </div>
+    <div class="modal-ft">
+      <button class="btn btn-danger" onclick="deleteUser()">Delete User</button>
+      <button class="btn btn-secondary" onclick="closeEditPerm()">Cancel</button>
+      <button class="btn btn-primary" onclick="savePermissions()">Save Changes</button>
+    </div>
+  </div>
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="/wellfix-website/backend/config/supabase.js"></script>
 <script src="assets/js/shell.js"></script>
 <script>
+let allProfiles = [];
 let lastCreatedCredentials = null;
+const PAGE_LABELS = {
+  dashboard:'Dashboard', analytics:'Analytics', products:'Products',
+  categories:'Categories', brands:'Brands', inventory:'Inventory',
+  orders:'Orders', customers:'Customers', coupons:'Coupons',
+  reviews:'Reviews', services:'Bookings', homepage:'Homepage',
+  banners:'Banners', blog:'Blog', media:'Media',
+  seo:'SEO', users:'Users', settings:'Settings'
+};
+const DEFAULT_PERMS = {
+  super_admin: {dashboard:true,analytics:true,products:true,categories:true,brands:true,inventory:true,orders:true,customers:true,coupons:true,reviews:true,services:true,homepage:true,banners:true,blog:true,media:true,seo:true,users:true,settings:true},
+  admin:       {dashboard:true,analytics:true,products:true,categories:true,brands:true,inventory:true,orders:true,customers:true,coupons:true,reviews:true,services:true,homepage:true,banners:true,blog:true,media:true,seo:true,users:false,settings:false},
+  staff:       {dashboard:true,analytics:false,products:true,categories:false,brands:false,inventory:false,orders:true,customers:true,coupons:false,reviews:false,services:true,homepage:false,banners:false,blog:false,media:false,seo:false,users:false,settings:false},
+  pos_staff:   {dashboard:true,analytics:false,products:true,categories:false,brands:false,inventory:false,orders:true,customers:true,coupons:true,reviews:false,services:false,homepage:false,banners:false,blog:false,media:false,seo:false,users:false,settings:false},
+  accountant:  {dashboard:true,analytics:true,products:false,categories:false,brands:false,inventory:false,orders:true,customers:true,coupons:false,reviews:false,services:false,homepage:false,banners:false,blog:false,media:false,seo:false,users:false,settings:false},
+  inventory:   {dashboard:true,analytics:false,products:true,categories:false,brands:false,inventory:true,orders:false,customers:false,coupons:false,reviews:false,services:false,homepage:false,banners:false,blog:false,media:false,seo:false,users:false,settings:false},
+  content:     {dashboard:true,analytics:false,products:false,categories:true,brands:true,inventory:false,orders:false,customers:false,coupons:false,reviews:true,services:false,homepage:true,banners:true,blog:true,media:true,seo:false,users:false,settings:false},
+};
 
 (async () => {
-  await AdminShell.init('Admin Users');
+  await AdminShell.init('Admin Users', 'users');
   await loadUsers();
+  loadDefaultPermissions();
 })();
 
 async function loadUsers() {
-  const { data: profiles } = await db.from('profiles').select('*').order('created_at');
-  const tbody = document.getElementById('usersTbody');
-  if (!profiles?.length) {
-    tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;padding:30px;color:var(--gray-300);">No users found</td></tr>`;
-    return;
-  }
-  const roleColors = {
-    super_admin: 'var(--green-700)', admin: 'var(--blue-500)',
-    staff: 'var(--gold-400)', pos_staff: 'var(--orange-500)',
-    accountant: 'var(--purple-500)', inventory: 'var(--gray-500)', content: 'var(--gray-500)'
-  };
-  tbody.innerHTML = profiles.map(p => `<tr>
-    <td>
-      <div style="display:flex;align-items:center;gap:9px;">
-        <div style="width:30px;height:30px;border-radius:99px;background:var(--green-700);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--gold-400);flex-shrink:0;">
-          ${(p.full_name||'?').charAt(0).toUpperCase()}
-        </div>
-        <div>
-          <div class="td-bold">${p.full_name || '—'}</div>
-          <div style="font-size:11px;color:var(--gray-400);">ID: ${p.id.slice(0,8)}…</div>
-        </div>
-      </div>
-    </td>
-    <td>
-      <span style="font-size:11px;font-weight:700;color:${roleColors[p.role]||'var(--gray-500)'};text-transform:uppercase;letter-spacing:.04em;">
-        ${(p.role||'staff').replace(/_/g,' ')}
-      </span>
-    </td>
-    <td>${renderBadge(p.is_active ? 'active' : 'inactive')}</td>
-    <td>${formatDate(p.created_at)}</td>
-    <td>
-      <div style="display:flex;gap:6px;align-items:center;">
-        <select class="filter-select" style="height:26px;font-size:11px;" onchange="updateRole('${p.id}',this.value)">
-          ${['super_admin','admin','staff','pos_staff','accountant','inventory','content'].map(r =>
-            `<option value="${r}" ${p.role===r?'selected':''}>${r.replace(/_/g,' ')}</option>`
-          ).join('')}
-        </select>
-        <button class="btn-icon" onclick="toggleStatus('${p.id}',${!p.is_active})" title="${p.is_active?'Deactivate':'Activate'}">
-          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-            ${p.is_active
-              ? '<circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/>'
-              : '<polyline points="20 6 9 17 4 12"/>'}
-          </svg>
-        </button>
-      </div>
-    </td>
-  </tr>`).join('');
+  const { data } = await db.from('profiles').select('*').order('created_at');
+  allProfiles = data || [];
+  renderUsersTable();
 }
 
+function renderUsersTable() {
+  const roleColors = {
+    super_admin:'var(--green-700)',admin:'var(--blue-500)',staff:'var(--gold-400)',
+    pos_staff:'var(--orange-500)',accountant:'var(--purple-500)',inventory:'var(--gray-500)',content:'var(--gray-400)'
+  };
+  const tbody = document.getElementById('usersTbody');
+  if (!allProfiles.length) {
+    tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:30px;color:var(--gray-300);">No users found</td></tr>`;
+    return;
+  }
+  tbody.innerHTML = allProfiles.map(p => {
+    const perms = p.permissions || DEFAULT_PERMS[p.role] || {};
+    const allowedCount = Object.values(perms).filter(Boolean).length;
+    const totalPages = Object.keys(PAGE_LABELS).length;
+    return `<tr>
+      <td>
+        <div style="display:flex;align-items:center;gap:9px;">
+          <div style="width:32px;height:32px;border-radius:99px;background:var(--green-700);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--gold-400);flex-shrink:0;">
+            ${(p.full_name||'?').charAt(0).toUpperCase()}
+          </div>
+          <div>
+            <div class="td-bold">${p.full_name||'—'}</div>
+            <div style="font-size:10px;color:var(--gray-400);">${p.id.slice(0,10)}…</div>
+          </div>
+        </div>
+      </td>
+      <td>
+        <span style="font-size:11px;font-weight:700;color:${roleColors[p.role]||'var(--gray-500)'};text-transform:uppercase;letter-spacing:.04em;">
+          ${(p.role||'staff').replace(/_/g,' ')}
+        </span>
+      </td>
+      <td>
+        <div style="font-size:12px;color:var(--gray-600);">
+          <span style="font-weight:700;color:var(--green-700);">${allowedCount}</span>/${totalPages} pages
+        </div>
+      </td>
+      <td>${renderBadge(p.is_active ? 'active' : 'inactive')}</td>
+      <td>${formatDate(p.created_at)}</td>
+      <td>
+        <div style="display:flex;gap:5px;">
+          <button class="btn btn-primary btn-sm" onclick="openEditPerm('${p.id}')">
+            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="12" height="12"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+            Edit
+          </button>
+          <button class="btn-icon" onclick="toggleActive('${p.id}',${!p.is_active})" title="${p.is_active?'Deactivate':'Activate'}">
+            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              ${p.is_active ? '<circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/>' : '<polyline points="20 6 9 17 4 12"/>'}
+            </svg>
+          </button>
+        </div>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+// ── Permission grid builder ──
+function buildPermGrid(containerId, perms) {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+  container.innerHTML = Object.entries(PAGE_LABELS).map(([key, label]) => `
+    <div class="perm-item ${perms[key] ? 'is-on' : ''}" id="perm-item-${containerId}-${key}">
+      <span class="perm-label">${label}</span>
+      <label class="toggle" style="flex-shrink:0;">
+        <input type="checkbox" ${perms[key] ? 'checked' : ''}
+          onchange="togglePerm('${containerId}','${key}',this.checked)">
+        <span class="toggle-track"></span>
+      </label>
+    </div>`).join('');
+}
+
+function togglePerm(containerId, key, val) {
+  const item = document.getElementById(`perm-item-${containerId}-${key}`);
+  if (item) item.className = `perm-item ${val ? 'is-on' : ''}`;
+}
+
+function getPermValues(containerId) {
+  const perms = {};
+  Object.keys(PAGE_LABELS).forEach(key => {
+    const input = document.querySelector(`#perm-item-${containerId}-${key} input[type="checkbox"]`);
+    perms[key] = input ? input.checked : false;
+  });
+  return perms;
+}
+
+function loadDefaultPermissions() {
+  const role = document.getElementById('newRole').value;
+  buildPermGrid('permGrid', DEFAULT_PERMS[role] || DEFAULT_PERMS['staff']);
+}
+
+function loadEditDefaultPerms() {
+  const role = document.getElementById('editRole').value;
+  buildPermGrid('editPermGrid', DEFAULT_PERMS[role] || DEFAULT_PERMS['staff']);
+}
+
+// ── Create User ──
 function openCreateModal() {
   document.getElementById('credentialsBox').style.display = 'none';
   document.getElementById('createModalFt').style.display = 'flex';
-  document.getElementById('createUserBtn').style.display = 'flex';
+  document.getElementById('createUserBtn').style.display = 'inline-flex';
   document.getElementById('newName').value = '';
   document.getElementById('newEmail').value = '';
   document.getElementById('newPassword').value = '';
   document.getElementById('newRole').value = 'staff';
+  loadDefaultPermissions();
   document.getElementById('createModal').classList.add('is-open');
   document.body.style.overflow = 'hidden';
 }
@@ -212,10 +349,8 @@ function closeCreateModal() {
 document.getElementById('createModal').addEventListener('click', e => { if (e.target === e.currentTarget) closeCreateModal(); });
 
 function generatePassword() {
-  const chars = 'ABCDEFGHJKMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789!@#';
-  let pass = '';
-  for (let i = 0; i < 10; i++) pass += chars[Math.floor(Math.random() * chars.length)];
-  document.getElementById('newPassword').value = pass;
+  const c = 'ABCDEFGHJKMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789!@#';
+  document.getElementById('newPassword').value = Array.from({length:10}, () => c[Math.floor(Math.random()*c.length)]).join('');
 }
 
 async function createUser() {
@@ -223,88 +358,144 @@ async function createUser() {
   const email = document.getElementById('newEmail').value.trim();
   const password = document.getElementById('newPassword').value;
   const role = document.getElementById('newRole').value;
-
-  if (!name || !email || !password) {
-    toast('Name, email and password are required', true);
-    return;
-  }
-  if (password.length < 8) {
-    toast('Password must be at least 8 characters', true);
-    return;
-  }
+  if (!name || !email || !password) { toast('All fields required', true); return; }
+  if (password.length < 8) { toast('Password min 8 characters', true); return; }
 
   const btn = document.getElementById('createUserBtn');
   btn.disabled = true;
-  btn.innerHTML = '<div class="spinner" style="width:14px;height:14px;border-top-color:#fff;border-color:rgba(255,255,255,.3);"></div> Creating…';
+  btn.innerHTML = '<div class="spinner" style="width:13px;height:13px;border-top-color:#fff;border-color:rgba(255,255,255,.3);"></div> Creating…';
 
   try {
+    const customPerms = getPermValues('permGrid');
     const { data, error } = await db.rpc('create_admin_user', {
       user_email: email,
       user_password: password,
       user_name: name,
       user_role: role
     });
-
     if (error) throw error;
 
-    lastCreatedCredentials = { name, email, password, role: role.replace(/_/g, ' ') };
+    // Save custom permissions
+    const { data: profiles } = await db.from('profiles').select('id').eq('full_name', name).order('created_at', {ascending: false}).limit(1);
+    if (profiles?.[0]) {
+      await db.from('profiles').update({ permissions: customPerms }).eq('id', profiles[0].id);
+    }
+
+    lastCreatedCredentials = { name, email, password, role: role.replace(/_/g,' ') };
     showCredentials(lastCreatedCredentials);
-    toast('User created successfully!');
+    toast('User created!');
     document.getElementById('createUserBtn').style.display = 'none';
     await loadUsers();
 
   } catch (err) {
-    toast('Error creating user: ' + err.message, true);
+    toast('Error: ' + err.message, true);
     btn.disabled = false;
     btn.innerHTML = 'Create User';
   }
 }
 
-function showCredentials(creds) {
-  const box = document.getElementById('credentialsBox');
-  const text = document.getElementById('credentialsText');
-  box.style.display = 'block';
-  text.innerHTML = `
-    WellFix Admin Access<br>
-    ━━━━━━━━━━━━━━━━━━━━<br>
-    Login URL: https://wellfixappliances.github.io/wellfix-website/admin/login.html<br>
-    Name: ${creds.name}<br>
-    Email: ${creds.email}<br>
-    Password: ${creds.password}<br>
-    Role: ${creds.role}<br>
-    ━━━━━━━━━━━━━━━━━━━━<br>
-    Keep this safe. Do not share with others.
-  `;
+function showCredentials(c) {
+  document.getElementById('credentialsBox').style.display = 'block';
+  document.getElementById('credentialsText').textContent =
+`WellFix Admin Access
+━━━━━━━━━━━━━━━━━━━━
+Login: https://wellfixappliances.github.io/wellfix-website/admin/login.html
+Name: ${c.name}
+Email: ${c.email}
+Password: ${c.password}
+Role: ${c.role}
+━━━━━━━━━━━━━━━━━━━━
+Keep this safe.`;
 }
 
 function copyCredentials() {
   if (!lastCreatedCredentials) return;
-  const text = `WellFix Admin Access\n\nLogin: https://wellfixappliances.github.io/wellfix-website/admin/login.html\nEmail: ${lastCreatedCredentials.email}\nPassword: ${lastCreatedCredentials.password}\nRole: ${lastCreatedCredentials.role}`;
-  navigator.clipboard.writeText(text).then(() => toast('Credentials copied to clipboard!'));
+  const c = lastCreatedCredentials;
+  navigator.clipboard.writeText(`WellFix Admin\nLogin: https://wellfixappliances.github.io/wellfix-website/admin/login.html\nEmail: ${c.email}\nPassword: ${c.password}\nRole: ${c.role}`)
+    .then(() => toast('Copied to clipboard!'));
 }
-
 function shareWhatsApp() {
   if (!lastCreatedCredentials) return;
-  const text = encodeURIComponent(`WellFix Admin Access\n\nLogin: https://wellfixappliances.github.io/wellfix-website/admin/login.html\nEmail: ${lastCreatedCredentials.email}\nPassword: ${lastCreatedCredentials.password}\nRole: ${lastCreatedCredentials.role}`);
-  window.open(`https://wa.me/?text=${text}`, '_blank');
+  const c = lastCreatedCredentials;
+  window.open(`https://wa.me/?text=${encodeURIComponent(`WellFix Admin Access\nLogin: https://wellfixappliances.github.io/wellfix-website/admin/login.html\nEmail: ${c.email}\nPassword: ${c.password}\nRole: ${c.role}`)}`, '_blank');
 }
-
 function shareEmail() {
   if (!lastCreatedCredentials) return;
-  const subject = encodeURIComponent('Your WellFix Admin Access');
-  const body = encodeURIComponent(`Hi ${lastCreatedCredentials.name},\n\nYour WellFix admin access has been created.\n\nLogin URL: https://wellfixappliances.github.io/wellfix-website/admin/login.html\nEmail: ${lastCreatedCredentials.email}\nPassword: ${lastCreatedCredentials.password}\nRole: ${lastCreatedCredentials.role}\n\nPlease change your password after first login.\n\nWellFix Appliances`);
-  window.location.href = `mailto:${lastCreatedCredentials.email}?subject=${subject}&body=${body}`;
+  const c = lastCreatedCredentials;
+  window.location.href = `mailto:${c.email}?subject=${encodeURIComponent('Your WellFix Admin Access')}&body=${encodeURIComponent(`Hi ${c.name},\n\nLogin: https://wellfixappliances.github.io/wellfix-website/admin/login.html\nEmail: ${c.email}\nPassword: ${c.password}\nRole: ${c.role}\n\nWellFix Appliances`)}`;
 }
 
-async function updateRole(id, role) {
-  await db.from('profiles').update({ role }).eq('id', id);
-  toast('Role updated');
+// ── Edit Permissions ──
+function openEditPerm(id) {
+  const profile = allProfiles.find(p => p.id === id);
+  if (!profile) return;
+  document.getElementById('editPermUserId').value = id;
+  document.getElementById('editPermTitle').textContent = `Edit — ${profile.full_name}`;
+  document.getElementById('editRole').value = profile.role || 'staff';
+  document.getElementById('newPasswordReset').value = '';
+  const perms = profile.permissions || DEFAULT_PERMS[profile.role] || DEFAULT_PERMS['staff'];
+  buildPermGrid('editPermGrid', perms);
+  document.getElementById('editPermModal').classList.add('is-open');
+  document.body.style.overflow = 'hidden';
+}
+function closeEditPerm() {
+  document.getElementById('editPermModal').classList.remove('is-open');
+  document.body.style.overflow = '';
+}
+document.getElementById('editPermModal').addEventListener('click', e => { if (e.target === e.currentTarget) closeEditPerm(); });
+
+async function savePermissions() {
+  const id = document.getElementById('editPermUserId').value;
+  const role = document.getElementById('editRole').value;
+  const perms = getPermValues('editPermGrid');
+  try {
+    await db.from('profiles').update({ role, permissions: perms }).eq('id', id);
+    toast('Permissions saved! Takes effect on next login.');
+    closeEditPerm();
+    await loadUsers();
+  } catch (e) { toast('Error: ' + e.message, true); }
 }
 
-async function toggleStatus(id, active) {
+async function deleteUser() {
+  const id = document.getElementById('editPermUserId').value;
+  const profile = allProfiles.find(p => p.id === id);
+  if (!confirmDialog(`Delete user "${profile?.full_name}"? This cannot be undone.`)) return;
+  try {
+    await db.from('profiles').delete().eq('id', id);
+    await db.from('auth.users').delete().eq('id', id);
+    toast('User deleted');
+    closeEditPerm();
+    await loadUsers();
+  } catch (e) {
+    // Try SQL delete
+    await db.rpc('delete_user_by_id', { uid: id }).catch(() => {});
+    await db.from('profiles').delete().eq('id', id);
+    toast('User removed');
+    closeEditPerm();
+    await loadUsers();
+  }
+}
+
+async function toggleActive(id, active) {
   await db.from('profiles').update({ is_active: active }).eq('id', id);
   toast(active ? 'User activated' : 'User deactivated');
   await loadUsers();
+}
+
+function generateResetPassword() {
+  const c = 'ABCDEFGHJKMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789!@#';
+  document.getElementById('newPasswordReset').value = Array.from({length:10}, () => c[Math.floor(Math.random()*c.length)]).join('');
+}
+
+async function resetUserPassword() {
+  const id = document.getElementById('editPermUserId').value;
+  const newPass = document.getElementById('newPasswordReset').value;
+  if (!newPass || newPass.length < 8) { toast('Password must be at least 8 characters', true); return; }
+  try {
+    await db.rpc('reset_user_password', { uid: id, new_password: newPass });
+    toast('Password updated! New password: ' + newPass);
+    document.getElementById('newPasswordReset').value = '';
+  } catch (e) { toast('Error: ' + e.message, true); }
 }
 </script>
 </body>
