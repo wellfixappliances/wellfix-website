@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Blog — WellFix Appliances</title>
+  <link rel="icon" href="../assets/images/WELLFIX-FAVICON.png">
+  <link rel="stylesheet" href="../assets/css/main.css">
+  <style>
+    .blog-page{padding:var(--sp-6) 0 var(--sp-12);}
+    .blog-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--sp-5);}
+    @media(max-width:900px){.blog-grid{grid-template-columns:repeat(2,1fr);}}
+    @media(max-width:560px){.blog-grid{grid-template-columns:1fr;}}
+    .blog-card{background:var(--color-surface);border:1.5px solid var(--color-border);border-radius:var(--r-lg);overflow:hidden;cursor:pointer;transition:box-shadow var(--t-base),transform var(--t-base);}
+    .blog-card:hover{box-shadow:var(--shadow-lg);transform:translateY(-2px);}
+    .blog-card__img{width:100%;height:200px;object-fit:cover;}
+    .blog-card__img-placeholder{width:100%;height:200px;background:var(--green-50);display:flex;align-items:center;justify-content:center;font-size:48px;}
+    .blog-card__body{padding:var(--sp-4);}
+    .blog-card__cat{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--color-primary);margin-bottom:8px;}
+    .blog-card__title{font-family:var(--font-display);font-size:var(--text-xl);font-weight:700;color:var(--color-text);line-height:1.3;margin-bottom:8px;}
+    .blog-card__excerpt{font-size:var(--text-sm);color:var(--color-text-2);line-height:1.6;margin-bottom:12px;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;}
+    .blog-card__meta{display:flex;align-items:center;justify-content:space-between;font-size:var(--text-xs);color:var(--color-text-3);}
+    .blog-card__read{color:var(--color-primary);font-weight:600;}
+    .skel{background:linear-gradient(90deg,var(--gray-100) 25%,var(--gray-50) 50%,var(--gray-100) 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;border-radius:var(--r-sm);}
+    @keyframes shimmer{to{background-position:-200% 0;}}
+  </style>
+</head>
+<body>
+<div class="topbar"><div class="container topbar__inner"><div class="topbar__links"><a href="../index.html">Home</a></div><div class="topbar__center">Free delivery across Kerala · <strong>+91 85900 04349</strong></div><div class="topbar__links"><a href="#">100% Genuine</a></div></div></div>
+<header class="site-header">
+  <div class="container site-header__inner">
+    <a href="../index.html" class="logo"><img src="../assets/images/WELLFIX-MAIN-LOGO.png" alt="WellFix" class="logo__img" onerror="this.style.display='none'"></a>
+    <div style="flex:1;"></div>
+    <div class="header-actions">
+      <a href="cart.html" class="hdr-cart"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg><span class="label">Cart</span><span class="hdr-cart__count" data-cart-count>0</span></a>
+    </div>
+  </div>
+</header>
+<main class="blog-page">
+  <div class="container">
+    <div style="margin-bottom:var(--sp-5);">
+      <div class="sec-hd"><div><div class="sec-hd__title">WellFix <span>Blog</span></div><div class="sec-hd__sub">Tips, guides and news about home appliances</div></div></div>
+    </div>
+    <div class="blog-grid" id="blogGrid">
+      ${Array(6).fill(0).map(()=>`<div class="blog-card"><div class="skel" style="height:200px;border-radius:0;"></div><div style="padding:var(--sp-4);"><div class="skel" style="height:10px;width:60px;margin-bottom:10px;"></div><div class="skel" style="height:18px;margin-bottom:6px;"></div><div class="skel" style="height:18px;width:80%;margin-bottom:12px;"></div><div class="skel" style="height:12px;margin-bottom:6px;"></div><div class="skel" style="height:12px;width:70%;"></div></div></div>`).join('')}
+    </div>
+    <div id="noPosts" style="display:none;text-align:center;padding:var(--sp-12) var(--sp-4);color:var(--color-text-3);">
+      <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" style="width:48px;height:48px;margin:0 auto var(--sp-3);opacity:.3;"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+      <h3 style="font-size:var(--text-xl);font-weight:700;margin-bottom:8px;">No posts yet</h3>
+      <p>Check back soon for tips and guides</p>
+    </div>
+  </div>
+</main>
+<footer class="site-footer"><div class="container"><div class="site-footer__bottom"><p>© 2025 WellFix Appliances. All rights reserved.</p></div></div></footer>
+<a href="https://wa.me/918590004349" target="_blank" class="wa-fab"><svg fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347zM12 2C6.477 2 2 6.477 2 12c0 1.89.525 3.66 1.438 5.168L2 22l4.978-1.413A9.955 9.955 0 0012 22c5.523 0 10-4.477 10-10S17.523 2 12 2z"/></svg></a>
+<nav class="mobile-nav">
+  <a class="mobile-nav__item" href="../index.html"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>Home</a>
+  <a class="mobile-nav__item" href="products.html"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>Products</a>
+  <a class="mobile-nav__item" href="cart.html"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/></svg>Cart</a>
+  <a class="mobile-nav__item is-active" href="blog.html"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/></svg>Blog</a>
+</nav>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../backend/config/supabase.js"></script>
+<script src="../assets/js/app.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', async () => {
+  updateCartUI();
+  const { data: posts } = await db.from('blog_posts').select('*').eq('status','published').order('published_at',{ascending:false});
+  const grid = document.getElementById('blogGrid');
+  if (!posts?.length) { grid.style.display='none'; document.getElementById('noPosts').style.display='block'; return; }
+  grid.innerHTML = posts.map(p => `
+    <div class="blog-card" onclick="window.location.href='blog-post.html?id=${p.id}'">
+      ${p.cover_image ? `<img class="blog-card__img" src="${p.cover_image}" alt="${p.title}" loading="lazy">` : `<div class="blog-card__img-placeholder">📝</div>`}
+      <div class="blog-card__body">
+        ${p.category ? `<div class="blog-card__cat">${p.category}</div>` : ''}
+        <div class="blog-card__title">${p.title}</div>
+        ${p.excerpt ? `<div class="blog-card__excerpt">${p.excerpt}</div>` : ''}
+        <div class="blog-card__meta">
+          <span>${p.published_at ? new Date(p.published_at).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'}) : ''}</span>
+          <span class="blog-card__read">Read more →</span>
+        </div>
+      </div>
+    </div>`).join('');
+});
+</script>
+</body>
+</html>
