@@ -43,9 +43,11 @@
 .qty-btn{width:40px;height:48px;background:var(--gray-50);border:none;cursor:pointer;font-size:20px;font-weight:600;color:var(--color-text);transition:background .15s;}
 .qty-btn:hover{background:var(--green-50);color:var(--color-primary);}
 .qty-num{width:46px;height:48px;display:flex;align-items:center;justify-content:center;font-size:var(--text-lg);font-weight:600;border-left:1px solid var(--color-border);border-right:1px solid var(--color-border);}
-.btn-atc{flex:1;min-width:160px;height:48px;background:var(--color-primary);color:#fff;border:none;border-radius:var(--r-md);font-family:var(--font-display);font-size:var(--text-md);font-weight:700;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:7px;box-shadow:0 4px 14px rgba(3,71,50,.22);}
+.btn-atc{flex:1;min-width:160px;height:48px;background:var(--color-primary);color:#fff;border:none;border-radius:var(--r-md);font-family:var(--font-display);font-size:var(--text-md);font-weight:700;cursor:pointer;transition:background .2s;display:flex;align-items:center;justify-content:center;gap:7px;box-shadow:0 4px 14px rgba(3,71,50,.22);overflow:hidden;white-space:nowrap;}
 .btn-atc:hover{background:var(--green-600);}
+.btn-atc:disabled{background:var(--green-500);cursor:not-allowed;}
 .btn-atc.is-added{background:var(--green-600);}
+.btn-atc svg{width:16px;height:16px;flex-shrink:0;}
 .btn-wa{display:flex;align-items:center;justify-content:center;gap:8px;height:48px;background:#25d366;color:#fff;border-radius:var(--r-md);font-size:var(--text-md);font-weight:600;padding:0 20px;text-decoration:none;transition:background .2s;white-space:nowrap;}
 .btn-wa:hover{background:#1da855;}
 /* Tabs */
@@ -474,7 +476,38 @@ function doAddToCart() {
   if (!product) return;
   const img = product.images?.find(i => i.is_primary)?.url || product.images?.[0]?.url || '';
   const btn = document.getElementById('atcBtn');
-  addToCart(product.id, product.name, product.price, img, btn);
+  // Add to cart state
+  const cart = JSON.parse(localStorage.getItem('wf_cart') || '[]');
+  const existing = cart.find(i => i.id === product.id);
+  if (existing) existing.qty = (existing.qty || 1) + qty;
+  else cart.push({ id: product.id, name: product.name, price: product.price, img, qty });
+  localStorage.setItem('wf_cart', JSON.stringify(cart));
+  updateCartUI();
+  // Clean button feedback - no SVG swap, just text
+  if (btn) {
+    btn.textContent = '✓ Added to Cart';
+    btn.classList.add('is-added');
+    setTimeout(() => {
+      btn.innerHTML = '<svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="16" height="16"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg> Add to Cart';
+      btn.classList.remove('is-added');
+    }, 2000);
+  }
+  // Toast
+  let t = document.getElementById('wf-cart-toast');
+  if (!t) {
+    t = document.createElement('div');
+    t.id = 'wf-cart-toast';
+    t.style.cssText = 'position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(10px);background:#1a1a1a;color:#fff;padding:10px 20px;border-radius:8px;font-size:13px;font-weight:500;z-index:9999;transition:all .25s;opacity:0;pointer-events:none;white-space:nowrap;';
+    document.body.appendChild(t);
+  }
+  t.textContent = '✓ Added to cart';
+  t.style.opacity = '1';
+  t.style.transform = 'translateX(-50%) translateY(0)';
+  clearTimeout(t._t);
+  t._t = setTimeout(() => {
+    t.style.opacity = '0';
+    t.style.transform = 'translateX(-50%) translateY(10px)';
+  }, 2000);
 }
 
 function setRevRating(v) {
