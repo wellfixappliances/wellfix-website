@@ -14,7 +14,7 @@ const AdminShell = {
     // Check auth
     const { data: { session } } = await db.auth.getSession();
     if (!session) {
-      window.location.href = '/admin/login.html';
+      window.location.href = '/wellfix-website/admin/login.html';
       return;
     }
     // Get profile
@@ -23,7 +23,7 @@ const AdminShell = {
 
     if (!profile || !profile.is_active) {
       await db.auth.signOut();
-      window.location.href = '/admin/login.html';
+      window.location.href = '/wellfix-website/admin/login.html';
       return;
     }
     // Role check
@@ -217,7 +217,7 @@ const AdminShell = {
 
   async logout() {
     await db.auth.signOut();
-    window.location.href = '/admin/login.html';
+    window.location.href = '/wellfix-website/admin/login.html';
   }
 };
 
