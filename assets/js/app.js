@@ -311,34 +311,34 @@ function buildSupabaseCard(p) {
   const disc = p.mrp && p.price ? Math.round(((p.mrp - p.price) / p.mrp) * 100) : 0;
   const price = Number(p.price).toLocaleString('en-IN');
   const mrp   = p.mrp ? Number(p.mrp).toLocaleString('en-IN') : null;
+  const safeId = String(p.id).replace(/'/g, "\\'");
+  const safeName = p.name.replace(/'/g, "\\'");
 
   return `
-    <div class="product-card">
+    <div class="product-card" onclick="window.location.href='pages/product.html?id=${p.id}'">
       <div class="product-card__img-wrap">
         ${img
           ? `<img src="${img}" alt="${p.name}" loading="lazy" class="product-card__img">`
-          : `<div class="product-card__img product-card__img--placeholder">
-               <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" width="40" height="40">
-                 <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/>
-                 <line x1="3" y1="6" x2="21" y2="6"/>
-               </svg>
-             </div>`
+          : `<div class="product-card__img" style="display:flex;align-items:center;justify-content:center;font-size:40px;position:absolute;inset:0;background:var(--gray-25);">&#128230;</div>`
         }
-        ${p.badge ? `<span class="product-card__badge badge--${p.badge}">${p.badge.toUpperCase()}</span>` : ''}
-        ${disc > 0 ? `<span class="product-card__disc-tag">-${disc}%</span>` : ''}
+        <div class="product-card__badges">
+          ${p.badge ? `<span class="badge badge-${p.badge}">${p.badge === 'hot' ? 'HOT' : p.badge === 'sale' ? 'SALE' : 'NEW'}</span>` : ''}
+          ${disc > 0 ? `<span class="badge badge-sale">-${disc}%</span>` : ''}
+        </div>
+        <button class="product-card__wish" onclick="event.stopPropagation()" aria-label="Wishlist">
+          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
+        </button>
       </div>
       <div class="product-card__body">
         <div class="product-card__brand">${p.brand?.name || ''}</div>
         <div class="product-card__name">${p.name}</div>
-        <div class="product-card__price-row">
-          <span class="product-card__price">₹${price}</span>
-          ${mrp ? `<span class="product-card__mrp">₹${mrp}</span>` : ''}
+        <div class="product-card__pricing">
+          <span class="price-now">\u20B9${price}</span>
+          ${mrp ? `<span class="price-old">\u20B9${mrp}</span>` : ''}
         </div>
-        ${p.warranty ? `<div class="product-card__warranty">${p.warranty} Warranty</div>` : ''}
-        <button class="product-card__add-btn" onclick="addToCartWF('${p.id}','${p.name.replace(/'/g,"\\'")}',${p.price},'${img||''}',event)">
-          <svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" width="13" height="13">
-            <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
-          </svg>
+        ${p.warranty ? `<div class="product-card__warranty"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>${p.warranty} Warranty</div>` : ''}
+        <button class="product-card__add" onclick="event.stopPropagation();addToCartWF('${safeId}','${safeName}',${p.price},'${img||''}',event)">
+          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
           Add to Cart
         </button>
       </div>
