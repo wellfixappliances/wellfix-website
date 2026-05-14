@@ -7,326 +7,386 @@
   <link rel="icon" href="../assets/images/WELLFIX-FAVICON.png">
   <link rel="stylesheet" href="../assets/css/main.css">
   <style>
-    .checkout-page { padding: var(--sp-5) 0 var(--sp-12); }
-    .checkout-layout { display: grid; grid-template-columns: 1fr 360px; gap: var(--sp-6); align-items: start; }
-    @media(max-width:900px){ .checkout-layout { grid-template-columns: 1fr; } }
-    .checkout-card { background: var(--color-surface); border: 1.5px solid var(--color-border); border-radius: var(--r-lg); margin-bottom: var(--sp-4); overflow: hidden; }
-    .checkout-card__header { padding: var(--sp-4) var(--sp-5); border-bottom: 1px solid var(--color-border); display: flex; align-items: center; gap: var(--sp-3); }
-    .checkout-card__num { width: 26px; height: 26px; background: var(--color-primary); color: #fff; border-radius: 99px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; flex-shrink: 0; }
-    .checkout-card__title { font-family: var(--font-display); font-size: var(--text-base); font-weight: var(--weight-bold); }
-    .checkout-card__body { padding: var(--sp-5); }
-    .form-grid { display: grid; gap: var(--sp-3); }
-    .form-grid-2 { grid-template-columns: 1fr 1fr; }
-    @media(max-width:600px){ .form-grid-2 { grid-template-columns: 1fr; } }
-    .form-group { display: flex; flex-direction: column; gap: 5px; }
-    .form-label { font-size: var(--text-xs); font-weight: var(--weight-bold); color: var(--color-text-2); text-transform: uppercase; letter-spacing: .03em; }
-    .form-label .req { color: var(--color-danger); }
-    .form-input, .form-select { border: 1.5px solid var(--color-border-strong); border-radius: var(--r-sm); padding: 0 12px; height: 42px; font-size: var(--text-base); color: var(--color-text); background: var(--color-surface); width: 100%; outline: none; transition: border-color .2s; }
-    .form-input:focus, .form-select:focus { border-color: var(--color-primary); box-shadow: 0 0 0 3px rgba(3,71,50,.07); }
-    .form-textarea { border: 1.5px solid var(--color-border-strong); border-radius: var(--r-sm); padding: 10px 12px; font-size: var(--text-base); color: var(--color-text); width: 100%; outline: none; resize: vertical; min-height: 80px; transition: border-color .2s; }
-    .form-textarea:focus { border-color: var(--color-primary); }
-
-    /* Payment methods */
-    .payment-option { display: flex; align-items: center; gap: var(--sp-3); padding: 14px; border: 1.5px solid var(--color-border); border-radius: var(--r-md); cursor: pointer; transition: all .2s; margin-bottom: var(--sp-2); }
-    .payment-option:hover { border-color: var(--color-primary); }
-    .payment-option.is-selected { border-color: var(--color-primary); background: var(--green-50); }
-    .payment-option input { width: 18px; height: 18px; accent-color: var(--color-primary); flex-shrink: 0; }
-    .payment-option__icon { width: 40px; height: 28px; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
-    .payment-option__info { flex: 1; }
-    .payment-option__name { font-size: var(--text-base); font-weight: var(--weight-semi); }
-    .payment-option__desc { font-size: var(--text-xs); color: var(--color-text-3); }
-
-    /* Order items */
-    .order-item { display: flex; gap: var(--sp-3); padding: var(--sp-3) 0; border-bottom: 1px solid var(--color-border); align-items: center; }
-    .order-item:last-child { border-bottom: none; }
-    .order-item__img { width: 50px; height: 50px; object-fit: contain; background: var(--gray-25); border-radius: var(--r-sm); border: 1px solid var(--color-border); padding: 4px; flex-shrink: 0; }
-    .order-item__name { font-size: var(--text-sm); font-weight: var(--weight-semi); flex: 1; }
-    .order-item__price { font-size: var(--text-base); font-weight: var(--weight-bold); flex-shrink: 0; }
-
-    /* Success screen */
-    .order-success { text-align: center; padding: var(--sp-10) var(--sp-4); background: var(--color-surface); border: 1.5px solid var(--color-border); border-radius: var(--r-lg); }
-    .order-success__icon { width: 64px; height: 64px; background: var(--green-50); border-radius: 99px; display: flex; align-items: center; justify-content: center; margin: 0 auto var(--sp-4); }
-    .order-success__icon svg { width: 32px; height: 32px; color: var(--green-600); }
+    .checkout-page{padding:var(--sp-5) 0 var(--sp-12);}
+    .checkout-layout{display:grid;grid-template-columns:1fr 360px;gap:var(--sp-6);align-items:start;}
+    @media(max-width:900px){.checkout-layout{grid-template-columns:1fr;}}
+    .co-card{background:var(--color-surface);border:1.5px solid var(--color-border);border-radius:var(--r-xl);overflow:hidden;margin-bottom:var(--sp-4);}
+    .co-card-hd{padding:var(--sp-4) var(--sp-5);border-bottom:1px solid var(--color-border);display:flex;align-items:center;gap:var(--sp-3);}
+    .co-num{width:26px;height:26px;background:var(--color-primary);color:#fff;border-radius:99px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0;}
+    .co-title{font-family:var(--font-display);font-size:var(--text-base);font-weight:700;}
+    .co-body{padding:var(--sp-5);}
+    .fg{display:flex;flex-direction:column;gap:5px;margin-bottom:var(--sp-3);}
+    .fl{font-size:11px;font-weight:700;color:var(--color-text-2);text-transform:uppercase;letter-spacing:.03em;}
+    .fl .req{color:var(--color-danger);}
+    .fi,.fs{border:1.5px solid var(--color-border-strong);border-radius:var(--r-sm);padding:0 12px;height:42px;font-size:var(--text-md);color:var(--color-text);background:var(--color-surface);width:100%;outline:none;transition:border-color .2s;}
+    .fi:focus,.fs:focus{border-color:var(--color-primary);box-shadow:0 0 0 3px rgba(3,71,50,.07);}
+    .fta{border:1.5px solid var(--color-border-strong);border-radius:var(--r-sm);padding:10px 12px;font-size:var(--text-md);color:var(--color-text);width:100%;outline:none;resize:vertical;min-height:80px;transition:border-color .2s;}
+    .fta:focus{border-color:var(--color-primary);}
+    .form-2{display:grid;grid-template-columns:1fr 1fr;gap:var(--sp-3);}
+    @media(max-width:600px){.form-2{grid-template-columns:1fr;}}
+    .pay-opt{display:flex;align-items:center;gap:var(--sp-3);padding:14px;border:1.5px solid var(--color-border);border-radius:var(--r-md);cursor:pointer;transition:all .2s;margin-bottom:var(--sp-2);}
+    .pay-opt:hover{border-color:var(--color-primary);}
+    .pay-opt.is-sel{border-color:var(--color-primary);background:var(--green-50);}
+    .pay-opt input{width:18px;height:18px;accent-color:var(--color-primary);flex-shrink:0;}
+    .pay-icon{width:40px;height:28px;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
+    .pay-name{font-size:var(--text-md);font-weight:600;}
+    .pay-desc{font-size:var(--text-xs);color:var(--color-text-3);}
+    /* Order summary */
+    .os-wrap{background:var(--color-surface);border:1.5px solid var(--color-border);border-radius:var(--r-xl);overflow:hidden;position:sticky;top:80px;}
+    .os-hd{padding:var(--sp-4) var(--sp-5);border-bottom:1px solid var(--color-border);font-family:var(--font-display);font-size:var(--text-lg);font-weight:700;}
+    .os-body{padding:var(--sp-4) var(--sp-5);}
+    .os-item{display:flex;align-items:center;gap:var(--sp-3);padding:var(--sp-2) 0;border-bottom:1px solid var(--color-border);}
+    .os-item:last-child{border-bottom:none;}
+    .os-img{width:46px;height:46px;object-fit:contain;background:var(--gray-25);border-radius:var(--r-sm);border:1px solid var(--color-border);padding:3px;flex-shrink:0;}
+    .os-name{font-size:var(--text-sm);font-weight:600;flex:1;}
+    .os-price{font-size:var(--text-base);font-weight:700;flex-shrink:0;}
+    .os-row{display:flex;justify-content:space-between;font-size:var(--text-sm);color:var(--color-text-2);padding:6px 0;}
+    .os-total{display:flex;justify-content:space-between;font-family:var(--font-display);font-size:var(--text-2xl);font-weight:800;padding-top:12px;margin-top:8px;border-top:1.5px solid var(--color-border);}
+    .btn-place{width:100%;height:50px;background:var(--color-primary);color:#fff;border:none;border-radius:var(--r-md);font-family:var(--font-display);font-size:var(--text-md);font-weight:700;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 4px 14px rgba(3,71,50,.22);margin-top:var(--sp-3);}
+    .btn-place:hover{background:var(--green-600);}
+    .btn-place:disabled{background:var(--gray-200);color:var(--gray-400);cursor:not-allowed;box-shadow:none;}
+    /* UPI Modal */
+    .upi-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:1000;align-items:center;justify-content:center;padding:20px;}
+    .upi-modal.open{display:flex;}
+    .upi-box{background:#fff;border-radius:var(--r-2xl);width:100%;max-width:400px;overflow:hidden;}
+    .upi-hd{padding:20px;background:var(--color-primary);color:#fff;text-align:center;}
+    .upi-title{font-family:var(--font-display);font-size:var(--text-xl);font-weight:800;}
+    .upi-amt{font-size:var(--text-4xl);font-weight:800;margin-top:4px;}
+    .upi-body{padding:20px;text-align:center;}
+    .upi-qr{width:200px;height:200px;margin:0 auto 14px;border:2px solid var(--color-border);border-radius:var(--r-lg);overflow:hidden;}
+    .upi-qr img{width:100%;height:100%;}
+    .upi-id{background:var(--gray-25);border:1.5px solid var(--color-border);border-radius:var(--r-sm);padding:10px 14px;font-family:monospace;font-size:var(--text-lg);font-weight:700;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;gap:10px;}
+    .upi-copy{background:var(--color-primary);color:#fff;border:none;border-radius:var(--r-sm);padding:5px 12px;font-size:var(--text-sm);font-weight:600;cursor:pointer;}
+    .upi-steps{text-align:left;background:var(--green-50);border-radius:var(--r-md);padding:12px 14px;margin-bottom:14px;}
+    .upi-step{display:flex;align-items:flex-start;gap:8px;font-size:var(--text-sm);color:var(--green-700);padding:3px 0;}
+    .upi-step-n{font-weight:700;flex-shrink:0;}
+    .upi-confirm{width:100%;height:46px;background:#25d366;color:#fff;border:none;border-radius:var(--r-md);font-size:var(--text-base);font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;}
+    /* Success */
+    .success-wrap{max-width:520px;margin:0 auto;text-align:center;padding:var(--sp-10) var(--sp-4);}
+    .success-icon{width:64px;height:64px;background:var(--green-50);border-radius:99px;display:flex;align-items:center;justify-content:center;margin:0 auto var(--sp-4);}
+    .success-icon svg{width:32px;height:32px;color:var(--green-600);}
   </style>
 </head>
 <body>
 
-<div class="topbar"><div class="container topbar__inner"><div class="topbar__center">Secure Checkout · <strong>+91 85900 04349</strong></div></div></div>
+<div class="topbar"><div class="container topbar__inner">
+  <div class="topbar__center">Secure Checkout · <strong>+91 85900 04349</strong></div>
+</div></div>
 
-<header class="site-header">
-  <div class="container site-header__inner">
-    <a href="../index.html" class="logo"><img src="../assets/images/WELLFIX-MAIN-LOGO.png" alt="WellFix" class="logo__img" onerror="this.style.display='none'"></a>
-    <div style="flex:1;text-align:center;font-size:var(--text-sm);color:rgba(255,255,255,.7);">
-      <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="14" height="14" style="display:inline;vertical-align:middle;margin-right:4px;"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-      Secure Checkout
-    </div>
-    <a href="cart.html" style="font-size:var(--text-sm);color:rgba(255,255,255,.7);">← Back to Cart</a>
+<header class="site-header"><div class="container site-header__inner">
+  <a href="../index.html" class="logo"><img src="../assets/images/WELLFIX-MAIN-LOGO.png" alt="WellFix" class="logo__img" onerror="this.style.display='none'"></a>
+  <div style="flex:1;text-align:center;font-size:var(--text-sm);color:rgba(255,255,255,.7);">
+    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="13" height="13" style="display:inline;vertical-align:middle;margin-right:4px;"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+    Secure Checkout
   </div>
-</header>
+  <a href="cart.html" style="font-size:var(--text-sm);color:rgba(255,255,255,.7);text-decoration:none;">← Back to Cart</a>
+</div></header>
 
 <main class="checkout-page" id="checkoutMain">
-  <div class="container">
-    <div id="checkoutForm">
-      <div class="checkout-layout">
-        <div>
-          <!-- Delivery Info -->
-          <div class="checkout-card">
-            <div class="checkout-card__header">
-              <div class="checkout-card__num">1</div>
-              <div class="checkout-card__title">Delivery Information</div>
+<div class="container">
+  <div id="checkoutForm">
+    <div class="checkout-layout">
+      <div>
+        <!-- Delivery Info -->
+        <div class="co-card">
+          <div class="co-card-hd"><div class="co-num">1</div><div class="co-title">Delivery Information</div></div>
+          <div class="co-body">
+            <div class="fg"><label class="fl">Full Name <span class="req">*</span></label><input class="fi" id="cName" placeholder="Your full name"></div>
+            <div class="form-2">
+              <div class="fg"><label class="fl">Phone <span class="req">*</span></label><input class="fi" id="cPhone" type="tel" placeholder="+91 98765 43210"></div>
+              <div class="fg"><label class="fl">Email (optional)</label><input class="fi" id="cEmail" type="email" placeholder="your@email.com"></div>
             </div>
-            <div class="checkout-card__body">
-              <div class="form-grid form-grid-2">
-                <div class="form-group" style="grid-column:1/-1;">
-                  <label class="form-label">Full Name <span class="req">*</span></label>
-                  <input class="form-input" id="custName" placeholder="Your full name">
-                </div>
-                <div class="form-group">
-                  <label class="form-label">Phone Number <span class="req">*</span></label>
-                  <input class="form-input" id="custPhone" type="tel" placeholder="+91 98765 43210">
-                </div>
-                <div class="form-group">
-                  <label class="form-label">Email (optional)</label>
-                  <input class="form-input" id="custEmail" type="email" placeholder="your@email.com">
-                </div>
-                <div class="form-group" style="grid-column:1/-1;">
-                  <label class="form-label">Delivery Address <span class="req">*</span></label>
-                  <textarea class="form-textarea" id="custAddress" placeholder="House no, street, area…" rows="2"></textarea>
-                </div>
-                <div class="form-group">
-                  <label class="form-label">City <span class="req">*</span></label>
-                  <input class="form-input" id="custCity" placeholder="e.g. Thrissur">
-                </div>
-                <div class="form-group">
-                  <label class="form-label">District</label>
-                  <select class="form-select" id="custDistrict">
-                    <option value="">Select District</option>
-                    <option>Thrissur</option><option>Ernakulam</option><option>Calicut</option>
-                    <option>Trivandrum</option><option>Palakkad</option><option>Malappuram</option>
-                    <option>Kannur</option><option>Kollam</option><option>Kottayam</option>
-                    <option>Idukki</option><option>Wayanad</option><option>Kasaragod</option>
-                    <option>Alappuzha</option><option>Pathanamthitta</option>
-                  </select>
-                </div>
-                <div class="form-group">
-                  <label class="form-label">Pincode</label>
-                  <input class="form-input" id="custPincode" placeholder="680001" maxlength="6">
-                </div>
-                <div class="form-group" style="grid-column:1/-1;">
-                  <label class="form-label">Order Notes (optional)</label>
-                  <textarea class="form-textarea" id="custNotes" placeholder="Any special instructions…" rows="2"></textarea>
-                </div>
+            <div class="fg"><label class="fl">Delivery Address <span class="req">*</span></label><textarea class="fta" id="cAddr" placeholder="House no, street, area…" rows="2"></textarea></div>
+            <div class="form-2">
+              <div class="fg"><label class="fl">City <span class="req">*</span></label><input class="fi" id="cCity" placeholder="e.g. Thrissur"></div>
+              <div class="fg"><label class="fl">District</label>
+                <select class="fs" id="cDistrict">
+                  <option value="">Select District</option>
+                  <option>Thrissur</option><option>Ernakulam</option><option>Calicut</option>
+                  <option>Trivandrum</option><option>Palakkad</option><option>Malappuram</option>
+                  <option>Kannur</option><option>Kollam</option><option>Kottayam</option>
+                  <option>Idukki</option><option>Wayanad</option><option>Kasaragod</option>
+                  <option>Alappuzha</option><option>Pathanamthitta</option>
+                </select>
               </div>
             </div>
-          </div>
-
-          <!-- Payment Method -->
-          <div class="checkout-card">
-            <div class="checkout-card__header">
-              <div class="checkout-card__num">2</div>
-              <div class="checkout-card__title">Payment Method</div>
+            <div class="form-2">
+              <div class="fg"><label class="fl">Pincode</label><input class="fi" id="cPin" placeholder="680001" maxlength="6"></div>
+              <div class="fg"></div>
             </div>
-            <div class="checkout-card__body">
-              <label class="payment-option is-selected" id="pay-cod" onclick="selectPayment('cod')">
-                <input type="radio" name="payment" value="cod" checked>
-                <div class="payment-option__icon">💵</div>
-                <div class="payment-option__info">
-                  <div class="payment-option__name">Cash on Delivery (COD)</div>
-                  <div class="payment-option__desc">Pay when your order arrives</div>
-                </div>
-              </label>
-              <label class="payment-option" id="pay-upi" onclick="selectPayment('upi')">
-                <input type="radio" name="payment" value="upi">
-                <div class="payment-option__icon">📱</div>
-                <div class="payment-option__info">
-                  <div class="payment-option__name">UPI / Online Payment</div>
-                  <div class="payment-option__desc">Pay via WhatsApp after order is confirmed</div>
-                </div>
-              </label>
-              <label class="payment-option" id="pay-whatsapp" onclick="selectPayment('whatsapp')">
-                <input type="radio" name="payment" value="whatsapp">
-                <div class="payment-option__icon">
-                  <svg fill="currentColor" viewBox="0 0 24 24" style="width:22px;height:22px;color:#25d366;"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347zM12 2C6.477 2 2 6.477 2 12c0 1.89.525 3.66 1.438 5.168L2 22l4.978-1.413A9.955 9.955 0 0012 22c5.523 0 10-4.477 10-10S17.523 2 12 2z"/></svg>
-                </div>
-                <div class="payment-option__info">
-                  <div class="payment-option__name">Order via WhatsApp</div>
-                  <div class="payment-option__desc">Place order directly on WhatsApp</div>
-                </div>
-              </label>
-            </div>
+            <div class="fg"><label class="fl">Order Notes</label><textarea class="fta" id="cNotes" placeholder="Any special instructions…" rows="2"></textarea></div>
           </div>
         </div>
 
-        <!-- Order Summary -->
-        <div>
-          <div style="background:var(--color-surface);border:1.5px solid var(--color-border);border-radius:var(--r-lg);overflow:hidden;position:sticky;top:80px;">
-            <div style="padding:var(--sp-4) var(--sp-5);border-bottom:1px solid var(--color-border);">
-              <div style="font-family:var(--font-display);font-size:var(--text-lg);font-weight:var(--weight-bold);">Order Summary</div>
-            </div>
-            <div style="padding:var(--sp-4) var(--sp-5);" id="checkoutSummary">
-              <!-- Rendered by JS -->
-            </div>
-            <div style="padding:var(--sp-4) var(--sp-5);border-top:1px solid var(--color-border);">
-              <button class="btn btn-primary btn-lg" style="width:100%;justify-content:center;" onclick="placeOrder()" id="placeOrderBtn">
-                Place Order →
-              </button>
-              <div style="text-align:center;font-size:var(--text-xs);color:var(--color-text-3);margin-top:var(--sp-2);">
-                By ordering you agree to our terms of service
-              </div>
-            </div>
+        <!-- Payment Method -->
+        <div class="co-card">
+          <div class="co-card-hd"><div class="co-num">2</div><div class="co-title">Payment Method</div></div>
+          <div class="co-body">
+            <label class="pay-opt is-sel" id="pay-cod" onclick="selPay('cod')">
+              <input type="radio" name="pay" value="cod" checked>
+              <div class="pay-icon">💵</div>
+              <div><div class="pay-name">Cash on Delivery (COD)</div><div class="pay-desc">Pay when your order arrives at your door</div></div>
+            </label>
+            <label class="pay-opt" id="pay-upi" onclick="selPay('upi')">
+              <input type="radio" name="pay" value="upi">
+              <div class="pay-icon">📱</div>
+              <div><div class="pay-name">UPI Payment</div><div class="pay-desc">Scan QR code and pay online — instant confirmation</div></div>
+            </label>
+            <label class="pay-opt" id="pay-whatsapp" onclick="selPay('whatsapp')">
+              <input type="radio" name="pay" value="whatsapp">
+              <div class="pay-icon"><svg fill="currentColor" viewBox="0 0 24 24" style="width:22px;height:22px;color:#25d366;"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347zM12 2C6.477 2 2 6.477 2 12c0 1.89.525 3.66 1.438 5.168L2 22l4.978-1.413A9.955 9.955 0 0012 22c5.523 0 10-4.477 10-10S17.523 2 12 2z"/></svg></div>
+              <div><div class="pay-name">Order via WhatsApp</div><div class="pay-desc">Place order directly — we confirm via WhatsApp</div></div>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Order Summary -->
+      <div>
+        <div class="os-wrap">
+          <div class="os-hd">Order Summary</div>
+          <div class="os-body" id="osSummary"></div>
+          <div style="padding:0 var(--sp-5) var(--sp-4);">
+            <button class="btn-place" id="placeBtn" onclick="placeOrder()">Place Order →</button>
+            <div style="text-align:center;font-size:11px;color:var(--color-text-3);margin-top:8px;">By ordering you agree to our terms</div>
           </div>
         </div>
       </div>
     </div>
+  </div>
 
-    <!-- Success screen (hidden initially) -->
-    <div id="successScreen" style="display:none;max-width:560px;margin:0 auto;">
+  <!-- Success Screen -->
+  <div id="successScreen" style="display:none;"></div>
+</div>
+</main>
+
+<!-- UPI Payment Modal -->
+<div class="upi-modal" id="upiModal">
+  <div class="upi-box">
+    <div class="upi-hd">
+      <div class="upi-title">Pay via UPI</div>
+      <div class="upi-amt" id="upiAmount">₹0</div>
+    </div>
+    <div class="upi-body">
+      <!-- QR Code generated via API -->
+      <div class="upi-qr">
+        <img id="upiQR" src="" alt="UPI QR Code">
+      </div>
+      <div class="upi-id">
+        <span>8301879406@ybl</span>
+        <button class="upi-copy" onclick="copyUPI()">Copy</button>
+      </div>
+      <div class="upi-steps">
+        <div style="font-size:12px;font-weight:700;margin-bottom:6px;color:var(--green-700);">How to pay:</div>
+        <div class="upi-step"><span class="upi-step-n">1.</span><span>Open PhonePe, GPay, Paytm or any UPI app</span></div>
+        <div class="upi-step"><span class="upi-step-n">2.</span><span>Scan this QR code or enter UPI ID manually</span></div>
+        <div class="upi-step"><span class="upi-step-n">3.</span><span>Enter exact amount and complete payment</span></div>
+        <div class="upi-step"><span class="upi-step-n">4.</span><span>Click "I have paid" button below</span></div>
+      </div>
+      <button class="upi-confirm" onclick="confirmUPIPayment()">
+        <svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" width="18" height="18"><polyline points="20 6 9 17 4 12"/></svg>
+        I Have Paid — Confirm Order
+      </button>
+      <button onclick="closeUPIModal()" style="width:100%;margin-top:10px;padding:10px;background:none;border:1.5px solid var(--color-border);border-radius:var(--r-sm);font-size:var(--text-sm);color:var(--color-text-3);cursor:pointer;">Cancel</button>
     </div>
   </div>
-</main>
+</div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="../backend/config/supabase.js"></script>
 <script src="../assets/js/app.js"></script>
 <script>
+const UPI_ID = '8301879406@ybl';
+const UPI_NAME = 'WellFix Appliances';
 let cart = [];
-let selectedPayment = 'cod';
+let selectedPay = 'cod';
+let pendingOrder = null;
 
 document.addEventListener('DOMContentLoaded', () => {
   cart = JSON.parse(localStorage.getItem('wf_cart') || '[]');
   if (!cart.length) { window.location.href = 'cart.html'; return; }
-  renderCheckoutSummary();
   updateCartUI();
+  renderSummary();
 });
 
-function renderCheckoutSummary() {
-  const subtotal = cart.reduce((s, i) => s + (i.price * (i.qty || 1)), 0);
-  const shipping = subtotal >= 999 ? 0 : 60;
-  const couponData = JSON.parse(sessionStorage.getItem('wf_coupon') || 'null');
-  const discount = couponData?.discount || 0;
-  const total = subtotal + shipping - discount;
+function renderSummary() {
+  const sub = cart.reduce((s,i) => s + (i.price*(i.qty||1)), 0);
+  const ship = sub >= 999 ? 0 : 60;
+  const coup = JSON.parse(sessionStorage.getItem('wf_coupon') || 'null');
+  const disc = coup?.discount || 0;
+  const total = sub + ship - disc;
 
-  document.getElementById('checkoutSummary').innerHTML = `
-    ${cart.map(item => `
-      <div class="order-item">
-        ${item.img ? `<img class="order-item__img" src="${item.img}" alt="${item.name}">` : `<div class="order-item__img" style="display:flex;align-items:center;justify-content:center;font-size:22px;">📦</div>`}
-        <div class="order-item__name">${item.name} <span style="color:var(--color-text-3);">x${item.qty||1}</span></div>
-        <div class="order-item__price">₹${Number(item.price * (item.qty||1)).toLocaleString('en-IN')}</div>
+  document.getElementById('osSummary').innerHTML = `
+    ${cart.map(i => `
+      <div class="os-item">
+        ${i.img ? `<img class="os-img" src="${i.img}" alt="${i.name}">` : `<div class="os-img" style="display:flex;align-items:center;justify-content:center;font-size:20px;">📦</div>`}
+        <div class="os-name">${i.name} <span style="color:var(--color-text-3);">×${i.qty||1}</span></div>
+        <div class="os-price">₹${Number(i.price*(i.qty||1)).toLocaleString('en-IN')}</div>
       </div>`).join('')}
-    <div style="border-top:1px solid var(--color-border);margin-top:var(--sp-3);padding-top:var(--sp-3);">
-      <div style="display:flex;justify-content:space-between;font-size:var(--text-sm);color:var(--color-text-2);margin-bottom:6px;"><span>Subtotal</span><span>₹${subtotal.toLocaleString('en-IN')}</span></div>
-      <div style="display:flex;justify-content:space-between;font-size:var(--text-sm);color:${shipping===0?'var(--green-600)':'var(--color-text-2)'};margin-bottom:6px;"><span>Delivery</span><span>${shipping===0?'FREE':'₹'+shipping}</span></div>
-      ${discount > 0 ? `<div style="display:flex;justify-content:space-between;font-size:var(--text-sm);color:var(--green-600);margin-bottom:6px;"><span>Coupon (${couponData.code})</span><span>-₹${discount.toLocaleString('en-IN')}</span></div>` : ''}
-      <div style="display:flex;justify-content:space-between;font-family:var(--font-display);font-size:var(--text-2xl);font-weight:var(--weight-bold);margin-top:8px;padding-top:10px;border-top:1.5px solid var(--color-border);"><span>Total</span><span>₹${total.toLocaleString('en-IN')}</span></div>
+    <div style="padding-top:var(--sp-3);">
+      <div class="os-row"><span>Subtotal</span><span>₹${sub.toLocaleString('en-IN')}</span></div>
+      <div class="os-row" style="color:${ship===0?'var(--green-600)':'inherit'}"><span>Delivery</span><span>${ship===0?'FREE':'₹'+ship}</span></div>
+      ${disc>0?`<div class="os-row" style="color:var(--green-600)"><span>Coupon (${coup.code})</span><span>-₹${disc.toLocaleString('en-IN')}</span></div>`:''}
+      <div class="os-total"><span>Total</span><span>₹${total.toLocaleString('en-IN')}</span></div>
     </div>`;
 }
 
-function selectPayment(method) {
-  selectedPayment = method;
+function selPay(method) {
+  selectedPay = method;
   ['cod','upi','whatsapp'].forEach(m => {
-    document.getElementById('pay-' + m)?.classList.toggle('is-selected', m === method);
+    document.getElementById('pay-'+m)?.classList.toggle('is-sel', m===method);
   });
 }
 
 async function placeOrder() {
-  const name = document.getElementById('custName').value.trim();
-  const phone = document.getElementById('custPhone').value.trim();
-  const address = document.getElementById('custAddress').value.trim();
-  const city = document.getElementById('custCity').value.trim();
+  const name = document.getElementById('cName').value.trim();
+  const phone = document.getElementById('cPhone').value.trim();
+  const addr = document.getElementById('cAddr').value.trim();
+  const city = document.getElementById('cCity').value.trim();
 
-  if (!name || !phone || !address || !city) {
-    alert('Please fill in all required fields: Name, Phone, Address, City');
+  if (!name||!phone||!addr||!city) {
+    alert('Please fill in: Name, Phone, Address, and City');
+    return;
+  }
+  if (!/^[6-9]\d{9}$/.test(phone.replace(/[\s+\-]/g,''))) {
+    alert('Please enter a valid 10-digit Indian phone number');
     return;
   }
 
-  if (selectedPayment === 'whatsapp') {
-    const subtotal = cart.reduce((s, i) => s + (i.price * (i.qty || 1)), 0);
-    const shipping = subtotal >= 999 ? 0 : 60;
-    const items = cart.map(i => `- ${i.name} x${i.qty||1} = ₹${(i.price*(i.qty||1)).toLocaleString('en-IN')}`).join('\n');
-    const msg = `Hi WellFix! I want to place an order:\n\n${items}\n\nSubtotal: ₹${subtotal.toLocaleString('en-IN')}\nDelivery: ${shipping===0?'FREE':'₹'+shipping}\nTotal: ₹${(subtotal+shipping).toLocaleString('en-IN')}\n\nDelivery to:\n${name}\n${phone}\n${address}, ${city}`;
+  const sub = cart.reduce((s,i) => s+(i.price*(i.qty||1)), 0);
+  const ship = sub >= 999 ? 0 : 60;
+  const coup = JSON.parse(sessionStorage.getItem('wf_coupon')||'null');
+  const disc = coup?.discount || 0;
+  const total = sub + ship - disc;
+
+  if (selectedPay === 'whatsapp') {
+    const lines = cart.map(i => `• ${i.name} ×${i.qty||1} = ₹${(i.price*(i.qty||1)).toLocaleString('en-IN')}`).join('\n');
+    const msg = `Hi WellFix! I want to place an order:\n\n${lines}\n\nTotal: ₹${total.toLocaleString('en-IN')}\nDelivery: ${ship===0?'Free':'₹'+ship}\n\nDeliver to:\n${name}\n${phone}\n${addr}, ${city}`;
     window.open(`https://wa.me/918590004349?text=${encodeURIComponent(msg)}`, '_blank');
     return;
   }
 
-  const btn = document.getElementById('placeOrderBtn');
+  if (selectedPay === 'upi') {
+    // Show UPI modal with QR code
+    const amt = total.toLocaleString('en-IN');
+    document.getElementById('upiAmount').textContent = '₹' + amt;
+    // Generate QR via qrserver API
+    const upiString = `upi://pay?pa=${UPI_ID}&pn=${encodeURIComponent(UPI_NAME)}&am=${total}&cu=INR&tn=WellFix Order`;
+    document.getElementById('upiQR').src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(upiString)}`;
+    document.getElementById('upiModal').classList.add('open');
+    // Save order data for after payment confirmation
+    pendingOrder = { name, phone, addr, city, total, sub, ship, disc, coup };
+    return;
+  }
+
+  // COD — place immediately
+  await saveOrder({ name, phone, addr, city, total, sub, ship, disc, coup, payStatus:'pending' });
+}
+
+async function saveOrder({ name, phone, addr, city, total, sub, ship, disc, coup, payStatus }) {
+  const btn = document.getElementById('placeBtn');
   btn.disabled = true;
-  btn.textContent = 'Placing Order…';
+  btn.innerHTML = '<div style="width:16px;height:16px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;"></div> Placing Order…';
 
   try {
-    const subtotal = cart.reduce((s, i) => s + (i.price * (i.qty || 1)), 0);
-    const shipping = subtotal >= 999 ? 0 : 60;
-    const couponData = JSON.parse(sessionStorage.getItem('wf_coupon') || 'null');
-    const discount = couponData?.discount || 0;
-    const total = subtotal + shipping - discount;
-
     const orderNum = 'WF-' + Date.now().toString().slice(-6);
-
     const { data: order, error } = await db.from('orders').insert({
       order_number: orderNum,
       customer_name: name,
-      customer_phone: phone,
-      customer_email: document.getElementById('custEmail').value || null,
-      shipping_address: address,
+      customer_phone: phone.replace(/[\s+\-]/g,'').slice(-10),
+      customer_email: document.getElementById('cEmail').value || null,
+      shipping_address: addr,
       shipping_city: city,
-      shipping_district: document.getElementById('custDistrict').value || null,
-      shipping_pincode: document.getElementById('custPincode').value || null,
+      shipping_district: document.getElementById('cDistrict').value || null,
+      shipping_pincode: document.getElementById('cPin').value || null,
       status: 'pending',
-      payment_method: selectedPayment,
-      payment_status: selectedPayment === 'cod' ? 'pending' : 'pending',
-      subtotal,
-      discount,
-      shipping_fee: shipping,
-      total,
-      coupon_code: couponData?.code || null,
-      notes: document.getElementById('custNotes').value || null,
+      payment_method: selectedPay,
+      payment_status: payStatus,
+      subtotal: sub,
+      discount: disc,
+      shipping_fee: ship,
+      total: total,
+      coupon_code: coup?.code || null,
+      notes: document.getElementById('cNotes').value || null,
     }).select().single();
 
     if (error) throw error;
 
-    // Insert order items
-    await db.from('order_items').insert(cart.map(i => ({
-      order_id: order.id,
-      product_id: i.id,
-      product_name: i.name,
-      product_image: i.img || null,
-      quantity: i.qty || 1,
-      unit_price: i.price,
-      total_price: i.price * (i.qty || 1),
-    })));
+    // Save order items
+    if (cart.length) {
+      const items = cart.map(i => ({
+        order_id: order.id,
+        product_id: i.id.startsWith('s') ? null : i.id,
+        product_name: i.name,
+        product_image: i.img || null,
+        quantity: i.qty || 1,
+        unit_price: i.price,
+        total_price: i.price * (i.qty||1),
+      }));
+      const { error: itemsError } = await db.from('order_items').insert(items);
+      if (itemsError) console.warn('Items insert error:', itemsError.message);
+    }
 
     // Clear cart
     localStorage.removeItem('wf_cart');
     sessionStorage.removeItem('wf_coupon');
-
+    updateCartUI();
     showSuccess(order, total);
 
   } catch (err) {
     alert('Error placing order: ' + err.message);
     btn.disabled = false;
-    btn.textContent = 'Place Order →';
+    btn.innerHTML = 'Place Order →';
   }
+}
+
+async function confirmUPIPayment() {
+  if (!pendingOrder) return;
+  document.getElementById('upiModal').classList.remove('open');
+  await saveOrder({ ...pendingOrder, payStatus: 'pending_verification' });
+}
+
+function closeUPIModal() {
+  document.getElementById('upiModal').classList.remove('open');
+}
+
+function copyUPI() {
+  navigator.clipboard.writeText(UPI_ID).then(() => {
+    const btn = document.querySelector('.upi-copy');
+    btn.textContent = 'Copied!';
+    btn.style.background = '#056b4b';
+    setTimeout(() => { btn.textContent = 'Copy'; btn.style.background = ''; }, 2000);
+  });
 }
 
 function showSuccess(order, total) {
   document.getElementById('checkoutForm').style.display = 'none';
-  const screen = document.getElementById('successScreen');
-  screen.style.display = 'block';
-  screen.innerHTML = `
-    <div class="order-success">
-      <div class="order-success__icon">
+  const s = document.getElementById('successScreen');
+  s.style.display = 'block';
+  const isPending = order.payment_status === 'pending_verification';
+  s.innerHTML = `
+    <div class="success-wrap">
+      <div class="success-icon">
         <svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
       </div>
       <h2 style="font-family:var(--font-display);font-size:var(--text-3xl);font-weight:800;margin-bottom:8px;">Order Placed!</h2>
-      <div style="font-size:var(--text-lg);color:var(--color-text-2);margin-bottom:4px;">Order ID: <strong>${order.order_number}</strong></div>
-      <div style="font-size:var(--text-2xl);font-weight:800;color:var(--color-primary);font-family:var(--font-display);margin-bottom:var(--sp-4);">₹${total.toLocaleString('en-IN')}</div>
-      <p style="color:var(--color-text-2);margin-bottom:var(--sp-5);">Thank you! We will contact you at <strong>${document.getElementById('custPhone').value}</strong> to confirm your order and delivery details.</p>
+      <div style="font-size:var(--text-lg);color:var(--color-text-2);margin-bottom:4px;">Order: <strong>${order.order_number}</strong></div>
+      <div style="font-size:var(--text-3xl);font-weight:800;color:var(--color-primary);font-family:var(--font-display);margin-bottom:var(--sp-4);">₹${Number(total).toLocaleString('en-IN')}</div>
+      ${isPending ? `<div style="background:#fff3cd;border:1px solid #ffc107;border-radius:var(--r-md);padding:12px 16px;font-size:var(--text-sm);color:#856404;margin-bottom:var(--sp-4);">Payment verification pending. We will confirm your order once payment is received.</div>` : ''}
+      <p style="color:var(--color-text-2);margin-bottom:var(--sp-5);font-size:var(--text-base);">Thank you! We will contact you at <strong>${order.customer_phone}</strong> to confirm delivery details.</p>
       <div style="display:flex;gap:var(--sp-3);justify-content:center;flex-wrap:wrap;">
-        <a href="https://wa.me/918590004349?text=Hi! My order ${order.order_number} - can I get an update?" target="_blank" class="btn btn-gold">Track on WhatsApp</a>
-        <a href="../index.html" class="btn btn-secondary">Continue Shopping</a>
+        <a href="https://wa.me/918590004349?text=Hi! My order ${order.order_number} is placed. Need update." target="_blank" style="display:inline-flex;align-items:center;gap:6px;background:#25d366;color:#fff;padding:12px 20px;border-radius:var(--r-md);font-weight:600;text-decoration:none;font-size:var(--text-base);">Track on WhatsApp</a>
+        <a href="track-order.html?order=${order.order_number}" style="display:inline-flex;align-items:center;gap:6px;background:var(--color-primary);color:#fff;padding:12px 20px;border-radius:var(--r-md);font-weight:600;text-decoration:none;font-size:var(--text-base);">Track Order</a>
+        <a href="../index.html" style="display:inline-flex;align-items:center;gap:6px;background:var(--gray-50);color:var(--color-text);padding:12px 20px;border-radius:var(--r-md);font-weight:600;text-decoration:none;font-size:var(--text-base);border:1.5px solid var(--color-border);">Continue Shopping</a>
       </div>
     </div>`;
-  window.scrollTo({ top: 0, behavior: 'smooth' });
+  window.scrollTo({top:0,behavior:'smooth'});
 }
+
+// Spin animation for button loader
+const style = document.createElement('style');
+style.textContent = '@keyframes spin{to{transform:rotate(360deg);}}';
+document.head.appendChild(style);
 </script>
 </body>
 </html>
