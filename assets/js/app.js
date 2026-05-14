@@ -272,34 +272,29 @@ function initScrollReveal() {
 }
 
 /* ── MOBILE SEARCH OVERLAY ─────────────────────────────────── */
+/* ── MOBILE SEARCH OVERLAY ─────────────────────────────────── */
 function initMobileSearch() {
   const overlay  = document.getElementById('mobSearchOverlay');
   const openBtn  = document.getElementById('mobSearchOpen');
   const closeBtn = document.getElementById('mobSearchClose');
   const backdrop = document.getElementById('mobSearchBackdrop');
   const mobInput = document.getElementById('mobSearchInput');
-
   if (!overlay) return;
-
   function openSearch() {
     overlay.classList.add('is-open');
     document.body.style.overflow = 'hidden';
     setTimeout(() => mobInput && mobInput.focus(), 250);
   }
-
   function closeSearch() {
     overlay.classList.remove('is-open');
     document.body.style.overflow = '';
   }
-
   if (openBtn)  openBtn.addEventListener('click', openSearch);
   if (closeBtn) closeBtn.addEventListener('click', closeSearch);
   if (backdrop) backdrop.addEventListener('click', closeSearch);
-
   document.addEventListener('keydown', e => {
     if (e.key === 'Escape') closeSearch();
   });
-
   document.querySelectorAll('.mob-search-hint').forEach(hint => {
     hint.addEventListener('click', () => {
       if (mobInput) {
@@ -308,6 +303,136 @@ function initMobileSearch() {
       }
     });
   });
+}
+
+/* ── BUILD PRODUCT CARD HTML ───────────────────────────────── */
+function buildSupabaseCard(p) {
+  const img = p.images?.find(i => i.is_primary)?.url || p.images?.[0]?.url;
+  const disc = p.mrp && p.price ? Math.round(((p.mrp - p.price) / p.mrp) * 100) : 0;
+  const price = Number(p.price).toLocaleString('en-IN');
+  const mrp   = p.mrp ? Number(p.mrp).toLocaleString('en-IN') : null;
+
+  return `
+    <div class="product-card">
+      <div class="product-card__img-wrap">
+        ${img
+          ? `<img src="${img}" alt="${p.name}" loading="lazy" class="product-card__img">`
+          : `<div class="product-card__img product-card__img--placeholder">
+               <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" width="40" height="40">
+                 <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/>
+                 <line x1="3" y1="6" x2="21" y2="6"/>
+               </svg>
+             </div>`
+        }
+        ${p.badge ? `<span class="product-card__badge badge--${p.badge}">${p.badge.toUpperCase()}</span>` : ''}
+        ${disc > 0 ? `<span class="product-card__disc-tag">-${disc}%</span>` : ''}
+      </div>
+      <div class="product-card__body">
+        <div class="product-card__brand">${p.brand?.name || ''}</div>
+        <div class="product-card__name">${p.name}</div>
+        <div class="product-card__price-row">
+          <span class="product-card__price">₹${price}</span>
+          ${mrp ? `<span class="product-card__mrp">₹${mrp}</span>` : ''}
+        </div>
+        ${p.warranty ? `<div class="product-card__warranty">${p.warranty} Warranty</div>` : ''}
+        <button class="product-card__add-btn" onclick="addToCartWF('${p.id}','${p.name.replace(/'/g,"\\'")}',${p.price},'${img||''}',event)">
+          <svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" width="13" height="13">
+            <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+          </svg>
+          Add to Cart
+        </button>
+      </div>
+    </div>`;
+}
+
+/* ── ADD TO CART ────────────────────────────────────────────── */
+function addToCartWF(id, name, price, img, event) {
+  if (event) event.stopPropagation();
+  const cart = JSON.parse(localStorage.getItem('wf_cart') || '[]');
+  const existing = cart.find(i => i.id === id);
+  if (existing) existing.qty = (existing.qty || 1) + 1;
+  else cart.push({ id, name, price, img, qty: 1 });
+  localStorage.setItem('wf_cart', JSON.stringify(cart));
+  const total = cart.reduce((s, i) => s + (i.qty || 1), 0);
+  // Update all cart count elements
+  document.querySelectorAll('[data-cart-count], .hdr-cart__count, [data-cart-badge]').forEach(el => {
+    el.textContent = total;
+    el.style.display = total > 0 ? 'flex' : 'none';
+  });
+  // Show toast
+  showCartToast(name);
+}
+
+function showCartToast(name) {
+  let t = document.getElementById('wf-cart-toast');
+  if (!t) {
+    t = document.createElement('div');
+    t.id = 'wf-cart-toast';
+    t.style.cssText = `
+      position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(20px);
+      background:#1a1a1a;color:#fff;padding:10px 20px;border-radius:8px;
+      font-size:13px;font-weight:500;z-index:9999;
+      transition:all .25s;opacity:0;pointer-events:none;
+      white-space:nowrap;max-width:280px;text-align:center;
+    `;
+    document.body.appendChild(t);
+  }
+  t.textContent = 'Added to cart';
+  t.style.opacity = '1';
+  t.style.transform = 'translateX(-50%) translateY(0)';
+  clearTimeout(t._t);
+  t._t = setTimeout(() => {
+    t.style.opacity = '0';
+    t.style.transform = 'translateX(-50%) translateY(20px)';
+  }, 2000);
+}
+
+/* ── LOAD FROM SUPABASE ─────────────────────────────────────── */
+async function loadFromSupabase() {
+  try {
+    const { data: products, error } = await db
+      .from('products')
+      .select(`
+        id, name, price, mrp, badge, warranty, is_active,
+        images:product_images(url, is_primary),
+        brand:brands(name),
+        category:categories(name)
+      `)
+      .eq('is_active', true)
+      .order('created_at', { ascending: false })
+      .limit(24);
+
+    if (error) throw error;
+    if (!products || !products.length) {
+      // No Supabase products yet — keep static render
+      renderFlashProducts();
+      renderTrendingProducts();
+      return;
+    }
+
+    // ── Flash Sale (badge = sale or hot) ──
+    const flashEl = document.getElementById('flash-products');
+    const flashItems = products.filter(p => p.badge === 'sale' || p.badge === 'hot');
+    if (flashEl) {
+      if (flashItems.length) {
+        flashEl.innerHTML = flashItems.map(p => buildSupabaseCard(p)).join('');
+      } else {
+        // No sale items — render all products in flash section too
+        flashEl.innerHTML = products.slice(0, 8).map(p => buildSupabaseCard(p)).join('');
+      }
+    }
+
+    // ── Trending Products ──
+    const trendEl = document.getElementById('trending-products');
+    if (trendEl) {
+      trendEl.innerHTML = products.map(p => buildSupabaseCard(p)).join('');
+    }
+
+  } catch (err) {
+    console.warn('Supabase load failed, using static data:', err.message);
+    renderFlashProducts();
+    renderTrendingProducts();
+  }
 }
 
 /* ── INIT ──────────────────────────────────────────────────── */
@@ -320,77 +445,3 @@ document.addEventListener('DOMContentLoaded', () => {
   initMobileSearch();
   loadFromSupabase();
 });
-
-async function loadFromSupabase() {
-  try {
-    const { data: products, error } = await db
-      .from('products')
-      .select(`
-        *,
-        images:product_images(url, is_primary),
-        brand:brands(name),
-        category:categories(name)
-      `)
-      .eq('is_active', true)
-      .order('created_at', { ascending: false })
-      .limit(20);
-
-    if (error || !products || !products.length) {
-      renderFlashProducts();
-      renderTrendingProducts();
-      return;
-    }
-
-    // Flash products = items with badge
-    const flashItems = products.filter(p => p.badge === 'sale' || p.badge === 'hot');
-    const flashEl = document.getElementById('flashProductsTrack')
-                 || document.querySelector('.flash__track')
-                 || document.querySelector('[data-flash]');
-
-    if (flashEl && flashItems.length) {
-      flashEl.innerHTML = flashItems.map(p => buildCard(p)).join('');
-    } else {
-      renderFlashProducts();
-    }
-
-    // Trending = all products
-    const trendEl = document.getElementById('trendingProductsGrid')
-                 || document.querySelector('.products__grid')
-                 || document.querySelector('[data-trending]');
-
-    if (trendEl) {
-      trendEl.innerHTML = products.map(p => buildCard(p)).join('');
-    } else {
-      renderTrendingProducts();
-    }
-
-  } catch(e) {
-    // Fallback to static data if Supabase fails
-    renderFlashProducts();
-    renderTrendingProducts();
-  }
-}
-
-function buildCard(p) {
-  const img = p.images?.find(i => i.is_primary)?.url || p.images?.[0]?.url;
-  const disc = p.mrp ? Math.round(((p.mrp - p.price) / p.mrp) * 100) : 0;
-  return `
-    <div class="product-card">
-      <div class="product-card__img-wrap">
-        ${img
-          ? `<img src="${img}" alt="${p.name}" loading="lazy" class="product-card__img">`
-          : `<div class="product-card__img" style="display:flex;align-items:center;justify-content:center;font-size:40px;background:#f5f5f5;height:160px;">📦</div>`
-        }
-        ${p.badge ? `<span class="product-card__badge badge--${p.badge}">${p.badge.toUpperCase()}</span>` : ''}
-      </div>
-      <div class="product-card__body">
-        <div class="product-card__brand">${p.brand?.name || ''}</div>
-        <div class="product-card__name">${p.name}</div>
-        <div class="product-card__price-row">
-          <span class="product-card__price">₹${Number(p.price).toLocaleString('en-IN')}</span>
-          ${p.mrp ? `<span class="product-card__mrp">₹${Number(p.mrp).toLocaleString('en-IN')}</span>` : ''}
-          ${disc > 0 ? `<span class="product-card__disc">${disc}% off</span>` : ''}
-        </div>
-      </div>
-    </div>`;
-}
