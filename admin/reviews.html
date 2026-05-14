@@ -1,69 +1,351 @@
 <!DOCTYPE html>
 <html lang="en">
-<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
 <title>Reviews — WellFix Admin</title>
-<link rel="icon" href="../frontend/assets/images/WELLFIX-FAVICON.png">
-<link rel="stylesheet" href="assets/css/admin.css"></head>
+<link rel="icon" href="/wellfix-website/frontend/assets/images/WELLFIX-FAVICON.png">
+<link rel="stylesheet" href="assets/css/admin.css">
+</head>
 <body>
-<div class="admin-shell"><div id="adminShell"></div>
-<div class="main-wrap" id="mainWrap"><div class="page-content">
-  <div class="pg-hd"><div><h1>Reviews</h1><p>Approve and manage customer reviews</p></div></div>
-  <div class="card">
-    <div class="filter-bar">
-      <div class="filter-search"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><input type="search" id="rSearch" placeholder="Search reviews…" oninput="renderReviews()"></div>
-      <select class="filter-select" id="rStatusFilter" onchange="renderReviews()"><option value="">All</option><option value="false">Pending</option><option value="true">Approved</option></select>
+<div class="admin-shell">
+<div id="adminShell"></div>
+<div class="main-wrap" id="mainWrap">
+<div class="page-content">
+
+<div class="pg-hd">
+  <div><h1>Reviews</h1><p>Manage product and shop reviews</p></div>
+  <div class="pg-hd__actions">
+    <button class="btn btn-secondary" onclick="filterReviews('all',this)">All</button>
+    <button class="btn btn-secondary" onclick="filterReviews('pending',this)">Pending</button>
+    <button class="btn btn-secondary" onclick="filterReviews('approved',this)">Approved</button>
+    <button class="btn btn-primary" onclick="openAddReviewModal()">
+      <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      Add Review
+    </button>
+  </div>
+</div>
+
+<!-- Settings bar -->
+<div class="card" style="margin-bottom:16px;">
+  <div class="card-body" style="display:flex;align-items:center;gap:20px;flex-wrap:wrap;padding:14px 16px;">
+    <div style="display:flex;align-items:center;gap:10px;">
+      <label class="toggle"><input type="checkbox" id="autoApprove" onchange="toggleAutoApprove(this.checked)"><span class="toggle-track"></span></label>
+      <div>
+        <div style="font-size:13px;font-weight:600;">Auto-approve reviews</div>
+        <div style="font-size:11px;color:var(--gray-400);">Customer reviews go live immediately without approval</div>
+      </div>
     </div>
-    <div class="tbl-wrap">
-      <table>
-        <thead><tr><th>Customer</th><th>Product</th><th>Rating</th><th>Review</th><th>Date</th><th>Status</th><th>Actions</th></tr></thead>
-        <tbody id="reviewsTbody"><tr><td colspan="7" style="text-align:center;padding:30px;"><div class="spinner" style="margin:0 auto;"></div></td></tr></tbody>
-      </table>
+    <div style="display:flex;align-items:center;gap:10px;">
+      <label class="toggle"><input type="checkbox" id="showOnHome" onchange="toggleHomeReviews(this.checked)"><span class="toggle-track"></span></label>
+      <div>
+        <div style="font-size:13px;font-weight:600;">Show reviews on homepage</div>
+        <div style="font-size:11px;color:var(--gray-400);">Display approved reviews in website homepage section</div>
+      </div>
     </div>
   </div>
+</div>
+
+<div class="card">
+  <div class="filter-bar">
+    <div class="filter-search">
+      <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input type="search" id="reviewSearch" placeholder="Search reviews…" oninput="renderReviews()">
+    </div>
+    <select class="filter-select" id="ratingFilter" onchange="renderReviews()">
+      <option value="">All Ratings</option>
+      <option value="5">5 Stars</option>
+      <option value="4">4 Stars</option>
+      <option value="3">3 Stars</option>
+      <option value="2">2 Stars</option>
+      <option value="1">1 Star</option>
+    </select>
+    <select class="filter-select" id="typeFilter" onchange="renderReviews()">
+      <option value="">All Types</option>
+      <option value="shop">Shop Reviews</option>
+      <option value="product">Product Reviews</option>
+    </select>
+  </div>
+  <div class="tbl-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Customer</th>
+          <th>Type</th>
+          <th>Rating</th>
+          <th>Review</th>
+          <th>Date</th>
+          <th>Status</th>
+          <th>Homepage</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody id="reviewsTbody">
+        <tr><td colspan="8" style="text-align:center;padding:30px;"><div class="spinner" style="margin:0 auto;"></div></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
 </div></div></div>
+
+<!-- ADD REVIEW MODAL -->
+<div class="modal-overlay" id="addReviewModal">
+  <div class="modal" style="max-width:540px;">
+    <div class="modal-hd">
+      <div class="modal-title" id="reviewModalTitle">Add Review</div>
+      <button class="modal-close" onclick="closeAddReviewModal()"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="reviewId">
+      <div class="form-grid" style="gap:13px;">
+        <div class="form-group">
+          <label class="form-label">Review Type</label>
+          <select class="form-select" id="rType" onchange="toggleProductSelect()">
+            <option value="shop">Shop Review (Homepage)</option>
+            <option value="product">Product Review</option>
+          </select>
+        </div>
+        <div class="form-group" id="productSelectGroup" style="display:none;">
+          <label class="form-label">Select Product <span class="req">*</span></label>
+          <select class="form-select" id="rProduct">
+            <option value="">Loading products…</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Customer Name <span class="req">*</span></label>
+          <input class="form-input" id="rName" placeholder="e.g. Rahul Menon">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Location</label>
+          <input class="form-input" id="rLocation" placeholder="e.g. Thrissur, Kerala">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Rating <span class="req">*</span></label>
+          <div style="display:flex;gap:8px;align-items:center;">
+            <div id="starPicker" style="display:flex;gap:4px;">
+              ${[1,2,3,4,5].map(i => `
+                <span onclick="setRating(${i})" data-star="${i}"
+                  style="font-size:28px;cursor:pointer;color:var(--gray-200);transition:color .15s;"
+                >★</span>`).join('')}
+            </div>
+            <input type="hidden" id="rRating" value="5">
+            <span id="ratingLabel" style="font-size:12px;color:var(--green-700);font-weight:600;">5 stars</span>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Review Title</label>
+          <input class="form-input" id="rTitle" placeholder="e.g. Excellent product!">
+        </div>
+        <div class="form-group" style="grid-column:1/-1;">
+          <label class="form-label">Review Text <span class="req">*</span></label>
+          <textarea class="form-textarea" id="rBody" rows="3" placeholder="Write the review here…" style="min-height:90px;"></textarea>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Status</label>
+          <select class="form-select" id="rStatus">
+            <option value="true">Approved (visible on website)</option>
+            <option value="false">Pending (hidden)</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Show on Homepage</label>
+          <select class="form-select" id="rFeatured">
+            <option value="true">Yes — show on homepage</option>
+            <option value="false">No</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div class="modal-ft">
+      <button class="btn btn-secondary" onclick="closeAddReviewModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveReview()">Save Review</button>
+    </div>
+  </div>
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="../backend/config/supabase.js"></script>
+<script src="/wellfix-website/backend/config/supabase.js"></script>
 <script src="assets/js/shell.js"></script>
 <script>
-let allReviews=[];
-(async()=>{
+let allReviews = [], products = [], currentFilter = 'all', selectedRating = 5;
+
+(async () => {
   await AdminShell.init('Reviews');
-  allReviews = await WF.reviews.getAll();
-  renderReviews();
+  await Promise.all([loadReviews(), loadProducts()]);
+  setRating(5);
 })();
-function renderReviews(){
-  const q=document.getElementById('rSearch').value.toLowerCase();
-  const st=document.getElementById('rStatusFilter').value;
-  const f=allReviews.filter(r=>{
-    if(st!==''&&String(r.is_approved)!==st)return false;
-    if(q&&!r.customer_name.toLowerCase().includes(q))return false;
+
+async function loadReviews() {
+  const { data, error } = await db.from('reviews')
+    .select('*, product:products(name)')
+    .order('created_at', { ascending: false });
+  allReviews = data || [];
+  renderReviews();
+}
+
+async function loadProducts() {
+  const { data } = await db.from('products').select('id,name').eq('is_active', true).order('name');
+  products = data || [];
+  const sel = document.getElementById('rProduct');
+  sel.innerHTML = '<option value="">Select product…</option>' +
+    products.map(p => `<option value="${p.id}">${p.name}</option>`).join('');
+}
+
+function filterReviews(filter, btn) {
+  currentFilter = filter;
+  document.querySelectorAll('.pg-hd__actions .btn-secondary').forEach(b => b.className = 'btn btn-secondary');
+  if (btn) btn.className = 'btn btn-primary';
+  renderReviews();
+}
+
+function renderReviews() {
+  const q = document.getElementById('reviewSearch').value.toLowerCase();
+  const rating = document.getElementById('ratingFilter').value;
+  const type = document.getElementById('typeFilter').value;
+
+  let filtered = allReviews.filter(r => {
+    if (currentFilter === 'pending' && r.is_approved) return false;
+    if (currentFilter === 'approved' && !r.is_approved) return false;
+    if (q && !r.customer_name.toLowerCase().includes(q) && !(r.body||'').toLowerCase().includes(q)) return false;
+    if (rating && r.rating != rating) return false;
+    if (type === 'shop' && r.product_id) return false;
+    if (type === 'product' && !r.product_id) return false;
     return true;
   });
-  document.getElementById('reviewsTbody').innerHTML=f.length?f.map(r=>`<tr>
-    <td class="td-bold">${r.customer_name}</td>
-    <td style="font-size:12px;color:var(--gray-500);">${r.product?.name||'—'}</td>
-    <td><span style="color:var(--gold-400);font-size:14px;">${'★'.repeat(r.rating)}${'☆'.repeat(5-r.rating)}</span></td>
-    <td style="max-width:200px;font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${r.body||r.title||'—'}</td>
-    <td>${formatDate(r.created_at)}</td>
-    <td>${renderBadge(r.is_approved?'approved':'pending')}</td>
-    <td><div style="display:flex;gap:4px;">
-      ${!r.is_approved?`<button class="btn btn-primary btn-sm" onclick="approveReview('${r.id}')">Approve</button>`:''}
-      <button class="btn-icon danger" onclick="deleteReview('${r.id}')"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg></button>
-    </div></td>
-  </tr>`).join(''):`<tr><td colspan="7" style="text-align:center;padding:30px;color:var(--gray-300);">No reviews found</td></tr>`;
+
+  const tbody = document.getElementById('reviewsTbody');
+  if (!filtered.length) {
+    tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;padding:30px;color:var(--gray-300);">No reviews found</td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = filtered.map(r => `
+    <tr>
+      <td>
+        <div class="td-bold">${r.customer_name}</div>
+        ${r.customer_phone ? `<div style="font-size:11px;color:var(--gray-400);">${r.customer_phone}</div>` : ''}
+      </td>
+      <td>
+        <span style="font-size:11px;font-weight:600;color:${r.product_id ? 'var(--blue-500)' : 'var(--green-700)'};">
+          ${r.product_id ? r.product?.name?.substring(0,20)+'…' || 'Product' : 'Shop Review'}
+        </span>
+      </td>
+      <td>
+        <span style="color:var(--gold-400);font-size:14px;letter-spacing:-1px;">${'★'.repeat(r.rating)}${'☆'.repeat(5-r.rating)}</span>
+      </td>
+      <td style="max-width:200px;">
+        ${r.title ? `<div style="font-weight:600;font-size:12px;">${r.title}</div>` : ''}
+        <div style="font-size:12px;color:var(--gray-500);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:180px;">${r.body||'—'}</div>
+      </td>
+      <td>${formatDate(r.created_at)}</td>
+      <td>${renderBadge(r.is_approved ? 'approved' : 'pending')}</td>
+      <td>
+        <label class="toggle"><input type="checkbox" ${r.is_featured?'checked':''} onchange="toggleFeatured('${r.id}',this.checked)"><span class="toggle-track"></span></label>
+      </td>
+      <td>
+        <div style="display:flex;gap:4px;">
+          ${!r.is_approved ? `<button class="btn btn-primary btn-sm" onclick="approveReview('${r.id}')">Approve</button>` : ''}
+          <button class="btn-icon" onclick="editReview('${r.id}')" title="Edit">
+            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+          </button>
+          <button class="btn-icon danger" onclick="deleteReview('${r.id}')" title="Delete">
+            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg>
+          </button>
+        </div>
+      </td>
+    </tr>
+  `).join('');
 }
-async function approveReview(id){
-  await WF.reviews.approve(id);
-  const r=allReviews.find(r=>r.id===id); if(r)r.is_approved=true;
-  toast('Review approved! Now visible on website.');
-  renderReviews();
+
+function setRating(val) {
+  selectedRating = val;
+  document.getElementById('rRating').value = val;
+  document.getElementById('ratingLabel').textContent = val + ' star' + (val > 1 ? 's' : '');
+  document.querySelectorAll('#starPicker span').forEach((s, i) => {
+    s.style.color = i < val ? 'var(--gold-400)' : 'var(--gray-200)';
+  });
 }
-async function deleteReview(id){
-  if(!confirmDialog('Delete this review?'))return;
-  await WF.reviews.delete(id);
-  allReviews=allReviews.filter(r=>r.id!==id);
+
+function toggleProductSelect() {
+  const type = document.getElementById('rType').value;
+  document.getElementById('productSelectGroup').style.display = type === 'product' ? 'block' : 'none';
+}
+
+function openAddReviewModal(data = null) {
+  document.getElementById('reviewId').value = data?.id || '';
+  document.getElementById('rName').value = data?.customer_name || '';
+  document.getElementById('rLocation').value = data?.customer_phone || '';
+  document.getElementById('rTitle').value = data?.title || '';
+  document.getElementById('rBody').value = data?.body || '';
+  document.getElementById('rStatus').value = String(data?.is_approved !== false);
+  document.getElementById('rFeatured').value = String(data?.is_featured || false);
+  document.getElementById('rType').value = data?.product_id ? 'product' : 'shop';
+  if (data?.product_id) document.getElementById('rProduct').value = data.product_id;
+  toggleProductSelect();
+  setRating(data?.rating || 5);
+  document.getElementById('reviewModalTitle').textContent = data ? 'Edit Review' : 'Add Review';
+  document.getElementById('addReviewModal').classList.add('is-open');
+  document.body.style.overflow = 'hidden';
+}
+function closeAddReviewModal() {
+  document.getElementById('addReviewModal').classList.remove('is-open');
+  document.body.style.overflow = '';
+}
+document.getElementById('addReviewModal').addEventListener('click', e => { if (e.target === e.currentTarget) closeAddReviewModal(); });
+
+async function saveReview() {
+  const name = document.getElementById('rName').value.trim();
+  const body = document.getElementById('rBody').value.trim();
+  const type = document.getElementById('rType').value;
+  if (!name || !body) { toast('Name and review text are required', true); return; }
+
+  const data = {
+    customer_name: name,
+    customer_phone: document.getElementById('rLocation').value || null,
+    rating: parseInt(document.getElementById('rRating').value),
+    title: document.getElementById('rTitle').value || null,
+    body,
+    is_approved: document.getElementById('rStatus').value === 'true',
+    is_featured: document.getElementById('rFeatured').value === 'true',
+    product_id: type === 'product' ? (document.getElementById('rProduct').value || null) : null,
+  };
+
+  try {
+    const id = document.getElementById('reviewId').value;
+    if (id) { await db.from('reviews').update(data).eq('id', id); }
+    else { await db.from('reviews').insert(data); }
+    toast('Review saved! Now visible on website if approved.');
+    closeAddReviewModal();
+    await loadReviews();
+  } catch (e) { toast('Error: ' + e.message, true); }
+}
+
+async function approveReview(id) {
+  await db.from('reviews').update({ is_approved: true }).eq('id', id);
+  toast('Review approved — now live on website!');
+  await loadReviews();
+}
+
+async function toggleFeatured(id, val) {
+  await db.from('reviews').update({ is_featured: val }).eq('id', id);
+  toast(val ? 'Review featured on homepage' : 'Removed from homepage');
+}
+
+function editReview(id) {
+  const r = allReviews.find(r => r.id === id);
+  openAddReviewModal(r);
+}
+
+async function deleteReview(id) {
+  if (!confirmDialog('Delete this review?')) return;
+  await db.from('reviews').delete().eq('id', id);
   toast('Review deleted');
-  renderReviews();
+  await loadReviews();
 }
+
+function toggleAutoApprove(val) { toast(val ? 'Auto-approve enabled' : 'Auto-approve disabled'); }
+function toggleHomeReviews(val) { toast(val ? 'Reviews will show on homepage' : 'Reviews hidden from homepage'); }
 </script>
-</body></html>
+</body>
+</html>
