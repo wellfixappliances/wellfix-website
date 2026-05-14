@@ -44,7 +44,7 @@ function productCardHTML(p, isDark = false) {
   const safeName = name.replace(/'/g, "\\'").replace(/"/g, '&quot;');
 
   return `
-    <div class="${cls}" onclick="window.location.href='${isDark ? '' : ''}product.html?id=${id}'" style="cursor:pointer;">
+    <div class="${cls}" onclick="window.location.href=(location.pathname.includes('/pages/')?'':'pages/')+'product.html?id=${id}'" style="cursor:pointer;">
       <div class="product-card__img-wrap">
         ${img
           ? `<img class="product-card__img" src="${img}" alt="${name}" loading="lazy">`
