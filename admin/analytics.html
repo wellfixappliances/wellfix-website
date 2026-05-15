@@ -1,50 +1,102 @@
 <!DOCTYPE html>
 <html lang="en">
-<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Analytics — WellFix Admin</title>
-<link rel="icon" href="../frontend/assets/images/WELLFIX-FAVICON.png">
-<link rel="stylesheet" href="assets/css/admin.css"></head>
+<link rel="icon" href="../assets/images/WELLFIX-FAVICON.png">
+<link rel="stylesheet" href="assets/css/admin.css">
+</head>
 <body>
 <div class="admin-shell"><div id="adminShell"></div>
 <div class="main-wrap" id="mainWrap"><div class="page-content">
-  <div class="pg-hd"><div><h1>Analytics</h1><p>Sales performance and store insights</p></div>
-    <div class="pg-hd__actions"><select class="filter-select"><option>Last 30 Days</option><option>Last 7 Days</option><option>Last 3 Months</option></select></div>
+<div class="pg-hd">
+  <div><h1>Analytics</h1><p>Real-time sales and store performance</p></div>
+  <div class="pg-hd__actions">
+    <select class="filter-select" id="period" onchange="loadAnalytics()">
+      <option value="30">Last 30 Days</option>
+      <option value="7">Last 7 Days</option>
+      <option value="90">Last 90 Days</option>
+    </select>
   </div>
-  <div class="stats-grid" id="aStats">
-    <div class="stat-card"><div class="skeleton" style="height:80px;border-radius:8px;"></div></div>
-    <div class="stat-card"><div class="skeleton" style="height:80px;border-radius:8px;"></div></div>
-    <div class="stat-card"><div class="skeleton" style="height:80px;border-radius:8px;"></div></div>
-    <div class="stat-card"><div class="skeleton" style="height:80px;border-radius:8px;"></div></div>
-  </div>
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;" id="aGrids">
-    <div class="card"><div class="card-hd"><span class="card-title">Revenue by Category</span></div><div class="card-body" id="catRevenue"></div></div>
-    <div class="card"><div class="card-hd"><span class="card-title">Top Products</span></div>
-      <div class="card-body-0"><div class="tbl-wrap"><table><thead><tr><th>#</th><th>Product</th><th>Sales</th><th>Revenue</th></tr></thead><tbody id="topProducts"></tbody></table></div></div>
-    </div>
-    <div class="card"><div class="card-hd"><span class="card-title">Order Status Breakdown</span></div><div class="card-body" id="orderBreakdown"></div></div>
-    <div class="card"><div class="card-hd"><span class="card-title">Customer Locations</span></div><div class="card-body" id="custLocations"></div></div>
-  </div>
-</div></div></div>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</div>
+<div class="stats-grid" id="aStats">
+  <div class="stat-card"><div class="skeleton" style="height:80px;border-radius:8px;"></div></div>
+  <div class="stat-card"><div class="skeleton" style="height:80px;border-radius:8px;"></div></div>
+  <div class="stat-card"><div class="skeleton" style="height:80px;border-radius:8px;"></div></div>
+  <div class="stat-card"><div class="skeleton" style="height:80px;border-radius:8px;"></div></div>
+</div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px;" id="aCharts">
+  <div class="card"><div class="card-hd"><span class="card-title">Revenue by Category</span></div><div class="card-body" id="catRev"></div></div>
+  <div class="card"><div class="card-hd"><span class="card-title">Top Products by Orders</span></div><div class="card-body-0"><div class="tbl-wrap"><table><thead><tr><th>#</th><th>Product</th><th>Orders</th></tr></thead><tbody id="topProds"></tbody></table></div></div></div>
+  <div class="card"><div class="card-hd"><span class="card-title">Order Status Breakdown</span></div><div class="card-body" id="orderBreak"></div></div>
+  <div class="card"><div class="card-hd"><span class="card-title">Orders by District</span></div><div class="card-body" id="distBreak"></div></div>
+</div>
+</div></div></div><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="../backend/config/supabase.js"></script>
 <script src="assets/js/shell.js"></script>
 <script>
-(async()=>{
-  await AdminShell.init('Analytics');
-  const s=await WF.analytics.getDashboardStats();
-  document.getElementById('aStats').innerHTML=`
-    <div class="stat-card"><div class="stat-card__top"><div class="stat-card__icon green"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg></div><span class="stat-card__badge up">Month</span></div><div class="stat-card__val">${formatCurrency(s.revenue)}</div><div class="stat-card__label">Revenue</div></div>
-    <div class="stat-card"><div class="stat-card__top"><div class="stat-card__icon blue"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/></svg></div></div><div class="stat-card__val">${s.total_orders}</div><div class="stat-card__label">Total Orders</div></div>
-    <div class="stat-card"><div class="stat-card__top"><div class="stat-card__icon gold"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></div></div><div class="stat-card__val">${s.customers_count}</div><div class="stat-card__label">Customers</div></div>
-    <div class="stat-card"><div class="stat-card__top"><div class="stat-card__icon purple"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg></div></div><div class="stat-card__val">${s.bookings_count}</div><div class="stat-card__label">Bookings</div></div>`;
-  const cats=[{name:'Mixers & Grinders',pct:38,rev:'₹31,800'},{name:'Gas Stoves',pct:26,rev:'₹21,900'},{name:'Cookers',pct:18,rev:'₹15,160'},{name:'Fans',pct:11,rev:'₹9,260'},{name:'Others',pct:7,rev:'₹6,100'}];
-  document.getElementById('catRevenue').innerHTML=cats.map(c=>`<div class="progress-row"><div class="progress-label">${c.name}</div><div class="progress-bar"><div class="progress-fill" style="width:${c.pct}%"></div></div><div class="progress-val" style="width:60px;text-align:right;">${c.rev}</div></div>`).join('');
-  const prods=await WF.products.getAll({limit:5});
-  document.getElementById('topProducts').innerHTML=prods.map((p,i)=>`<tr><td style="font-weight:700;color:var(--gray-400);">${i+1}</td><td class="td-bold" style="max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${p.name}</td><td>${20-i*3}</td><td style="font-weight:700;">${formatCurrency(((20-i*3)*p.price))}</td></tr>`).join('');
-  const statuses=[{s:'delivered',label:'Delivered',pct:53},{s:'confirmed',label:'Confirmed',pct:20},{s:'processing',label:'Processing',pct:13},{s:'pending',label:'Pending',pct:8},{s:'cancelled',label:'Cancelled',pct:6}];
-  document.getElementById('orderBreakdown').innerHTML=statuses.map(s=>`<div class="progress-row"><div class="progress-label">${s.label}</div><div class="progress-bar"><div class="progress-fill" style="width:${s.pct}%"></div></div><div class="progress-val">${s.pct}%</div></div>`).join('');
-  const locs=[{name:'Thrissur',pct:42},{name:'Ernakulam',pct:28},{name:'Calicut',pct:16},{name:'Trivandrum',pct:9},{name:'Others',pct:5}];
-  document.getElementById('custLocations').innerHTML=locs.map(l=>`<div class="progress-row"><div class="progress-label">${l.name}</div><div class="progress-bar"><div class="progress-fill" style="width:${l.pct}%"></div></div><div class="progress-val">${l.pct}%</div></div>`).join('');
-})();
-</script>
-</body></html>
+async function loadAnalytics() {
+  const days = parseInt(document.getElementById('period').value);
+  const since = new Date(); since.setDate(since.getDate()-days);
+
+  const [ordersRes, prodsRes, customersRes] = await Promise.all([
+    db.from('orders').select('id,total,status,payment_method,shipping_district,created_at').gte('created_at',since.toISOString()),
+    db.from('products').select('id,name,price,stock_qty,low_stock_threshold,category:categories(name)').eq('is_active',true),
+    db.from('customers').select('id',{count:'exact'})
+  ]);
+
+  const orders = ordersRes.data || [];
+  const prods = prodsRes.data || [];
+  const revenue = orders.reduce((s,o)=>s+(parseFloat(o.total)||0),0);
+  const avgOrder = orders.length ? revenue/orders.length : 0;
+  const lowStock = prods.filter(p=>p.stock_qty<=p.low_stock_threshold).length;
+
+  document.getElementById('aStats').innerHTML = `
+    <div class="stat-card">
+      <div class="stat-card__top"><div class="stat-card__icon green"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg></div><span class="stat-card__badge up">${days}d</span></div>
+      <div class="stat-card__val">${formatCurrency(revenue)}</div><div class="stat-card__label">Total Revenue</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-card__top"><div class="stat-card__icon blue"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/></svg></div></div>
+      <div class="stat-card__val">${orders.length}</div><div class="stat-card__label">Total Orders</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-card__top"><div class="stat-card__icon gold"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg></div></div>
+      <div class="stat-card__val">${formatCurrency(avgOrder)}</div><div class="stat-card__label">Avg. Order Value</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-card__top"><div class="stat-card__icon ${lowStock>0?'red':'green'}"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/></svg></div></div>
+      <div class="stat-card__val">${lowStock}</div><div class="stat-card__label">Low Stock Products</div>
+    </div>`;
+
+  // Revenue by category
+  const catMap = {};
+  prods.forEach(p => { const c=p.category?.name||'Other'; catMap[c]=(catMap[c]||0)+1; });
+  const catTotal=Object.values(catMap).reduce((a,b)=>a+b,0);
+  document.getElementById('catRev').innerHTML = Object.entries(catMap).sort((a,b)=>b[1]-a[1]).slice(0,6).map(([c,v])=>`
+    <div class="progress-row"><div class="progress-label">${c}</div><div class="progress-bar"><div class="progress-fill" style="width:${catTotal>0?Math.round(v/catTotal*100):0}%"></div></div><div class="progress-val">${v} products</div></div>`).join('') || '<p style="color:var(--gray-400);font-size:12px;padding:12px;">No data</p>';
+
+  // Top products (by order items)
+  const { data: items } = await db.from('order_items').select('product_name, product_id').gte('created_at',since.toISOString());
+  const prodCounts = {};
+  (items||[]).forEach(i => { const k=i.product_name||i.product_id; prodCounts[k]=(prodCounts[k]||0)+1; });
+  const sorted = Object.entries(prodCounts).sort((a,b)=>b[1]-a[1]).slice(0,8);
+  document.getElementById('topProds').innerHTML = sorted.length ? sorted.map(([n,c],i)=>`<tr><td style="font-weight:700;color:var(--gray-400);">${i+1}</td><td style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" class="td-bold">${n}</td><td style="font-weight:700;">${c}</td></tr>`).join('') : '<tr><td colspan="3" style="text-align:center;padding:20px;color:var(--gray-400);">Place orders to see data</td></tr>';
+
+  // Order status breakdown
+  const statusMap = {};
+  orders.forEach(o => { statusMap[o.status||'pending']=(statusMap[o.status||'pending']||0)+1; });
+  const stTotal=orders.length||1;
+  document.getElementById('orderBreak').innerHTML = Object.entries(statusMap).map(([s,v])=>`
+    <div class="progress-row"><div class="progress-label" style="text-transform:capitalize;">${s.replace(/_/g,' ')}</div><div class="progress-bar"><div class="progress-fill" style="width:${Math.round(v/stTotal*100)}%"></div></div><div class="progress-val">${v} (${Math.round(v/stTotal*100)}%)</div></div>`).join('') || '<p style="color:var(--gray-400);font-size:12px;padding:12px;">No orders yet</p>';
+
+  // Districts
+  const distMap = {};
+  orders.forEach(o => { const d=o.shipping_district||'Unknown'; distMap[d]=(distMap[d]||0)+1; });
+  const distTotal=orders.length||1;
+  document.getElementById('distBreak').innerHTML = Object.entries(distMap).sort((a,b)=>b[1]-a[1]).slice(0,8).map(([d,v])=>`
+    <div class="progress-row"><div class="progress-label">${d}</div><div class="progress-bar"><div class="progress-fill" style="width:${Math.round(v/distTotal*100)}%"></div></div><div class="progress-val">${v}</div></div>`).join('') || '<p style="color:var(--gray-400);font-size:12px;padding:12px;">No location data</p>';
+}
+
+(async()=>{ await AdminShell.init('Analytics','analytics'); loadAnalytics(); })();
+</script></body></html>
