@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Branches — WellFix Admin</title>
+<link rel="icon" href="../assets/images/WELLFIX-FAVICON.png">
+<link rel="stylesheet" href="assets/css/admin.css">
+</head>
+<body>
+<div class="admin-shell"><div id="adminShell"></div>
+<div class="main-wrap" id="mainWrap"><div class="page-content">
+<div class="pg-hd">
+  <div><h1>Branches</h1><p>Manage store locations and service areas</p></div>
+  <div class="pg-hd__actions">
+    <button class="btn btn-primary" onclick="openModal()">+ Add Branch</button>
+  </div>
+</div>
+<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px;" id="branchGrid">
+  <div class="card" style="padding:20px;"><div class="skeleton" style="height:100px;border-radius:6px;"></div></div>
+  <div class="card" style="padding:20px;"><div class="skeleton" style="height:100px;border-radius:6px;"></div></div>
+</div>
+<!-- Modal -->
+<div class="modal-overlay" id="modalOverlay" style="display:none;" onclick="closeModal()"></div>
+<div class="modal" id="modal" style="display:none;">
+  <div class="modal-hd"><h3 id="modalTitle">Add Branch</h3><button class="modal-close" onclick="closeModal()">✕</button></div>
+  <div class="modal-body">
+    <div class="form-grid form-2">
+      <div class="form-group"><label class="form-label">Branch Name *</label><input class="form-input" id="fName" placeholder="e.g. Thrissur Main"></div>
+      <div class="form-group"><label class="form-label">Manager Name</label><input class="form-input" id="fManager" placeholder="Manager name"></div>
+      <div class="form-group" style="grid-column:1/-1"><label class="form-label">Address *</label><textarea class="form-textarea" id="fAddress" placeholder="Full address" style="min-height:60px;"></textarea></div>
+      <div class="form-group"><label class="form-label">Phone</label><input class="form-input" id="fPhone" placeholder="+91 99999 99999"></div>
+      <div class="form-group"><label class="form-label">Working Hours</label><input class="form-input" id="fHours" placeholder="Mon–Sat: 9AM–7PM"></div>
+      <div class="form-group" style="grid-column:1/-1"><label class="form-label">Service Areas (comma separated)</label><input class="form-input" id="fAreas" placeholder="Thrissur, Palakkad, Guruvayur"></div>
+      <div class="form-group"><label class="form-label">Status</label>
+        <select class="form-input" id="fStatus"><option value="active">Active</option><option value="inactive">Inactive</option></select>
+      </div>
+    </div>
+  </div>
+  <div class="modal-ft">
+    <button class="btn btn-outline" onclick="closeModal()">Cancel</button>
+    <button class="btn btn-primary" onclick="saveBranch()">Save Branch</button>
+  </div>
+</div>
+</div></div></div><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../backend/config/supabase.js"></script>
+<script src="assets/js/shell.js"></script>
+<script>
+let branches = [], editId = null;
+
+async function load() {
+  const { data } = await db.from('branches').select('*').order('created_at');
+  branches = data || [];
+  render();
+}
+
+function render() {
+  const grid = document.getElementById('branchGrid');
+  if (!branches.length) {
+    grid.innerHTML = '<div class="card" style="padding:40px;text-align:center;grid-column:1/-1;color:var(--gray-400);">No branches yet. Add your first branch.</div>';
+    return;
+  }
+  grid.innerHTML = branches.map(b => `
+    <div class="card" style="padding:20px;">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px;">
+        <div>
+          <div style="font-family:var(--font-display);font-size:15px;font-weight:700;">${b.name}</div>
+          <div style="font-size:12px;color:var(--gray-400);margin-top:2px;">${b.manager_name||'No manager'}</div>
+        </div>
+        ${renderBadge(b.status||'active')}
+      </div>
+      <div style="font-size:12px;color:var(--gray-600);margin-bottom:8px;">📍 ${b.address||'—'}</div>
+      ${b.phone ? `<div style="font-size:12px;color:var(--gray-600);margin-bottom:8px;">📞 ${b.phone}</div>` : ''}
+      ${b.working_hours ? `<div style="font-size:12px;color:var(--gray-600);margin-bottom:8px;">🕐 ${b.working_hours}</div>` : ''}
+      ${b.service_areas ? `<div style="margin-top:10px;display:flex;flex-wrap:wrap;gap:4px;">${b.service_areas.split(',').map(a=>`<span style="background:var(--green-50);color:var(--green-700);padding:2px 8px;border-radius:99px;font-size:11px;font-weight:500;">${a.trim()}</span>`).join('')}</div>` : ''}
+      <div style="display:flex;gap:6px;margin-top:14px;">
+        <button class="btn btn-sm btn-outline" onclick="editBranch('${b.id}')">Edit</button>
+        <button class="btn btn-sm" style="background:var(--red-100);color:var(--red-600);" onclick="deleteBranch('${b.id}')">Delete</button>
+      </div>
+    </div>`).join('');
+}
+
+function openModal(id=null) {
+  editId = id;
+  document.getElementById('modalTitle').textContent = id ? 'Edit Branch' : 'Add Branch';
+  if (id) {
+    const b = branches.find(x=>x.id===id);
+    document.getElementById('fName').value = b.name||'';
+    document.getElementById('fManager').value = b.manager_name||'';
+    document.getElementById('fAddress').value = b.address||'';
+    document.getElementById('fPhone').value = b.phone||'';
+    document.getElementById('fHours').value = b.working_hours||'';
+    document.getElementById('fAreas').value = b.service_areas||'';
+    document.getElementById('fStatus').value = b.status||'active';
+  } else {
+    ['fName','fManager','fAddress','fPhone','fHours','fAreas'].forEach(id=>document.getElementById(id).value='');
+  }
+  document.getElementById('modalOverlay').style.display='block';
+  document.getElementById('modal').style.display='block';
+}
+function editBranch(id){openModal(id);}
+function closeModal(){document.getElementById('modalOverlay').style.display='none';document.getElementById('modal').style.display='none';}
+
+async function saveBranch() {
+  const name = document.getElementById('fName').value.trim();
+  if (!name) { toast('Branch name required',true); return; }
+  const payload = {
+    name, manager_name: document.getElementById('fManager').value,
+    address: document.getElementById('fAddress').value,
+    phone: document.getElementById('fPhone').value,
+    working_hours: document.getElementById('fHours').value,
+    service_areas: document.getElementById('fAreas').value,
+    status: document.getElementById('fStatus').value,
+  };
+  if (editId) await db.from('branches').update(payload).eq('id',editId);
+  else await db.from('branches').insert(payload);
+  toast(editId ? 'Branch updated!' : 'Branch added!');
+  closeModal(); load();
+}
+
+async function deleteBranch(id) {
+  if (!confirm('Delete this branch?')) return;
+  await db.from('branches').delete().eq('id',id);
+  toast('Branch deleted'); load();
+}
+
+(async()=>{ await AdminShell.init('Branches','branches'); load(); })();
+</script></body></html>

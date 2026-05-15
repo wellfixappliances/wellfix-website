@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Roles — WellFix Admin</title>
+<link rel="icon" href="../assets/images/WELLFIX-FAVICON.png">
+<link rel="stylesheet" href="assets/css/admin.css">
+</head>
+<body>
+<div class="admin-shell"><div id="adminShell"></div>
+<div class="main-wrap" id="mainWrap"><div class="page-content">
+<div class="pg-hd">
+  <div><h1>Roles & Permissions</h1><p>Configure what each role can access</p></div>
+</div>
+<div class="card">
+  <div class="card-hd"><span class="card-title">Permission Matrix</span>
+    <button class="btn btn-primary" onclick="saveMatrix()">Save Permissions</button>
+  </div>
+  <div class="tbl-wrap">
+    <table id="matrixTable" style="min-width:900px;">
+      <thead id="matrixHead"></thead>
+      <tbody id="matrixBody"></tbody>
+    </table>
+  </div>
+</div>
+<div class="card" style="margin-top:16px;">
+  <div class="card-hd"><span class="card-title">Role Descriptions</span></div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;padding:16px;">
+    <div style="padding:12px;background:var(--gray-25);border-radius:var(--r-md);border:1px solid var(--gray-100);">
+      <div style="font-weight:700;color:var(--green-700);margin-bottom:4px;">Super Admin</div>
+      <div style="font-size:12px;color:var(--gray-500);">Full access to all modules. Cannot be restricted.</div>
+    </div>
+    <div style="padding:12px;background:var(--gray-25);border-radius:var(--r-md);border:1px solid var(--gray-100);">
+      <div style="font-weight:700;margin-bottom:4px;">Admin</div>
+      <div style="font-size:12px;color:var(--gray-500);">Most modules except system settings and user management.</div>
+    </div>
+    <div style="padding:12px;background:var(--gray-25);border-radius:var(--r-md);border:1px solid var(--gray-100);">
+      <div style="font-weight:700;margin-bottom:4px;">Staff</div>
+      <div style="font-size:12px;color:var(--gray-500);">Orders, products, bookings. No financial access.</div>
+    </div>
+    <div style="padding:12px;background:var(--gray-25);border-radius:var(--r-md);border:1px solid var(--gray-100);">
+      <div style="font-weight:700;margin-bottom:4px;">Accountant</div>
+      <div style="font-size:12px;color:var(--gray-500);">Finance, orders view only. No product editing.</div>
+    </div>
+    <div style="padding:12px;background:var(--gray-25);border-radius:var(--r-md);border:1px solid var(--gray-100);">
+      <div style="font-weight:700;margin-bottom:4px;">Content</div>
+      <div style="font-size:12px;color:var(--gray-500);">Blog, banners, homepage. No order or product access.</div>
+    </div>
+    <div style="padding:12px;background:var(--gray-25);border-radius:var(--r-md);border:1px solid var(--gray-100);">
+      <div style="font-weight:700;margin-bottom:4px;">Inventory</div>
+      <div style="font-size:12px;color:var(--gray-500);">Products and stock management only.</div>
+    </div>
+  </div>
+</div>
+</div></div></div><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../backend/config/supabase.js"></script>
+<script src="assets/js/shell.js"></script>
+<script>
+const PAGES = ['dashboard','analytics','products','categories','brands','inventory','orders','customers','coupons','reviews','services','homepage','banners','blog','media','seo','finance','branches','roles','activity_logs','users','settings'];
+const ROLES = ['admin','staff','accountant','content','inventory','support'];
+const ROLE_DEFAULTS = {
+  admin:     {dashboard:1,analytics:1,products:1,categories:1,brands:1,inventory:1,orders:1,customers:1,coupons:1,reviews:1,services:1,homepage:1,banners:1,blog:1,media:1,seo:1,finance:0,branches:0,roles:0,activity_logs:0,users:0,settings:0},
+  staff:     {dashboard:1,analytics:0,products:1,categories:1,brands:0,inventory:1,orders:1,customers:1,coupons:0,reviews:1,services:1,homepage:0,banners:0,blog:0,media:0,seo:0,finance:0,branches:0,roles:0,activity_logs:0,users:0,settings:0},
+  accountant:{dashboard:1,analytics:1,products:0,categories:0,brands:0,inventory:0,orders:1,customers:1,coupons:0,reviews:0,services:0,homepage:0,banners:0,blog:0,media:0,seo:0,finance:1,branches:0,roles:0,activity_logs:1,users:0,settings:0},
+  content:   {dashboard:1,analytics:0,products:0,categories:1,brands:1,inventory:0,orders:0,customers:0,coupons:1,reviews:1,services:0,homepage:1,banners:1,blog:1,media:1,seo:1,finance:0,branches:0,roles:0,activity_logs:0,users:0,settings:0},
+  inventory: {dashboard:1,analytics:0,products:1,categories:1,brands:1,inventory:1,orders:0,customers:0,coupons:0,reviews:0,services:0,homepage:0,banners:0,blog:0,media:0,seo:0,finance:0,branches:0,roles:0,activity_logs:0,users:0,settings:0},
+  support:   {dashboard:1,analytics:0,products:0,categories:0,brands:0,inventory:0,orders:1,customers:1,coupons:0,reviews:1,services:1,homepage:0,banners:0,blog:0,media:0,seo:0,finance:0,branches:0,roles:0,activity_logs:0,users:0,settings:0},
+};
+let matrix = JSON.parse(JSON.stringify(ROLE_DEFAULTS));
+
+function renderMatrix() {
+  const head = document.getElementById('matrixHead');
+  const body = document.getElementById('matrixBody');
+  head.innerHTML = `<tr><th style="min-width:130px;">Module</th>${ROLES.map(r=>`<th style="text-align:center;text-transform:capitalize;">${r}</th>`).join('')}</tr>`;
+  body.innerHTML = PAGES.map(page => `
+    <tr>
+      <td style="font-weight:600;text-transform:capitalize;">${page.replace(/_/g,' ')}</td>
+      ${ROLES.map(role => `
+        <td style="text-align:center;">
+          <label class="toggle" style="justify-content:center;">
+            <input type="checkbox" data-page="${page}" data-role="${role}" ${matrix[role]?.[page] ? 'checked' : ''} onchange="togglePerm('${page}','${role}',this.checked)">
+            <span class="toggle-track"></span>
+          </label>
+        </td>`).join('')}
+    </tr>`).join('');
+}
+
+function togglePerm(page, role, val) {
+  if (!matrix[role]) matrix[role] = {};
+  matrix[role][page] = val ? 1 : 0;
+}
+
+async function saveMatrix() {
+  try {
+    for (const role of ROLES) {
+      await db.from('role_permissions').upsert({ role, permissions: matrix[role] }, { onConflict: 'role' });
+    }
+    toast('Permissions saved! Users will see changes on next login.');
+  } catch(e) {
+    toast('Saved locally. Run SQL to create role_permissions table for persistence.', false);
+  }
+}
+
+(async()=>{ await AdminShell.init('Roles','roles'); renderMatrix(); })();
+</script></body></html>

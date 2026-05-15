@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Finance — WellFix Admin</title>
+<link rel="icon" href="../assets/images/WELLFIX-FAVICON.png">
+<link rel="stylesheet" href="assets/css/admin.css">
+</head>
+<body>
+<div class="admin-shell">
+<div id="adminShell"></div>
+<div class="main-wrap" id="mainWrap">
+<div class="page-content">
+<div class="pg-hd">
+  <div><h1>Finance</h1><p>Revenue reports, payouts and financial overview</p></div>
+  <div class="pg-hd__actions">
+    <select class="filter-select" id="finPeriod" onchange="loadFinance()">
+      <option value="30">Last 30 Days</option>
+      <option value="7">Last 7 Days</option>
+      <option value="90">Last 90 Days</option>
+      <option value="365">This Year</option>
+    </select>
+    <button class="btn btn-outline" onclick="exportFinance()">
+      <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="13" height="13"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+      Export
+    </button>
+  </div>
+</div>
+
+<div class="stats-grid" id="finStats">
+  <div class="stat-card"><div class="skeleton" style="height:80px;border-radius:8px;"></div></div>
+  <div class="stat-card"><div class="skeleton" style="height:80px;border-radius:8px;"></div></div>
+  <div class="stat-card"><div class="skeleton" style="height:80px;border-radius:8px;"></div></div>
+  <div class="stat-card"><div class="skeleton" style="height:80px;border-radius:8px;"></div></div>
+</div>
+
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px;">
+  <div class="card">
+    <div class="card-hd"><span class="card-title">Payment Method Breakdown</span></div>
+    <div class="card-body" id="payBreakdown">
+      <div class="skeleton" style="height:120px;border-radius:6px;"></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-hd"><span class="card-title">Order Status by Revenue</span></div>
+    <div class="card-body" id="statusRevenue">
+      <div class="skeleton" style="height:120px;border-radius:6px;"></div>
+    </div>
+  </div>
+</div>
+
+<div class="card" style="margin-top:16px;">
+  <div class="card-hd">
+    <span class="card-title">Payment Transactions</span>
+    <div style="display:flex;gap:8px;">
+      <select class="filter-select" id="finPayFilter" onchange="filterTxns()">
+        <option value="">All Payments</option>
+        <option value="cod">COD</option>
+        <option value="upi">UPI</option>
+        <option value="whatsapp">WhatsApp</option>
+      </select>
+      <select class="filter-select" id="finStatusFilter" onchange="filterTxns()">
+        <option value="">All Status</option>
+        <option value="pending">Pending</option>
+        <option value="pending_verification">Pending Verification</option>
+        <option value="paid">Paid</option>
+        <option value="failed">Failed</option>
+      </select>
+    </div>
+  </div>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>Order ID</th><th>Customer</th><th>Amount</th><th>Method</th><th>Pay Status</th><th>Order Status</th><th>Date</th><th>Actions</th></tr></thead>
+      <tbody id="finTbody"><tr><td><div class="skeleton" style="height:12px;border-radius:3px;"></div></td><td><div class="skeleton" style="height:12px;border-radius:3px;"></div></td><td><div class="skeleton" style="height:12px;border-radius:3px;"></div></td><td><div class="skeleton" style="height:12px;border-radius:3px;"></div></td><td><div class="skeleton" style="height:12px;border-radius:3px;"></div></td><td><div class="skeleton" style="height:12px;border-radius:3px;"></div></td><td><div class="skeleton" style="height:12px;border-radius:3px;"></div></td><td><div class="skeleton" style="height:12px;border-radius:3px;"></div></td></tr></tr></tr></tr></tr></tbody>
+    </table>
+  </div>
+</div>
+</div></div></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../backend/config/supabase.js"></script>
+<script src="assets/js/shell.js"></script>
+<script>
+let allOrders = [];
+
+async function loadFinance() {
+  const days = parseInt(document.getElementById('finPeriod').value);
+  const since = new Date(); since.setDate(since.getDate() - days);
+  
+  const { data } = await db.from('orders')
+    .select('*')
+    .gte('created_at', since.toISOString())
+    .order('created_at', { ascending: false });
+  
+  allOrders = data || [];
+  renderStats();
+  renderBreakdowns();
+  renderTxns(allOrders);
+}
+
+function renderStats() {
+  const total = allOrders.reduce((s,o) => s + (parseFloat(o.total)||0), 0);
+  const paid = allOrders.filter(o => o.payment_status === 'paid').reduce((s,o) => s + (parseFloat(o.total)||0), 0);
+  const pending = allOrders.filter(o => ['pending','pending_verification'].includes(o.payment_status)).length;
+  const cod = allOrders.filter(o => o.payment_method === 'cod').length;
+  
+  document.getElementById('finStats').innerHTML = `
+    <div class="stat-card">
+      <div class="stat-card__top"><div class="stat-card__icon green"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg></div><span class="stat-card__badge up">Total</span></div>
+      <div class="stat-card__val">${formatCurrency(total)}</div><div class="stat-card__label">Gross Revenue</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-card__top"><div class="stat-card__icon blue"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div></div>
+      <div class="stat-card__val">${formatCurrency(paid)}</div><div class="stat-card__label">Confirmed Revenue</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-card__top"><div class="stat-card__icon gold"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div></div>
+      <div class="stat-card__val">${pending}</div><div class="stat-card__label">Pending Payments</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-card__top"><div class="stat-card__icon purple"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg></div></div>
+      <div class="stat-card__val">${allOrders.length}</div><div class="stat-card__label">Total Orders</div>
+    </div>`;
+}
+
+function renderBreakdowns() {
+  const methods = {};
+  allOrders.forEach(o => { methods[o.payment_method||'unknown'] = (methods[o.payment_method||'unknown']||0) + (parseFloat(o.total)||0); });
+  const total = Object.values(methods).reduce((a,b)=>a+b,0);
+  document.getElementById('payBreakdown').innerHTML = Object.entries(methods).map(([m,v]) => {
+    const pct = total > 0 ? Math.round((v/total)*100) : 0;
+    return `<div class="progress-row"><div class="progress-label">${m.toUpperCase()}</div><div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div><div class="progress-val">${formatCurrency(v)}</div></div>`;
+  }).join('') || '<p style="color:var(--gray-400);font-size:12px;text-align:center;padding:20px;">No data</p>';
+
+  const statuses = {};
+  allOrders.forEach(o => { statuses[o.status||'pending'] = (statuses[o.status||'pending']||0) + (parseFloat(o.total)||0); });
+  const stTotal = Object.values(statuses).reduce((a,b)=>a+b,0);
+  document.getElementById('statusRevenue').innerHTML = Object.entries(statuses).map(([s,v]) => {
+    const pct = stTotal > 0 ? Math.round((v/stTotal)*100) : 0;
+    return `<div class="progress-row"><div class="progress-label">${s.replace(/_/g,' ')}</div><div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div><div class="progress-val">${formatCurrency(v)}</div></div>`;
+  }).join('') || '<p style="color:var(--gray-400);font-size:12px;text-align:center;padding:20px;">No data</p>';
+}
+
+function filterTxns() {
+  const pm = document.getElementById('finPayFilter').value;
+  const ps = document.getElementById('finStatusFilter').value;
+  let filtered = allOrders;
+  if (pm) filtered = filtered.filter(o => o.payment_method === pm);
+  if (ps) filtered = filtered.filter(o => o.payment_status === ps);
+  renderTxns(filtered);
+}
+
+function renderTxns(orders) {
+  const tbody = document.getElementById('finTbody');
+  if (!orders.length) { tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:30px;color:var(--gray-400);">No transactions found</td></tr>'; return; }
+  tbody.innerHTML = orders.map(o => `
+    <tr>
+      <td class="td-bold">${o.order_number||'—'}</td>
+      <td>${o.customer_name||'—'}<div style="font-size:11px;color:var(--gray-400);">${o.customer_phone||''}</div></td>
+      <td class="td-bold" style="color:var(--green-700);">${formatCurrency(o.total)}</td>
+      <td><span style="text-transform:uppercase;font-size:11px;font-weight:700;background:var(--gray-100);padding:2px 8px;border-radius:99px;">${o.payment_method||'cod'}</span></td>
+      <td>${renderBadge(o.payment_status||'pending')}</td>
+      <td>${renderBadge(o.status||'pending')}</td>
+      <td>${formatDate(o.created_at)}</td>
+      <td>
+        ${o.payment_status === 'pending_verification' ? `<button class="btn btn-sm btn-primary" onclick="markPaid('${o.id}')">Verify Payment</button>` : ''}
+      </td>
+    </tr>`).join('');
+}
+
+async function markPaid(id) {
+  await db.from('orders').update({ payment_status: 'paid', status: 'confirmed' }).eq('id', id);
+  toast('Payment verified! Order confirmed.');
+  loadFinance();
+}
+
+function exportFinance() {
+  const rows = [['Order ID','Customer','Phone','Total','Method','Pay Status','Status','Date']];
+  allOrders.forEach(o => rows.push([o.order_number,o.customer_name,o.customer_phone,o.total,o.payment_method,o.payment_status,o.status,formatDate(o.created_at)]));
+  const csv = rows.map(r => r.join(',')).join('\n');
+  const a = document.createElement('a'); a.href = 'data:text/csv,' + encodeURIComponent(csv); a.download = 'wellfix-finance.csv'; a.click();
+}
+
+(async() => {
+  await AdminShell.init('Finance', 'finance');
+  loadFinance();
+})();
+</script>
+</body></html>

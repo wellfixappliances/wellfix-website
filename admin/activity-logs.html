@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Activity Logs — WellFix Admin</title>
+<link rel="icon" href="../assets/images/WELLFIX-FAVICON.png">
+<link rel="stylesheet" href="assets/css/admin.css">
+</head>
+<body>
+<div class="admin-shell"><div id="adminShell"></div>
+<div class="main-wrap" id="mainWrap"><div class="page-content">
+<div class="pg-hd">
+  <div><h1>Activity Logs</h1><p>Full audit trail of all admin actions</p></div>
+  <div class="pg-hd__actions">
+    <button class="btn btn-outline" onclick="exportLogs()">
+      <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="13" height="13"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+      Export CSV
+    </button>
+  </div>
+</div>
+<div class="card">
+  <div class="filter-bar">
+    <div class="filter-search">
+      <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input type="search" id="logSearch" placeholder="Search actions, users…" oninput="filterLogs()">
+    </div>
+    <select class="filter-select" id="logType" onchange="filterLogs()">
+      <option value="">All Actions</option>
+      <option value="create">Create</option>
+      <option value="update">Update</option>
+      <option value="delete">Delete</option>
+      <option value="login">Login</option>
+      <option value="logout">Logout</option>
+    </select>
+    <select class="filter-select" id="logPeriod" onchange="loadLogs()">
+      <option value="7">Last 7 Days</option>
+      <option value="30">Last 30 Days</option>
+      <option value="90">Last 90 Days</option>
+    </select>
+  </div>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>Time</th><th>User</th><th>Action</th><th>Module</th><th>Details</th><th>IP</th></tr></thead>
+      <tbody id="logsTbody">
+        <tr><td colspan="6" style="text-align:center;padding:30px;"><div class="spinner" style="margin:0 auto;"></div></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div style="padding:12px 16px;display:flex;align-items:center;justify-content:space-between;border-top:1px solid var(--gray-100);">
+    <span id="logCount" style="font-size:12px;color:var(--gray-400);"></span>
+    <div style="display:flex;gap:6px;">
+      <button class="btn btn-sm btn-outline" id="prevBtn" onclick="prevPage()">← Prev</button>
+      <button class="btn btn-sm btn-outline" id="nextBtn" onclick="nextPage()">Next →</button>
+    </div>
+  </div>
+</div>
+</div></div></div><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../backend/config/supabase.js"></script>
+<script src="assets/js/shell.js"></script>
+<script>
+let allLogs = [], filtered = [], page = 0;
+const PER_PAGE = 50;
+
+async function loadLogs() {
+  const days = parseInt(document.getElementById('logPeriod').value);
+  const since = new Date(); since.setDate(since.getDate() - days);
+  
+  // Try activity_logs table first, fallback to generating from orders/products
+  try {
+    const { data, error } = await db.from('activity_logs')
+      .select('*')
+      .gte('created_at', since.toISOString())
+      .order('created_at', { ascending: false })
+      .limit(500);
+    
+    if (error) throw error;
+    allLogs = data || [];
+  } catch(e) {
+    // Fallback: generate from orders and products changes
+    const [orders, prods] = await Promise.all([
+      db.from('orders').select('id,order_number,customer_name,status,created_at').gte('created_at', since.toISOString()).order('created_at',{ascending:false}).limit(100),
+      db.from('products').select('id,name,updated_at').order('updated_at',{ascending:false}).limit(50)
+    ]);
+    allLogs = [
+      ...(orders.data||[]).map(o => ({ id:o.id, action:'create', module:'orders', description:`Order ${o.order_number} from ${o.customer_name}`, created_at:o.created_at, user_name:'Customer', ip:'—' })),
+      ...(prods.data||[]).map(p => ({ id:p.id, action:'update', module:'products', description:`Product updated: ${p.name}`, created_at:p.updated_at, user_name:'Admin', ip:'—' })),
+    ].sort((a,b) => new Date(b.created_at) - new Date(a.created_at));
+  }
+  
+  filterLogs();
+}
+
+function filterLogs() {
+  const q = document.getElementById('logSearch').value.toLowerCase();
+  const type = document.getElementById('logType').value;
+  filtered = allLogs.filter(l => {
+    if (type && l.action !== type) return false;
+    if (q && !`${l.description||''} ${l.user_name||''} ${l.module||''}`.toLowerCase().includes(q)) return false;
+    return true;
+  });
+  page = 0;
+  renderLogs();
+}
+
+function renderLogs() {
+  const start = page * PER_PAGE;
+  const slice = filtered.slice(start, start + PER_PAGE);
+  document.getElementById('logCount').textContent = `${filtered.length} entries`;
+  document.getElementById('prevBtn').disabled = page === 0;
+  document.getElementById('nextBtn').disabled = start + PER_PAGE >= filtered.length;
+
+  const actionColors = { create:'background:var(--green-50);color:var(--green-700)', update:'background:var(--blue-100);color:var(--blue-500)', delete:'background:var(--red-100);color:var(--red-600)', login:'background:var(--purple-100);color:var(--purple-500)', logout:'background:var(--gray-100);color:var(--gray-500)' };
+
+  document.getElementById('logsTbody').innerHTML = slice.length ? slice.map(l => `
+    <tr>
+      <td style="white-space:nowrap;font-size:11px;color:var(--gray-500);">${new Date(l.created_at).toLocaleString('en-IN',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})}</td>
+      <td style="font-weight:600;">${l.user_name||'System'}</td>
+      <td><span style="font-size:11px;font-weight:700;padding:2px 8px;border-radius:99px;${actionColors[l.action]||actionColors.update};">${(l.action||'action').toUpperCase()}</span></td>
+      <td style="text-transform:capitalize;color:var(--gray-500);">${l.module||'—'}</td>
+      <td style="max-width:300px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${l.description||'—'}</td>
+      <td style="font-size:11px;color:var(--gray-400);">${l.ip||'—'}</td>
+    </tr>`).join('') : '<tr><td colspan="6" style="text-align:center;padding:30px;color:var(--gray-400);">No activity logs found</td></tr>';
+}
+
+function prevPage(){if(page>0){page--;renderLogs();}}
+function nextPage(){if((page+1)*PER_PAGE<filtered.length){page++;renderLogs();}}
+
+function exportLogs(){
+  const rows=[['Time','User','Action','Module','Details','IP'],...filtered.map(l=>[new Date(l.created_at).toLocaleString(),l.user_name||'',l.action||'',l.module||'',l.description||'',l.ip||''])];
+  const a=document.createElement('a');a.href='data:text/csv,'+encodeURIComponent(rows.map(r=>r.join(',')).join('\n'));a.download='activity-logs.csv';a.click();
+}
+
+(async()=>{ await AdminShell.init('Activity Logs','activity_logs'); loadLogs(); })();
+</script></body></html>
