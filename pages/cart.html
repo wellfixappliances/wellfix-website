@@ -52,7 +52,6 @@
   </style>
 </head>
 <body>
-
 <div class="topbar">
   <div class="container topbar__inner">
     <div class="topbar__links">
@@ -73,103 +72,54 @@
 
 <header class="site-header">
   <div class="container site-header__inner">
-
-    <!-- Logo -->
     <a href="../index.html" class="logo" aria-label="WellFix Home">
-      <img
-        src="../assets/images/WELLFIX-MAIN-LOGO.png"
-        alt="WellFix Appliances"
-        class="logo__img"
-        onerror="this.style.display='none'">
+      <img src="../assets/images/WELLFIX-MAIN-LOGO.png" alt="WellFix Appliances" class="logo__img" onerror="this.style.display='none'">
     </a>
-
-    <!-- Desktop search (hidden on mobile) -->
     <div class="header-search">
       <select class="header-search__cat" aria-label="Category filter">
-        <option>All</option>
-        <option>Mixers</option>
-        <option>Stoves</option>
-        <option>Fans</option>
-        <option>Cookers</option>
-        <option>Motors</option>
-        <option>Spare Parts</option>
+        <option>All</option><option>Mixers</option><option>Stoves</option>
+        <option>Fans</option><option>Cookers</option><option>Motors</option><option>Spare Parts</option>
       </select>
-      <input class="header-search__input" type="search"
-        placeholder="Search products, brands, spare parts…" aria-label="Search">
-      <button class="header-search__btn" aria-label="Search">
-        <svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-          <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
-        </svg>
+      <input class="header-search__input" id="hdrSearch" type="search" placeholder="Search products, brands, spare parts…" aria-label="Search">
+      <button class="header-search__btn" onclick="doSiteSearch()" aria-label="Search">
+        <svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
       </button>
     </div>
-
-    <!-- Mobile search icon (hidden on desktop) -->
-    <button class="mob-search-btn" id="mobSearchOpen" aria-label="Open search" onclick="document.getElementById('mobSearchOverlay').classList.add('is-open');document.body.style.overflow='hidden';">
-      <svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-        <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
-      </svg>
+    <button class="mob-search-btn" id="mobSearchOpen" aria-label="Open search">
+      <svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
     </button>
-
-    <!-- Spacer pushes actions to right on mobile -->
     <div style="flex:1;" class="mob-spacer"></div>
-
-    <!-- Actions -->
     <div class="header-actions">
       <button class="hdr-action hdr-action--account">
-        <svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
-          <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/>
-          <circle cx="12" cy="7" r="4"/>
-        </svg>
+        <svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
         <span>Account</span>
       </button>
-
       <button class="hdr-action">
-        <svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
-          <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/>
-        </svg>
+        <svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
         <span>Wishlist</span>
-        <span class="hdr-action__badge" data-wish-count style="display:none"></span>
       </button>
-
       <a href="cart.html" class="hdr-cart">
-        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-          <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/>
-          <line x1="3" y1="6" x2="21" y2="6"/>
-          <path d="M16 10a4 4 0 01-8 0"/>
-        </svg>
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
         <span class="label">Cart</span>
         <span class="hdr-cart__count" data-cart-count></span>
-      </button>
+      </a>
     </div>
-
   </div>
 </header>
 
-<!-- Mobile Search Overlay -->
 <div class="mob-search-overlay" id="mobSearchOverlay">
   <div class="mob-search-overlay__backdrop" id="mobSearchBackdrop"></div>
   <div class="mob-search-overlay__panel">
     <div class="mob-search-overlay__top">
       <button class="mob-search-back" id="mobSearchClose" aria-label="Close search">
-        <svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-          <line x1="19" y1="12" x2="5" y2="12"/>
-          <polyline points="12 19 5 12 12 5"/>
-        </svg>
+        <svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
       </button>
       <span class="mob-search-overlay__label">Search WellFix</span>
     </div>
     <div class="mob-search-overlay__input-row">
-      <input
-        class="mob-search-overlay__input"
-        id="mobSearchInput"
-        type="search"
-        placeholder="Mixers, stoves, fans, spare parts…"
-        autocomplete="off"
-        autofocus>
-      <button class="mob-search-overlay__go" aria-label="Go">
-        <svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-          <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
-        </svg>
+      <input class="mob-search-overlay__input" id="mobSearchInput" type="search" placeholder="Mixers, stoves, fans, spare parts…" autocomplete="off">
+      <button class="mob-search-overlay__go" onclick="doSiteSearch()" aria-label="Go">
+        <svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
       </button>
     </div>
     <div class="mob-search-overlay__hints">
@@ -183,17 +133,14 @@
   </div>
 </div>
 
-<!-- Category Navbar -->
 <nav class="cat-navbar">
   <div class="container cat-navbar__inner">
-    <button class="cat-navbar__all">
-      <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="15" height="15">
-        <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
-      </svg>
+    <button class="cat-navbar__all" onclick="window.location.href='products.html'">
+      <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="15" height="15"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
       All Categories
     </button>
     <div class="cat-navbar__links">
-      <a class="cat-nav-link active" href="products.html?cat=mixers-grinders">Mixers &amp; Grinders</a>
+      <a class="cat-nav-link" href="products.html?cat=mixers-grinders">Mixers &amp; Grinders</a>
       <a class="cat-nav-link" href="products.html?cat=gas-stoves">Gas Stoves</a>
       <a class="cat-nav-link" href="products.html?cat=fans">Fans</a>
       <a class="cat-nav-link" href="products.html?cat=pressure-cookers">Pressure Cookers</a>
@@ -201,18 +148,15 @@
       <a class="cat-nav-link" href="products.html?cat=cookware-pans">Cookware</a>
       <a class="cat-nav-link" href="products.html?cat=spare-parts">Spare Parts</a>
       <a class="cat-nav-link" href="services.html">Services <span class="dot-new">New</span></a>
-      <a class="cat-nav-link" href="brands.html">Brands</a>
+      <a class="cat-nav-link" href="#">Brands</a>
     </div>
     <div class="cat-navbar__spacer"></div>
     <div class="cat-navbar__location">
-      <svg fill="currentColor" viewBox="0 0 24 24">
-        <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
-      </svg>
+      <svg fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
       Kerala, India
     </div>
   </div>
 </nav>
-
 <main class="cart-page">
   <div class="container">
     <div style="display:flex;align-items:center;gap:8px;margin-bottom:var(--sp-4);font-size:var(--text-sm);color:var(--color-text-3);">
@@ -226,170 +170,20 @@
     </div>
   </div>
 </main>
-
-<a href="https://wa.me/918590004349" target="_blank" class="wa-fab"><svg fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347zM12 2C6.477 2 2 6.477 2 12c0 1.89.525 3.66 1.438 5.168L2 22l4.978-1.413A9.955 9.955 0 0012 22c5.523 0 10-4.477 10-10S17.523 2 12 2z"/></svg></a>
-
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="../backend/config/supabase.js"></script>
-<script src="../assets/js/app.js"></script>
-<script>
-let cart = [];
-
-document.addEventListener('DOMContentLoaded', () => {
-  updateCartUI();
-  renderCart();
-});
-
-function renderCart() {
-  cart = JSON.parse(localStorage.getItem('wf_cart') || '[]');
-  const container = document.getElementById('cartContent');
-
-  if (!cart.length) {
-    container.innerHTML = `
-      <div class="empty-cart">
-        <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
-        <h2>Your cart is empty</h2>
-        <p>Add some products to get started</p>
-        <a href="products.html" class="btn btn-primary btn-lg">Browse Products</a>
-      </div>`;
-    return;
-  }
-
-  const subtotal = cart.reduce((s, i) => s + (i.price * (i.qty || 1)), 0);
-  const shipping = subtotal >= 999 ? 0 : 60;
-  const total = subtotal + shipping;
-
-  container.innerHTML = `
-    <div class="cart-layout">
-      <div>
-        <div class="cart-card">
-          <div class="cart-card__header">
-            <div class="cart-card__title">My Cart (${cart.length} item${cart.length !== 1 ? 's' : ''})</div>
-            <button onclick="clearCart()" style="font-size:var(--text-xs);color:var(--color-text-3);background:none;border:none;cursor:pointer;">Clear all</button>
-          </div>
-          ${cart.map(item => `
-            <div class="cart-item" id="item-${item.id}">
-              ${item.img
-                ? `<img class="cart-item__img" src="${item.img}" alt="${item.name}">`
-                : `<div class="cart-item__img-placeholder">📦</div>`}
-              <div class="cart-item__info">
-                <div class="cart-item__name">${item.name}</div>
-                <div class="cart-item__meta">Unit price: ₹${Number(item.price).toLocaleString('en-IN')}</div>
-                <div class="qty-control">
-                  <button class="qty-btn" onclick="changeQty('${item.id}',-1)">−</button>
-                  <div class="qty-num">${item.qty || 1}</div>
-                  <button class="qty-btn" onclick="changeQty('${item.id}',1)">+</button>
-                </div>
-              </div>
-              <div class="cart-item__actions">
-                <div class="cart-item__price">₹${Number(item.price * (item.qty || 1)).toLocaleString('en-IN')}</div>
-                <button class="remove-btn" onclick="removeItem('${item.id}')">Remove</button>
-              </div>
-            </div>`).join('')}
-        </div>
-      </div>
-
-      <div class="order-summary">
-        <div class="order-summary__header"><div class="order-summary__title">Order Summary</div></div>
-        <div class="order-summary__body">
-          <div class="summary-row"><span>Subtotal (${cart.length} items)</span><span>₹${subtotal.toLocaleString('en-IN')}</span></div>
-          <div class="summary-row ${shipping === 0 ? 'free' : ''}">
-            <span>Delivery</span>
-            <span>${shipping === 0 ? 'FREE' : '₹' + shipping}</span>
-          </div>
-          ${shipping > 0 ? `<div style="font-size:11px;color:var(--color-text-3);margin-top:-6px;padding-bottom:8px;">Add ₹${(999-subtotal).toLocaleString('en-IN')} more for free delivery</div>` : ''}
-
-          <div class="coupon-row">
-            <input class="coupon-input" id="couponInput" placeholder="Enter coupon code">
-            <button class="btn btn-secondary btn-sm" onclick="applyCoupon()">Apply</button>
-          </div>
-          <div id="couponMsg" style="font-size:11px;margin-top:-6px;"></div>
-
-          <div class="summary-row total"><span>Total</span><span>₹${total.toLocaleString('en-IN')}</span></div>
-          <a href="checkout.html" class="btn btn-primary btn-lg" style="width:100%;justify-content:center;margin-top:var(--sp-3);">
-            Proceed to Checkout →
-          </a>
-          <a href="products.html" class="btn btn-secondary btn-sm" style="width:100%;justify-content:center;margin-top:var(--sp-2);">Continue Shopping</a>
-        </div>
-        <div class="trust-badges">
-          <div class="trust-badge"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>100% Secure Checkout</div>
-          <div class="trust-badge"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/></svg>Genuine Products Only</div>
-          <div class="trust-badge"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>Free delivery above ₹999</div>
-        </div>
-      </div>
-    </div>`;
-}
-
-function changeQty(id, delta) {
-  const item = cart.find(i => i.id === id);
-  if (!item) return;
-  item.qty = Math.max(1, (item.qty || 1) + delta);
-  localStorage.setItem('wf_cart', JSON.stringify(cart));
-  renderCart();
-  updateCartUI();
-}
-
-function removeItem(id) {
-  cart = cart.filter(i => i.id !== id);
-  localStorage.setItem('wf_cart', JSON.stringify(cart));
-  renderCart();
-  updateCartUI();
-}
-
-function clearCart() {
-  if (!confirm('Clear all items from cart?')) return;
-  localStorage.removeItem('wf_cart');
-  renderCart();
-  updateCartUI();
-}
-
-async function applyCoupon() {
-  const code = document.getElementById('couponInput').value.trim().toUpperCase();
-  const msgEl = document.getElementById('couponMsg');
-  if (!code) { msgEl.style.color = 'var(--color-danger)'; msgEl.textContent = 'Enter a coupon code'; return; }
-  try {
-    const subtotal = cart.reduce((s, i) => s + (i.price * (i.qty || 1)), 0);
-    const coupon = await WF.coupons.validate(code, subtotal);
-    const discount = coupon.type === 'percentage'
-      ? Math.min(subtotal * coupon.value / 100, coupon.max_discount || Infinity)
-      : coupon.value;
-    msgEl.style.color = 'var(--green-600)';
-    msgEl.textContent = `Coupon applied! You save ₹${discount.toLocaleString('en-IN')}`;
-    sessionStorage.setItem('wf_coupon', JSON.stringify({ code, discount, coupon_id: coupon.id }));
-  } catch (e) {
-    msgEl.style.color = 'var(--color-danger)';
-    msgEl.textContent = e.message;
-  }
-}
-</script>
-</body>
-</html>
-
 <footer class="site-footer">
   <div class="container">
     <div class="site-footer__grid">
       <div class="footer-brand">
         <div class="footer-brand__logo">
           <img src="../assets/images/WELLFIX-MAIN-LOGO.png" alt="WellFix"
-               style="height:28px;filter:brightness(0) invert(1);opacity:.8;"
-               onerror="this.outerHTML='<span style=\'font-family:var(--font-display);font-size:18px;font-weight:800;color:#fff;\'>WellFix</span>'">
+            style="height:28px;filter:brightness(0) invert(1);opacity:.8;"
+            onerror="this.outerHTML='<span style='font-family:var(--font-display);font-size:18px;font-weight:800;color:#fff;'>WellFix</span>'">
         </div>
-        <p class="footer-brand__desc">Kerala's most trusted home and kitchen appliance sales &amp; service shop. Original products, best prices, genuine warranties — since day one.</p>
+        <p class="footer-brand__desc">Kerala's most trusted home and kitchen appliance sales &amp; service shop. Original products, best prices, genuine warranties.</p>
         <div class="footer-social">
-          <a href="#" class="footer-social__btn" aria-label="Facebook">
-            <svg fill="currentColor" viewBox="0 0 24 24"><path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"/></svg>
-          </a>
-          <a href="#" class="footer-social__btn" aria-label="Instagram">
-            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-              <rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r=".5" fill="currentColor"/>
-            </svg>
-          </a>
-          <a href="https://wa.me/918590004349" class="footer-social__btn" aria-label="WhatsApp">
-            <svg fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347zM12 2C6.477 2 2 6.477 2 12c0 1.89.525 3.66 1.438 5.168L2 22l4.978-1.413A9.955 9.955 0 0012 22c5.523 0 10-4.477 10-10S17.523 2 12 2z"/></svg>
-          </a>
-          <a href="#" class="footer-social__btn" aria-label="YouTube">
-            <svg fill="currentColor" viewBox="0 0 24 24"><path d="M22.54 6.42a2.78 2.78 0 00-1.95-1.96C18.88 4 12 4 12 4s-6.88 0-8.59.46a2.78 2.78 0 00-1.95 1.96A29 29 0 001 12a29 29 0 00.46 5.58A2.78 2.78 0 003.41 19.6C5.12 20 12 20 12 20s6.88 0 8.59-.4a2.78 2.78 0 001.95-1.95A29 29 0 0023 12a29 29 0 00-.46-5.58z"/><polygon fill="#fff" points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02"/></svg>
-          </a>
+          <a href="#" class="footer-social__btn" aria-label="Facebook"><svg fill="currentColor" viewBox="0 0 24 24"><path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"/></svg></a>
+          <a href="#" class="footer-social__btn" aria-label="Instagram"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r=".5" fill="currentColor"/></svg></a>
+          <a href="https://wa.me/918590004349" class="footer-social__btn" aria-label="WhatsApp"><svg fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347zM12 2C6.477 2 2 6.477 2 12c0 1.89.525 3.66 1.438 5.168L2 22l4.978-1.413A9.955 9.955 0 0012 22c5.523 0 10-4.477 10-10S17.523 2 12 2z"/></svg></a>
         </div>
       </div>
       <div class="footer-col">
@@ -400,7 +194,7 @@ async function applyCoupon() {
           <a href="products.html?cat=fans">Fans</a>
           <a href="products.html?cat=pressure-cookers">Pressure Cookers</a>
           <a href="products.html?cat=water-motors">Water Motors</a>
-          <a href="#">Cookware &amp; Pans</a>
+          <a href="products.html?cat=cookware-pans">Cookware</a>
           <a href="products.html?cat=spare-parts">Spare Parts</a>
         </div>
       </div>
@@ -411,58 +205,65 @@ async function applyCoupon() {
           <a href="services.html">Washing Machine</a>
           <a href="services.html">Gas Stove Repair</a>
           <a href="services.html">Fan Service</a>
-          <a href="services.html">Cooker Repair</a>
           <a href="services.html">Book a Service</a>
         </div>
       </div>
       <div class="footer-col">
-        <h5 class="footer-col__title">Contact</h5>
-        <div class="footer-contact-item">
-          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.18 9.84 19.79 19.79 0 01.11 1.23 2 2 0 012.11 1h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.91 8.09a16 16 0 006 6l.91-.91a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 15.4v1.52z"/></svg>
+        <h5 class="footer-col__title">Help</h5>
+        <div class="footer-links">
+          <a href="track-order.html">Track Order</a>
+          <a href="contact.html">Contact Us</a>
+          <a href="blog.html">Blog</a>
+          <a href="store-locator.html">Store Locator</a>
+        </div>
+        <div class="footer-contact-item" style="margin-top:12px;">
+          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="14" height="14"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07"/></svg>
           <span>+91 85900 04349</span>
         </div>
         <div class="footer-contact-item">
-          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
-          <span>Kerala, India</span>
-        </div>
-        <div class="footer-contact-item">
-          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-          <span>Mon – Sat: 9 AM – 7 PM</span>
+          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="14" height="14"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          <span>Mon–Sat: 9 AM – 7 PM</span>
         </div>
       </div>
     </div>
     <div class="site-footer__bottom">
       <p>© 2025 WellFix Appliances. All rights reserved.</p>
       <div class="footer-bottom-links">
-        <a href="#">Privacy Policy</a>
-        <a href="#">Terms of Use</a>
-        <a href="#">Sitemap</a>
+        <a href="#">Privacy Policy</a><a href="#">Terms of Use</a><a href="#">Sitemap</a>
       </div>
     </div>
   </div>
 </footer>
 
-<!-- WhatsApp FAB -->
 <a href="https://wa.me/918590004349?text=Hi%20WellFix!%20I%20need%20help" class="wa-fab" aria-label="WhatsApp">
   <svg fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347zM12 2C6.477 2 2 6.477 2 12c0 1.89.525 3.66 1.438 5.168L2 22l4.978-1.413A9.955 9.955 0 0012 22c5.523 0 10-4.477 10-10S17.523 2 12 2z"/></svg>
 </a>
 
-<!-- Mobile Bottom Nav -->
 <nav class="mobile-nav">
-  <a class="mobile-nav__item is-active" href="../index.html"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Home</button>
-  <a class="mobile-nav__item" href="products.html"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>Categories</button>
-  <a class="mobile-nav__item" href="contact.html"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>Search</a>
-  <a class="mobile-nav__item" style="position:relative;">
+  <a class="mobile-nav__item" href="../index.html"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Home</a>
+  <a class="mobile-nav__item" href="products.html"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>Products</a>
+  <a class="mobile-nav__item is-active" href="cart.html" style="position:relative;">
     <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
-    <span class="mobile-nav__badge" data-cart-badge></span>
-    Cart
-  </button>
+    <span class="mobile-nav__badge" data-cart-badge></span>Cart
+  </a>
+  <a class="mobile-nav__item" href="services.html"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg>Services</a>
   <a class="mobile-nav__item" href="contact.html"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Account</a>
 </nav>
-
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="../backend/config/supabase.js"></script>
 <script src="../assets/js/app.js"></script>
+<script>
+function doSiteSearch() {
+  const q = document.getElementById('hdrSearch')?.value.trim() || document.getElementById('mobSearchInput')?.value.trim();
+  if (q) window.location.href = 'products.html?search=' + encodeURIComponent(q);
+}
+document.addEventListener('DOMContentLoaded', () => {
+  updateCartUI();
+  initMobileSearch();
+  document.getElementById('hdrSearch')?.addEventListener('keydown', e => { if(e.key==='Enter') doSiteSearch(); });
+  document.querySelector('.header-search__btn')?.addEventListener('click', doSiteSearch);
+});
+</script>
 E html>
 <html lang="en">
 <head>
@@ -679,14 +480,6 @@ async function applyCoupon() {
     msgEl.textContent = e.message;
   }
 }
-</script>
-<script>
-function doSiteSearch() {
-  const q = document.getElementById('hdrSearch')?.value.trim();
-  if (q) window.location.href = 'products.html?search=' + encodeURIComponent(q);
-}
-document.getElementById('hdrSearch')?.addEventListener('keydown', e => { if (e.key==='Enter') doSiteSearch(); });
-document.querySelector('.header-search__btn')?.addEventListener('click', doSiteSearch);
 </script>
 </body>
 </html>
