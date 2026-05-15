@@ -4,21 +4,25 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>Store Locator — WellFix Appliances</title>
-  <link rel="icon" href="../assets/images/WELLFIX-FAVICON.png" type="image/png">
+  <link rel="icon" href="../assets/images/WELLFIX-FAVICON.png">
   <link rel="stylesheet" href="../assets/css/main.css">
-
 </head>
 <body>
-
 <div class="topbar">
   <div class="container topbar__inner">
     <div class="topbar__links">
-      <a href="../pages/track-order.html">Track Order</a>
-      <a href="../pages/store-locator.html">Store Locator</a>
-      <a href="../pages/contact.html">Help</a>
+      <a href="track-order.html">Track Order</a>
+      <a href="store-locator.html">Store Locator</a>
+      <a href="contact.html">Help</a>
     </div>
-    <div class="topbar__center">Free delivery across Kerala &nbsp;·&nbsp; <strong>+91 85900 04349</strong></div>
-    <div class="topbar__links"><a href="#">100% Genuine</a><a href="#">Best Price Guarantee</a></div>
+    <div class="topbar__center">
+      Free delivery across Kerala &nbsp;·&nbsp;
+      <strong>+91 85900 04349</strong>
+    </div>
+    <div class="topbar__links">
+      <a href="#">100% Genuine</a>
+      <a href="#">Best Price Guarantee</a>
+    </div>
   </div>
 </div>
 
@@ -28,14 +32,9 @@
       <img src="../assets/images/WELLFIX-MAIN-LOGO.png" alt="WellFix Appliances" class="logo__img" onerror="this.style.display='none'">
     </a>
     <div class="header-search">
-      <select class="header-search__cat" id="hdrCatSel" aria-label="Category">
-        <option value="">All</option>
-        <option value="mixers-grinders">Mixers</option>
-        <option value="gas-stoves">Stoves</option>
-        <option value="fans">Fans</option>
-        <option value="pressure-cookers">Cookers</option>
-        <option value="water-motors">Motors</option>
-        <option value="spare-parts">Spare Parts</option>
+      <select class="header-search__cat" aria-label="Category filter">
+        <option>All</option><option>Mixers</option><option>Stoves</option>
+        <option>Fans</option><option>Cookers</option><option>Motors</option><option>Spare Parts</option>
       </select>
       <input class="header-search__input" id="hdrSearch" type="search" placeholder="Search products, brands, spare parts…" aria-label="Search">
       <button class="header-search__btn" onclick="doSiteSearch()" aria-label="Search">
@@ -47,15 +46,15 @@
     </button>
     <div style="flex:1;" class="mob-spacer"></div>
     <div class="header-actions">
-      <a href="../pages/account.html" class="hdr-action hdr-action--account">
+      <button class="hdr-action hdr-action--account">
         <svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
         <span>Account</span>
-      </a>
-      <a href="../pages/wishlist.html" class="hdr-action">
+      </button>
+      <button class="hdr-action">
         <svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
         <span>Wishlist</span>
-      </a>
-      <a href="../pages/cart.html" class="hdr-cart">
+      </button>
+      <a href="cart.html" class="hdr-cart">
         <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
         <span class="label">Cart</span>
         <span class="hdr-cart__count" data-cart-count></span>
@@ -68,12 +67,16 @@
   <div class="mob-search-overlay__backdrop" id="mobSearchBackdrop"></div>
   <div class="mob-search-overlay__panel">
     <div class="mob-search-overlay__top">
-      <button class="mob-search-back" id="mobSearchClose"><svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg></button>
+      <button class="mob-search-back" id="mobSearchClose" aria-label="Close search">
+        <svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+      </button>
       <span class="mob-search-overlay__label">Search WellFix</span>
     </div>
     <div class="mob-search-overlay__input-row">
       <input class="mob-search-overlay__input" id="mobSearchInput" type="search" placeholder="Mixers, stoves, fans, spare parts…" autocomplete="off">
-      <button class="mob-search-overlay__go" onclick="doSiteSearch()"><svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></button>
+      <button class="mob-search-overlay__go" onclick="doSiteSearch()" aria-label="Go">
+        <svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      </button>
     </div>
     <div class="mob-search-overlay__hints">
       <button class="mob-search-hint">Sujata Mixer</button>
@@ -88,20 +91,20 @@
 
 <nav class="cat-navbar">
   <div class="container cat-navbar__inner">
-    <button class="cat-navbar__all" onclick="window.location.href='../pages/products.html'">
+    <button class="cat-navbar__all" onclick="window.location.href='products.html'">
       <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="15" height="15"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
       All Categories
     </button>
     <div class="cat-navbar__links">
-      <a class="cat-nav-link " href="../pages/products.html?cat=mixers-grinders">Mixers &amp; Grinders</a>
-      <a class="cat-nav-link " href="../pages/products.html?cat=gas-stoves">Gas Stoves</a>
-      <a class="cat-nav-link " href="../pages/products.html?cat=fans">Fans</a>
-      <a class="cat-nav-link " href="../pages/products.html?cat=pressure-cookers">Pressure Cookers</a>
-      <a class="cat-nav-link " href="../pages/products.html?cat=water-motors">Water Motors</a>
-      <a class="cat-nav-link " href="../pages/products.html?cat=cookware-pans">Cookware</a>
-      <a class="cat-nav-link " href="../pages/products.html?cat=spare-parts">Spare Parts</a>
-      <a class="cat-nav-link" href="../pages/services.html">Services <span class="dot-new">New</span></a>
-      <a class="cat-nav-link" href="../pages/brands.html">Brands</a>
+      <a class="cat-nav-link" href="products.html?cat=mixers-grinders">Mixers &amp; Grinders</a>
+      <a class="cat-nav-link" href="products.html?cat=gas-stoves">Gas Stoves</a>
+      <a class="cat-nav-link" href="products.html?cat=fans">Fans</a>
+      <a class="cat-nav-link" href="products.html?cat=pressure-cookers">Pressure Cookers</a>
+      <a class="cat-nav-link" href="products.html?cat=water-motors">Water Motors</a>
+      <a class="cat-nav-link" href="products.html?cat=cookware-pans">Cookware</a>
+      <a class="cat-nav-link" href="products.html?cat=spare-parts">Spare Parts</a>
+      <a class="cat-nav-link" href="services.html">Services <span class="dot-new">New</span></a>
+      <a class="cat-nav-link" href="#">Brands</a>
     </div>
     <div class="cat-navbar__spacer"></div>
     <div class="cat-navbar__location">
@@ -113,32 +116,43 @@
 <main style="padding:var(--sp-5) 0 var(--sp-12);">
 <div class="container">
   <div style="margin-bottom:var(--sp-6);">
-    <div style="font-family:var(--font-display);font-size:var(--text-4xl);font-weight:800;margin-bottom:8px;">Store <span style="color:var(--color-primary);">Locator</span></div>
+    <h1 style="font-family:var(--font-display);font-size:var(--text-4xl);font-weight:800;margin-bottom:8px;">Store <span style="color:var(--color-primary);">Locator</span></h1>
     <p style="color:var(--color-text-2);">Find WellFix service centres and delivery locations across Kerala</p>
   </div>
   <div style="display:grid;grid-template-columns:1fr 2fr;gap:var(--sp-5);align-items:start;">
-    <div>
-      <div style="background:var(--color-surface);border:1.5px solid var(--color-border);border-radius:var(--r-xl);overflow:hidden;">
-        <div style="padding:var(--sp-4);border-bottom:1px solid var(--color-border);font-family:var(--font-display);font-size:var(--text-base);font-weight:700;">Our Locations</div>
-        <div style="padding:var(--sp-3);">
-          <div style="padding:var(--sp-3);background:var(--green-50);border-radius:var(--r-md);margin-bottom:var(--sp-2);cursor:pointer;">
-            <div style="font-weight:700;margin-bottom:3px;">WellFix Main Store</div>
-            <div style="font-size:var(--text-sm);color:var(--color-text-2);">Kerala, India</div>
-            <div style="font-size:var(--text-xs);color:var(--color-text-3);margin-top:3px;">Mon–Sat: 9 AM – 7 PM</div>
-          </div>
-          <a href="https://wa.me/918590004349" target="_blank" style="display:flex;align-items:center;gap:6px;background:#25d366;color:#fff;padding:10px 14px;border-radius:var(--r-sm);font-size:var(--text-sm);font-weight:600;text-decoration:none;margin-top:var(--sp-3);">
-            <svg fill="currentColor" viewBox="0 0 24 24" width="15" height="15"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347zM12 2C6.477 2 2 6.477 2 12c0 1.89.525 3.66 1.438 5.168L2 22l4.978-1.413A9.955 9.955 0 0012 22c5.523 0 10-4.477 10-10S17.523 2 12 2z"/></svg>
-            Chat on WhatsApp
-          </a>
+    <div style="background:var(--color-surface);border:1.5px solid var(--color-border);border-radius:var(--r-xl);overflow:hidden;">
+      <div style="padding:var(--sp-4);border-bottom:1px solid var(--color-border);font-family:var(--font-display);font-size:var(--text-base);font-weight:700;">Our Locations</div>
+      <div style="padding:var(--sp-3);">
+        <div style="padding:var(--sp-3);background:var(--green-50);border-radius:var(--r-md);margin-bottom:var(--sp-2);">
+          <div style="font-weight:700;margin-bottom:3px;">WellFix Main Store</div>
+          <div style="font-size:var(--text-sm);color:var(--color-text-2);">Kerala, India</div>
+          <div style="font-size:var(--text-xs);color:var(--color-text-3);margin-top:3px;">Mon–Sat: 9 AM – 7 PM</div>
         </div>
+        <a href="https://wa.me/918590004349" target="_blank" style="display:flex;align-items:center;gap:6px;background:#25d366;color:#fff;padding:10px 14px;border-radius:var(--r-sm);font-size:var(--text-sm);font-weight:600;text-decoration:none;margin-top:var(--sp-3);">
+          <svg fill="currentColor" viewBox="0 0 24 24" width="15" height="15"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347zM12 2C6.477 2 2 6.477 2 12c0 1.89.525 3.66 1.438 5.168L2 22l4.978-1.413A9.955 9.955 0 0012 22c5.523 0 10-4.477 10-10S17.523 2 12 2z"/></svg>
+          Chat on WhatsApp
+        </a>
       </div>
     </div>
     <div style="background:var(--color-surface);border:1.5px solid var(--color-border);border-radius:var(--r-xl);overflow:hidden;">
       <div style="padding:var(--sp-4);border-bottom:1px solid var(--color-border);font-family:var(--font-display);font-size:var(--text-base);font-weight:700;">Delivery Coverage</div>
       <div style="padding:var(--sp-4);">
-        <p style="font-size:var(--text-sm);color:var(--color-text-2);margin-bottom:var(--sp-4);">We deliver across all districts of Kerala. Free delivery on orders above ₹999.</p>
+        <p style="font-size:var(--text-sm);color:var(--color-text-2);margin-bottom:var(--sp-4);">We deliver across all 14 districts of Kerala. Free delivery on orders above ₹999.</p>
         <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:var(--sp-2);">
-          ${["Thrissur","Ernakulam","Calicut","Trivandrum","Palakkad","Malappuram","Kannur","Kollam","Kottayam","Idukki","Wayanad","Kasaragod","Alappuzha","Pathanamthitta"].map(d => f'<div style="background:var(--green-50);border:1px solid var(--green-100);border-radius:var(--r-sm);padding:7px 12px;font-size:var(--text-sm);font-weight:500;text-align:center;color:var(--green-700);">{d}</div>').join("")}
+          <div style="background:var(--green-50);border:1px solid var(--green-100);border-radius:var(--r-sm);padding:7px 12px;font-size:var(--text-sm);font-weight:500;text-align:center;color:var(--green-700);">Thrissur</div>
+<div style="background:var(--green-50);border:1px solid var(--green-100);border-radius:var(--r-sm);padding:7px 12px;font-size:var(--text-sm);font-weight:500;text-align:center;color:var(--green-700);">Ernakulam</div>
+<div style="background:var(--green-50);border:1px solid var(--green-100);border-radius:var(--r-sm);padding:7px 12px;font-size:var(--text-sm);font-weight:500;text-align:center;color:var(--green-700);">Calicut</div>
+<div style="background:var(--green-50);border:1px solid var(--green-100);border-radius:var(--r-sm);padding:7px 12px;font-size:var(--text-sm);font-weight:500;text-align:center;color:var(--green-700);">Trivandrum</div>
+<div style="background:var(--green-50);border:1px solid var(--green-100);border-radius:var(--r-sm);padding:7px 12px;font-size:var(--text-sm);font-weight:500;text-align:center;color:var(--green-700);">Palakkad</div>
+<div style="background:var(--green-50);border:1px solid var(--green-100);border-radius:var(--r-sm);padding:7px 12px;font-size:var(--text-sm);font-weight:500;text-align:center;color:var(--green-700);">Malappuram</div>
+<div style="background:var(--green-50);border:1px solid var(--green-100);border-radius:var(--r-sm);padding:7px 12px;font-size:var(--text-sm);font-weight:500;text-align:center;color:var(--green-700);">Kannur</div>
+<div style="background:var(--green-50);border:1px solid var(--green-100);border-radius:var(--r-sm);padding:7px 12px;font-size:var(--text-sm);font-weight:500;text-align:center;color:var(--green-700);">Kollam</div>
+<div style="background:var(--green-50);border:1px solid var(--green-100);border-radius:var(--r-sm);padding:7px 12px;font-size:var(--text-sm);font-weight:500;text-align:center;color:var(--green-700);">Kottayam</div>
+<div style="background:var(--green-50);border:1px solid var(--green-100);border-radius:var(--r-sm);padding:7px 12px;font-size:var(--text-sm);font-weight:500;text-align:center;color:var(--green-700);">Idukki</div>
+<div style="background:var(--green-50);border:1px solid var(--green-100);border-radius:var(--r-sm);padding:7px 12px;font-size:var(--text-sm);font-weight:500;text-align:center;color:var(--green-700);">Wayanad</div>
+<div style="background:var(--green-50);border:1px solid var(--green-100);border-radius:var(--r-sm);padding:7px 12px;font-size:var(--text-sm);font-weight:500;text-align:center;color:var(--green-700);">Kasaragod</div>
+<div style="background:var(--green-50);border:1px solid var(--green-100);border-radius:var(--r-sm);padding:7px 12px;font-size:var(--text-sm);font-weight:500;text-align:center;color:var(--green-700);">Alappuzha</div>
+<div style="background:var(--green-50);border:1px solid var(--green-100);border-radius:var(--r-sm);padding:7px 12px;font-size:var(--text-sm);font-weight:500;text-align:center;color:var(--green-700);">Pathanamthitta</div>
         </div>
       </div>
     </div>
@@ -152,48 +166,47 @@
         <div class="footer-brand__logo">
           <img src="../assets/images/WELLFIX-MAIN-LOGO.png" alt="WellFix"
             style="height:28px;filter:brightness(0) invert(1);opacity:.8;"
-            onerror="this.outerHTML='<span style=&quot;font-family:var(--font-display);font-size:18px;font-weight:800;color:#fff;&quot;>WellFix</span>'">
+            onerror="this.outerHTML='<span style='font-family:var(--font-display);font-size:18px;font-weight:800;color:#fff;'>WellFix</span>'">
         </div>
         <p class="footer-brand__desc">Kerala's most trusted home and kitchen appliance sales &amp; service shop. Original products, best prices, genuine warranties.</p>
         <div class="footer-social">
           <a href="#" class="footer-social__btn" aria-label="Facebook"><svg fill="currentColor" viewBox="0 0 24 24"><path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"/></svg></a>
           <a href="#" class="footer-social__btn" aria-label="Instagram"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r=".5" fill="currentColor"/></svg></a>
           <a href="https://wa.me/918590004349" class="footer-social__btn" aria-label="WhatsApp"><svg fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347zM12 2C6.477 2 2 6.477 2 12c0 1.89.525 3.66 1.438 5.168L2 22l4.978-1.413A9.955 9.955 0 0012 22c5.523 0 10-4.477 10-10S17.523 2 12 2z"/></svg></a>
-          <a href="#" class="footer-social__btn" aria-label="YouTube"><svg fill="currentColor" viewBox="0 0 24 24"><path d="M22.54 6.42a2.78 2.78 0 00-1.95-1.96C18.88 4 12 4 12 4s-6.88 0-8.59.46a2.78 2.78 0 00-1.95 1.96A29 29 0 001 12a29 29 0 00.46 5.58A2.78 2.78 0 003.41 19.6C5.12 20 12 20 12 20s6.88 0 8.59-.4a2.78 2.78 0 001.95-1.95A29 29 0 0023 12a29 29 0 00-.46-5.58z"/><polygon fill="#fff" points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02"/></svg></a>
         </div>
       </div>
       <div class="footer-col">
         <h5 class="footer-col__title">Shop</h5>
         <div class="footer-links">
-          <a href="../pages/products.html?cat=mixers-grinders">Mixers &amp; Grinders</a>
-          <a href="../pages/products.html?cat=gas-stoves">Gas Stoves</a>
-          <a href="../pages/products.html?cat=fans">Fans</a>
-          <a href="../pages/products.html?cat=pressure-cookers">Pressure Cookers</a>
-          <a href="../pages/products.html?cat=water-motors">Water Motors</a>
-          <a href="../pages/products.html?cat=cookware-pans">Cookware</a>
-          <a href="../pages/products.html?cat=spare-parts">Spare Parts</a>
+          <a href="products.html?cat=mixers-grinders">Mixers &amp; Grinders</a>
+          <a href="products.html?cat=gas-stoves">Gas Stoves</a>
+          <a href="products.html?cat=fans">Fans</a>
+          <a href="products.html?cat=pressure-cookers">Pressure Cookers</a>
+          <a href="products.html?cat=water-motors">Water Motors</a>
+          <a href="products.html?cat=cookware-pans">Cookware</a>
+          <a href="products.html?cat=spare-parts">Spare Parts</a>
         </div>
       </div>
       <div class="footer-col">
         <h5 class="footer-col__title">Services</h5>
         <div class="footer-links">
-          <a href="../pages/services.html">Mixer Repair</a>
-          <a href="../pages/services.html">Washing Machine</a>
-          <a href="../pages/services.html">Gas Stove Repair</a>
-          <a href="../pages/services.html">Fan Service</a>
-          <a href="../pages/services.html">Book a Service</a>
+          <a href="services.html">Mixer Repair</a>
+          <a href="services.html">Washing Machine</a>
+          <a href="services.html">Gas Stove Repair</a>
+          <a href="services.html">Fan Service</a>
+          <a href="services.html">Book a Service</a>
         </div>
       </div>
       <div class="footer-col">
         <h5 class="footer-col__title">Help</h5>
         <div class="footer-links">
-          <a href="../pages/track-order.html">Track Order</a>
-          <a href="../pages/contact.html">Contact Us</a>
-          <a href="../pages/blog.html">Blog</a>
-          <a href="../pages/store-locator.html">Store Locator</a>
+          <a href="track-order.html">Track Order</a>
+          <a href="contact.html">Contact Us</a>
+          <a href="blog.html">Blog</a>
+          <a href="store-locator.html">Store Locator</a>
         </div>
         <div class="footer-contact-item" style="margin-top:12px;">
-          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="14" height="14"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.18 9.84"/></svg>
+          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="14" height="14"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07"/></svg>
           <span>+91 85900 04349</span>
         </div>
         <div class="footer-contact-item">
@@ -216,16 +229,28 @@
 </a>
 
 <nav class="mobile-nav">
-  <a class="mobile-nav__item is-active" href="../index.html"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Home</a>
-  <a class="mobile-nav__item " href="../pages/products.html"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>Products</a>
-  <a class="mobile-nav__item " href="../pages/cart.html" style="position:relative;"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg><span class="mobile-nav__badge" data-cart-badge></span>Cart</a>
-  <a class="mobile-nav__item " href="../pages/services.html"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg>Services</a>
-  <a class="mobile-nav__item " href="../pages/account.html"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Account</a>
+  <a class="mobile-nav__item" href="../index.html"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Home</a>
+  <a class="mobile-nav__item" href="products.html"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>Products</a>
+  <a class="mobile-nav__item" href="cart.html" style="position:relative;">
+    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+    <span class="mobile-nav__badge" data-cart-badge></span>Cart
+  </a>
+  <a class="mobile-nav__item" href="services.html"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg>Services</a>
+  <a class="mobile-nav__item" href="contact.html"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Account</a>
 </nav>
-
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="../backend/config/supabase.js"></script>
 <script src="../assets/js/app.js"></script>
-<script>function doSiteSearch(){const q=document.getElementById("hdrSearch").value.trim();if(q)window.location.href="products.html?search="+encodeURIComponent(q);}</script>
+<script>
+function doSiteSearch() {
+  const q = document.getElementById('hdrSearch')?.value.trim() || document.getElementById('mobSearchInput')?.value.trim();
+  if (q) window.location.href = 'products.html?search=' + encodeURIComponent(q);
+}
+document.addEventListener('DOMContentLoaded', () => {
+  updateCartUI();
+  initMobileSearch();
+  document.getElementById('hdrSearch')?.addEventListener('keydown', e => { if(e.key==='Enter') doSiteSearch(); });
+});
+</script>
 </body>
 </html>
