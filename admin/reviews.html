@@ -329,7 +329,6 @@ async function approveReview(id) {
 
 async function toggleFeatured(id, val) {
   await db.from('reviews').update({ is_featured: val }).eq('id', id);
-  toast(val ? 'Review will now show on website homepage' : 'Review removed from homepage');
   toast(val ? 'Review featured on homepage' : 'Removed from homepage');
 }
 
