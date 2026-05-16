@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Dashboard — WellFix Admin</title>
-<link rel="icon" href="../frontend/assets/images/WELLFIX-FAVICON.png">
+<link rel="icon" href="../assets/images/WELLFIX-FAVICON.png">
 <link rel="stylesheet" href="assets/css/admin.css">
 </head>
 <body>
@@ -165,7 +165,31 @@
 
 async function loadDashboard() {
   try {
-    const stats = await WF.analytics.getDashboardStats();
+    // Direct query — excludes cancelled orders from revenue
+  const { data: orderData } = await db.from('orders').select('total, status, payment_status, created_at');
+  const allOrd = orderData || [];
+  const now = new Date(); const ms = new Date(now.getFullYear(), now.getMonth(), 1);
+  const PAID = ['confirmed','processing','shipped','delivered'];
+  const paidOrd = allOrd.filter(o => PAID.includes(o.status));
+  const monthRev = paidOrd.filter(o => new Date(o.created_at) >= ms).reduce((s,o)=>s+(parseFloat(o.total)||0),0);
+  const stats = {
+    revenue: monthRev.toFixed(2),
+    orders_count: allOrd.filter(o => PAID.includes(o.status) && new Date(o.created_at)>=ms).length,
+    total_orders: allOrd.filter(o => o.status !== 'cancelled').length,
+    cancelled_orders: allOrd.filter(o => o.status === 'cancelled').length,
+    pending_orders: allOrd.filter(o => o.status === 'pending').length,
+    pending_payment: allOrd.filter(o => o.payment_status === 'pending_verification').length,
+    customers_count: 0, bookings_count: 0, low_stock_count: 0
+  };
+  // Get customers + bookings + low stock separately
+  const [custRes, bookRes, stockRes] = await Promise.all([
+    db.from('customers').select('id',{count:'exact'}),
+    db.from('service_bookings').select('id',{count:'exact'}),
+    db.from('products').select('id,stock_qty,low_stock_threshold').eq('is_active',true)
+  ]);
+  stats.customers_count = custRes.count || 0;
+  stats.bookings_count = bookRes.count || 0;
+  stats.low_stock_count = (stockRes.data||[]).filter(p=>(p.stock_qty||0)<=(p.low_stock_threshold||5)).length;
     renderStats(stats);
     await Promise.all([
       loadRecentOrders(),
@@ -189,7 +213,7 @@ function renderStats(s) {
         <span class="stat-card__badge up">This Month</span>
       </div>
       <div class="stat-card__val">${formatCurrency(s.revenue)}</div>
-      <div class="stat-card__label">Monthly Revenue <span style="font-size:10px;color:var(--gray-400);font-weight:400;">(confirmed only)</span></div>
+      <div class="stat-card__label">Monthly Revenue</div>
     </div>
     <div class="stat-card">
       <div class="stat-card__top">
@@ -242,8 +266,8 @@ async function loadRecentOrders() {
 
 async function loadActivity() {
   const feed = document.getElementById('activityFeed');
-  const ordersRes = await WF.orders.getAll({ limit: 20 });
-  const orders = { data: (ordersRes || []).filter(o => o.status !== 'cancelled').slice(0,5) };
+  const { data: _actOrd } = await db.from('orders').select('id,order_number,customer_name,total,status,created_at').neq('status','cancelled').order('created_at',{ascending:false}).limit(5);
+  const orders = { data: _actOrd || [] };
   const bookings = await WF.services.getAll({ status: 'new' });
   const items = [
     ...orders.slice(0, 3).map(o => ({ dot: 'green', text: `<strong>Order ${o.order_number}</strong> from ${o.customer_name} — ${formatCurrency(o.total)}`, time: formatDate(o.created_at) })),
@@ -279,6 +303,10 @@ async function loadCategoryProgress() {
     { name: 'Fans', pct: 11 },
     { name: 'Others', pct: 7 },
   ];
+  
+  const {data:_oi}=await db.from('order_items').select('product_name,total_price').limit(300);
+  const _cm={}; (_oi||[]).forEach(i=>{const k=(i.product_name||'Other').split(' ')[0]; _cm[k]=(_cm[k]||0)+(parseFloat(i.total_price)||0);});
+  const _ce=Object.entries(_cm).sort((a,b)=>b[1]-a[1]).slice(0,6); const _ct=_ce.reduce((s,[,v])=>s+v,0)||1;
   document.getElementById('catProgress').innerHTML = cats.map(c => `
     <div class="progress-row">
       <div class="progress-label">${c.name}</div>
