@@ -481,7 +481,8 @@ async function handleImageUpload(input) {
     msg.textContent = `Uploading ${i + 1} of ${files.length}…`;
     progressBar.style.width = `${Math.round(((i) / files.length) * 100)}%`;
     try {
-      const { url } = await uploadFile(files[i], 'products');
+      const pf=await processImage(files[i]);
+        const { url } = await uploadFile(pf, 'products');
       editingImages.push({ url, is_primary: editingImages.length === 0, sort_order: editingImages.length });
       renderImageGallery();
     } catch (err) {
