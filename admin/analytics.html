@@ -1,65 +1,774 @@
 <!DOCTYPE html>
 <html lang="en">
-<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Analytics — WellFix Admin</title>
 <link rel="icon" href="../assets/images/WELLFIX-FAVICON.png">
-<link rel="stylesheet" href="assets/css/admin.css"></head>
+<link rel="stylesheet" href="assets/css/admin.css">
+<script src="https://cdn.jsdelivr.net/npm/apexcharts@3.49.0/dist/apexcharts.min.js"></script>
+<style>
+/* ═══════════════════════════════════════
+   ANALYTICS DESIGN SYSTEM
+   ═══════════════════════════════════════ */
+.an-header{display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:20px;}
+.an-title h1{font-family:var(--font-display);font-size:22px;font-weight:800;color:var(--gray-900);letter-spacing:-.4px;margin:0;}
+.an-title p{font-size:11px;color:var(--gray-400);margin-top:3px;}
+
+/* Filter bar */
+.an-filters{display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
+.seg{display:flex;background:var(--gray-50);border:1px solid var(--gray-150,#e0e0e0);border-radius:var(--r-sm);padding:2px;gap:1px;}
+.seg-btn{padding:5px 11px;border-radius:5px;font-size:11px;font-weight:600;color:var(--gray-500);cursor:pointer;transition:all .15s;white-space:nowrap;border:none;background:none;}
+.seg-btn.on{background:#fff;color:var(--gray-900);box-shadow:0 1px 3px rgba(0,0,0,.1);}
+.dr-row{display:none;align-items:center;gap:5px;}
+.dr-row.open{display:flex;}
+.dr-inp{height:30px;padding:0 8px;border:1px solid var(--gray-200);border-radius:5px;font-size:11px;background:#fff;color:var(--gray-700);}
+
+/* Secondary filters */
+.sec-filters{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px;}
+.sec-sel{height:30px;padding:0 10px;border:1px solid var(--gray-200);border-radius:5px;font-size:11px;background:#fff;color:var(--gray-600);cursor:pointer;}
+
+/* KPI Grid */
+.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px;}
+@media(max-width:1100px){.kpi-grid{grid-template-columns:repeat(3,1fr);}}
+@media(max-width:750px){.kpi-grid{grid-template-columns:repeat(2,1fr);}}
+@media(max-width:450px){.kpi-grid{grid-template-columns:1fr 1fr;gap:8px;}}
+
+.kcard{background:#fff;border:1px solid var(--gray-100);border-radius:10px;padding:15px 16px;position:relative;overflow:hidden;transition:box-shadow .2s;box-shadow:0 1px 2px rgba(0,0,0,.04);}
+.kcard:hover{box-shadow:0 4px 16px rgba(0,0,0,.07);}
+.kcard-accent{position:absolute;top:0;left:0;width:3px;height:100%;border-radius:10px 0 0 10px;}
+.kcard-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;}
+.kcard-ico{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;}
+.kcard-ico svg{width:15px;height:15px;}
+.kcard-val{font-family:var(--font-display);font-size:22px;font-weight:800;color:var(--gray-900);line-height:1;letter-spacing:-.5px;}
+.kcard-label{font-size:11px;color:var(--gray-400);margin-top:3px;font-weight:500;}
+.kcard-cmp{display:flex;align-items:center;gap:5px;margin-top:6px;}
+.badge-up{display:inline-flex;align-items:center;gap:2px;font-size:10px;font-weight:700;padding:1px 6px;border-radius:99px;background:#f0fdf4;color:#16a34a;}
+.badge-dn{display:inline-flex;align-items:center;gap:2px;font-size:10px;font-weight:700;padding:1px 6px;border-radius:99px;background:#fef2f2;color:#dc2626;}
+.badge-nt{display:inline-flex;align-items:center;gap:2px;font-size:10px;font-weight:700;padding:1px 6px;border-radius:99px;background:var(--gray-50);color:var(--gray-400);}
+.kcard-cmp-lbl{font-size:10px;color:var(--gray-400);}
+
+/* Section panels */
+.an-grid{display:grid;gap:12px;margin-bottom:12px;}
+.an-grid.g2{grid-template-columns:1fr 1fr;}
+.an-grid.g3{grid-template-columns:repeat(3,1fr);}
+.an-grid.g73{grid-template-columns:7fr 3fr;}
+@media(max-width:1100px){.an-grid.g73{grid-template-columns:1fr;}.an-grid.g2,.an-grid.g3{grid-template-columns:1fr;}}
+@media(max-width:700px){.an-grid.g2{grid-template-columns:1fr;}.an-grid.g3{grid-template-columns:1fr;}}
+
+.panel{background:#fff;border:1px solid var(--gray-100);border-radius:10px;overflow:hidden;box-shadow:0 1px 2px rgba(0,0,0,.04);}
+.panel-hd{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid var(--gray-50);}
+.panel-title{font-family:var(--font-display);font-size:13px;font-weight:700;color:var(--gray-800);letter-spacing:-.2px;}
+.panel-actions{display:flex;align-items:center;gap:8px;}
+.panel-lnk{font-size:11px;font-weight:600;color:var(--green-600);cursor:pointer;background:none;border:none;}
+.panel-lnk:hover{text-decoration:underline;}
+
+/* Chart boxes */
+.chart-area{padding:16px;min-height:260px;}
+
+/* Progress rows */
+.prog-row{display:flex;align-items:center;gap:10px;padding:8px 14px;border-bottom:1px solid var(--gray-50);}
+.prog-row:last-child{border-bottom:none;}
+.prog-rank{width:16px;font-size:10px;font-weight:700;color:var(--gray-400);text-align:center;flex-shrink:0;}
+.prog-name{font-size:12px;color:var(--gray-700);min-width:0;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.prog-bar{width:80px;height:4px;background:var(--gray-100);border-radius:99px;overflow:hidden;flex-shrink:0;}
+.prog-fill{height:100%;border-radius:99px;background:var(--green-500);transition:width .5s cubic-bezier(.4,0,.2,1);}
+.prog-val{font-size:11px;font-weight:700;color:var(--gray-700);width:52px;text-align:right;flex-shrink:0;}
+
+/* Order flow */
+.order-flow{display:flex;align-items:center;gap:0;padding:16px;flex-wrap:wrap;justify-content:center;gap:4px;}
+.flow-step{display:flex;flex-direction:column;align-items:center;gap:4px;flex:1;min-width:70px;}
+.flow-circle{width:52px;height:52px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-size:16px;font-weight:800;border:2px solid;}
+.flow-label{font-size:10px;font-weight:600;color:var(--gray-500);text-align:center;line-height:1.2;}
+.flow-count{font-size:11px;font-weight:700;text-align:center;}
+.flow-arrow{color:var(--gray-200);font-size:16px;align-self:flex-start;margin-top:16px;flex-shrink:0;}
+
+/* Tables */
+.an-table{width:100%;border-collapse:collapse;font-size:12px;}
+.an-table th{padding:8px 14px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--gray-400);border-bottom:1px solid var(--gray-100);text-align:left;white-space:nowrap;cursor:pointer;user-select:none;}
+.an-table th:hover{color:var(--gray-700);}
+.an-table td{padding:8px 14px;border-bottom:1px solid var(--gray-50);color:var(--gray-700);vertical-align:middle;}
+.an-table tbody tr:hover td{background:var(--gray-25);}
+.an-table tr:last-child td{border-bottom:none;}
+
+/* Status pills */
+.spill{display:inline-flex;align-items:center;gap:3px;font-size:10px;font-weight:700;padding:2px 7px;border-radius:99px;}
+
+/* Empty state */
+.empty-an{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 24px;text-align:center;}
+.empty-an svg{width:36px;height:36px;opacity:.18;margin-bottom:12px;color:var(--gray-500);}
+.empty-an h3{font-family:var(--font-display);font-size:14px;font-weight:700;color:var(--gray-600);margin-bottom:4px;}
+.empty-an p{font-size:12px;color:var(--gray-400);max-width:200px;}
+
+/* Donut legend */
+.dn-grid{display:grid;grid-template-columns:150px 1fr;gap:16px;align-items:center;padding:16px;}
+.dn-legend{display:flex;flex-direction:column;gap:9px;}
+.dn-item{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--gray-600);}
+.dn-dot{width:8px;height:8px;border-radius:2px;flex-shrink:0;}
+.dn-pct{font-weight:700;color:var(--gray-900);margin-left:auto;font-size:12px;}
+
+/* Skeleton */
+.sk{background:linear-gradient(90deg,var(--gray-100) 25%,var(--gray-50) 50%,var(--gray-100) 75%);background-size:200% 100%;animation:sk 1.4s infinite;border-radius:6px;}
+@keyframes sk{to{background-position:-200% 0;}}
+
+/* Export btn */
+.btn-export{height:28px;padding:0 10px;border:1px solid var(--gray-200);border-radius:5px;font-size:11px;font-weight:600;color:var(--gray-500);background:#fff;cursor:pointer;display:flex;align-items:center;gap:5px;transition:all .15s;}
+.btn-export:hover{border-color:var(--green-400);color:var(--green-600);}
+</style>
+</head>
 <body>
-<div class="admin-shell"><div id="adminShell"></div>
-<div class="main-wrap" id="mainWrap"><div class="page-content">
-  <div class="pg-hd"><div><h1>Analytics</h1><p>Sales performance and store insights</p></div>
-    <div class="pg-hd__actions"><select class="filter-select"><option>Last 30 Days</option><option>Last 7 Days</option><option>Last 3 Months</option></select></div>
+<div class="admin-shell">
+<div id="adminShell"></div>
+<div class="main-wrap" id="mainWrap">
+<div class="page-content">
+
+<!-- HEADER -->
+<div class="an-header">
+  <div class="an-title">
+    <h1>Analytics</h1>
+    <p id="anSub">Live data from database</p>
   </div>
-  <div class="stats-grid" id="aStats">
-    <div class="stat-card"><div class="skeleton" style="height:80px;border-radius:8px;"></div></div>
-    <div class="stat-card"><div class="skeleton" style="height:80px;border-radius:8px;"></div></div>
-    <div class="stat-card"><div class="skeleton" style="height:80px;border-radius:8px;"></div></div>
-    <div class="stat-card"><div class="skeleton" style="height:80px;border-radius:8px;"></div></div>
-  </div>
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;" id="aGrids">
-    <div class="card"><div class="card-hd"><span class="card-title">Revenue by Category</span></div><div class="card-body" id="catRevenue"></div></div>
-    <div class="card"><div class="card-hd"><span class="card-title">Top Products</span></div>
-      <div class="card-body-0"><div class="tbl-wrap"><table><thead><tr><th>#</th><th>Product</th><th>Sales</th><th>Revenue</th></tr></thead><tbody id="topProducts"></tbody></table></div></div>
+  <div class="an-filters">
+    <div class="seg">
+      <button class="seg-btn on" onclick="setPeriod('7d',this)">7 Days</button>
+      <button class="seg-btn" onclick="setPeriod('30d',this)">30 Days</button>
+      <button class="seg-btn" onclick="setPeriod('month',this)">This Month</button>
+      <button class="seg-btn" onclick="setPeriod('lmonth',this)">Last Month</button>
+      <button class="seg-btn" onclick="setPeriod('year',this)">This Year</button>
+      <button class="seg-btn" onclick="setPeriod('custom',this)">Custom</button>
     </div>
-    <div class="card"><div class="card-hd"><span class="card-title">Order Status Breakdown</span></div><div class="card-body" id="orderBreakdown"></div></div>
-    <div class="card"><div class="card-hd"><span class="card-title">Customer Locations</span></div><div class="card-body" id="custLocations"></div></div>
+    <div class="dr-row" id="drRow">
+      <input type="date" class="dr-inp" id="drFrom">
+      <span style="font-size:11px;color:var(--gray-400);">–</span>
+      <input type="date" class="dr-inp" id="drTo">
+      <button class="btn-apply" onclick="loadAll()" style="height:28px;padding:0 10px;background:var(--green-700);color:#fff;border-radius:5px;font-size:11px;font-weight:700;border:none;cursor:pointer;">Apply</button>
+    </div>
+    <button class="btn-export" onclick="exportCSV()">
+      <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="11" height="11"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+      Export CSV
+    </button>
   </div>
+</div>
+
+<!-- SECONDARY FILTERS -->
+<div class="sec-filters">
+  <select class="sec-sel" id="fPayMethod" onchange="applyFilters()">
+    <option value="">All Payment Methods</option>
+    <option value="cod">COD</option>
+    <option value="upi">UPI</option>
+    <option value="whatsapp">WhatsApp</option>
+  </select>
+  <select class="sec-sel" id="fStatus" onchange="applyFilters()">
+    <option value="">All Statuses</option>
+    <option value="pending">Pending</option>
+    <option value="confirmed">Confirmed</option>
+    <option value="delivered">Delivered</option>
+    <option value="cancelled">Cancelled</option>
+    <option value="returned">Returned</option>
+  </select>
+</div>
+
+<!-- KPI CARDS -->
+<div class="kpi-grid" id="kpiGrid">
+  <div class="kcard"><div class="sk" style="height:80px;"></div></div>
+  <div class="kcard"><div class="sk" style="height:80px;"></div></div>
+  <div class="kcard"><div class="sk" style="height:80px;"></div></div>
+  <div class="kcard"><div class="sk" style="height:80px;"></div></div>
+  <div class="kcard"><div class="sk" style="height:80px;"></div></div>
+  <div class="kcard"><div class="sk" style="height:80px;"></div></div>
+  <div class="kcard"><div class="sk" style="height:80px;"></div></div>
+  <div class="kcard"><div class="sk" style="height:80px;"></div></div>
+</div>
+
+<!-- REVENUE AREA CHART -->
+<div class="panel" style="margin-bottom:12px;">
+  <div class="panel-hd">
+    <span class="panel-title">Revenue Trend</span>
+    <div class="panel-actions">
+      <div class="seg" style="padding:1px;">
+        <button class="seg-btn on" id="ct-rev" onclick="setChartMetric('revenue',this)" style="font-size:10px;padding:3px 8px;">Revenue</button>
+        <button class="seg-btn" id="ct-ord" onclick="setChartMetric('orders',this)" style="font-size:10px;padding:3px 8px;">Orders</button>
+        <button class="seg-btn" id="ct-aov" onclick="setChartMetric('aov',this)" style="font-size:10px;padding:3px 8px;">Avg Order</button>
+      </div>
+      <button class="btn-export" onclick="exportRevenueChart()" style="height:26px;font-size:10px;">PNG</button>
+    </div>
+  </div>
+  <div class="chart-area" style="min-height:240px;" id="revChartWrap">
+    <div class="sk" style="height:200px;border-radius:8px;"></div>
+  </div>
+</div>
+
+<!-- ORDER FLOW + PAYMENT DONUT -->
+<div class="an-grid g73">
+  <div class="panel">
+    <div class="panel-hd"><span class="panel-title">Order Lifecycle</span></div>
+    <div class="order-flow" id="orderFlow">
+      <div class="sk" style="height:80px;width:100%;margin:8px;border-radius:8px;"></div>
+    </div>
+  </div>
+  <div class="panel">
+    <div class="panel-hd"><span class="panel-title">Payment Methods</span></div>
+    <div class="dn-grid" id="payDonutWrap">
+      <div class="sk" style="height:150px;border-radius:99px;"></div>
+    </div>
+  </div>
+</div>
+
+<!-- PRODUCT + CUSTOMER ANALYTICS -->
+<div class="an-grid g2">
+  <div class="panel">
+    <div class="panel-hd">
+      <span class="panel-title">Top Products by Revenue</span>
+      <button class="panel-lnk" onclick="location.href='products.html'">All products</button>
+    </div>
+    <div id="topProdPanel"><div class="sk" style="height:200px;margin:12px;border-radius:8px;"></div></div>
+  </div>
+  <div class="panel">
+    <div class="panel-hd">
+      <span class="panel-title">Customer Analytics</span>
+    </div>
+    <div class="chart-area" id="custChartWrap" style="min-height:220px;">
+      <div class="sk" style="height:200px;border-radius:8px;"></div>
+    </div>
+  </div>
+</div>
+
+<!-- INVENTORY + ORDERS TABLE -->
+<div class="an-grid g2">
+  <div class="panel">
+    <div class="panel-hd">
+      <span class="panel-title">Inventory Status</span>
+      <button class="panel-lnk" onclick="location.href='inventory.html'">Manage stock</button>
+    </div>
+    <div id="invPanel"><div class="sk" style="height:200px;margin:12px;border-radius:8px;"></div></div>
+  </div>
+  <div class="panel">
+    <div class="panel-hd">
+      <span class="panel-title">District Performance</span>
+    </div>
+    <div id="distPanel"><div class="sk" style="height:200px;margin:12px;border-radius:8px;"></div></div>
+  </div>
+</div>
+
+<!-- FULL ORDERS TABLE -->
+<div class="panel" style="margin-bottom:12px;">
+  <div class="panel-hd">
+    <span class="panel-title">Order Details</span>
+    <div class="panel-actions">
+      <input type="search" id="tblSearch" placeholder="Search orders…" oninput="filterTable()" style="height:28px;padding:0 8px;border:1px solid var(--gray-200);border-radius:5px;font-size:11px;width:160px;">
+      <button class="btn-export" onclick="exportCSV()">
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="11" height="11"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+        CSV
+      </button>
+    </div>
+  </div>
+  <div style="overflow-x:auto;">
+    <table class="an-table">
+      <thead><tr>
+        <th onclick="sortTable('order_number')">Order</th>
+        <th onclick="sortTable('customer_name')">Customer</th>
+        <th onclick="sortTable('total')">Amount</th>
+        <th onclick="sortTable('payment_method')">Method</th>
+        <th onclick="sortTable('payment_status')">Payment</th>
+        <th onclick="sortTable('status')">Status</th>
+        <th onclick="sortTable('created_at')">Date</th>
+      </tr></thead>
+      <tbody id="ordTbody"></tbody>
+    </table>
+  </div>
+  <div style="padding:10px 14px;display:flex;align-items:center;justify-content:space-between;border-top:1px solid var(--gray-50);">
+    <span id="tblCount" style="font-size:11px;color:var(--gray-400);"></span>
+    <div style="display:flex;gap:6px;">
+      <button class="btn-export" id="prevBtn" onclick="prevPage()">← Prev</button>
+      <button class="btn-export" id="nextBtn" onclick="nextPage()">Next →</button>
+    </div>
+  </div>
+</div>
+
 </div></div></div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="../backend/config/supabase.js"></script>
 <script src="assets/js/shell.js"></script>
 <script>
-(async()=>{
-  await AdminShell.init('Analytics');
-  // Direct query excluding cancelled orders
-  const {data:_aOrd}=await db.from('orders').select('total,status,payment_status,created_at');
-  const _paid=((_aOrd||[]).filter(o=>!['cancelled'].includes(o.status)));
-  const _now=new Date(); const _ms=new Date(_now.getFullYear(),_now.getMonth(),1);
-  const s={
-    revenue: _paid.filter(o=>new Date(o.created_at)>=_ms).reduce((sum,o)=>sum+(parseFloat(o.total)||0),0).toFixed(2),
-    total_revenue: _paid.reduce((sum,o)=>sum+(parseFloat(o.total)||0),0).toFixed(2),
-    orders_count: _paid.filter(o=>new Date(o.created_at)>=_ms).length,
-    total_orders: (_aOrd||[]).filter(o=>o.status!=='cancelled').length,
-    cancelled_orders: (_aOrd||[]).filter(o=>o.status==='cancelled').length,
-    pending_orders: (_aOrd||[]).filter(o=>o.status==='pending').length,
-    customers_count:0, bookings_count:0, low_stock_count:0
+'use strict';
+
+// ── APEX DEFAULTS ─────────────────────────────────────────────
+const APEX_BASE = {
+  chart: { fontFamily: "'Outfit', sans-serif", toolbar: { show: false }, animations: { speed: 500 } },
+  colors: ['#056b4b','#3b82f6','#f59e0b','#8b5cf6','#ef4444','#06b6d4'],
+  tooltip: { style: { fontFamily: "'Outfit', sans-serif", fontSize: '12px' } },
+  dataLabels: { enabled: false },
+  stroke: { curve: 'smooth', width: 2 },
+  grid: { borderColor: '#f0f0f0', strokeDashArray: 3 },
+};
+
+// ── STATE ─────────────────────────────────────────────────────
+let period = '7d';
+let chartMetric = 'revenue';
+let allOrders = [], filteredOrders = [], allProds = [], allCusts = [], allItems = [];
+let revChartInst = null, payChartInst = null, custChartInst = null;
+let sortCol = 'created_at', sortDir = -1;
+let page = 0; const PER_PAGE = 20;
+
+// ── DATE RANGE ────────────────────────────────────────────────
+function getRange() {
+  const n = new Date(), y = n.getFullYear(), m = n.getMonth(), d = n.getDate();
+  const e = dt => { const x = new Date(dt); x.setHours(23,59,59,999); return x; };
+  const ago = days => { const x = new Date(n); x.setDate(d - days); x.setHours(0,0,0,0); return x; };
+  switch(period) {
+    case '7d':    return { from: ago(6).toISOString(),              to: e(n).toISOString(),            label: 'Last 7 Days' };
+    case '30d':   return { from: ago(29).toISOString(),             to: e(n).toISOString(),            label: 'Last 30 Days' };
+    case 'month': return { from: new Date(y,m,1).toISOString(),     to: e(n).toISOString(),            label: 'This Month' };
+    case 'lmonth':return { from: new Date(y,m-1,1).toISOString(),   to: e(new Date(y,m,0)).toISOString(), label: 'Last Month' };
+    case 'year':  return { from: new Date(y,0,1).toISOString(),     to: e(n).toISOString(),            label: 'This Year' };
+    case 'custom': {
+      const f = document.getElementById('drFrom').value;
+      const t = document.getElementById('drTo').value;
+      if (!f || !t) { toast('Select both dates', true); return null; }
+      return { from: new Date(f).toISOString(), to: e(new Date(t)).toISOString(), label: 'Custom Range' };
+    }
+    default: return { from: ago(6).toISOString(), to: e(n).toISOString(), label: 'Last 7 Days' };
+  }
+}
+
+// ── PREVIOUS PERIOD for comparison ───────────────────────────
+function getPrevRange(range) {
+  const span = new Date(range.to) - new Date(range.from);
+  const prevTo = new Date(new Date(range.from) - 1);
+  const prevFrom = new Date(new Date(range.from) - span - 1);
+  return { from: prevFrom.toISOString(), to: prevTo.toISOString() };
+}
+
+function setPeriod(p, el) {
+  period = p;
+  document.querySelectorAll('.seg .seg-btn').forEach(b => b.classList.remove('on'));
+  el.classList.add('on');
+  document.getElementById('drRow').classList.toggle('open', p === 'custom');
+  if (p !== 'custom') loadAll();
+}
+
+function setChartMetric(m, el) {
+  chartMetric = m;
+  ['ct-rev','ct-ord','ct-aov'].forEach(id => document.getElementById(id)?.classList.remove('on'));
+  el.classList.add('on');
+  buildRevenueChart();
+}
+
+// ── MAIN LOAD ─────────────────────────────────────────────────
+async function loadAll() {
+  const range = getRange();
+  if (!range) return;
+  document.getElementById('anSub').textContent = `${range.label} — Real data from Supabase`;
+
+  try {
+    const [oRes, pRes, cRes, iRes, oPrev] = await Promise.all([
+      db.from('orders').select('id,order_number,customer_name,customer_phone,total,status,payment_method,payment_status,shipping_district,created_at').gte('created_at', range.from).lte('created_at', range.to).order('created_at', { ascending: false }),
+      db.from('products').select('id,name,price,stock_qty,low_stock_threshold,is_active,cost_price'),
+      db.from('customers').select('id,name,created_at', { count: 'exact' }),
+      db.from('order_items').select('product_id,product_name,quantity,total_price,created_at').gte('created_at', range.from).lte('created_at', range.to),
+      db.from('orders').select('total,status').gte('created_at', getPrevRange(range).from).lte('created_at', getPrevRange(range).to),
+    ]);
+
+    allOrders  = oRes.data  || [];
+    allProds   = pRes.data  || [];
+    allCusts   = cRes.data  || [];
+    allItems   = iRes.data  || [];
+    const prevOrders = oPrev.data || [];
+
+    applyFilters();
+    renderKPIs(prevOrders);
+    buildRevenueChart();
+    renderOrderFlow();
+    renderPayDonut();
+    renderTopProds();
+    renderCustChart();
+    renderInventory();
+    renderDistricts();
+    renderTable();
+
+  } catch(e) {
+    toast('Analytics error: ' + e.message, true);
+  }
+}
+
+// ── FILTER ────────────────────────────────────────────────────
+function applyFilters() {
+  const pm  = document.getElementById('fPayMethod').value;
+  const st  = document.getElementById('fStatus').value;
+  filteredOrders = allOrders.filter(o => {
+    if (pm && o.payment_method !== pm) return false;
+    if (st && o.status !== st) return false;
+    return true;
+  });
+  page = 0;
+  renderTable();
+}
+
+// ── KPI CARDS ─────────────────────────────────────────────────
+function renderKPIs(prevOrders) {
+  const PAID = ['confirmed','processing','shipped','delivered'];
+  const paidOrd   = filteredOrders.filter(o => PAID.includes(o.status));
+  const revenue   = paidOrd.reduce((s,o) => s + (parseFloat(o.total)||0), 0);
+  const prevRev   = prevOrders.filter(o=>PAID.includes(o.status)).reduce((s,o)=>s+(parseFloat(o.total)||0),0);
+  const orders    = filteredOrders.length;
+  const delivered = filteredOrders.filter(o=>o.status==='delivered').length;
+  const cancelled = filteredOrders.filter(o=>o.status==='cancelled').length;
+  const avg       = paidOrd.length ? revenue / paidOrd.length : 0;
+  const pendPay   = filteredOrders.filter(o=>o.payment_status==='pending_verification').reduce((s,o)=>s+(parseFloat(o.total)||0),0);
+  const refunds   = filteredOrders.filter(o=>o.status==='returned').reduce((s,o)=>s+(parseFloat(o.total)||0),0);
+  const codRev    = filteredOrders.filter(o=>o.payment_method==='cod'&&PAID.includes(o.status)).reduce((s,o)=>s+(parseFloat(o.total)||0),0);
+  const upiRev    = filteredOrders.filter(o=>o.payment_method==='upi'&&PAID.includes(o.status)).reduce((s,o)=>s+(parseFloat(o.total)||0),0);
+  const cancelLoss = filteredOrders.filter(o=>o.status==='cancelled').reduce((s,o)=>s+(parseFloat(o.total)||0),0);
+  const totalCusts = allCusts.count || allCusts.length || 0;
+
+  const pctChange = (cur, prev) => {
+    if (!prev) return { badge: '<span class="badge-nt">No prev data</span>', pct: null };
+    const p = ((cur - prev) / prev * 100).toFixed(1);
+    if (p > 0) return { badge: `<span class="badge-up">+${p}%</span>`, pct: +p };
+    if (p < 0) return { badge: `<span class="badge-dn">${p}%</span>`, pct: +p };
+    return { badge: '<span class="badge-nt">No change</span>', pct: 0 };
   };
-  const [_cr,_br,_sr]=await Promise.all([db.from('customers').select('id',{count:'exact'}),db.from('service_bookings').select('id',{count:'exact'}),db.from('products').select('id,stock_qty,low_stock_threshold').eq('is_active',true)]);
-  s.customers_count=_cr.count||0; s.bookings_count=_br.count||0;
-  s.low_stock_count=(_sr.data||[]).filter(p=>(p.stock_qty||0)<=(p.low_stock_threshold||5)).length;
-  document.getElementById('aStats').innerHTML=`
-    <div class="stat-card"><div class="stat-card__top"><div class="stat-card__icon green"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg></div><span class="stat-card__badge up">Month</span></div><div class="stat-card__val">${formatCurrency(s.revenue)}</div><div class="stat-card__label">Revenue</div></div>
-    <div class="stat-card"><div class="stat-card__top"><div class="stat-card__icon blue"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/></svg></div></div><div class="stat-card__val">${s.total_orders}</div><div class="stat-card__label">Total Orders</div></div>
-    <div class="stat-card"><div class="stat-card__top"><div class="stat-card__icon gold"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></div></div><div class="stat-card__val">${s.customers_count}</div><div class="stat-card__label">Customers</div></div>
-    <div class="stat-card"><div class="stat-card__top"><div class="stat-card__icon purple"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg></div></div><div class="stat-card__val">${s.bookings_count}</div><div class="stat-card__label">Bookings</div></div>`;
-  const cats=[{name:'Mixers & Grinders',pct:38,rev:'₹31,800'},{name:'Gas Stoves',pct:26,rev:'₹21,900'},{name:'Cookers',pct:18,rev:'₹15,160'},{name:'Fans',pct:11,rev:'₹9,260'},{name:'Others',pct:7,rev:'₹6,100'}];
-  document.getElementById('catRevenue').innerHTML=cats.map(c=>`<div class="progress-row"><div class="progress-label">${c.name}</div><div class="progress-bar"><div class="progress-fill" style="width:${c.pct}%"></div></div><div class="progress-val" style="width:60px;text-align:right;">${c.rev}</div></div>`).join('');
-  const prods=await WF.products.getAll({limit:5});
-  document.getElementById('topProducts').innerHTML=prods.map((p,i)=>`<tr><td style="font-weight:700;color:var(--gray-400);">${i+1}</td><td class="td-bold" style="max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${p.name}</td><td>${20-i*3}</td><td style="font-weight:700;">${formatCurrency(((20-i*3)*p.price))}</td></tr>`).join('');
-  const statuses=[{s:'delivered',label:'Delivered',pct:53},{s:'confirmed',label:'Confirmed',pct:20},{s:'processing',label:'Processing',pct:13},{s:'pending',label:'Pending',pct:8},{s:'cancelled',label:'Cancelled',pct:6}];
-  document.getElementById('orderBreakdown').innerHTML=statuses.map(s=>`<div class="progress-row"><div class="progress-label">${s.label}</div><div class="progress-bar"><div class="progress-fill" style="width:${s.pct}%"></div></div><div class="progress-val">${s.pct}%</div></div>`).join('');
-  const locs=[{name:'Thrissur',pct:42},{name:'Ernakulam',pct:28},{name:'Calicut',pct:16},{name:'Trivandrum',pct:9},{name:'Others',pct:5}];
-  document.getElementById('custLocations').innerHTML=locs.map(l=>`<div class="progress-row"><div class="progress-label">${l.name}</div><div class="progress-bar"><div class="progress-fill" style="width:${l.pct}%"></div></div><div class="progress-val">${l.pct}%</div></div>`).join('');
+
+  const revChange = pctChange(revenue, prevRev);
+
+  const SVG = {
+    rev: `<svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>`,
+    ord: `<svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>`,
+    usr: `<svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>`,
+    avg: `<svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>`,
+    pnd: `<svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>`,
+    ref: `<svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 102.13-9.36L1 10"/></svg>`,
+    cod: `<svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>`,
+    los: `<svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg>`,
+  };
+
+  const K = (accent, icoBg, icoColor, ico, val, label, badge, sub) => `
+    <div class="kcard">
+      <div class="kcard-accent" style="background:${accent};"></div>
+      <div class="kcard-top">
+        <div class="kcard-ico" style="background:${icoBg};color:${icoColor};">${ico}</div>
+        ${badge}
+      </div>
+      <div class="kcard-val">${val}</div>
+      <div class="kcard-label">${label}</div>
+      ${sub ? `<div class="kcard-cmp"><span class="kcard-cmp-lbl" style="font-size:10px;color:var(--gray-400);">${sub}</span></div>` : ''}
+    </div>`;
+
+  document.getElementById('kpiGrid').innerHTML =
+    K('#22c55e','#f0fdf4','#16a34a', SVG.rev, formatCurrency(revenue),   'Total Revenue',       revChange.badge, `vs prev period`) +
+    K('#3b82f6','#eff6ff','#2563eb', SVG.ord, orders,                    'Total Orders',        `<span class="badge-nt">${delivered} delivered</span>`, `${cancelled} cancelled`) +
+    K('#f59e0b','#fffbeb','#d97706', SVG.avg, formatCurrency(avg),       'Avg Order Value',     `<span class="badge-nt">${paidOrd.length} paid orders</span>`, '') +
+    K('#8b5cf6','#f5f3ff','#7c3aed', SVG.usr, Number(totalCusts).toLocaleString('en-IN'), 'Total Customers', `<span class="badge-nt">All time</span>`, '') +
+    K('#ef4444','#fef2f2','#dc2626', SVG.pnd, formatCurrency(pendPay),   'Pending Payments',    filteredOrders.filter(o=>o.payment_status==='pending_verification').length > 0 ? `<span class="badge-dn">${filteredOrders.filter(o=>o.payment_status==='pending_verification').length} orders</span>` : `<span class="badge-up">Clear</span>`, '') +
+    K('#ec4899','#fdf2f8','#be185d', SVG.ref, formatCurrency(refunds),   'Returns / Refunds',   `<span class="badge-nt">${filteredOrders.filter(o=>o.status==='returned').length} returned</span>`, '') +
+    K('#f59e0b','#fffbeb','#d97706', SVG.cod, formatCurrency(codRev),    'COD Revenue',         `<span class="badge-nt">UPI: ${formatCurrency(upiRev)}</span>`, '') +
+    K('#ef4444','#fef2f2','#dc2626', SVG.los, formatCurrency(cancelLoss),'Cancellation Loss',   `<span class="badge-nt">${cancelled} cancelled orders</span>`, '');
+}
+
+// ── REVENUE AREA CHART (ApexCharts) ──────────────────────────
+function buildRevenueChart() {
+  const range = getRange(); if (!range) return;
+  const PAID = ['confirmed','processing','shipped','delivered'];
+  const start = new Date(range.from);
+  const isYear = period === 'year';
+  let labels = [], data = [];
+
+  if (isYear) {
+    for (let i = 0; i < 12; i++) {
+      const d = new Date(start.getFullYear(), i, 1);
+      labels.push(d.toLocaleDateString('en-IN', { month: 'short' }));
+      const mo = filteredOrders.filter(o => { const od = new Date(o.created_at); return od.getMonth()===i && od.getFullYear()===start.getFullYear(); });
+      if (chartMetric==='revenue') data.push(parseFloat(mo.filter(o=>PAID.includes(o.status)).reduce((s,o)=>s+(parseFloat(o.total)||0),0).toFixed(0)));
+      else if (chartMetric==='orders') data.push(mo.length);
+      else { const p=mo.filter(o=>PAID.includes(o.status)); data.push(p.length?parseFloat((p.reduce((s,o)=>s+(parseFloat(o.total)||0),0)/p.length).toFixed(0)):0); }
+    }
+  } else {
+    const days = Math.min(Math.ceil((new Date(range.to)-start)/86400000)+1, 31);
+    for (let i = 0; i < days; i++) {
+      const d = new Date(start); d.setDate(d.getDate()+i);
+      const ds = d.toDateString();
+      labels.push(d.toLocaleDateString('en-IN', { day:'numeric', month:'short' }));
+      const dOrd = filteredOrders.filter(o => new Date(o.created_at).toDateString()===ds);
+      if (chartMetric==='revenue') data.push(parseFloat(dOrd.filter(o=>PAID.includes(o.status)).reduce((s,o)=>s+(parseFloat(o.total)||0),0).toFixed(0)));
+      else if (chartMetric==='orders') data.push(dOrd.length);
+      else { const p=dOrd.filter(o=>PAID.includes(o.status)); data.push(p.length?parseFloat((p.reduce((s,o)=>s+(parseFloat(o.total)||0),0)/p.length).toFixed(0)):0); }
+    }
+  }
+
+  const yLabel = chartMetric==='revenue'?'Revenue (₹)':chartMetric==='orders'?'Orders':'Avg Order (₹)';
+  const opts = {
+    ...APEX_BASE,
+    chart: { ...APEX_BASE.chart, type: 'area', height: 220, id: 'revChart' },
+    series: [{ name: yLabel, data }],
+    xaxis: { categories: labels, labels: { style: { fontSize: '10px' }, rotate: -30 }, axisBorder: { show: false }, axisTicks: { show: false } },
+    yaxis: { labels: { formatter: v => chartMetric==='revenue'||chartMetric==='aov' ? '₹'+Number(v).toLocaleString('en-IN') : v, style: { fontSize: '10px' } } },
+    fill: { type: 'gradient', gradient: { shadeIntensity: 1, opacityFrom: 0.18, opacityTo: 0.01, stops: [0,100] } },
+    tooltip: { y: { formatter: v => chartMetric==='orders' ? `${v} orders` : `₹${Number(v).toLocaleString('en-IN')}` } },
+    noData: { text: 'No data in this period', style: { fontFamily: "'Outfit', sans-serif", fontSize: '13px', color: '#9ca3af' } },
+  };
+
+  const wrap = document.getElementById('revChartWrap');
+  if (revChartInst) { revChartInst.destroy(); revChartInst = null; }
+  wrap.innerHTML = '<div id="revChartEl"></div>';
+  revChartInst = new ApexCharts(document.getElementById('revChartEl'), opts);
+  revChartInst.render();
+}
+
+// ── ORDER FLOW ─────────────────────────────────────────────────
+function renderOrderFlow() {
+  const steps = [
+    { key: 'pending',    label: 'Pending',    color: '#f59e0b', bg: '#fffbeb' },
+    { key: 'confirmed',  label: 'Confirmed',  color: '#3b82f6', bg: '#eff6ff' },
+    { key: 'processing', label: 'Processing', color: '#8b5cf6', bg: '#f5f3ff' },
+    { key: 'shipped',    label: 'Shipped',    color: '#06b6d4', bg: '#ecfeff' },
+    { key: 'delivered',  label: 'Delivered',  color: '#22c55e', bg: '#f0fdf4' },
+    { key: 'cancelled',  label: 'Cancelled',  color: '#ef4444', bg: '#fef2f2' },
+    { key: 'returned',   label: 'Returned',   color: '#ec4899', bg: '#fdf2f8' },
+  ];
+  const counts = {};
+  filteredOrders.forEach(o => { counts[o.status] = (counts[o.status]||0)+1; });
+  const total = filteredOrders.length || 1;
+
+  document.getElementById('orderFlow').innerHTML = steps.map((s, i) => {
+    const cnt = counts[s.key]||0;
+    const pct = Math.round(cnt/total*100);
+    const isLast = i === steps.length-1;
+    return `<div style="display:flex;align-items:center;gap:4px;">
+      <div class="flow-step">
+        <div class="flow-circle" style="background:${s.bg};border-color:${s.color};color:${s.color};">${cnt}</div>
+        <div class="flow-label" style="color:${s.color};">${s.label}</div>
+        <div class="flow-count" style="color:var(--gray-400);">${pct}%</div>
+      </div>
+      ${!isLast ? `<div style="color:var(--gray-200);font-size:18px;margin-top:-20px;">›</div>` : ''}
+    </div>`;
+  }).join('');
+}
+
+// ── PAYMENT DONUT ─────────────────────────────────────────────
+function renderPayDonut() {
+  const counts = {}, totals = {};
+  filteredOrders.forEach(o => {
+    const m = o.payment_method||'cod';
+    counts[m] = (counts[m]||0)+1;
+    totals[m] = (totals[m]||0)+(parseFloat(o.total)||0);
+  });
+  const entries = Object.entries(counts).sort((a,b)=>b[1]-a[1]);
+  const total = filteredOrders.length||1;
+  const colors = ['#056b4b','#3b82f6','#f59e0b','#8b5cf6'];
+  const cmap = {}; entries.forEach(([m],i)=>{ cmap[m]=colors[i%colors.length]; });
+
+  const wrap = document.getElementById('payDonutWrap');
+  if (!entries.length) {
+    wrap.innerHTML = '<div class="empty-an"><svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/></svg><h3>No payment data</h3><p>Orders will appear after transactions</p></div>';
+    return;
+  }
+
+  wrap.innerHTML = `<div id="payChartEl"></div><div class="dn-legend">${
+    entries.map(([m,c])=>`<div class="dn-item"><div class="dn-dot" style="background:${cmap[m]};"></div><span style="text-transform:uppercase;font-size:11px;font-weight:600;">${m}</span><span class="dn-pct">${Math.round(c/total*100)}%</span></div>`).join('')
+  }</div>`;
+
+  if (payChartInst) { payChartInst.destroy(); payChartInst=null; }
+  payChartInst = new ApexCharts(document.getElementById('payChartEl'), {
+    ...APEX_BASE,
+    chart: { ...APEX_BASE.chart, type: 'donut', height: 150, width: 150 },
+    series: entries.map(([,c])=>c),
+    labels: entries.map(([m])=>m.toUpperCase()),
+    colors: entries.map(([m])=>cmap[m]),
+    plotOptions: { pie: { donut: { size: '68%' } } },
+    legend: { show: false },
+    tooltip: { y: { formatter: v=>`${v} orders` } },
+  });
+  payChartInst.render();
+}
+
+// ── TOP PRODUCTS ──────────────────────────────────────────────
+function renderTopProds() {
+  const el = document.getElementById('topProdPanel');
+  if (!allItems.length) {
+    el.innerHTML = '<div class="empty-an"><svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/></svg><h3>No sales data</h3><p>Analytics will appear after real transactions</p></div>';
+    return;
+  }
+  const map = {};
+  allItems.forEach(i => {
+    const k = i.product_name||'Unknown';
+    if (!map[k]) map[k] = { qty:0, rev:0 };
+    map[k].qty += i.quantity||1;
+    map[k].rev += parseFloat(i.total_price)||0;
+  });
+  const sorted = Object.entries(map).sort((a,b)=>b[1].rev-a[1].rev).slice(0,8);
+  const maxR = sorted[0]?.[1]?.rev||1;
+  el.innerHTML = sorted.map(([name,d], i) => `
+    <div class="prog-row">
+      <div class="prog-rank">${i+1}</div>
+      <div class="prog-name" title="${name}">${name.length>22?name.slice(0,22)+'…':name}</div>
+      <div class="prog-bar"><div class="prog-fill" style="width:${Math.round(d.rev/maxR*100)}%;"></div></div>
+      <div class="prog-val" style="font-size:10px;">${d.qty} sold</div>
+      <div style="font-size:11px;font-weight:700;color:var(--gray-800);width:70px;text-align:right;">${formatCurrency(d.rev)}</div>
+    </div>`).join('');
+}
+
+// ── CUSTOMER CHART ────────────────────────────────────────────
+function renderCustChart() {
+  const wrap = document.getElementById('custChartWrap');
+  const range = getRange(); if(!range) return;
+  const start = new Date(range.from);
+
+  // New customers by day/month
+  let labels = [], data = [];
+  const isYear = period==='year';
+  if (isYear) {
+    for (let i=0;i<12;i++) {
+      const d=new Date(start.getFullYear(),i,1);
+      labels.push(d.toLocaleDateString('en-IN',{month:'short'}));
+      data.push((allCusts.data||allCusts||[]).filter(c=>{const cd=new Date(c.created_at);return cd.getMonth()===i&&cd.getFullYear()===start.getFullYear();}).length);
+    }
+  } else {
+    const days=Math.min(Math.ceil((new Date(range.to)-start)/86400000)+1,31);
+    for(let i=0;i<days;i++){
+      const d=new Date(start);d.setDate(d.getDate()+i);
+      labels.push(d.toLocaleDateString('en-IN',{day:'numeric',month:'short'}));
+      data.push((allCusts.data||allCusts||[]).filter(c=>new Date(c.created_at).toDateString()===d.toDateString()).length);
+    }
+  }
+
+  if (custChartInst){custChartInst.destroy();custChartInst=null;}
+  wrap.innerHTML='<div id="custChartEl"></div>';
+  custChartInst = new ApexCharts(document.getElementById('custChartEl'),{
+    ...APEX_BASE,
+    chart:{...APEX_BASE.chart,type:'bar',height:200},
+    colors:['#3b82f6'],
+    series:[{name:'New Customers',data}],
+    xaxis:{categories:labels,labels:{style:{fontSize:'10px'},rotate:-30},axisBorder:{show:false},axisTicks:{show:false}},
+    yaxis:{labels:{formatter:v=>v,style:{fontSize:'10px'}}},
+    plotOptions:{bar:{borderRadius:3,columnWidth:'60%'}},
+    noData:{text:'No customer data',style:{fontFamily:"'Outfit',sans-serif",fontSize:'13px',color:'#9ca3af'}},
+  });
+  custChartInst.render();
+}
+
+// ── INVENTORY ─────────────────────────────────────────────────
+function renderInventory() {
+  const el = document.getElementById('invPanel');
+  const low   = allProds.filter(p=>p.is_active&&(p.stock_qty||0)>0&&(p.stock_qty||0)<=(p.low_stock_threshold||5));
+  const out   = allProds.filter(p=>p.is_active&&(p.stock_qty||0)===0);
+  const good  = allProds.filter(p=>p.is_active&&(p.stock_qty||0)>(p.low_stock_threshold||5));
+  const val   = allProds.reduce((s,p)=>s+(p.stock_qty||0)*(p.price||0),0);
+
+  const items = [
+    ...out.slice(0,3).map(p=>({ name:p.name, qty:0, status:'out', threshold:p.low_stock_threshold||5 })),
+    ...low.slice(0,4).map(p=>({ name:p.name, qty:p.stock_qty, status:'low', threshold:p.low_stock_threshold||5 })),
+    ...good.slice(0,3).map(p=>({ name:p.name, qty:p.stock_qty, status:'ok', threshold:p.low_stock_threshold||5 })),
+  ];
+
+  if (!items.length) {
+    el.innerHTML = '<div class="empty-an"><h3>No inventory data</h3><p>Add products to see stock analytics</p></div>';
+    return;
+  }
+
+  const summary = `<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:12px 14px;border-bottom:1px solid var(--gray-50);">
+    <div style="text-align:center;"><div style="font-size:18px;font-weight:800;color:#ef4444;">${out.length}</div><div style="font-size:10px;color:var(--gray-400);">Out of Stock</div></div>
+    <div style="text-align:center;"><div style="font-size:18px;font-weight:800;color:#f59e0b;">${low.length}</div><div style="font-size:10px;color:var(--gray-400);">Low Stock</div></div>
+    <div style="text-align:center;"><div style="font-size:18px;font-weight:800;color:#22c55e;">${good.length}</div><div style="font-size:10px;color:var(--gray-400);">Well Stocked</div></div>
+  </div>
+  <div style="padding:10px 14px;border-bottom:1px solid var(--gray-50);display:flex;justify-content:space-between;"><span style="font-size:11px;color:var(--gray-500);">Inventory Value</span><span style="font-size:13px;font-weight:700;">${formatCurrency(val)}</span></div>`;
+
+  el.innerHTML = summary + items.map(p => {
+    const colors = { out:'#ef4444', low:'#f59e0b', ok:'#22c55e' };
+    const labels = { out:'Out of Stock', low:`${p.qty} left`, ok:`${p.qty} in stock` };
+    return `<div class="prog-row">
+      <div class="prog-name" title="${p.name}" style="flex:1;">${p.name.length>24?p.name.slice(0,24)+'…':p.name}</div>
+      <span style="font-size:10px;font-weight:700;padding:2px 7px;border-radius:99px;background:${colors[p.status]}18;color:${colors[p.status]};">${labels[p.status]}</span>
+    </div>`;
+  }).join('');
+}
+
+// ── DISTRICT PERFORMANCE ──────────────────────────────────────
+function renderDistricts() {
+  const el = document.getElementById('distPanel');
+  const map = {};
+  filteredOrders.forEach(o => {
+    const d = o.shipping_district||'Unknown';
+    if (!map[d]) map[d]={orders:0,rev:0};
+    map[d].orders++;
+    map[d].rev += parseFloat(o.total)||0;
+  });
+  const sorted = Object.entries(map).sort((a,b)=>b[1].rev-a[1].rev).slice(0,8);
+  if (!sorted.length) {
+    el.innerHTML = '<div class="empty-an"><h3>No location data</h3><p>District data will appear after orders with district info</p></div>';
+    return;
+  }
+  const maxR = sorted[0]?.[1]?.rev||1;
+  el.innerHTML = sorted.map(([dist,d], i) => `
+    <div class="prog-row">
+      <div class="prog-rank">${i+1}</div>
+      <div class="prog-name">${dist}</div>
+      <div class="prog-bar"><div class="prog-fill" style="width:${Math.round(d.rev/maxR*100)}%;background:#3b82f6;"></div></div>
+      <div class="prog-val" style="font-size:10px;">${d.orders} orders</div>
+    </div>`).join('');
+}
+
+// ── ORDERS TABLE ──────────────────────────────────────────────
+function sortTable(col) {
+  if (sortCol===col) sortDir*=-1; else { sortCol=col; sortDir=-1; }
+  renderTable();
+}
+
+function filterTable() {
+  page=0; renderTable();
+}
+
+function renderTable() {
+  const q = (document.getElementById('tblSearch')?.value||'').toLowerCase();
+  let rows = filteredOrders.filter(o => !q || `${o.order_number} ${o.customer_name} ${o.customer_phone}`.toLowerCase().includes(q));
+  rows.sort((a,b)=>{
+    let av=a[sortCol]||'', bv=b[sortCol]||'';
+    if(sortCol==='total'){av=parseFloat(av)||0;bv=parseFloat(bv)||0;}
+    return av<bv?-sortDir:av>bv?sortDir:0;
+  });
+
+  const total = rows.length;
+  const slice = rows.slice(page*PER_PAGE,(page+1)*PER_PAGE);
+  document.getElementById('tblCount').textContent = `${total} orders · Page ${page+1} of ${Math.ceil(total/PER_PAGE)||1}`;
+  document.getElementById('prevBtn').disabled = page===0;
+  document.getElementById('nextBtn').disabled = (page+1)*PER_PAGE>=total;
+
+  const payColors={cod:'#f59e0b',upi:'#3b82f6',whatsapp:'#22c55e'};
+  const tbody=document.getElementById('ordTbody');
+
+  if(!slice.length){
+    tbody.innerHTML='<tr><td colspan="7" style="text-align:center;padding:24px;color:var(--gray-400);font-size:12px;">No orders match the current filters</td></tr>';
+    return;
+  }
+  tbody.innerHTML=slice.map(o=>`
+    <tr onclick="location.href='orders.html'">
+      <td><span style="font-family:var(--font-display);font-weight:700;color:var(--green-700);font-size:11px;">${o.order_number}</span></td>
+      <td>${o.customer_name||'—'}<div style="font-size:10px;color:var(--gray-400);">${o.customer_phone||''}</div></td>
+      <td><span style="font-weight:700;">${formatCurrency(o.total)}</span></td>
+      <td><span class="spill" style="background:${(payColors[o.payment_method]||'#9ca3af')}18;color:${payColors[o.payment_method]||'#6b7280'};">${(o.payment_method||'cod').toUpperCase()}</span></td>
+      <td><span class="spill" style="background:${o.payment_status==='paid'?'#f0fdf4':o.payment_status==='pending_verification'?'#fff7ed':'#f9fafb'};color:${o.payment_status==='paid'?'#16a34a':o.payment_status==='pending_verification'?'#92400e':'#6b7280'};">${(o.payment_status||'pending').replace(/_/g,' ')}</span></td>
+      <td>${renderBadge(o.status)}</td>
+      <td style="color:var(--gray-400);font-size:11px;">${formatDate(o.created_at)}</td>
+    </tr>`).join('');
+}
+function prevPage(){if(page>0){page--;renderTable();}}
+function nextPage(){if((page+1)*PER_PAGE<filteredOrders.length){page++;renderTable();}}
+
+// ── EXPORT ────────────────────────────────────────────────────
+function exportCSV() {
+  const rows=[['Order','Customer','Phone','Amount','Method','Pay Status','Status','Date']];
+  filteredOrders.forEach(o=>rows.push([o.order_number,o.customer_name||'',o.customer_phone||'',o.total||0,o.payment_method||'',o.payment_status||'',o.status||'',new Date(o.created_at).toLocaleDateString()]));
+  const csv=rows.map(r=>r.map(v=>`"${v}"`).join(',')).join('\n');
+  const a=document.createElement('a');a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv);a.download='wellfix-analytics.csv';a.click();
+  toast('CSV exported!');
+}
+function exportRevenueChart(){
+  if(revChartInst)revChartInst.exports.exportToPng();
+}
+
+// ── INIT ──────────────────────────────────────────────────────
+(async()=>{
+  await AdminShell.init('Analytics','analytics');
+  await loadAll();
 })();
 </script>
-</body></html>
+</body>
+</html>
