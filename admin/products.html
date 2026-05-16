@@ -676,11 +676,11 @@ async function saveProduct() {
 
     const payload = {
       name,
+      slug: document.getElementById('pSlug').value || slugify(name),
+      sku: document.getElementById('pSku').value || null,
       description: document.getElementById('pDesc').value || null,
-      category_id: document.getElementById('pCat').value || null,
-      brand_id: document.getElementById('pBrand').value || null,
-      badge: document.getElementById('pBadge').value || null,
       warranty: document.getElementById('pWarranty').value || null,
+      badge: document.getElementById('pBadge').value || null,
       is_active: document.getElementById('pStatus').value === 'true',
       is_featured: document.getElementById('pFeatured').value === 'true',
       is_trending: false,
@@ -688,13 +688,12 @@ async function saveProduct() {
       mrp: parseFloat(document.getElementById('pMrp').value) || null,
       stock_qty: parseInt(document.getElementById('pStock').value) || 0,
       low_stock_threshold: parseInt(document.getElementById('pLowStock').value) || 5,
-      sku: document.getElementById('pSku').value || null,
       weight: parseFloat(document.getElementById('pWeight').value) || null,
+      brand_id: document.getElementById('pBrand').value || null,
+      category_id: document.getElementById('pCat').value || null,
+      seo_title: document.getElementById('pMetaTitle').value || null,
+      seo_description: document.getElementById('pMetaDesc').value || null,
       tags: document.getElementById('pTags').value.split(',').map(t => t.trim()).filter(Boolean),
-      slug: document.getElementById('pSlug').value || slugify(name),
-      meta_title: document.getElementById('pMetaTitle').value || null,
-      meta_description: document.getElementById('pMetaDesc').value || null,
-      specifications: Object.keys(specifications).length ? specifications : null,
       sort_order: parseInt(document.getElementById('pSort').value) || 0,
     };
 
