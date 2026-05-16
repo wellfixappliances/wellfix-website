@@ -7,11 +7,7 @@
 <body>
 <div class="admin-shell"><div id="adminShell"></div>
 <div class="main-wrap" id="mainWrap"><div class="page-content">
-  <div style="background:var(--green-50);border:1px solid var(--green-100);border-radius:var(--r-md);padding:12px 16px;margin-bottom:16px;font-size:13px;color:var(--green-700);">
-  <strong>✅ Live Connected:</strong> Toggling sections here updates the homepage immediately. The website reads these settings from the database every time it loads.
-  Also make sure <code>homepage_visibility.js</code> is loaded on your homepage.
-</div>
-<div class="pg-hd"><div><h1>Homepage Manager</h1><p>Control what appears on your homepage — toggle sections on/off</p></div>
+  <div class="pg-hd"><div><h1>Homepage Manager</h1><p>Control what appears on your homepage — toggle sections on/off</p></div>
     <div class="pg-hd__actions">
       <a href="../frontend/index.html" target="_blank" class="btn btn-secondary">Preview Site</a>
       <button class="btn btn-primary" onclick="saveHomepage()">Save Changes</button>
@@ -21,9 +17,78 @@
     <div style="text-align:center;padding:30px;"><div class="spinner" style="margin:0 auto;"></div></div>
   </div>
 </div></div></div>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="../backend/config/supabase.js"></script>
-<script src="assets/js/shell.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">
+async function loadSections() {
+  const {data} = await db.from('homepage_sections').select('*').order('sort_order');
+  if(!data?.length) return;
+  // Render sections
+  const grid = document.getElementById('sectionsGrid');
+  if(!grid) return;
+  grid.innerHTML = data.map(s=>`
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border:1.5px solid var(--gray-100);border-radius:var(--r-md);background:#fff;">
+      <div>
+        <div style="font-weight:600;">${s.title||s.section_key}</div>
+        <div style="font-size:11px;color:var(--gray-400);">Key: ${s.section_key} · Order: ${s.sort_order}</div>
+      </div>
+      <label class="toggle">
+        <input type="checkbox" ${s.is_visible?'checked':''} onchange="toggleSection('${s.id}',this.checked)">
+        <span class="toggle-track"></span>
+      </label>
+    </div>`).join('');
+}
+async function toggleSection(id, val) {
+  await db.from('homepage_sections').update({is_visible:val}).eq('id',id);
+  toast(val?'Section now visible on website':'Section hidden from website');
+}
+</script>
+<script src="../backend/config/supabase.js">
+async function loadSections() {
+  const {data} = await db.from('homepage_sections').select('*').order('sort_order');
+  if(!data?.length) return;
+  // Render sections
+  const grid = document.getElementById('sectionsGrid');
+  if(!grid) return;
+  grid.innerHTML = data.map(s=>`
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border:1.5px solid var(--gray-100);border-radius:var(--r-md);background:#fff;">
+      <div>
+        <div style="font-weight:600;">${s.title||s.section_key}</div>
+        <div style="font-size:11px;color:var(--gray-400);">Key: ${s.section_key} · Order: ${s.sort_order}</div>
+      </div>
+      <label class="toggle">
+        <input type="checkbox" ${s.is_visible?'checked':''} onchange="toggleSection('${s.id}',this.checked)">
+        <span class="toggle-track"></span>
+      </label>
+    </div>`).join('');
+}
+async function toggleSection(id, val) {
+  await db.from('homepage_sections').update({is_visible:val}).eq('id',id);
+  toast(val?'Section now visible on website':'Section hidden from website');
+}
+</script>
+<script src="assets/js/shell.js">
+async function loadSections() {
+  const {data} = await db.from('homepage_sections').select('*').order('sort_order');
+  if(!data?.length) return;
+  // Render sections
+  const grid = document.getElementById('sectionsGrid');
+  if(!grid) return;
+  grid.innerHTML = data.map(s=>`
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border:1.5px solid var(--gray-100);border-radius:var(--r-md);background:#fff;">
+      <div>
+        <div style="font-weight:600;">${s.title||s.section_key}</div>
+        <div style="font-size:11px;color:var(--gray-400);">Key: ${s.section_key} · Order: ${s.sort_order}</div>
+      </div>
+      <label class="toggle">
+        <input type="checkbox" ${s.is_visible?'checked':''} onchange="toggleSection('${s.id}',this.checked)">
+        <span class="toggle-track"></span>
+      </label>
+    </div>`).join('');
+}
+async function toggleSection(id, val) {
+  await db.from('homepage_sections').update({is_visible:val}).eq('id',id);
+  toast(val?'Section now visible on website':'Section hidden from website');
+}
+</script>
 <script>
 let sections=[];
 const sectionIcons={
@@ -63,5 +128,28 @@ async function toggleSection(id,visible){
   toast(visible?'Section enabled — visible on website':'Section hidden from website');
 }
 async function saveHomepage(){toast('Homepage layout saved! Changes live on website.');}
+
+async function loadSections() {
+  const {data} = await db.from('homepage_sections').select('*').order('sort_order');
+  if(!data?.length) return;
+  // Render sections
+  const grid = document.getElementById('sectionsGrid');
+  if(!grid) return;
+  grid.innerHTML = data.map(s=>`
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border:1.5px solid var(--gray-100);border-radius:var(--r-md);background:#fff;">
+      <div>
+        <div style="font-weight:600;">${s.title||s.section_key}</div>
+        <div style="font-size:11px;color:var(--gray-400);">Key: ${s.section_key} · Order: ${s.sort_order}</div>
+      </div>
+      <label class="toggle">
+        <input type="checkbox" ${s.is_visible?'checked':''} onchange="toggleSection('${s.id}',this.checked)">
+        <span class="toggle-track"></span>
+      </label>
+    </div>`).join('');
+}
+async function toggleSection(id, val) {
+  await db.from('homepage_sections').update({is_visible:val}).eq('id',id);
+  toast(val?'Section now visible on website':'Section hidden from website');
+}
 </script>
 </body></html>
