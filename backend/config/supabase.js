@@ -349,24 +349,32 @@ const WF = {
 
   analytics: {
     async getDashboardStats() {
+      const PAID_STATUSES = ['confirmed','processing','shipped','delivered','paid'];
       const [orders, products, customers, bookings] = await Promise.all([
-        db.from('orders').select('total, status, created_at'),
+        db.from('orders').select('total, status, payment_status, created_at'),
         db.from('products').select('id, stock_qty, low_stock_threshold', { count: 'exact' }),
         db.from('customers').select('id', { count: 'exact' }),
         db.from('service_bookings').select('id, status', { count: 'exact' })
       ]);
+      const allOrders = orders.data || [];
       const thisMonth = new Date(); thisMonth.setDate(1); thisMonth.setHours(0,0,0,0);
-      const monthOrders = (orders.data || []).filter(o => new Date(o.created_at) >= thisMonth);
-      const revenue = monthOrders.reduce((s, o) => s + (parseFloat(o.total) || 0), 0);
+      // Only count confirmed/delivered orders for revenue — NOT cancelled
+      const paidOrders = allOrders.filter(o => PAID_STATUSES.includes(o.status) && o.status !== 'cancelled');
+      const monthPaid = paidOrders.filter(o => new Date(o.created_at) >= thisMonth);
+      const revenue = monthPaid.reduce((s, o) => s + (parseFloat(o.total) || 0), 0);
+      const totalRevenue = paidOrders.reduce((s, o) => s + (parseFloat(o.total) || 0), 0);
       const lowStock = (products.data || []).filter(p => (p.stock_qty || 0) <= (p.low_stock_threshold || 5)).length;
       return {
         revenue: revenue.toFixed(2),
-        orders_count: monthOrders.length,
-        total_orders: (orders.data || []).length,
+        total_revenue: totalRevenue.toFixed(2),
+        orders_count: monthPaid.length,
+        total_orders: allOrders.filter(o => o.status !== 'cancelled').length,
+        cancelled_orders: allOrders.filter(o => o.status === 'cancelled').length,
         customers_count: customers.count || 0,
         bookings_count: bookings.count || 0,
         low_stock_count: lowStock,
-        pending_orders: (orders.data || []).filter(o => o.status === 'pending').length
+        pending_orders: allOrders.filter(o => o.status === 'pending').length,
+        pending_payment: allOrders.filter(o => o.payment_status === 'pending_verification').length
       };
     }
   }
