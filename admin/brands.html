@@ -2,7 +2,7 @@
 <html lang="en">
 <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Brands — WellFix Admin</title>
-<link rel="icon" href="../frontend/assets/images/WELLFIX-FAVICON.png">
+<link rel="icon" href="../assets/images/WELLFIX-FAVICON.png">
 <link rel="stylesheet" href="assets/css/admin.css"></head>
 <body>
 <div class="admin-shell"><div id="adminShell"></div>
@@ -27,7 +27,27 @@
         <div class="form-group"><label class="form-label">Description</label><textarea class="form-textarea" id="brandDesc" rows="2"></textarea></div>
       </div>
     </div>
-    <div class="modal-ft"><button class="btn btn-secondary" onclick="closeBrandModal()">Cancel</button><button class="btn btn-primary" onclick="saveBrand()">Save Brand</button></div>
+    
+      <div class="form-group">
+        <label class="form-label">Logo Image</label>
+        <input class="form-input" id="bLogo" placeholder="Paste image URL or upload below" style="margin-bottom:6px;">
+        <div style="border:2px dashed var(--gray-200);border-radius:var(--r-md);padding:10px;text-align:center;cursor:pointer;" onclick="document.getElementById('bLogoFile').click()">
+          <input type="file" id="bLogoFile" accept="image/*" style="display:none;" onchange="uploadBrandLogo(this)">
+          <div id="bLogoPreview" style="font-size:12px;color:var(--gray-400);">Click to upload logo</div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Website Display Mode</label>
+        <select class="form-input" id="bDisplayMode">
+          <option value="text">Text Only (brand name)</option>
+          <option value="logo">Logo Only</option>
+          <option value="both">Logo + Text</option>
+        </select>
+      </div>
+      
+          <div class="form-group"><label class="form-label">Logo URL</label><input class="form-input" id="bLogo" placeholder="Paste image URL"></div>
+      <div class="form-group"><label class="form-label">Website Display</label><select class="form-input" id="bDisplayMode"><option value="text">Text Only</option><option value="logo">Logo Only</option><option value="both">Logo + Text</option></select></div>
+<div class="modal-ft"><button class="btn btn-secondary" onclick="closeBrandModal()">Cancel</button><button class="btn btn-primary" onclick="saveBrand()">Save Brand</button></div>
   </div>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -68,7 +88,7 @@ document.getElementById('brandModal').addEventListener('click',e=>{if(e.target==
 async function saveBrand(){
   const name=document.getElementById('brandName').value.trim();if(!name){toast('Name required',true);return;}
   const id=document.getElementById('brandId').value;
-  const data={name,slug:document.getElementById('brandSlug').value||slugify(name),description:document.getElementById('brandDesc').value||null,is_active:true};
+  const data={name,slug:document.getElementById('brandSlug').value||slugify(name),description:document.getElementById('brandDesc').value||null,is_active:true,logo_url:document.getElementById('brandLogo')?.value||'',display_mode:document.getElementById('brandDisplayMode')?.value||'text'};
   try{if(id)await WF.brands.update(id,data);else await WF.brands.create(data);toast('Brand saved!');closeBrandModal();await loadBrands();}
   catch(e){toast('Error: '+e.message,true);}
 }
