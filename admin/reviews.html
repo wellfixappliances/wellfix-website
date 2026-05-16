@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
 <title>Reviews — WellFix Admin</title>
-<link rel="icon" href="/wellfix-website/frontend/assets/images/WELLFIX-FAVICON.png">
+<link rel="icon" href="../assets/images/WELLFIX-FAVICON.png">
 <link rel="stylesheet" href="assets/css/admin.css">
 </head>
 <body>
@@ -165,7 +165,7 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="/wellfix-website/backend/config/supabase.js"></script>
+<script src="../backend/config/supabase.js"></script>
 <script src="assets/js/shell.js"></script>
 <script>
 let allReviews = [], products = [], currentFilter = 'all', selectedRating = 5;
@@ -329,6 +329,7 @@ async function approveReview(id) {
 
 async function toggleFeatured(id, val) {
   await db.from('reviews').update({ is_featured: val }).eq('id', id);
+  toast(val ? 'Review will now show on website homepage' : 'Review removed from homepage');
   toast(val ? 'Review featured on homepage' : 'Removed from homepage');
 }
 
