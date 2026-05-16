@@ -8,29 +8,40 @@
   <link rel="stylesheet" href="../assets/css/main.css">
 <style>
 .pdp{padding:var(--sp-5) 0 var(--sp-12);}
-.pdp-grid{display:grid;grid-template-columns:1fr 1fr;gap:var(--sp-8);align-items:start;}
-@media(max-width:768px){.pdp-grid{grid-template-columns:1fr;gap:0;}}
+.pdp-grid{display:grid;grid-template-columns:1fr 1fr;gap:var(--sp-6);align-items:start;}
+@media(max-width:768px){.pdp-grid{grid-template-columns:1fr;gap:var(--sp-4);}}
 /* Gallery */
-.pdp-gallery{position:sticky;top:80px;}
-@media(max-width:768px){.pdp-gallery{position:static;}}
-.pdp-main-wrap{position:relative;width:100%;background:var(--gray-25);border-radius:var(--r-xl);overflow:hidden;border:1.5px solid var(--color-border);margin-bottom:var(--sp-3);cursor:zoom-in;}
-.pdp-main-wrap .img-frame{width:100%;padding-bottom:100%;position:relative;overflow:hidden;}
-.pdp-main-img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;padding:20px;transition:transform .3s ease,opacity .2s;}
-.pdp-main-wrap:hover .pdp-main-img{transform:scale(1.06);}
-/* Swipe gallery mobile */
-.pdp-swipe-wrap{display:none;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;-webkit-overflow-scrolling:touch;}
+.pdp-gallery-wrap{position:sticky;top:80px;}
+@media(max-width:768px){.pdp-gallery-wrap{position:static;}}
+/* ── PRODUCT GALLERY — Noon/Flipkart style ── */
+.pdp-gallery-wrap{display:flex;gap:12px;align-items:flex-start;}
+.pdp-thumb-strip{display:flex;flex-direction:column;gap:8px;flex-shrink:0;}
+.pdp-thumb{width:62px;height:62px;border-radius:8px;border:2px solid var(--color-border);overflow:hidden;cursor:pointer;background:var(--gray-25);transition:border-color .2s;}
+.pdp-thumb:hover,.pdp-thumb.is-active{border-color:var(--color-primary);}
+.pdp-thumb img{width:100%;height:100%;object-fit:contain;padding:4px;}
+.pdp-main-box{flex:1;position:relative;background:var(--gray-25);border-radius:12px;border:1.5px solid var(--color-border);overflow:hidden;aspect-ratio:1;cursor:zoom-in;}
+.pdp-main-img{width:100%;height:100%;object-fit:contain;padding:24px;transition:transform .4s ease,opacity .15s;display:block;}
+.pdp-main-box:hover .pdp-main-img{transform:scale(1.08);}
+.pdp-zoom-hint{position:absolute;bottom:10px;right:12px;font-size:10px;color:var(--color-text-3);background:rgba(255,255,255,.8);padding:3px 8px;border-radius:99px;pointer-events:none;}
+/* Mobile swipe — hidden on desktop */
+.pdp-swipe-wrap{display:none;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;-webkit-overflow-scrolling:touch;border-radius:12px;background:var(--gray-25);}
 .pdp-swipe-wrap::-webkit-scrollbar{display:none;}
 .pdp-swipe-slide{flex-shrink:0;width:100%;scroll-snap-align:start;}
-.pdp-swipe-slide img{width:100%;aspect-ratio:1;object-fit:contain;padding:20px;background:var(--gray-25);}
+.pdp-swipe-slide img{width:100%;aspect-ratio:1;object-fit:contain;padding:16px;background:var(--gray-25);display:block;}
 .pdp-swipe-dots{display:none;justify-content:center;gap:5px;margin-top:8px;}
-.pdp-dot{width:7px;height:7px;border-radius:50%;background:var(--gray-200);cursor:pointer;transition:background .2s;}
-.pdp-dot.is-active{background:var(--color-primary);}
+.pdp-dot{width:6px;height:6px;border-radius:50%;background:var(--gray-200);cursor:pointer;transition:all .2s;}
+.pdp-dot.is-active{background:var(--color-primary);width:18px;border-radius:3px;}
+/* Mobile: hide desktop gallery, show swipe */
 @media(max-width:768px){
-  .pdp-main-wrap{display:none;}
-  .pdp-thumbs{display:none!important;}
+  .pdp-gallery-wrap{display:none;}
   .pdp-swipe-wrap{display:flex;}
   .pdp-swipe-dots{display:flex;}
 }
+/* Zoom modal */
+.zoom-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:9999;align-items:center;justify-content:center;cursor:zoom-out;}
+.zoom-modal.open{display:flex;}
+.zoom-modal img{max-width:90vw;max-height:90vh;object-fit:contain;border-radius:8px;}
+.zoom-close{position:fixed;top:16px;right:20px;color:#fff;font-size:28px;cursor:pointer;font-weight:300;line-height:1;}
 .pdp-main-placeholder{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:80px;}
 .pdp-thumbs{display:flex;gap:var(--sp-2);overflow-x:auto;scrollbar-width:none;}
 .pdp-thumbs::-webkit-scrollbar{display:none;}
@@ -220,8 +231,8 @@
 
     <div class="pdp-grid" id="pdpGrid">
       <!-- Skeleton -->
-      <div class="pdp-gallery">
-        <div class="pdp-main-wrap"><div class="skel" style="width:100%;height:100%;"></div></div>
+      <div>
+        <div style="width:100%;aspect-ratio:1;background:var(--gray-50);border-radius:12px;border:1.5px solid var(--color-border);"></div>
       </div>
       <div>
         <div class="skel" style="height:12px;width:80px;margin-bottom:12px;"></div>
@@ -363,24 +374,25 @@ function renderProduct() {
   document.getElementById('bc-name').textContent = p.name.length > 45 ? p.name.substring(0,45)+'…' : p.name;
 
   document.getElementById('pdpGrid').innerHTML = `
-    <div class="pdp-gallery">
-      <!-- Desktop gallery -->
-      <div class="pdp-main-wrap">
-        <div class="img-frame">
-          ${primaryImg
-            ? `<img class="pdp-main-img" id="mainImg" src="${primaryImg}" alt="${imgs[0]?.alt_text||p.name}">`
-            : `<div class="pdp-main-img" style="display:flex;align-items:center;justify-content:center;font-size:80px;">📦</div>`}
-        </div>
-      </div>
-      ${imgs.length > 1 ? `<div class="pdp-thumbs" id="thumbs">
-        ${imgs.map((img,i) => `<div class="pdp-thumb ${i===0?'is-active':''}" onclick="switchImg('${img.url}',this)">
+    <!-- DESKTOP: Noon/Flipkart style gallery -->
+    <div class="pdp-gallery-wrap">
+      <!-- Vertical thumbnail strip -->
+      ${imgs.length > 1 ? `<div class="pdp-thumb-strip" id="thumbStrip">
+        ${imgs.map((img,i) => `<div class="pdp-thumb ${i===0?'is-active':''}" onclick="switchImg('${img.url}',${i})">
           <img src="${img.url}" alt="${img.alt_text||p.name}" loading="lazy">
         </div>`).join('')}
       </div>` : ''}
-      <!-- Mobile swipe gallery -->
-      <div class="pdp-swipe-wrap" id="swipeWrap" style="display:flex;"></div>
-      <div class="pdp-swipe-dots" id="swipeDots"></div>
+      <!-- Main image -->
+      <div class="pdp-main-box" onclick="openZoom('${primaryImg}')">
+        ${primaryImg
+          ? `<img class="pdp-main-img" id="mainImg" src="${primaryImg}" alt="${imgs[0]?.alt_text||p.name}">`
+          : `<div class="pdp-main-img" style="display:flex;align-items:center;justify-content:center;font-size:80px;">📦</div>`}
+        <div class="pdp-zoom-hint">🔍 Click to zoom</div>
+      </div>
     </div>
+    <!-- MOBILE: Swipe gallery -->
+    <div class="pdp-swipe-wrap" id="swipeWrap"></div>
+    <div class="pdp-swipe-dots" id="swipeDots"></div>
 
     <div>
       <div class="pdp-brand">${p.brand?.name || ''}</div>
@@ -476,25 +488,55 @@ function renderProduct() {
     </div>`;
 }
 
-function switchImg(url, el) {
+function switchImg(url, idx) {
   const mainImg = document.getElementById('mainImg');
   if (mainImg) {
-    mainImg.style.opacity = '0.6';
+    mainImg.style.opacity = '0';
     mainImg.src = url;
     mainImg.onload = () => { mainImg.style.opacity = '1'; };
+    mainImg.style.transition = 'opacity .15s';
+    // Update zoom target
+    document.querySelector('.pdp-main-box').onclick = () => openZoom(url);
   }
-  document.querySelectorAll('.pdp-thumb').forEach(t => t.classList.remove('is-active'));
-  if (el) el.classList.add('is-active');
+  document.querySelectorAll('.pdp-thumb').forEach((t,i) => t.classList.toggle('is-active', i===idx));
 }
 
-// Mobile swipe init
+// Zoom modal
+function openZoom(url) {
+  if (!url) return;
+  let zm = document.getElementById('zoomModal');
+  if (!zm) {
+    zm = document.createElement('div');
+    zm.id = 'zoomModal';
+    zm.className = 'zoom-modal';
+    zm.innerHTML = '<span class="zoom-close" onclick="closeZoom()">✕</span><img id="zoomImg" src="">';
+    zm.onclick = e => { if (e.target === zm) closeZoom(); };
+    document.body.appendChild(zm);
+  }
+  document.getElementById('zoomImg').src = url;
+  zm.classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeZoom() {
+  const zm = document.getElementById('zoomModal');
+  if (zm) zm.classList.remove('open');
+  document.body.style.overflow = '';
+}
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeZoom(); });
+
+// Mobile swipe gallery
 function initSwipeGallery(imgs) {
   const wrap = document.getElementById('swipeWrap');
   const dots = document.getElementById('swipeDots');
   if (!wrap || !imgs.length) return;
-  wrap.innerHTML = imgs.map(img => `<div class="pdp-swipe-slide"><img src="${img.url}" alt="${img.alt_text||''}" loading="lazy"></div>`).join('');
-  if (dots) dots.innerHTML = imgs.map((_, i) => `<div class="pdp-dot ${i===0?'is-active':''}" onclick="scrollToSlide(${i})"></div>`).join('');
-  // Update dots on scroll
+  wrap.innerHTML = imgs.map(img =>
+    `<div class="pdp-swipe-slide"><img src="${img.url}" alt="${img.alt_text||''}" loading="lazy" onclick="openZoom('${img.url}')"></div>`
+  ).join('');
+  if (dots) {
+    dots.innerHTML = imgs.map((_, i) =>
+      `<div class="pdp-dot ${i===0?'is-active':''}" onclick="scrollToSlide(${i})"></div>`
+    ).join('');
+  }
   wrap.addEventListener('scroll', () => {
     const idx = Math.round(wrap.scrollLeft / wrap.offsetWidth);
     document.querySelectorAll('.pdp-dot').forEach((d,i) => d.classList.toggle('is-active', i===idx));
