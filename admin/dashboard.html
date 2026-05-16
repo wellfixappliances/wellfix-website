@@ -1,340 +1,531 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Dashboard — WellFix Admin</title>
 <link rel="icon" href="../assets/images/WELLFIX-FAVICON.png">
 <link rel="stylesheet" href="assets/css/admin.css">
+<style>
+/* ── DATE FILTER ── */
+.dash-top{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:16px;}
+.period-pills{display:flex;gap:4px;flex-wrap:wrap;}
+.period-pill{padding:5px 12px;border-radius:99px;font-size:12px;font-weight:600;border:1.5px solid var(--gray-150,#e5e7eb);background:#fff;cursor:pointer;color:var(--gray-500);transition:all .15s;}
+.period-pill.active{background:var(--color-primary);color:#fff;border-color:var(--color-primary);}
+.custom-range{display:none;align-items:center;gap:6px;}
+.custom-range.show{display:flex;}
+.dr-input{height:32px;padding:0 8px;border:1.5px solid var(--gray-200);border-radius:6px;font-size:12px;outline:none;}
+/* ── KPI GRID ── */
+.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px;}
+@media(max-width:1024px){.kpi-grid{grid-template-columns:repeat(2,1fr);}}
+@media(max-width:600px){.kpi-grid{grid-template-columns:1fr 1fr;gap:8px;}}
+.kpi{background:#fff;border:1.5px solid var(--gray-100);border-radius:10px;padding:14px 16px;position:relative;overflow:hidden;}
+.kpi-label{font-size:11px;font-weight:700;color:var(--gray-400);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;}
+.kpi-val{font-family:var(--font-display);font-size:22px;font-weight:800;color:var(--gray-900);line-height:1.1;}
+.kpi-sub{font-size:11px;color:var(--gray-400);margin-top:3px;display:flex;align-items:center;gap:4px;}
+.kpi-up{color:#10b981;font-weight:600;}
+.kpi-down{color:#ef4444;font-weight:600;}
+.kpi-icon{position:absolute;right:12px;top:50%;transform:translateY(-50%);width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;opacity:.12;}
+.kpi-icon svg{width:20px;height:20px;}
+/* ── 2-COL LAYOUT ── */
+.dash-grid{display:grid;grid-template-columns:1fr 320px;gap:14px;margin-bottom:14px;}
+@media(max-width:1100px){.dash-grid{grid-template-columns:1fr;}}
+.dash-grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:14px;}
+@media(max-width:900px){.dash-grid-3{grid-template-columns:1fr 1fr;}}
+@media(max-width:600px){.dash-grid-3{grid-template-columns:1fr;}}
+/* ── CARD ── */
+.dc{background:#fff;border:1.5px solid var(--gray-100);border-radius:10px;overflow:hidden;}
+.dc-hd{padding:12px 16px;border-bottom:1px solid var(--gray-100);display:flex;align-items:center;justify-content:space-between;}
+.dc-title{font-size:13px;font-weight:700;color:var(--gray-800);}
+.dc-link{font-size:11px;color:var(--color-primary);font-weight:600;cursor:pointer;text-decoration:none;}
+/* ── CHART ── */
+.chart-wrap{padding:16px;height:180px;position:relative;}
+.chart-bars{display:flex;align-items:flex-end;gap:4px;height:140px;padding-bottom:20px;}
+.chart-bar-wrap{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;height:100%;}
+.chart-bar{width:100%;border-radius:4px 4px 0 0;transition:height .4s ease;min-height:2px;cursor:pointer;position:relative;}
+.chart-bar:hover::after{content:attr(data-tip);position:absolute;bottom:100%;left:50%;transform:translateX(-50%);background:var(--gray-900);color:#fff;padding:3px 7px;border-radius:4px;font-size:10px;white-space:nowrap;pointer-events:none;z-index:10;}
+.chart-bar-label{font-size:9px;color:var(--gray-400);text-align:center;width:100%;}
+/* ── ORDER STATUS ROW ── */
+.status-row{display:flex;gap:8px;flex-wrap:wrap;padding:12px 16px;border-bottom:1px solid var(--gray-50);}
+.status-pill{display:flex;align-items:center;gap:5px;padding:4px 10px;border-radius:99px;font-size:11px;font-weight:700;cursor:pointer;}
+/* ── TABLE ── */
+.dc-table{width:100%;border-collapse:collapse;font-size:12px;}
+.dc-table th{padding:8px 12px;text-align:left;font-size:10px;font-weight:700;text-transform:uppercase;color:var(--gray-400);letter-spacing:.05em;border-bottom:1px solid var(--gray-100);}
+.dc-table td{padding:8px 12px;border-bottom:1px solid var(--gray-50);color:var(--gray-700);}
+.dc-table tr:last-child td{border-bottom:none;}
+.dc-table tr:hover td{background:var(--gray-25);}
+/* ── ACTIVITY ── */
+.act-item{display:flex;gap:10px;padding:9px 14px;border-bottom:1px solid var(--gray-50);}
+.act-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;margin-top:4px;}
+.act-text{font-size:12px;color:var(--gray-600);line-height:1.5;}
+.act-time{font-size:10px;color:var(--gray-400);margin-top:1px;}
+/* ── PROGRESS ── */
+.prog-row{display:flex;align-items:center;gap:8px;padding:7px 14px;border-bottom:1px solid var(--gray-50);}
+.prog-label{font-size:12px;color:var(--gray-600);min-width:90px;}
+.prog-bar{flex:1;height:5px;background:var(--gray-100);border-radius:99px;overflow:hidden;}
+.prog-fill{height:100%;border-radius:99px;background:var(--color-primary);}
+.prog-val{font-size:11px;font-weight:700;color:var(--gray-700);min-width:40px;text-align:right;}
+/* ── ALERT ── */
+.alert-item{display:flex;align-items:center;justify-content:space-between;padding:8px 14px;border-bottom:1px solid var(--gray-50);}
+.alert-item:last-child{border-bottom:none;}
+.alert-label{font-size:12px;color:var(--gray-700);}
+.alert-val{font-size:11px;font-weight:700;padding:2px 8px;border-radius:99px;}
+/* ── NOTIFICATION DOT ── */
+.notif-badge{position:absolute;top:-3px;right:-3px;width:16px;height:16px;background:#ef4444;border-radius:50%;font-size:9px;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;}
+</style>
 </head>
 <body>
+<div class="admin-shell"><div id="adminShell"></div>
+<div class="main-wrap" id="mainWrap"><div class="page-content">
 
-<div class="admin-shell">
-  <!-- Shell injected here by AdminShell.init() -->
-  <div id="adminShell"></div>
-
-  <!-- Main content -->
-  <div class="main-wrap" id="mainWrap">
-    <div class="page-content">
-
-      <div class="pg-hd">
-        <div>
-          <h1>Dashboard</h1>
-          <p>Welcome back — here's your store overview</p>
-        </div>
-        <div class="pg-hd__actions">
-          <button class="btn btn-secondary" onclick="exportReport()">
-            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-            Export
-          </button>
-          <a href="products.html" class="btn btn-primary">
-            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-            Add Product
-          </a>
-        </div>
-      </div>
-
-      <!-- Stats -->
-      <div class="stats-grid" id="statsGrid">
-        <!-- Skeleton -->
-        <div class="stat-card"><div class="skeleton" style="height:90px;border-radius:8px;"></div></div>
-        <div class="stat-card"><div class="skeleton" style="height:90px;border-radius:8px;"></div></div>
-        <div class="stat-card"><div class="skeleton" style="height:90px;border-radius:8px;"></div></div>
-        <div class="stat-card"><div class="skeleton" style="height:90px;border-radius:8px;"></div></div>
-      </div>
-
-      <!-- Charts + Panels -->
-      <div style="display:grid;grid-template-columns:1fr 340px;gap:20px;" id="dashGrid">
-
-        <!-- Left column -->
-        <div style="display:flex;flex-direction:column;gap:20px;">
-
-          <!-- Revenue chart -->
-          <div class="card">
-            <div class="card-hd">
-              <span class="card-title">Revenue Overview</span>
-              <select class="filter-select" style="width:auto;" onchange="loadRevenueChart(this.value)">
-                <option value="30">Last 30 days</option>
-                <option value="7">Last 7 days</option>
-                <option value="90">Last 3 months</option>
-              </select>
-            </div>
-            <div class="card-body">
-              <div style="display:flex;gap:24px;margin-bottom:16px;" id="revenueNums">
-                <div><div style="font-family:var(--font-display);font-size:22px;font-weight:800;color:var(--gray-900);" id="revMonth">—</div><div style="font-size:11px;color:var(--gray-400);">This Month</div></div>
-                <div><div style="font-family:var(--font-display);font-size:22px;font-weight:800;color:var(--gray-200);" id="revLast">—</div><div style="font-size:11px;color:var(--gray-400);">Last Month</div></div>
-              </div>
-              <div style="display:flex;align-items:flex-end;gap:4px;height:100px;padding-bottom:20px;position:relative;" id="revChart">
-                <div class="skeleton" style="flex:1;height:100%;border-radius:4px;"></div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Recent orders -->
-          <div class="card">
-            <div class="card-hd">
-              <span class="card-title">Recent Orders</span>
-              <a href="orders.html" class="btn btn-secondary btn-sm">View All</a>
-            </div>
-            <div class="card-body-0">
-              <div class="tbl-wrap">
-                <table>
-                  <thead><tr><th>Order</th><th>Customer</th><th>Amount</th><th>Status</th><th>Date</th></tr></thead>
-                  <tbody id="recentOrdersTbody">
-                    <tr><td colspan="5" style="text-align:center;padding:20px;color:var(--gray-300);">Loading…</td></tr>
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Right column -->
-        <div style="display:flex;flex-direction:column;gap:20px;">
-
-          <!-- Live activity -->
-          <div class="card">
-            <div class="card-hd"><span class="card-title">Live Activity</span></div>
-            <div class="card-body" id="activityFeed" style="max-height:240px;overflow-y:auto;">
-              <div class="skeleton" style="height:60px;border-radius:8px;margin-bottom:8px;"></div>
-              <div class="skeleton" style="height:60px;border-radius:8px;margin-bottom:8px;"></div>
-              <div class="skeleton" style="height:60px;border-radius:8px;"></div>
-            </div>
-          </div>
-
-          <!-- Low stock alert -->
-          <div class="card" id="lowStockCard" style="display:none;">
-            <div class="card-hd">
-              <span class="card-title" style="color:var(--orange-500);">⚠ Low Stock Alerts</span>
-              <a href="inventory.html" class="btn btn-secondary btn-sm">Manage</a>
-            </div>
-            <div class="card-body-0">
-              <div class="tbl-wrap">
-                <table>
-                  <thead><tr><th>Product</th><th>Stock</th></tr></thead>
-                  <tbody id="lowStockTbody"></tbody>
-                </table>
-              </div>
-            </div>
-          </div>
-
-          <!-- Top categories -->
-          <div class="card">
-            <div class="card-hd"><span class="card-title">Sales by Category</span></div>
-            <div class="card-body" id="catProgress"></div>
-          </div>
-
-          <!-- Quick actions -->
-          <div class="card">
-            <div class="card-hd"><span class="card-title">Quick Actions</span></div>
-            <div class="card-body" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
-              <a href="products.html?action=add" class="btn btn-primary btn-sm" style="justify-content:flex-start;">
-                <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-                Add Product
-              </a>
-              <a href="orders.html" class="btn btn-secondary btn-sm" style="justify-content:flex-start;">
-                <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/></svg>
-                Orders
-              </a>
-              <a href="services.html" class="btn btn-secondary btn-sm" style="justify-content:flex-start;">
-                <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg>
-                Bookings
-              </a>
-              <a href="banners.html" class="btn btn-secondary btn-sm" style="justify-content:flex-start;">
-                <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>
-                Banners
-              </a>
-            </div>
-          </div>
-        </div>
-      </div><!-- /dashGrid -->
-
+<!-- TOP BAR -->
+<div class="dash-top">
+  <div>
+    <h1 style="font-size:20px;font-weight:800;color:var(--gray-900);margin:0;">Dashboard</h1>
+    <div style="font-size:12px;color:var(--gray-400);" id="dashSubtitle">Loading…</div>
+  </div>
+  <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+    <div class="period-pills">
+      <div class="period-pill active" onclick="setPeriod('today',this)">Today</div>
+      <div class="period-pill" onclick="setPeriod('yesterday',this)">Yesterday</div>
+      <div class="period-pill" onclick="setPeriod('week',this)">This Week</div>
+      <div class="period-pill" onclick="setPeriod('month',this)">This Month</div>
+      <div class="period-pill" onclick="setPeriod('year',this)">This Year</div>
+      <div class="period-pill" onclick="setPeriod('custom',this)">Custom</div>
     </div>
+    <div class="custom-range" id="customRange">
+      <input type="date" class="dr-input" id="drFrom">
+      <span style="font-size:11px;color:var(--gray-400);">to</span>
+      <input type="date" class="dr-input" id="drTo">
+      <button class="btn btn-sm btn-primary" onclick="loadDash()">Go</button>
+    </div>
+    <button class="btn btn-sm btn-outline" onclick="loadDash()">
+      <svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" width="12" height="12"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/></svg>
+      Refresh
+    </button>
   </div>
 </div>
 
+<!-- KPI CARDS -->
+<div class="kpi-grid" id="kpiGrid">
+  <div class="kpi"><div class="kpi-label">Revenue</div><div class="kpi-val">—</div></div>
+  <div class="kpi"><div class="kpi-label">Orders</div><div class="kpi-val">—</div></div>
+  <div class="kpi"><div class="kpi-label">Customers</div><div class="kpi-val">—</div></div>
+  <div class="kpi"><div class="kpi-label">Pending Pay</div><div class="kpi-val">—</div></div>
+</div>
+
+<!-- ORDER STATUS ROW -->
+<div class="dc" style="margin-bottom:14px;">
+  <div class="status-row" id="statusRow">
+    <div style="font-size:12px;color:var(--gray-400);align-self:center;">Loading order stats…</div>
+  </div>
+</div>
+
+<!-- MAIN GRID -->
+<div class="dash-grid">
+  <!-- Revenue Chart -->
+  <div class="dc">
+    <div class="dc-hd">
+      <span class="dc-title">Revenue Overview</span>
+      <div style="display:flex;gap:6px;">
+        <select style="font-size:11px;padding:3px 8px;border:1px solid var(--gray-200);border-radius:4px;color:var(--gray-600);" id="chartMode" onchange="renderChart()">
+          <option value="revenue">Revenue</option>
+          <option value="orders">Orders</option>
+        </select>
+      </div>
+    </div>
+    <div class="chart-wrap"><div class="chart-bars" id="chartBars"></div></div>
+  </div>
+  <!-- Activity Feed -->
+  <div class="dc">
+    <div class="dc-hd"><span class="dc-title">Live Activity</span><a class="dc-link" href="orders.html">All Orders →</a></div>
+    <div id="activityFeed"></div>
+  </div>
+</div>
+
+<!-- 3-COL -->
+<div class="dash-grid-3">
+  <!-- Top Products -->
+  <div class="dc">
+    <div class="dc-hd"><span class="dc-title">Top Selling Products</span><a class="dc-link" href="products.html">All →</a></div>
+    <div id="topProducts"></div>
+  </div>
+  <!-- Payment Breakdown -->
+  <div class="dc">
+    <div class="dc-hd"><span class="dc-title">Payment Methods</span></div>
+    <div id="payBreak"></div>
+  </div>
+  <!-- Alerts -->
+  <div class="dc">
+    <div class="dc-hd"><span class="dc-title">⚠️ Alerts</span></div>
+    <div id="alertsPanel"></div>
+  </div>
+</div>
+
+<!-- BOTTOM GRID -->
+<div class="dash-grid">
+  <!-- Recent Orders -->
+  <div class="dc">
+    <div class="dc-hd"><span class="dc-title">Recent Orders</span><a class="dc-link" href="orders.html">View All →</a></div>
+    <div style="overflow-x:auto;">
+      <table class="dc-table">
+        <thead><tr><th>Order</th><th>Customer</th><th>Amount</th><th>Pay</th><th>Status</th><th>Date</th></tr></thead>
+        <tbody id="recentOrdTbody"></tbody>
+      </table>
+    </div>
+  </div>
+  <!-- Low Stock -->
+  <div class="dc">
+    <div class="dc-hd"><span class="dc-title">Low Stock Alerts</span><a class="dc-link" href="inventory.html">Manage →</a></div>
+    <div id="lowStockList"></div>
+  </div>
+</div>
+
+</div></div></div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="../backend/config/supabase.js"></script>
 <script src="assets/js/shell.js"></script>
 <script>
-(async () => {
-  await AdminShell.init('Dashboard');
-  await loadDashboard();
-  setupRealtime();
-})();
+'use strict';
 
-async function loadDashboard() {
+let period = 'month';
+let dateFrom = null, dateTo = null;
+let chartData = [];
+
+// ── DATE RANGE ──────────────────────────────────────────────
+function getRange() {
+  const now = new Date();
+  let from, to = new Date();
+  to.setHours(23,59,59,999);
+  switch(period) {
+    case 'today':
+      from = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0);
+      break;
+    case 'yesterday':
+      from = new Date(now.getFullYear(), now.getMonth(), now.getDate()-1, 0, 0, 0);
+      to   = new Date(now.getFullYear(), now.getMonth(), now.getDate()-1, 23, 59, 59);
+      break;
+    case 'week':
+      const dow = now.getDay() || 7;
+      from = new Date(now.getFullYear(), now.getMonth(), now.getDate()-dow+1, 0, 0, 0);
+      break;
+    case 'month':
+      from = new Date(now.getFullYear(), now.getMonth(), 1, 0, 0, 0);
+      break;
+    case 'year':
+      from = new Date(now.getFullYear(), 0, 1, 0, 0, 0);
+      break;
+    case 'custom':
+      from = dateFrom ? new Date(dateFrom) : new Date(now.getFullYear(), now.getMonth(), 1);
+      to   = dateTo   ? new Date(dateTo)   : new Date();
+      break;
+    default:
+      from = new Date(now.getFullYear(), now.getMonth(), 1, 0, 0, 0);
+  }
+  return { from: from.toISOString(), to: to.toISOString() };
+}
+
+function setPeriod(p, el) {
+  period = p;
+  document.querySelectorAll('.period-pill').forEach(x => x.classList.remove('active'));
+  el.classList.add('active');
+  const cr = document.getElementById('customRange');
+  cr.classList.toggle('show', p === 'custom');
+  if (p !== 'custom') loadDash();
+}
+
+// ── MAIN LOAD ───────────────────────────────────────────────
+async function loadDash() {
+  if (period === 'custom') {
+    dateFrom = document.getElementById('drFrom').value;
+    dateTo   = document.getElementById('drTo').value;
+    if (!dateFrom || !dateTo) { toast('Select both dates', true); return; }
+  }
+
+  const { from, to } = getRange();
+  const label = {
+    today:'Today', yesterday:'Yesterday', week:'This Week',
+    month:'This Month', year:'This Year', custom:'Custom Range'
+  }[period];
+
+  document.getElementById('dashSubtitle').textContent = `Showing data for: ${label}`;
+
   try {
-    // Direct query — excludes cancelled orders from revenue
-  const { data: orderData } = await db.from('orders').select('total, status, payment_status, created_at');
-  const allOrd = orderData || [];
-  const now = new Date(); const ms = new Date(now.getFullYear(), now.getMonth(), 1);
-  const PAID = ['confirmed','processing','shipped','delivered'];
-  const paidOrd = allOrd.filter(o => PAID.includes(o.status));
-  const monthRev = paidOrd.filter(o => new Date(o.created_at) >= ms).reduce((s,o)=>s+(parseFloat(o.total)||0),0);
-  const stats = {
-    revenue: monthRev.toFixed(2),
-    orders_count: allOrd.filter(o => PAID.includes(o.status) && new Date(o.created_at)>=ms).length,
-    total_orders: allOrd.filter(o => o.status !== 'cancelled').length,
-    cancelled_orders: allOrd.filter(o => o.status === 'cancelled').length,
-    pending_orders: allOrd.filter(o => o.status === 'pending').length,
-    pending_payment: allOrd.filter(o => o.payment_status === 'pending_verification').length,
-    customers_count: 0, bookings_count: 0, low_stock_count: 0
-  };
-  // Get customers + bookings + low stock separately
-  const [custRes, bookRes, stockRes] = await Promise.all([
-    db.from('customers').select('id',{count:'exact'}),
-    db.from('service_bookings').select('id',{count:'exact'}),
-    db.from('products').select('id,stock_qty,low_stock_threshold').eq('is_active',true)
-  ]);
-  stats.customers_count = custRes.count || 0;
-  stats.bookings_count = bookRes.count || 0;
-  stats.low_stock_count = (stockRes.data||[]).filter(p=>(p.stock_qty||0)<=(p.low_stock_threshold||5)).length;
-    renderStats(stats);
-    await Promise.all([
-      loadRecentOrders(),
-      loadActivity(),
-      loadLowStock(),
-      loadCategoryProgress()
+    // Load all data in parallel
+    const [ordRes, prodRes, custRes, itemRes] = await Promise.all([
+      db.from('orders').select('id,order_number,customer_name,customer_phone,total,status,payment_method,payment_status,created_at')
+        .gte('created_at', from).lte('created_at', to).order('created_at', {ascending:false}),
+      db.from('products').select('id,name,price,stock_qty,low_stock_threshold,is_active'),
+      db.from('customers').select('id,created_at').gte('created_at', from).lte('created_at', to),
+      db.from('order_items').select('product_name,quantity,total_price,created_at')
+        .gte('created_at', from).lte('created_at', to),
     ]);
-    renderChart();
-  } catch (e) {
-    toast('Error loading dashboard: ' + e.message, true);
+
+    const orders   = ordRes.data  || [];
+    const prods    = prodRes.data || [];
+    const newCusts = custRes.data || [];
+    const items    = itemRes.data || [];
+
+    // Also get ALL-TIME customers count separately
+    const { count: totalCusts } = await db.from('customers').select('id', {count:'exact'});
+
+    renderKPIs(orders, prods, newCusts, totalCusts || 0);
+    renderStatusRow(orders);
+    renderChart(orders);
+    renderActivity(orders);
+    renderTopProducts(items);
+    renderPayBreak(orders);
+    renderAlerts(prods, orders);
+    renderRecentOrders(orders);
+    renderLowStock(prods);
+
+  } catch(e) {
+    toast('Error: ' + e.message, true);
   }
 }
 
-function renderStats(s) {
-  document.getElementById('statsGrid').innerHTML = `
-    <div class="stat-card">
-      <div class="stat-card__top">
-        <div class="stat-card__icon green">
-          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
-        </div>
-        <span class="stat-card__badge up">This Month</span>
+// ── KPI CARDS ───────────────────────────────────────────────
+function renderKPIs(orders, prods, newCusts, totalCusts) {
+  const PAID = ['confirmed','processing','shipped','delivered'];
+  const revenue  = orders.filter(o=>PAID.includes(o.status)).reduce((s,o)=>s+(parseFloat(o.total)||0), 0);
+  const avgOrder = orders.length ? (revenue / orders.filter(o=>PAID.includes(o.status)).length || 0) : 0;
+  const pendPay  = orders.filter(o=>o.payment_status==='pending_verification').length;
+  const cancelled = orders.filter(o=>o.status==='cancelled').length;
+  const lowStock = prods.filter(p=>(p.stock_qty||0)<=(p.low_stock_threshold||5)).length;
+
+  document.getElementById('kpiGrid').innerHTML = `
+    <div class="kpi" style="border-left:3px solid var(--green-500);">
+      <div class="kpi-label">Revenue</div>
+      <div class="kpi-val">${formatCurrency(revenue)}</div>
+      <div class="kpi-sub">${orders.filter(o=>PAID.includes(o.status)).length} paid orders</div>
+      <div class="kpi-icon" style="background:var(--green-500);">
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
       </div>
-      <div class="stat-card__val">${formatCurrency(s.revenue)}</div>
-      <div class="stat-card__label">Monthly Revenue</div>
     </div>
-    <div class="stat-card">
-      <div class="stat-card__top">
-        <div class="stat-card__icon blue">
-          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
-        </div>
-        ${s.pending_orders > 0 ? `<span class="stat-card__badge down">${s.pending_orders} pending</span>` : `<span class="stat-card__badge up">All clear</span>`}
+    <div class="kpi" style="border-left:3px solid var(--blue-500,#3b82f6);">
+      <div class="kpi-label">Total Orders</div>
+      <div class="kpi-val">${orders.length}</div>
+      <div class="kpi-sub">Avg ₹${Math.round(avgOrder).toLocaleString('en-IN')}/order</div>
+      <div class="kpi-icon" style="background:#3b82f6;">
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/></svg>
       </div>
-      <div class="stat-card__val">${s.total_orders}</div>
-      <div class="stat-card__label">Total Orders</div>
     </div>
-    <div class="stat-card">
-      <div class="stat-card__top">
-        <div class="stat-card__icon gold">
-          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
-        </div>
+    <div class="kpi" style="border-left:3px solid #f59e0b;">
+      <div class="kpi-label">Customers</div>
+      <div class="kpi-val">${totalCusts.toLocaleString('en-IN')}</div>
+      <div class="kpi-sub">+${newCusts.length} new this period</div>
+      <div class="kpi-icon" style="background:#f59e0b;">
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
       </div>
-      <div class="stat-card__val">${Number(s.customers_count).toLocaleString('en-IN')}</div>
-      <div class="stat-card__label">Total Customers</div>
     </div>
-    <div class="stat-card">
-      <div class="stat-card__top">
-        <div class="stat-card__icon purple">
-          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg>
-        </div>
-        ${s.low_stock_count > 0 ? `<span class="stat-card__badge down">${s.low_stock_count} low stock</span>` : ''}
+    <div class="kpi" style="border-left:3px solid ${pendPay>0?'#ef4444':'var(--green-500)'};">
+      <div class="kpi-label">Pending Payments</div>
+      <div class="kpi-val ${pendPay>0?'kpi-down':''}">${pendPay}</div>
+      <div class="kpi-sub">${cancelled} cancelled · ${lowStock} low stock</div>
+      <div class="kpi-icon" style="background:#ef4444;">
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
       </div>
-      <div class="stat-card__val">${s.bookings_count}</div>
-      <div class="stat-card__label">Service Bookings</div>
     </div>`;
-
-  document.getElementById('revMonth').textContent = formatCurrency(s.revenue);
 }
 
-async function loadRecentOrders() {
-  const orders = await WF.orders.getAll({ limit: 8 });
-  const tbody = document.getElementById('recentOrdersTbody');
-  if (!orders.length) {
-    tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;padding:20px;color:var(--gray-300);">No orders yet</td></tr>`;
-    return;
-  }
-  tbody.innerHTML = orders.map(o => `<tr>
-    <td class="td-bold">${o.order_number}</td>
-    <td>${o.customer_name}</td>
-    <td style="font-weight:700;">${formatCurrency(o.total)}</td>
-    <td>${renderBadge(o.status)}</td>
-    <td>${formatDate(o.created_at)}</td>
-  </tr>`).join('');
-}
-
-async function loadActivity() {
-  const feed = document.getElementById('activityFeed');
-  const { data: _actOrd } = await db.from('orders').select('id,order_number,customer_name,total,status,created_at').neq('status','cancelled').order('created_at',{ascending:false}).limit(5);
-  const orders = { data: _actOrd || [] };
-  const bookings = await WF.services.getAll({ status: 'new' });
-  const items = [
-    ...orders.slice(0, 3).map(o => ({ dot: 'green', text: `<strong>Order ${o.order_number}</strong> from ${o.customer_name} — ${formatCurrency(o.total)}`, time: formatDate(o.created_at) })),
-    ...bookings.slice(0, 2).map(b => ({ dot: 'blue', text: `<strong>Service booking</strong> — ${b.service_type} by ${b.customer_name}`, time: formatDate(b.created_at) })),
+// ── STATUS ROW ──────────────────────────────────────────────
+function renderStatusRow(orders) {
+  const counts = {};
+  orders.forEach(o => { counts[o.status] = (counts[o.status]||0)+1; });
+  const statuses = [
+    {key:'pending',     label:'Pending',    bg:'#fef3c7',color:'#92400e'},
+    {key:'confirmed',   label:'Confirmed',  bg:'#dbeafe',color:'#1e40af'},
+    {key:'processing',  label:'Processing', bg:'#ede9fe',color:'#5b21b6'},
+    {key:'shipped',     label:'Shipped',    bg:'#d1fae5',color:'#065f46'},
+    {key:'delivered',   label:'Delivered',  bg:'#d1fae5',color:'#065f46'},
+    {key:'cancelled',   label:'Cancelled',  bg:'#fee2e2',color:'#991b1b'},
+    {key:'returned',    label:'Returned',   bg:'#fce7f3',color:'#9d174d'},
+    {key:'pending_verification',label:'Verify Pay',bg:'#ffedd5',color:'#9a3412'},
   ];
-  if (!items.length) { feed.innerHTML = '<div style="font-size:12px;color:var(--gray-300);text-align:center;padding:10px;">No recent activity</div>'; return; }
-  feed.innerHTML = items.map(a => `
-    <div style="display:flex;gap:10px;padding:10px 0;border-bottom:1px solid var(--gray-50);">
-      <div style="width:7px;height:7px;border-radius:99px;background:var(--${a.dot === 'green' ? 'green-500' : 'blue-500'});margin-top:5px;flex-shrink:0;"></div>
-      <div><div style="font-size:12px;color:var(--gray-600);line-height:1.5;">${a.text}</div><div style="font-size:11px;color:var(--gray-300);margin-top:2px;">${a.time}</div></div>
+  document.getElementById('statusRow').innerHTML = statuses.map(s => `
+    <div class="status-pill" style="background:${s.bg};color:${s.color};" onclick="window.location.href='orders.html'">
+      ${s.label}: <strong>${counts[s.key]||0}</strong>
     </div>`).join('');
 }
 
-async function loadLowStock() {
-  const products = await db.from('products')
-    .select('name, stock_qty, low_stock_threshold').eq('is_active', true)
-    .filter('stock_qty', 'lte', 'low_stock_threshold').limit(5);
-  const low = (products.data || []).filter(p => p.stock_qty <= (p.low_stock_threshold || 5));
-  if (!low.length) return;
-  document.getElementById('lowStockCard').style.display = 'block';
-  document.getElementById('lowStockTbody').innerHTML = low.map(p => `
-    <tr>
-      <td class="td-bold">${p.name.substring(0, 28)}…</td>
-      <td><span class="badge ${p.stock_qty === 0 ? 'badge-danger' : 'badge-pending'}">${p.stock_qty} left</span></td>
+// ── REVENUE CHART ───────────────────────────────────────────
+function renderChart(orders) {
+  if (orders) chartData = orders;
+  const mode = document.getElementById('chartMode').value;
+  const PAID = ['confirmed','processing','shipped','delivered'];
+  
+  // Build daily buckets for period
+  const { from, to } = getRange();
+  const start = new Date(from), end = new Date(to);
+  const days = Math.min(Math.ceil((end-start)/(1000*60*60*24))+1, 30);
+  
+  const buckets = [];
+  for (let i=0; i<days; i++) {
+    const d = new Date(start);
+    d.setDate(d.getDate()+i);
+    buckets.push({ label: d.toLocaleDateString('en-IN',{day:'numeric',month:'short'}), val: 0, date: d.toDateString() });
+  }
+  
+  chartData.forEach(o => {
+    const d = new Date(o.created_at).toDateString();
+    const b = buckets.find(bk => bk.date === d);
+    if (!b) return;
+    if (mode === 'revenue') {
+      if (PAID.includes(o.status)) b.val += parseFloat(o.total)||0;
+    } else {
+      b.val++;
+    }
+  });
+
+  const max = Math.max(...buckets.map(b=>b.val), 1);
+  const colors = ['#034732','#056b4b','#068a60','#34d399','#6ee7b7'];
+  
+  document.getElementById('chartBars').innerHTML = buckets.map((b,i) => {
+    const pct = Math.max((b.val/max)*100, 2);
+    const tip = mode === 'revenue' ? formatCurrency(b.val) : `${b.val} orders`;
+    const col = b.val > 0 ? colors[i%colors.length] : '#e5e7eb';
+    return `<div class="chart-bar-wrap">
+      <div class="chart-bar" style="height:${pct}%;background:${col};" data-tip="${b.label}: ${tip}"></div>
+      ${days <= 14 ? `<div class="chart-bar-label">${b.label.split(' ')[0]}</div>` : ''}
+    </div>`;
+  }).join('');
+}
+
+// ── ACTIVITY FEED ────────────────────────────────────────────
+function renderActivity(orders) {
+  const feed = document.getElementById('activityFeed');
+  const recent = orders.filter(o=>o.status!=='cancelled').slice(0,8);
+  if (!recent.length) {
+    feed.innerHTML = '<div class="act-item"><div class="act-text" style="color:var(--gray-300);">No activity in this period</div></div>';
+    return;
+  }
+  feed.innerHTML = recent.map(o => {
+    const colors = {confirmed:'#10b981',pending:'#f59e0b',delivered:'#3b82f6',cancelled:'#ef4444',processing:'#8b5cf6',shipped:'#06b6d4'};
+    const col = colors[o.status]||'#9ca3af';
+    return `<div class="act-item">
+      <div class="act-dot" style="background:${col};"></div>
+      <div>
+        <div class="act-text"><strong>${o.order_number}</strong> from ${o.customer_name} — ${formatCurrency(o.total)}</div>
+        <div class="act-time">${renderBadge(o.status)} · ${formatDate(o.created_at)}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ── TOP PRODUCTS ─────────────────────────────────────────────
+function renderTopProducts(items) {
+  const el = document.getElementById('topProducts');
+  if (!items.length) {
+    el.innerHTML = '<div style="padding:20px;text-align:center;font-size:12px;color:var(--gray-300);">No order items in this period</div>';
+    return;
+  }
+  const counts = {};
+  items.forEach(i => {
+    const k = i.product_name||'Unknown';
+    if (!counts[k]) counts[k] = {qty:0,rev:0};
+    counts[k].qty += i.quantity||1;
+    counts[k].rev += parseFloat(i.total_price)||0;
+  });
+  const sorted = Object.entries(counts).sort((a,b)=>b[1].qty-a[1].qty).slice(0,6);
+  const maxQ = sorted[0]?.[1]?.qty || 1;
+  el.innerHTML = sorted.map(([name,d],i) => `
+    <div class="prog-row">
+      <div class="prog-label" style="font-size:11px;" title="${name}">${name.length>18?name.slice(0,18)+'…':name}</div>
+      <div class="prog-bar"><div class="prog-fill" style="width:${Math.round(d.qty/maxQ*100)}%;"></div></div>
+      <div class="prog-val">${d.qty} sold</div>
+    </div>`).join('');
+}
+
+// ── PAYMENT BREAKDOWN ─────────────────────────────────────────
+function renderPayBreak(orders) {
+  const el = document.getElementById('payBreak');
+  if (!orders.length) {
+    el.innerHTML = '<div style="padding:20px;text-align:center;font-size:12px;color:var(--gray-300);">No orders</div>';
+    return;
+  }
+  const methods = {};
+  orders.forEach(o => {
+    const m = o.payment_method||'cod';
+    methods[m] = (methods[m]||0)+1;
+  });
+  const total = orders.length;
+  const colors = {cod:'#f59e0b',upi:'#3b82f6',whatsapp:'#10b981'};
+  el.innerHTML = Object.entries(methods).map(([m,c]) => {
+    const pct = Math.round(c/total*100);
+    const col = colors[m]||'#9ca3af';
+    return `<div class="prog-row">
+      <div class="prog-label" style="font-size:11px;text-transform:uppercase;font-weight:700;">${m}</div>
+      <div class="prog-bar"><div class="prog-fill" style="width:${pct}%;background:${col};"></div></div>
+      <div class="prog-val">${c} (${pct}%)</div>
+    </div>`;
+  }).join('');
+}
+
+// ── ALERTS ───────────────────────────────────────────────────
+function renderAlerts(prods, orders) {
+  const el = document.getElementById('alertsPanel');
+  const alerts = [];
+  const lowStock = prods.filter(p=>p.is_active&&(p.stock_qty||0)<=(p.low_stock_threshold||5)&&(p.stock_qty||0)>0);
+  const outStock = prods.filter(p=>p.is_active&&(p.stock_qty||0)===0);
+  const pendPay  = orders.filter(o=>o.payment_status==='pending_verification');
+  const pendOrd  = orders.filter(o=>o.status==='pending');
+  
+  if (outStock.length)  alerts.push({text:'Out of Stock',  val:outStock.length,  bg:'#fee2e2',color:'#991b1b', link:'inventory.html'});
+  if (lowStock.length)  alerts.push({text:'Low Stock',     val:lowStock.length,  bg:'#ffedd5',color:'#9a3412', link:'inventory.html'});
+  if (pendPay.length)   alerts.push({text:'Verify Payment',val:pendPay.length,   bg:'#fef3c7',color:'#92400e', link:'orders.html'});
+  if (pendOrd.length)   alerts.push({text:'New Orders',    val:pendOrd.length,   bg:'#dbeafe',color:'#1e40af', link:'orders.html'});
+  
+  if (!alerts.length) {
+    el.innerHTML = '<div style="padding:20px;text-align:center;font-size:12px;color:var(--green-600);">✅ All clear! No alerts.</div>';
+    return;
+  }
+  el.innerHTML = alerts.map(a => `
+    <div class="alert-item" style="cursor:pointer;" onclick="window.location.href='${a.link}'">
+      <span class="alert-label">${a.text}</span>
+      <span class="alert-val" style="background:${a.bg};color:${a.color};">${a.val}</span>
+    </div>`).join('');
+}
+
+// ── RECENT ORDERS ─────────────────────────────────────────────
+function renderRecentOrders(orders) {
+  const tbody = document.getElementById('recentOrdTbody');
+  const recent = orders.slice(0, 10);
+  if (!recent.length) {
+    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:20px;color:var(--gray-300);">No orders in this period</td></tr>';
+    return;
+  }
+  tbody.innerHTML = recent.map(o => `
+    <tr onclick="window.location.href='orders.html'" style="cursor:pointer;">
+      <td style="font-weight:700;color:var(--color-primary);">${o.order_number}</td>
+      <td>${o.customer_name||'—'}</td>
+      <td style="font-weight:700;">${formatCurrency(o.total)}</td>
+      <td><span style="font-size:10px;font-weight:700;text-transform:uppercase;background:${o.payment_status==='paid'?'#d1fae5':o.payment_status==='pending_verification'?'#ffedd5':'#f3f4f6'};color:${o.payment_status==='paid'?'#065f46':o.payment_status==='pending_verification'?'#9a3412':'#6b7280'};padding:2px 7px;border-radius:99px;">${o.payment_method||'cod'}</span></td>
+      <td>${renderBadge(o.status)}</td>
+      <td style="color:var(--gray-400);">${formatDate(o.created_at)}</td>
     </tr>`).join('');
 }
 
-async function loadCategoryProgress() {
-  const cats = [
-    { name: 'Mixers & Grinders', pct: 38 },
-    { name: 'Gas Stoves', pct: 26 },
-    { name: 'Pressure Cookers', pct: 18 },
-    { name: 'Fans', pct: 11 },
-    { name: 'Others', pct: 7 },
-  ];
-  
-  const {data:_oi}=await db.from('order_items').select('product_name,total_price').limit(300);
-  const _cm={}; (_oi||[]).forEach(i=>{const k=(i.product_name||'Other').split(' ')[0]; _cm[k]=(_cm[k]||0)+(parseFloat(i.total_price)||0);});
-  const _ce=Object.entries(_cm).sort((a,b)=>b[1]-a[1]).slice(0,6); const _ct=_ce.reduce((s,[,v])=>s+v,0)||1;
-  document.getElementById('catProgress').innerHTML = cats.map(c => `
-    <div class="progress-row">
-      <div class="progress-label">${c.name}</div>
-      <div class="progress-bar"><div class="progress-fill" style="width:${c.pct}%"></div></div>
-      <div class="progress-val">${c.pct}%</div>
+// ── LOW STOCK ─────────────────────────────────────────────────
+function renderLowStock(prods) {
+  const el = document.getElementById('lowStockList');
+  const low = prods.filter(p=>p.is_active&&(p.stock_qty||0)<=(p.low_stock_threshold||5)).sort((a,b)=>(a.stock_qty||0)-(b.stock_qty||0)).slice(0,8);
+  if (!low.length) {
+    el.innerHTML = '<div style="padding:20px;text-align:center;font-size:12px;color:var(--green-600);">✅ All products are well stocked</div>';
+    return;
+  }
+  el.innerHTML = low.map(p => `
+    <div class="alert-item" onclick="window.location.href='products.html'" style="cursor:pointer;">
+      <span class="alert-label">${p.name.length>28?p.name.slice(0,28)+'…':p.name}</span>
+      <span class="alert-val" style="background:${(p.stock_qty||0)===0?'#fee2e2':'#ffedd5'};color:${(p.stock_qty||0)===0?'#991b1b':'#9a3412'};">${p.stock_qty||0} left</span>
     </div>`).join('');
 }
 
-function renderChart() {
-  const vals = [45, 62, 38, 75, 55, 82, 67, 90, 72, 88, 78, 95];
-  const months = ['Jun','Jul','Aug','Sep','Oct','Nov','Dec','Jan','Feb','Mar','Apr','May'];
-  const max = Math.max(...vals);
-  document.getElementById('revChart').innerHTML = vals.map((v, i) => `
-    <div style="flex:1;border-radius:3px 3px 0 0;background:${v === max ? 'var(--green-600)' : 'var(--green-100)'};height:${Math.round((v/max)*100)}%;min-width:6px;transition:background .2s;position:relative;cursor:pointer;" title="${months[i]}">
-      <span style="position:absolute;bottom:-18px;left:50%;transform:translateX(-50%);font-size:9px;color:var(--gray-300);white-space:nowrap;">${months[i]}</span>
-    </div>`).join('');
-}
-
-function setupRealtime() {
-  WF.realtime.onOrdersChange(async () => {
-    await loadRecentOrders();
-    await loadActivity();
-  });
-}
-
-function exportReport() {
-  toast('Generating export… check your downloads');
-}
+// ── INIT ──────────────────────────────────────────────────────
+(async () => {
+  await AdminShell.init('Dashboard', 'dashboard');
+  await loadDash();
+  // Auto-refresh every 2 minutes
+  setInterval(loadDash, 120000);
+})();
 </script>
 </body>
 </html>
