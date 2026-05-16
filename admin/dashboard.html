@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Dashboard — WellFix Admin</title>
-<link rel="icon" href="../assets/images/WELLFIX-FAVICON.png">
+<link rel="icon" href="../frontend/assets/images/WELLFIX-FAVICON.png">
 <link rel="stylesheet" href="assets/css/admin.css">
 </head>
 <body>
@@ -189,7 +189,7 @@ function renderStats(s) {
         <span class="stat-card__badge up">This Month</span>
       </div>
       <div class="stat-card__val">${formatCurrency(s.revenue)}</div>
-      <div class="stat-card__label">Monthly Revenue</div>
+      <div class="stat-card__label">Monthly Revenue <span style="font-size:10px;color:var(--gray-400);font-weight:400;">(confirmed only)</span></div>
     </div>
     <div class="stat-card">
       <div class="stat-card__top">
@@ -242,7 +242,8 @@ async function loadRecentOrders() {
 
 async function loadActivity() {
   const feed = document.getElementById('activityFeed');
-  const orders = await WF.orders.getAll({ limit: 5 });
+  const ordersRes = await WF.orders.getAll({ limit: 20 });
+  const orders = { data: (ordersRes || []).filter(o => o.status !== 'cancelled').slice(0,5) };
   const bookings = await WF.services.getAll({ status: 'new' });
   const items = [
     ...orders.slice(0, 3).map(o => ({ dot: 'green', text: `<strong>Order ${o.order_number}</strong> from ${o.customer_name} — ${formatCurrency(o.total)}`, time: formatDate(o.created_at) })),
