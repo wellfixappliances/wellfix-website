@@ -1,635 +1,770 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Products — WellFix Admin</title>
 <link rel="icon" href="../assets/images/WELLFIX-FAVICON.png">
 <link rel="stylesheet" href="assets/css/admin.css">
+<style>
+/* ── IMAGE GALLERY ─────────────────────── */
+.img-gallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:10px;margin-top:10px;}
+.img-slot{position:relative;aspect-ratio:1;border-radius:8px;overflow:hidden;border:2px solid var(--gray-150,#e5e7eb);background:var(--gray-25);cursor:pointer;transition:border-color .2s;}
+.img-slot img{width:100%;height:100%;object-fit:contain;padding:4px;}
+.img-slot.is-primary{border-color:var(--color-primary);box-shadow:0 0 0 2px rgba(3,71,50,.15);}
+.img-slot.is-primary::after{content:'★ Main';position:absolute;bottom:0;left:0;right:0;background:var(--color-primary);color:#fff;font-size:9px;font-weight:700;text-align:center;padding:2px 0;}
+.img-slot .img-actions{position:absolute;top:4px;right:4px;display:none;flex-direction:column;gap:3px;}
+.img-slot:hover .img-actions{display:flex;}
+.img-act-btn{width:22px;height:22px;border-radius:4px;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:11px;}
+.img-act-btn.star{background:#fbbf24;color:#fff;}
+.img-act-btn.del{background:#ef4444;color:#fff;}
+.img-add-slot{aspect-ratio:1;border-radius:8px;border:2px dashed var(--gray-200);background:var(--gray-25);cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;transition:all .2s;}
+.img-add-slot:hover,.img-add-slot.drag-over{border-color:var(--color-primary);background:var(--green-50);}
+.img-add-slot svg{opacity:.35;}
+.img-add-slot span{font-size:11px;color:var(--gray-400);font-weight:500;}
+.img-progress-wrap{margin-top:8px;display:none;}
+.img-progress-bar{height:4px;background:var(--gray-100);border-radius:99px;overflow:hidden;}
+.img-progress-fill{height:100%;background:var(--color-primary);border-radius:99px;transition:width .2s;width:0%;}
+.img-progress-msg{font-size:11px;color:var(--gray-400);margin-top:4px;}
+.img-url-input{margin-top:8px;display:flex;gap:6px;}
+.img-url-input input{flex:1;height:34px;border:1.5px solid var(--gray-200);border-radius:6px;padding:0 10px;font-size:12px;outline:none;}
+.img-url-input input:focus{border-color:var(--color-primary);}
+.img-url-input button{height:34px;padding:0 12px;background:var(--color-primary);color:#fff;border:none;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;}
+/* drag sort */
+.img-slot.dragging{opacity:.4;border:2px dashed var(--color-primary);}
+.img-slot.drag-target{border-color:var(--green-400);}
+/* Tab nav */
+.tab-nav{display:flex;border-bottom:1.5px solid var(--gray-100);margin-bottom:16px;gap:2px;}
+.tab-btn{padding:8px 16px;font-size:13px;font-weight:600;color:var(--gray-400);cursor:pointer;border-bottom:2px solid transparent;background:none;border-top:none;border-left:none;border-right:none;margin-bottom:-1.5px;transition:all .15s;}
+.tab-btn.is-active,.tab-btn:hover{color:var(--color-primary);}
+.tab-btn.is-active{border-bottom-color:var(--color-primary);}
+.tab-panel{display:none;}.tab-panel.is-active{display:block;}
+</style>
 </head>
 <body>
+<div class="admin-shell"><div id="adminShell"></div>
+<div class="main-wrap" id="mainWrap"><div class="page-content">
 
-<div class="admin-shell">
-  <div id="adminShell"></div>
-  <div class="main-wrap" id="mainWrap">
-    <div class="page-content">
-
-      <div class="pg-hd">
-        <div>
-          <h1>Products</h1>
-          <p id="productCount">Loading products…</p>
-        </div>
-        <div class="pg-hd__actions">
-          <button class="btn btn-secondary" onclick="importCSV()">
-            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-            Import
-          </button>
-          <button class="btn btn-primary" onclick="openProductModal()">
-            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-            Add Product
-          </button>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="filter-bar">
-          <div class="filter-search">
-            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-            <input type="search" id="searchInput" placeholder="Search products…" oninput="debounce(filterProducts, 300)()">
-          </div>
-          <select class="filter-select" id="catFilter" onchange="filterProducts()">
-            <option value="">All Categories</option>
-          </select>
-          <select class="filter-select" id="brandFilter" onchange="filterProducts()">
-            <option value="">All Brands</option>
-          </select>
-          <select class="filter-select" id="statusFilter" onchange="filterProducts()">
-            <option value="">All Status</option>
-            <option value="true">Active</option>
-            <option value="false">Inactive</option>
-          </select>
-          <div class="filter-spacer"></div>
-          <button class="btn-icon" onclick="exportProducts()" title="Export CSV">
-            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-          </button>
-        </div>
-        <div class="tbl-wrap">
-          <table>
-            <thead>
-              <tr>
-                <th><input type="checkbox" id="selectAll" onchange="toggleSelectAll(this)"></th>
-                <th>Product</th>
-                <th>Brand</th>
-                <th>Category</th>
-                <th>Price</th>
-                <th>Stock</th>
-                <th>Status</th>
-                <th>Featured</th>
-                <th style="width:80px;">Actions</th>
-              </tr>
-            </thead>
-            <tbody id="productsTbody">
-              <tr><td colspan="9" style="text-align:center;padding:30px;"><div class="spinner" style="margin:0 auto;"></div></td></tr>
-            </tbody>
-          </table>
-        </div>
-        <div class="pagination">
-          <span class="pg-info" id="pgInfo"></span>
-          <button class="pg-btn" id="pgPrev" onclick="changePage(-1)">
-            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
-          </button>
-          <div id="pgNumbers" style="display:flex;gap:4px;"></div>
-          <button class="pg-btn" id="pgNext" onclick="changePage(1)">
-            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
-          </button>
-        </div>
-      </div>
-
-    </div>
+<div class="pg-hd">
+  <div><h1>Products</h1><p id="prodCount">Loading…</p></div>
+  <div class="pg-hd__actions">
+    <button class="btn btn-outline" onclick="exportCSV()">Export</button>
+    <button class="btn btn-primary" onclick="openProductModal()">+ Add Product</button>
   </div>
 </div>
 
-<!-- ADD / EDIT PRODUCT MODAL -->
-<div class="modal-overlay" id="productModal">
-  <div class="modal" style="max-width:800px;">
-    <div class="modal-hd">
-      <div class="modal-title" id="modalTitle">Add New Product</div>
-      <button class="modal-close" onclick="closeProductModal()">
-        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-      </button>
+<div class="card">
+  <div class="filter-bar">
+    <div class="filter-search">
+      <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input type="search" id="prodSearch" placeholder="Search products…" oninput="filterProducts()">
     </div>
-    <div class="modal-body">
-      <div class="tabs">
-        <button class="tab-btn is-active" onclick="switchTab('basic', this)">Basic Info</button>
-        <button class="tab-btn" onclick="switchTab('pricing', this)">Pricing & Stock</button>
-        <button class="tab-btn" onclick="switchTab('images', this)">Images</button>
-        <button class="tab-btn" onclick="switchTab('seo', this)">SEO</button>
-      </div>
+    <select class="filter-select" id="catFilter" onchange="filterProducts()"><option value="">All Categories</option></select>
+    <select class="filter-select" id="brandFilter" onchange="filterProducts()"><option value="">All Brands</option></select>
+    <select class="filter-select" id="statusFilter" onchange="filterProducts()">
+      <option value="">All Status</option><option value="true">Active</option><option value="false">Inactive</option>
+    </select>
+  </div>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>Product</th><th>Category</th><th>Brand</th><th>Price</th><th>Stock</th><th>Status</th><th>Actions</th></tr></thead>
+      <tbody id="prodTbody"></tbody>
+    </table>
+  </div>
+  <div style="padding:10px 16px;font-size:12px;color:var(--gray-400);" id="prodPager"></div>
+</div>
 
-      <!-- Basic -->
-      <div class="tab-panel is-active" id="tab-basic">
-        <div class="form-grid" style="gap:14px;">
-          <input type="hidden" id="productId">
-          <div class="form-group" style="grid-column:1/-1;">
-            <label class="form-label">Product Name <span class="req">*</span></label>
-            <input class="form-input" id="pName" placeholder="e.g. Sujata Powermatic Plus 900W" oninput="autoSlug()">
-          </div>
-          <div class="form-group">
-            <label class="form-label">Slug</label>
-            <input class="form-input" id="pSlug" placeholder="auto-generated">
-          </div>
-          <div class="form-group">
-            <label class="form-label">SKU</label>
-            <input class="form-input" id="pSKU" placeholder="e.g. SUJ-001">
-          </div>
-          <div class="form-group">
-            <label class="form-label">Brand <span class="req">*</span></label>
-            <select class="form-select" id="pBrand"></select>
-          </div>
-          <div class="form-group">
-            <label class="form-label">Category <span class="req">*</span></label>
-            <select class="form-select" id="pCategory"></select>
-          </div>
-          <div class="form-group" style="grid-column:1/-1;">
-            <label class="form-label">Short Description</label>
-            <input class="form-input" id="pShortDesc" placeholder="One-line product summary">
-          </div>
-          <div class="form-group" style="grid-column:1/-1;">
-            <label class="form-label">Full Description</label>
-            <textarea class="form-textarea" id="pDescription" rows="4" placeholder="Detailed product description…" style="min-height:100px;"></textarea>
-          </div>
-          <div class="form-group">
-            <label class="form-label">Warranty</label>
-            <input class="form-input" id="pWarranty" placeholder="e.g. 2 Year">
-          </div>
-          <div class="form-group">
-            <label class="form-label">Badge</label>
-            <select class="form-select" id="pBadge">
-              <option value="">No Badge</option>
-              <option value="hot">🔥 Hot</option>
-              <option value="sale">🏷 Sale</option>
-              <option value="new">✨ New</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label class="form-label">Status</label>
-            <select class="form-select" id="pStatus">
-              <option value="true">Active</option>
-              <option value="false">Inactive</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label class="form-label">Tags (comma separated)</label>
-            <input class="form-input" id="pTags" placeholder="mixer, grinder, kitchen">
-          </div>
-          <div style="display:flex;gap:20px;align-items:center;grid-column:1/-1;">
-            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;font-weight:500;color:var(--gray-700);">
-              <input type="checkbox" id="pFeatured"> Featured Product
-            </label>
-            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;font-weight:500;color:var(--gray-700);">
-              <input type="checkbox" id="pTrending"> Trending
-            </label>
-          </div>
-        </div>
-      </div>
-
-      <!-- Pricing -->
-      <div class="tab-panel" id="tab-pricing">
-        <div class="form-grid form-2" style="gap:14px;">
-          <div class="form-group">
-            <label class="form-label">Selling Price (₹) <span class="req">*</span></label>
-            <input class="form-input" type="number" id="pPrice" placeholder="3499" min="0">
-          </div>
-          <div class="form-group">
-            <label class="form-label">MRP / Original Price (₹)</label>
-            <input class="form-input" type="number" id="pMRP" placeholder="4500" min="0">
-          </div>
-          <div class="form-group">
-            <label class="form-label">Cost Price (₹)</label>
-            <input class="form-input" type="number" id="pCostPrice" placeholder="2800" min="0">
-          </div>
-          <div class="form-group">
-            <label class="form-label">Discount %</label>
-            <input class="form-input" type="number" id="pDiscount" placeholder="Auto-calculated" readonly style="background:var(--gray-50);cursor:not-allowed;">
-          </div>
-          <div class="form-group">
-            <label class="form-label">Stock Quantity <span class="req">*</span></label>
-            <input class="form-input" type="number" id="pStock" placeholder="50" min="0">
-          </div>
-          <div class="form-group">
-            <label class="form-label">Low Stock Alert Threshold</label>
-            <input class="form-input" type="number" id="pLowStock" placeholder="5" min="0">
-            <div class="form-hint">Alert when stock falls to this level</div>
-          </div>
-          <div class="form-group">
-            <label class="form-label">Weight (kg)</label>
-            <input class="form-input" type="number" id="pWeight" placeholder="2.5" step="0.1">
-          </div>
-        </div>
-        <div style="background:var(--green-50);border:1.5px solid var(--green-100);border-radius:var(--r-md);padding:14px;margin-top:16px;" id="marginCalc" style="display:none;">
-          <div style="font-size:12px;font-weight:700;color:var(--green-700);margin-bottom:6px;">Margin Calculator</div>
-          <div style="display:flex;gap:24px;font-size:13px;color:var(--gray-600);">
-            <div>Margin: <strong id="calcMargin" style="color:var(--green-700);">—</strong></div>
-            <div>Margin %: <strong id="calcMarginPct" style="color:var(--green-700);">—</strong></div>
-            <div>Discount: <strong id="calcDiscount" style="color:var(--red-600);">—</strong></div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Images -->
-      <div class="tab-panel" id="tab-images">
-        <div class="alert alert-warning" style="margin-bottom:14px;">
-          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-          First image uploaded will be the main product image. Recommended: 800×800px, WebP or JPG.
-        </div>
-        <div class="img-gallery" id="imgGallery">
-          <div class="img-slot img-add" id="imgAdd" onclick="document.getElementById('imgFileInput').click()">
-            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-            <span>Add Image</span>
-          </div>
-        </div>
-        <input type="file" id="imgFileInput" accept="image/*" multiple style="display:none;" onchange="handleImageUpload(this)">
-        <div style="margin-top:12px;font-size:12px;color:var(--gray-400);">Click an image to set as main. Click × to remove.</div>
-        <div id="imgUploadProgress" style="display:none;margin-top:10px;">
-          <div style="font-size:12px;color:var(--green-700);margin-bottom:4px;" id="imgUploadMsg">Uploading…</div>
-          <div style="height:4px;background:var(--gray-100);border-radius:99px;overflow:hidden;">
-            <div id="imgProgressBar" style="height:100%;background:var(--green-600);width:0%;transition:width .3s;border-radius:99px;"></div>
-          </div>
-        </div>
-      </div>
-
-      <!-- SEO -->
-      <div class="tab-panel" id="tab-seo">
-        <div class="form-grid" style="gap:14px;">
-          <div class="form-group">
-            <label class="form-label">SEO Title</label>
-            <input class="form-input" id="pSEOTitle" placeholder="Leave blank to use product name">
-            <div class="form-hint">Recommended: 50–60 characters</div>
-          </div>
-          <div class="form-group">
-            <label class="form-label">SEO Description</label>
-            <textarea class="form-textarea" id="pSEODesc" placeholder="Meta description for search engines…" style="min-height:80px;"></textarea>
-            <div class="form-hint">Recommended: 150–160 characters</div>
-          </div>
-        </div>
-      </div>
-
+<!-- PRODUCT MODAL -->
+<div class="modal-overlay" id="prodOverlay" style="display:none;"></div>
+<div class="modal" id="prodModal" style="display:none;max-width:760px;max-height:90vh;overflow-y:auto;">
+  <div class="modal-hd">
+    <h3 id="prodModalTitle">Add Product</h3>
+    <button class="modal-close" onclick="closeProdModal()">✕</button>
+  </div>
+  <div class="modal-body">
+    <!-- TABS -->
+    <div class="tab-nav">
+      <button class="tab-btn is-active" onclick="switchTab('basic',this)">Basic Info</button>
+      <button class="tab-btn" onclick="switchTab('images',this)">Images</button>
+      <button class="tab-btn" onclick="switchTab('pricing',this)">Pricing & Stock</button>
+      <button class="tab-btn" onclick="switchTab('details',this)">Details</button>
+      <button class="tab-btn" onclick="switchTab('seo',this)">SEO</button>
     </div>
-    <div class="modal-ft">
-      <button class="btn btn-secondary" onclick="closeProductModal()">Cancel</button>
-      <button class="btn btn-secondary" onclick="saveProduct('draft')">Save Draft</button>
-      <button class="btn btn-primary" id="saveProductBtn" onclick="saveProduct('active')">
-        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
-        Publish Product
-      </button>
+
+    <!-- BASIC INFO -->
+    <div class="tab-panel is-active" id="tab-basic">
+      <div class="form-grid form-2">
+        <div class="form-group" style="grid-column:1/-1">
+          <label class="form-label">Product Name *</label>
+          <input class="form-input" id="pName" placeholder="e.g. Sujata Powermatic Plus 900W" oninput="autoSlug()">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Category</label>
+          <select class="form-input" id="pCat"></select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Brand</label>
+          <select class="form-input" id="pBrand"></select>
+        </div>
+        <div class="form-group" style="grid-column:1/-1">
+          <label class="form-label">Short Description</label>
+          <textarea class="form-textarea" id="pShortDesc" placeholder="Brief product summary…" style="min-height:60px;"></textarea>
+        </div>
+        <div class="form-group" style="grid-column:1/-1">
+          <label class="form-label">Full Description</label>
+          <textarea class="form-textarea" id="pDesc" placeholder="Full product description…" style="min-height:100px;"></textarea>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Badge</label>
+          <select class="form-input" id="pBadge">
+            <option value="">None</option>
+            <option value="hot">🔥 Hot</option>
+            <option value="sale">🏷️ Sale</option>
+            <option value="new">✨ New</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Warranty</label>
+          <input class="form-input" id="pWarranty" placeholder="e.g. 2 Year Manufacturer Warranty">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Status</label>
+          <select class="form-input" id="pStatus">
+            <option value="true">Active (visible on website)</option>
+            <option value="false">Inactive (hidden)</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Featured Product</label>
+          <select class="form-input" id="pFeatured">
+            <option value="false">No</option>
+            <option value="true">Yes — show on homepage</option>
+          </select>
+        </div>
+      </div>
     </div>
+
+    <!-- IMAGES TAB -->
+    <div class="tab-panel" id="tab-images">
+      <div style="background:var(--green-50);border:1px solid var(--green-100);border-radius:8px;padding:10px 14px;margin-bottom:14px;font-size:12px;color:var(--green-700);">
+        <strong>✅ Auto-processed:</strong> All uploads auto-converted to WebP, resized to 800×800px, center-cropped. Drag images to reorder. Click ★ to set featured image.
+      </div>
+
+      <!-- Drop zone + gallery -->
+      <div class="img-gallery" id="imgGallery">
+        <!-- populated by renderImageGallery() -->
+      </div>
+      <div class="img-add-slot" id="imgDropZone" onclick="document.getElementById('imgFileInput').click()"
+        ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event)">
+        <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" width="28" height="28"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
+        <span>Drop images here or click to upload</span>
+        <span style="font-size:10px;">JPG, PNG, WebP, AVIF, HEIC — max 5MB each</span>
+      </div>
+      <input type="file" id="imgFileInput" accept="image/*" multiple style="display:none;" onchange="handleImageUpload(this)">
+
+      <!-- Progress -->
+      <div class="img-progress-wrap" id="imgProgressWrap">
+        <div class="img-progress-bar"><div class="img-progress-fill" id="imgProgressFill"></div></div>
+        <div class="img-progress-msg" id="imgProgressMsg">Uploading…</div>
+      </div>
+
+      <!-- URL input fallback -->
+      <div style="margin-top:14px;padding-top:14px;border-top:1px solid var(--gray-100);">
+        <div style="font-size:11px;font-weight:700;color:var(--gray-400);text-transform:uppercase;letter-spacing:.04em;margin-bottom:6px;">Or add by URL</div>
+        <div class="img-url-input">
+          <input type="url" id="imgUrlInput" placeholder="https://example.com/product-image.jpg">
+          <button onclick="addImageByUrl()">Add URL</button>
+        </div>
+      </div>
+
+      <!-- Alt text for selected -->
+      <div id="imgAltWrap" style="display:none;margin-top:14px;padding-top:14px;border-top:1px solid var(--gray-100);">
+        <div style="font-size:11px;font-weight:700;color:var(--gray-400);text-transform:uppercase;letter-spacing:.04em;margin-bottom:6px;">Selected Image — Alt Text & SEO</div>
+        <div class="form-grid form-2">
+          <div class="form-group"><label class="form-label">Alt Text</label><input class="form-input" id="imgAltText" placeholder="Describe the image for SEO" oninput="updateSelectedImgMeta()"></div>
+          <div class="form-group"><label class="form-label">Image Title</label><input class="form-input" id="imgSeoTitle" placeholder="SEO title for this image" oninput="updateSelectedImgMeta()"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PRICING & STOCK -->
+    <div class="tab-panel" id="tab-pricing">
+      <div class="form-grid form-2">
+        <div class="form-group"><label class="form-label">Selling Price (₹) *</label><input class="form-input" type="number" id="pPrice" placeholder="0"></div>
+        <div class="form-group"><label class="form-label">MRP / Original Price (₹)</label><input class="form-input" type="number" id="pMrp" placeholder="0"></div>
+        <div class="form-group"><label class="form-label">Cost Price (₹)</label><input class="form-input" type="number" id="pCost" placeholder="0"></div>
+        <div class="form-group"><label class="form-label">Tax %</label><input class="form-input" type="number" id="pTax" placeholder="18" value="18"></div>
+        <div class="form-group"><label class="form-label">Stock Quantity</label><input class="form-input" type="number" id="pStock" placeholder="0"></div>
+        <div class="form-group"><label class="form-label">Low Stock Alert Below</label><input class="form-input" type="number" id="pLowStock" placeholder="5" value="5"></div>
+        <div class="form-group"><label class="form-label">SKU</label><input class="form-input" id="pSku" placeholder="WF-SKU-001"></div>
+        <div class="form-group"><label class="form-label">Weight (kg)</label><input class="form-input" type="number" id="pWeight" placeholder="0.5" step="0.01"></div>
+        <div class="form-group">
+          <label class="form-label">COD Available</label>
+          <select class="form-input" id="pCod"><option value="true">Yes</option><option value="false">No</option></select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">UPI Payment</label>
+          <select class="form-input" id="pUpi"><option value="true">Yes</option><option value="false">No</option></select>
+        </div>
+      </div>
+    </div>
+
+    <!-- DETAILS -->
+    <div class="tab-panel" id="tab-details">
+      <div class="form-group" style="margin-bottom:12px;">
+        <label class="form-label">Tags (comma separated)</label>
+        <input class="form-input" id="pTags" placeholder="mixer, kitchen, 900w, sujata">
+      </div>
+      <div class="form-group" style="margin-bottom:12px;">
+        <label class="form-label">Specifications (one per line: Key: Value)</label>
+        <textarea class="form-textarea" id="pSpecs" placeholder="Power: 900W&#10;Jars: 3&#10;Color: White&#10;Voltage: 230V" style="min-height:120px;font-family:monospace;"></textarea>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Sort Order (lower = shown first)</label>
+        <input class="form-input" type="number" id="pSort" placeholder="0" value="0">
+      </div>
+    </div>
+
+    <!-- SEO -->
+    <div class="tab-panel" id="tab-seo">
+      <div class="form-grid">
+        <div class="form-group"><label class="form-label">URL Slug</label><input class="form-input" id="pSlug" placeholder="sujata-powermatic-plus-900w"></div>
+        <div class="form-group"><label class="form-label">Meta Title</label><input class="form-input" id="pMetaTitle" placeholder="Buy Sujata 900W Mixer in Kerala…"></div>
+        <div class="form-group"><label class="form-label">Meta Description</label><textarea class="form-textarea" id="pMetaDesc" placeholder="SEO description…" style="min-height:80px;"></textarea></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-ft">
+    <button class="btn btn-outline" onclick="closeProdModal()">Cancel</button>
+    <button class="btn" id="prodDeleteBtn" style="background:var(--red-100);color:var(--red-600);display:none;" onclick="deleteProduct()">Delete</button>
+    <button class="btn btn-primary" onclick="saveProduct()">
+      <svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" width="13" height="13"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/></svg>
+      Save Product
+    </button>
   </div>
 </div>
 
+</div></div></div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="../backend/config/supabase.js"></script>
 <script src="assets/js/shell.js"></script>
 <script>
-let allProducts = [], brands = [], categories = [];
-let currentPage = 1; const perPage = 15;
-let editingImages = [];
-let editingProductId = null;
+'use strict';
 
+// ── STATE ──────────────────────────────────────────────────────
+let allProducts = [], allCats = [], allBrands = [];
+let editingProductId = null;
+let editingImages = [];       // [{url, is_primary, sort_order, alt_text, seo_title}]
+let selectedImgIdx = null;
+let dragSrcIdx = null;
+const BUCKET = 'products';    // Supabase storage bucket name
+
+// ── INIT ───────────────────────────────────────────────────────
 (async () => {
-  await AdminShell.init('Products');
-  await Promise.all([loadFilters(), loadProducts()]);
-  // Check if coming from dashboard "Add Product" button
-  if (new URLSearchParams(location.search).get('action') === 'add') {
-    openProductModal();
-  }
+  await AdminShell.init('Products', 'products');
+  await Promise.all([loadCats(), loadBrands(), loadProducts()]);
 })();
 
-async function loadFilters() {
-  [brands, categories] = await Promise.all([WF.brands.getAll(), WF.categories.getAll()]);
-  const brandSel = document.getElementById('brandFilter');
-  const catSel = document.getElementById('catFilter');
-  const pBrand = document.getElementById('pBrand');
-  const pCat = document.getElementById('pCategory');
-  brands.forEach(b => {
-    brandSel.innerHTML += `<option value="${b.id}">${b.name}</option>`;
-    pBrand.innerHTML += `<option value="${b.id}">${b.name}</option>`;
+async function loadCats() {
+  const { data } = await db.from('categories').select('id,name').eq('is_active', true).order('sort_order');
+  allCats = data || [];
+  const sel = document.getElementById('catFilter');
+  const pSel = document.getElementById('pCat');
+  allCats.forEach(c => {
+    sel.innerHTML += `<option value="${c.id}">${c.name}</option>`;
+    pSel.innerHTML += `<option value="${c.id}">${c.name}</option>`;
   });
-  pBrand.innerHTML = '<option value="">Select Brand</option>' + pBrand.innerHTML;
-  categories.forEach(c => {
-    catSel.innerHTML += `<option value="${c.id}">${c.name}</option>`;
-    pCat.innerHTML += `<option value="${c.id}">${c.name}</option>`;
+}
+
+async function loadBrands() {
+  const { data } = await db.from('brands').select('id,name').eq('is_active', true).order('name');
+  allBrands = data || [];
+  const sel = document.getElementById('brandFilter');
+  const pSel = document.getElementById('pBrand');
+  allBrands.forEach(b => {
+    sel.innerHTML += `<option value="${b.id}">${b.name}</option>`;
+    pSel.innerHTML += `<option value="${b.id}">${b.name}</option>`;
   });
-  pCat.innerHTML = '<option value="">Select Category</option>' + pCat.innerHTML;
 }
 
 async function loadProducts() {
-  document.getElementById('productsTbody').innerHTML = `<tr><td colspan="9" style="text-align:center;padding:30px;"><div class="spinner" style="margin:0 auto;"></div></td></tr>`;
-  allProducts = await WF.products.getAll({ active: null });
-  document.getElementById('productCount').textContent = `${allProducts.length} products total`;
+  document.getElementById('prodTbody').innerHTML = skeletonRows(7, 8);
+  const { data, count } = await db.from('products')
+    .select('id,name,price,mrp,stock_qty,is_active,badge,category:categories(name),brand:brands(name),images:product_images(url,is_primary)', { count: 'exact' })
+    .order('sort_order', { ascending: true })
+    .order('created_at', { ascending: false })
+    .limit(200);
+  allProducts = data || [];
+  document.getElementById('prodCount').textContent = `${allProducts.length} products`;
   filterProducts();
 }
 
 function filterProducts() {
-  const q = document.getElementById('searchInput').value.toLowerCase();
+  const q = document.getElementById('prodSearch').value.toLowerCase();
   const cat = document.getElementById('catFilter').value;
   const brand = document.getElementById('brandFilter').value;
   const status = document.getElementById('statusFilter').value;
-  let filtered = allProducts.filter(p => {
-    if (q && !p.name.toLowerCase().includes(q) && !p.brand?.name.toLowerCase().includes(q)) return false;
+  let list = allProducts.filter(p => {
     if (cat && p.category_id !== cat) return false;
     if (brand && p.brand_id !== brand) return false;
     if (status !== '' && String(p.is_active) !== status) return false;
+    if (q && !p.name?.toLowerCase().includes(q)) return false;
     return true;
   });
-  renderProductsTable(filtered);
+  renderProducts(list);
 }
 
-function renderProductsTable(products) {
-  const start = (currentPage - 1) * perPage;
-  const page = products.slice(start, start + perPage);
-  const tbody = document.getElementById('productsTbody');
-  if (!page.length) {
-    tbody.innerHTML = `<tr><td colspan="9" style="text-align:center;padding:30px;color:var(--gray-300);">No products found</td></tr>`;
+function renderProducts(list) {
+  const tbody = document.getElementById('prodTbody');
+  if (!list.length) {
+    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:30px;color:var(--gray-400);">No products found</td></tr>';
     return;
   }
-  tbody.innerHTML = page.map(p => {
-    const primaryImg = p.images?.find(i => i.is_primary) || p.images?.[0];
-    const stock = p.stock_qty || 0;
-    const lowThresh = p.low_stock_threshold || 5;
-    const pct = Math.min(100, Math.round((stock / 60) * 100));
-    const lvl = pct > 40 ? 'high' : pct > 15 ? 'medium' : 'low';
-    const disc = p.mrp && p.price ? Math.round(((p.mrp - p.price) / p.mrp) * 100) : 0;
+  tbody.innerHTML = list.map(p => {
+    const img = p.images?.find(i => i.is_primary)?.url || p.images?.[0]?.url || '';
+    const fmt = n => n ? '₹' + Number(n).toLocaleString('en-IN') : '—';
     return `<tr>
-      <td><input type="checkbox" class="row-check" value="${p.id}"></td>
       <td>
         <div style="display:flex;align-items:center;gap:10px;">
-          ${primaryImg ? `<img src="${primaryImg.url}" class="td-img" alt="${p.name}">` : `<div class="td-img" style="display:flex;align-items:center;justify-content:center;font-size:18px;">📦</div>`}
+          <div style="width:42px;height:42px;border-radius:6px;overflow:hidden;background:var(--gray-50);border:1px solid var(--gray-100);flex-shrink:0;">
+            ${img ? `<img src="${img}" style="width:100%;height:100%;object-fit:contain;padding:3px;">` : '<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:18px;">📦</div>'}
+          </div>
           <div>
-            <div class="td-bold" style="max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${p.name}</div>
-            ${p.badge ? `<span class="badge badge-pending" style="font-size:9px;">${p.badge.toUpperCase()}</span>` : ''}
+            <div class="td-bold">${p.name}</div>
+            ${p.badge ? `<span style="font-size:10px;background:var(--green-50);color:var(--green-700);padding:1px 6px;border-radius:99px;font-weight:600;">${p.badge.toUpperCase()}</span>` : ''}
           </div>
         </div>
       </td>
-      <td>${p.brand?.name || '—'}</td>
-      <td>${p.category?.name || '—'}</td>
+      <td style="color:var(--gray-500);">${p.category?.name || '—'}</td>
+      <td style="color:var(--gray-500);">${p.brand?.name || '—'}</td>
       <td>
-        <div style="font-weight:700;">${formatCurrency(p.price)}</div>
-        ${disc > 0 ? `<div style="font-size:11px;color:var(--red-500);">-${disc}% off</div>` : ''}
+        <div class="td-bold">${fmt(p.price)}</div>
+        ${p.mrp && p.mrp > p.price ? `<div style="font-size:11px;text-decoration:line-through;color:var(--gray-400);">${fmt(p.mrp)}</div>` : ''}
       </td>
-      <td>
-        <div style="display:flex;align-items:center;gap:7px;">
-          <div class="stock-bar"><div class="stock-fill ${lvl}" style="width:${pct}%"></div></div>
-          <span style="font-size:12px;font-weight:600;">${stock}</span>
-        </div>
-      </td>
+      <td><span style="font-weight:700;color:${p.stock_qty <= 5 ? 'var(--red-500)' : 'inherit'}">${p.stock_qty ?? '—'}</span></td>
       <td>${renderBadge(p.is_active ? 'active' : 'inactive')}</td>
-      <td>
-        <div style="display:flex;gap:6px;">
-          <label class="toggle"><input type="checkbox" ${p.is_featured ? 'checked' : ''} onchange="toggleFeatured('${p.id}', this.checked)"><span class="toggle-track"></span></label>
-        </div>
-      </td>
-      <td>${actionBtns(`editProduct('${p.id}')`, `deleteProduct('${p.id}', '${p.name.replace(/'/g, "\\'")}')`)}</td>
+      <td>${actionBtns(`editProduct('${p.id}')`, `confirmDeleteProduct('${p.id}')`)}</td>
     </tr>`;
   }).join('');
-
-  // Pagination
-  const total = allProducts.length;
-  document.getElementById('pgInfo').textContent = `Showing ${start + 1}–${Math.min(start + perPage, total)} of ${total}`;
-  const pages = Math.ceil(total / perPage);
-  document.getElementById('pgNumbers').innerHTML = Array.from({length: Math.min(5, pages)}, (_, i) => {
-    const pg = i + 1;
-    return `<button class="pg-btn ${pg === currentPage ? 'is-active' : ''}" onclick="goPage(${pg})">${pg}</button>`;
-  }).join('');
 }
 
-function changePage(dir) { currentPage = Math.max(1, currentPage + dir); filterProducts(); }
-function goPage(pg) { currentPage = pg; filterProducts(); }
-
-// ── Product Modal ─────────────────────────────────────────────
-function openProductModal(productData = null) {
-  editingProductId = productData?.id || null;
-  editingImages = [];
-  document.getElementById('modalTitle').textContent = productData ? 'Edit Product' : 'Add New Product';
-  clearProductForm();
-  if (productData) fillProductForm(productData);
-  switchTab('basic', document.querySelector('.tab-btn'));
-  document.getElementById('productModal').classList.add('is-open');
-  document.body.style.overflow = 'hidden';
-}
-
-function closeProductModal() {
-  document.getElementById('productModal').classList.remove('is-open');
-  document.body.style.overflow = '';
+// ── MODAL ──────────────────────────────────────────────────────
+function openProductModal(id = null) {
   editingProductId = null;
   editingImages = [];
-}
-document.getElementById('productModal').addEventListener('click', e => {
-  if (e.target === e.currentTarget) closeProductModal();
-});
-
-function clearProductForm() {
-  ['pName','pSlug','pSKU','pShortDesc','pDescription','pWarranty','pSEOTitle','pSEODesc','pTags','pPrice','pMRP','pCostPrice','pStock','pLowStock','pWeight'].forEach(id => {
-    const el = document.getElementById(id);
-    if (el) el.value = '';
-  });
-  document.getElementById('productId').value = '';
-  document.getElementById('pBadge').value = '';
-  document.getElementById('pStatus').value = 'true';
-  document.getElementById('pFeatured').checked = false;
-  document.getElementById('pTrending').checked = false;
-  document.getElementById('imgGallery').innerHTML = `<div class="img-slot img-add" id="imgAdd" onclick="document.getElementById('imgFileInput').click()"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg><span>Add Image</span></div>`;
-}
-
-function fillProductForm(p) {
-  document.getElementById('productId').value = p.id;
-  document.getElementById('pName').value = p.name || '';
-  document.getElementById('pSlug').value = p.slug || '';
-  document.getElementById('pSKU').value = p.sku || '';
-  document.getElementById('pShortDesc').value = p.short_description || '';
-  document.getElementById('pDescription').value = p.description || '';
-  document.getElementById('pWarranty').value = p.warranty || '';
-  document.getElementById('pBadge').value = p.badge || '';
-  document.getElementById('pStatus').value = String(p.is_active !== false);
-  document.getElementById('pFeatured').checked = p.is_featured || false;
-  document.getElementById('pTrending').checked = p.is_trending || false;
-  document.getElementById('pPrice').value = p.price || '';
-  document.getElementById('pMRP').value = p.mrp || '';
-  document.getElementById('pCostPrice').value = p.cost_price || '';
-  document.getElementById('pStock').value = p.stock_qty || '';
-  document.getElementById('pLowStock').value = p.low_stock_threshold || '';
-  document.getElementById('pWeight').value = p.weight || '';
-  document.getElementById('pSEOTitle').value = p.seo_title || '';
-  document.getElementById('pSEODesc').value = p.seo_description || '';
-  document.getElementById('pTags').value = (p.tags || []).join(', ');
-  if (p.brand_id) document.getElementById('pBrand').value = p.brand_id;
-  if (p.category_id) document.getElementById('pCategory').value = p.category_id;
-  // Load images
-  editingImages = p.images || [];
+  selectedImgIdx = null;
+  clearForm();
   renderImageGallery();
-}
-
-function renderImageGallery() {
-  const gallery = document.getElementById('imgGallery');
-  const addSlot = `<div class="img-slot img-add" id="imgAdd" onclick="document.getElementById('imgFileInput').click()"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg><span>Add Image</span></div>`;
-  gallery.innerHTML = editingImages.map((img, i) => `
-    <div class="img-slot ${img.is_primary ? 'is-primary' : ''}" onclick="setPrimaryImage(${i})" data-index="${i}">
-      <img src="${img.url}" alt="Product image">
-      <div class="img-slot__del" onclick="removeImage(event, ${i})">×</div>
-    </div>`).join('') + (editingImages.length < 6 ? addSlot : '');
-}
-
-function setPrimaryImage(index) {
-  editingImages = editingImages.map((img, i) => ({ ...img, is_primary: i === index }));
-  renderImageGallery();
-}
-
-function removeImage(e, index) {
-  e.stopPropagation();
-  editingImages.splice(index, 1);
-  if (!editingImages.find(i => i.is_primary) && editingImages.length) editingImages[0].is_primary = true;
-  renderImageGallery();
-}
-
-async function handleImageUpload(input) {
-  const files = Array.from(input.files);
-  if (!files.length) return;
-  const progress = document.getElementById('imgUploadProgress');
-  const progressBar = document.getElementById('imgProgressBar');
-  const msg = document.getElementById('imgUploadMsg');
-  progress.style.display = 'block';
-  for (let i = 0; i < files.length; i++) {
-    msg.textContent = `Uploading ${i + 1} of ${files.length}…`;
-    progressBar.style.width = `${Math.round(((i) / files.length) * 100)}%`;
-    try {
-      const pf=await processImage(files[i]);
-        const { url } = await uploadFile(pf, 'products');
-      editingImages.push({ url, is_primary: editingImages.length === 0, sort_order: editingImages.length });
-      renderImageGallery();
-    } catch (err) {
-      toast('Upload failed: ' + err.message, true);
-    }
-  }
-  progressBar.style.width = '100%';
-  msg.textContent = 'Upload complete!';
-  setTimeout(() => { progress.style.display = 'none'; progressBar.style.width = '0%'; }, 1500);
-  input.value = '';
-}
-
-function autoSlug() {
-  const name = document.getElementById('pName').value;
-  if (!editingProductId) document.getElementById('pSlug').value = slugify(name);
-}
-
-// Price calculations
-document.addEventListener('input', e => {
-  if (['pPrice', 'pMRP', 'pCostPrice'].includes(e.target.id)) {
-    const price = parseFloat(document.getElementById('pPrice').value) || 0;
-    const mrp = parseFloat(document.getElementById('pMRP').value) || 0;
-    const cost = parseFloat(document.getElementById('pCostPrice').value) || 0;
-    if (price && mrp) {
-      const disc = Math.round(((mrp - price) / mrp) * 100);
-      document.getElementById('pDiscount').value = disc + '%';
-    }
-    if (price && cost) {
-      const margin = price - cost;
-      const marginPct = Math.round((margin / price) * 100);
-      const el = document.getElementById('marginCalc');
-      el.style.display = 'block';
-      document.getElementById('calcMargin').textContent = formatCurrency(margin);
-      document.getElementById('calcMarginPct').textContent = marginPct + '%';
-      document.getElementById('calcDiscount').textContent = mrp ? Math.round(((mrp - price) / mrp) * 100) + '%' : '—';
-    }
-  }
-});
-
-async function saveProduct(status) {
-  const name = document.getElementById('pName').value.trim();
-  const price = parseFloat(document.getElementById('pPrice').value);
-  const brand_id = document.getElementById('pBrand').value;
-  const category_id = document.getElementById('pCategory').value;
-  if (!name) { toast('Product name is required', true); switchTab('basic', document.querySelectorAll('.tab-btn')[0]); return; }
-  if (!price || price <= 0) { toast('Valid price is required', true); switchTab('pricing', document.querySelectorAll('.tab-btn')[1]); return; }
-
-  const btn = document.getElementById('saveProductBtn');
-  btn.disabled = true; btn.innerHTML = '<div class="spinner" style="width:14px;height:14px;"></div> Saving…';
-
-  const productData = {
-    name,
-    slug: document.getElementById('pSlug').value || slugify(name),
-    sku: document.getElementById('pSKU').value || null,
-    short_description: document.getElementById('pShortDesc').value || null,
-    description: document.getElementById('pDescription').value || null,
-    warranty: document.getElementById('pWarranty').value || null,
-    badge: document.getElementById('pBadge').value || null,
-    is_active: status === 'active' ? true : (document.getElementById('pStatus').value === 'true'),
-    is_featured: document.getElementById('pFeatured').checked,
-    is_trending: document.getElementById('pTrending').checked,
-    price,
-    mrp: parseFloat(document.getElementById('pMRP').value) || null,
-    cost_price: parseFloat(document.getElementById('pCostPrice').value) || null,
-    stock_qty: parseInt(document.getElementById('pStock').value) || 0,
-    low_stock_threshold: parseInt(document.getElementById('pLowStock').value) || 5,
-    weight: parseFloat(document.getElementById('pWeight').value) || null,
-    brand_id: brand_id || null,
-    category_id: category_id || null,
-    seo_title: document.getElementById('pSEOTitle').value || null,
-    seo_description: document.getElementById('pSEODesc').value || null,
-    tags: document.getElementById('pTags').value.split(',').map(t => t.trim()).filter(Boolean),
-  };
-
-  try {
-    let savedProduct;
-    if (editingProductId) {
-      savedProduct = await WF.products.update(editingProductId, productData);
-      // Sync images
-      await db.from('product_images').delete().eq('product_id', editingProductId);
-    } else {
-      savedProduct = await WF.products.create(productData);
-    }
-    // Save images
-    for (const img of editingImages) {
-      await db.from('product_images').insert({
-        product_id: savedProduct.id,
-        url: img.url,
-        is_primary: img.is_primary || false,
-        sort_order: img.sort_order || 0
-      });
-    }
-    toast(editingProductId ? 'Product updated!' : 'Product published!');
-    closeProductModal();
-    await loadProducts();
-  } catch (err) {
-    toast('Error: ' + err.message, true);
-  } finally {
-    btn.disabled = false;
-    btn.innerHTML = '<svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Publish Product';
-  }
+  document.getElementById('prodModalTitle').textContent = 'Add Product';
+  document.getElementById('prodDeleteBtn').style.display = 'none';
+  document.getElementById('prodOverlay').style.display = 'block';
+  document.getElementById('prodModal').style.display = 'block';
+  switchTab('basic', document.querySelector('.tab-btn'));
 }
 
 async function editProduct(id) {
-  const product = await WF.products.getById(id);
-  openProductModal(product);
+  const { data: p } = await db.from('products')
+    .select('*, images:product_images(id,url,is_primary,sort_order,alt_text,seo_title), category:categories(id,name), brand:brands(id,name)')
+    .eq('id', id).single();
+  if (!p) return;
+  editingProductId = id;
+  editingImages = (p.images || []).sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0));
+  selectedImgIdx = null;
+
+  document.getElementById('pName').value = p.name || '';
+  document.getElementById('pShortDesc').value = p.short_description || '';
+  document.getElementById('pDesc').value = p.description || '';
+  document.getElementById('pCat').value = p.category_id || '';
+  document.getElementById('pBrand').value = p.brand_id || '';
+  document.getElementById('pBadge').value = p.badge || '';
+  document.getElementById('pWarranty').value = p.warranty || '';
+  document.getElementById('pStatus').value = String(p.is_active !== false);
+  document.getElementById('pFeatured').value = String(!!p.is_featured);
+  document.getElementById('pPrice').value = p.price || '';
+  document.getElementById('pMrp').value = p.mrp || '';
+  document.getElementById('pCost').value = p.cost_price || '';
+  document.getElementById('pTax').value = p.tax_percent || 18;
+  document.getElementById('pStock').value = p.stock_qty ?? '';
+  document.getElementById('pLowStock').value = p.low_stock_threshold || 5;
+  document.getElementById('pSku').value = p.sku || '';
+  document.getElementById('pWeight').value = p.weight || '';
+  document.getElementById('pCod').value = String(p.cod_enabled !== false);
+  document.getElementById('pUpi').value = String(p.upi_enabled !== false);
+  document.getElementById('pTags').value = (p.tags || []).join(', ');
+  document.getElementById('pSlug').value = p.slug || '';
+  document.getElementById('pMetaTitle').value = p.meta_title || '';
+  document.getElementById('pMetaDesc').value = p.meta_description || '';
+  document.getElementById('pSort').value = p.sort_order || 0;
+  if (p.specifications) {
+    document.getElementById('pSpecs').value = Object.entries(p.specifications).map(([k, v]) => `${k}: ${v}`).join('\n');
+  }
+
+  renderImageGallery();
+  document.getElementById('prodModalTitle').textContent = 'Edit Product';
+  document.getElementById('prodDeleteBtn').style.display = 'block';
+  document.getElementById('prodOverlay').style.display = 'block';
+  document.getElementById('prodModal').style.display = 'block';
+  switchTab('basic', document.querySelector('.tab-btn'));
 }
 
-async function deleteProduct(id, name) {
-  if (!confirmDialog(`Delete "${name}"? This cannot be undone.`)) return;
+function closeProdModal() {
+  document.getElementById('prodOverlay').style.display = 'none';
+  document.getElementById('prodModal').style.display = 'none';
+}
+
+function clearForm() {
+  ['pName','pShortDesc','pDesc','pWarranty','pPrice','pMrp','pCost','pStock','pSku','pWeight','pTags','pSlug','pMetaTitle','pMetaDesc','pSpecs'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = '';
+  });
+  document.getElementById('pBadge').value = '';
+  document.getElementById('pStatus').value = 'true';
+  document.getElementById('pFeatured').value = 'false';
+  document.getElementById('pTax').value = 18;
+  document.getElementById('pLowStock').value = 5;
+  document.getElementById('pSort').value = 0;
+}
+
+function autoSlug() {
+  if (!editingProductId) {
+    document.getElementById('pSlug').value = slugify(document.getElementById('pName').value);
+  }
+}
+
+// ── IMAGE GALLERY ──────────────────────────────────────────────
+function renderImageGallery() {
+  const gallery = document.getElementById('imgGallery');
+  if (!editingImages.length) {
+    gallery.innerHTML = '';
+    return;
+  }
+  gallery.innerHTML = editingImages.map((img, i) => `
+    <div class="img-slot ${img.is_primary ? 'is-primary' : ''}"
+      draggable="true"
+      ondragstart="dragStart(${i})"
+      ondragover="dragOver(event, ${i})"
+      ondrop="dragDrop(event, ${i})"
+      ondragend="dragEnd()"
+      onclick="selectImg(${i})">
+      <img src="${img.url}" alt="${img.alt_text || ''}" loading="lazy"
+        onerror="this.src='';this.parentElement.style.background='var(--gray-100)';">
+      <div class="img-actions">
+        <button class="img-act-btn star" onclick="event.stopPropagation();setPrimary(${i})" title="Set as main image">★</button>
+        <button class="img-act-btn del" onclick="event.stopPropagation();removeImg(${i})" title="Remove">✕</button>
+      </div>
+    </div>`).join('');
+}
+
+function selectImg(i) {
+  selectedImgIdx = i;
+  const img = editingImages[i];
+  const wrap = document.getElementById('imgAltWrap');
+  wrap.style.display = 'block';
+  document.getElementById('imgAltText').value = img.alt_text || '';
+  document.getElementById('imgSeoTitle').value = img.seo_title || '';
+  // Highlight selected
+  document.querySelectorAll('.img-slot').forEach((el, idx) => {
+    el.style.outline = idx === i ? '2px solid var(--color-primary)' : '';
+  });
+}
+
+function updateSelectedImgMeta() {
+  if (selectedImgIdx === null) return;
+  editingImages[selectedImgIdx].alt_text = document.getElementById('imgAltText').value;
+  editingImages[selectedImgIdx].seo_title = document.getElementById('imgSeoTitle').value;
+}
+
+function setPrimary(i) {
+  editingImages = editingImages.map((img, idx) => ({ ...img, is_primary: idx === i }));
+  renderImageGallery();
+  toast('Featured image updated');
+}
+
+function removeImg(i) {
+  editingImages.splice(i, 1);
+  if (!editingImages.find(img => img.is_primary) && editingImages.length) {
+    editingImages[0].is_primary = true;
+  }
+  selectedImgIdx = null;
+  document.getElementById('imgAltWrap').style.display = 'none';
+  renderImageGallery();
+}
+
+// ── DRAG SORT ──────────────────────────────────────────────────
+function dragStart(i) {
+  dragSrcIdx = i;
+  setTimeout(() => document.querySelectorAll('.img-slot')[i]?.classList.add('dragging'), 0);
+}
+function dragOver(e, i) {
+  e.preventDefault();
+  document.querySelectorAll('.img-slot').forEach((el, idx) => el.classList.toggle('drag-target', idx === i && idx !== dragSrcIdx));
+}
+function dragDrop(e, i) {
+  e.preventDefault();
+  if (dragSrcIdx === null || dragSrcIdx === i) return;
+  const moved = editingImages.splice(dragSrcIdx, 1)[0];
+  editingImages.splice(i, 0, moved);
+  editingImages.forEach((img, idx) => img.sort_order = idx);
+  dragSrcIdx = null;
+  renderImageGallery();
+}
+function dragEnd() {
+  document.querySelectorAll('.img-slot').forEach(el => { el.classList.remove('dragging', 'drag-target'); });
+  dragSrcIdx = null;
+}
+
+// ── DROP ZONE ──────────────────────────────────────────────────
+function handleDragOver(e) {
+  e.preventDefault();
+  document.getElementById('imgDropZone').classList.add('drag-over');
+}
+function handleDragLeave(e) {
+  document.getElementById('imgDropZone').classList.remove('drag-over');
+}
+function handleDrop(e) {
+  e.preventDefault();
+  document.getElementById('imgDropZone').classList.remove('drag-over');
+  if (e.dataTransfer.files.length) {
+    handleImageUpload({ files: e.dataTransfer.files });
+  }
+}
+
+// ── IMAGE UPLOAD ───────────────────────────────────────────────
+async function processImage(file) {
+  // Convert any format → WebP 800×800 center-crop
+  return new Promise((resolve, reject) => {
+    // Handle HEIC — browsers may not support it, fall back to original
+    const supportedTypes = ['image/jpeg','image/jpg','image/png','image/webp','image/avif','image/gif'];
+    if (!supportedTypes.includes(file.type) && !file.type.includes('heic')) {
+      resolve(file); // pass through unknown types
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = e => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        const SIZE = 800;
+        canvas.width = SIZE;
+        canvas.height = SIZE;
+        const ctx = canvas.getContext('2d');
+        // White background (for transparent PNGs)
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, SIZE, SIZE);
+        // Smart contain: preserve full product, add padding if needed
+        // Use 'contain' logic: scale to fit within SIZE×SIZE with padding
+        const scale = Math.min(SIZE / img.width, SIZE / img.height) * 0.92; // 4% padding
+        const sw = img.width * scale;
+        const sh = img.height * scale;
+        const sx = (SIZE - sw) / 2;
+        const sy = (SIZE - sh) / 2;
+        ctx.drawImage(img, sx, sy, sw, sh);
+        canvas.toBlob(
+          blob => {
+            if (!blob) { resolve(file); return; }
+            const name = file.name.replace(/\.[^.]+$/, '') + '.webp';
+            resolve(new File([blob], name, { type: 'image/webp' }));
+          },
+          'image/webp',
+          0.88  // 88% quality — good balance
+        );
+      };
+      img.onerror = () => resolve(file); // fallback
+      img.src = e.target.result;
+    };
+    reader.onerror = () => resolve(file);
+    reader.readAsDataURL(file);
+  });
+}
+
+async function uploadToStorage(file, folder) {
+  const ext = file.name.split('.').pop() || 'webp';
+  const filename = `${folder}/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+  // Try 'products' bucket first, then 'media' bucket
+  let error, publicUrl;
+  for (const bucket of ['products', 'media']) {
+    const res = await db.storage.from(bucket).upload(filename, file, { cacheControl: '3600', upsert: false });
+    error = res.error;
+    if (!error) {
+      const { data: { publicUrl: url } } = db.storage.from(bucket).getPublicUrl(filename);
+      publicUrl = url;
+      break;
+    }
+  }
+  if (error) throw error;
+  return publicUrl;
+}
+
+async function handleImageUpload(input) {
+  const files = Array.from(input.files || []);
+  if (!files.length) return;
+
+  const progressWrap = document.getElementById('imgProgressWrap');
+  const progressFill = document.getElementById('imgProgressFill');
+  const progressMsg  = document.getElementById('imgProgressMsg');
+  progressWrap.style.display = 'block';
+
+  let uploaded = 0;
+  for (const file of files) {
+    progressMsg.textContent = `Processing ${uploaded + 1} of ${files.length}: ${file.name}`;
+    progressFill.style.width = `${Math.round((uploaded / files.length) * 100)}%`;
+    try {
+      // Step 1: client-side processing
+      progressMsg.textContent = `Converting ${file.name} to WebP…`;
+      const processed = await processImage(file);
+
+      // Step 2: upload
+      progressMsg.textContent = `Uploading ${processed.name}…`;
+      const url = await uploadToStorage(processed, 'products');
+
+      // Step 3: add to list
+      editingImages.push({
+        url,
+        is_primary: editingImages.length === 0,
+        sort_order: editingImages.length,
+        alt_text: '',
+        seo_title: ''
+      });
+      renderImageGallery();
+      uploaded++;
+    } catch (err) {
+      console.error('Upload error:', err);
+      toast(`Failed to upload ${file.name}: ${err.message}`, true);
+    }
+  }
+
+  progressFill.style.width = '100%';
+  progressMsg.textContent = `✅ ${uploaded} image${uploaded !== 1 ? 's' : ''} uploaded successfully`;
+  setTimeout(() => {
+    progressWrap.style.display = 'none';
+    progressFill.style.width = '0%';
+  }, 2000);
+
+  if (input.value !== undefined) input.value = '';
+}
+
+function addImageByUrl() {
+  const url = document.getElementById('imgUrlInput').value.trim();
+  if (!url || !url.startsWith('http')) { toast('Please enter a valid image URL', true); return; }
+  editingImages.push({ url, is_primary: editingImages.length === 0, sort_order: editingImages.length, alt_text: '', seo_title: '' });
+  renderImageGallery();
+  document.getElementById('imgUrlInput').value = '';
+  toast('Image added from URL');
+}
+
+// ── SAVE PRODUCT ───────────────────────────────────────────────
+async function saveProduct() {
+  const name = document.getElementById('pName').value.trim();
+  const price = parseFloat(document.getElementById('pPrice').value);
+  if (!name) { toast('Product name is required', true); switchTab('basic', document.querySelector('.tab-btn')); return; }
+  if (!price) { toast('Price is required', true); switchTab('pricing', document.querySelectorAll('.tab-btn')[2]); return; }
+
+  const btn = document.querySelector('.modal-ft .btn-primary');
+  btn.textContent = 'Saving…'; btn.disabled = true;
+
   try {
-    await WF.products.delete(id);
-    toast('Product deleted');
-    await loadProducts();
-  } catch (e) { toast('Error: ' + e.message, true); }
+    // Parse specs
+    let specifications = {};
+    const specsRaw = document.getElementById('pSpecs').value.trim();
+    if (specsRaw) {
+      specsRaw.split('\n').forEach(line => {
+        const [k, ...v] = line.split(':');
+        if (k && v.length) specifications[k.trim()] = v.join(':').trim();
+      });
+    }
+
+    const payload = {
+      name,
+      short_description: document.getElementById('pShortDesc').value || null,
+      description: document.getElementById('pDesc').value || null,
+      category_id: document.getElementById('pCat').value || null,
+      brand_id: document.getElementById('pBrand').value || null,
+      badge: document.getElementById('pBadge').value || null,
+      warranty: document.getElementById('pWarranty').value || null,
+      is_active: document.getElementById('pStatus').value === 'true',
+      is_featured: document.getElementById('pFeatured').value === 'true',
+      price,
+      mrp: parseFloat(document.getElementById('pMrp').value) || null,
+      cost_price: parseFloat(document.getElementById('pCost').value) || null,
+      tax_percent: parseFloat(document.getElementById('pTax').value) || 18,
+      stock_qty: parseInt(document.getElementById('pStock').value) || 0,
+      low_stock_threshold: parseInt(document.getElementById('pLowStock').value) || 5,
+      sku: document.getElementById('pSku').value || null,
+      weight: parseFloat(document.getElementById('pWeight').value) || null,
+      cod_enabled: document.getElementById('pCod').value === 'true',
+      upi_enabled: document.getElementById('pUpi').value === 'true',
+      tags: document.getElementById('pTags').value.split(',').map(t => t.trim()).filter(Boolean),
+      slug: document.getElementById('pSlug').value || slugify(name),
+      meta_title: document.getElementById('pMetaTitle').value || null,
+      meta_description: document.getElementById('pMetaDesc').value || null,
+      specifications: Object.keys(specifications).length ? specifications : null,
+      sort_order: parseInt(document.getElementById('pSort').value) || 0,
+    };
+
+    let productId = editingProductId;
+    if (productId) {
+      await db.from('products').update(payload).eq('id', productId);
+    } else {
+      const { data, error } = await db.from('products').insert(payload).select().single();
+      if (error) throw error;
+      productId = data.id;
+    }
+
+    // Save images — delete old, insert new
+    await db.from('product_images').delete().eq('product_id', productId);
+    if (editingImages.length) {
+      const imgPayload = editingImages.map((img, i) => ({
+        product_id: productId,
+        url: img.url,
+        is_primary: !!img.is_primary,
+        sort_order: i,
+        alt_text: img.alt_text || null,
+        seo_title: img.seo_title || null,
+      }));
+      await db.from('product_images').insert(imgPayload);
+    }
+
+    toast(editingProductId ? '✅ Product updated! Changes live on website.' : '✅ Product added! Now visible on website.');
+    closeProdModal();
+    loadProducts();
+  } catch (err) {
+    toast('Error: ' + err.message, true);
+  } finally {
+    btn.textContent = 'Save Product'; btn.disabled = false;
+  }
 }
 
-async function toggleFeatured(id, featured) {
-  try {
-    await WF.products.update(id, { is_featured: featured });
-    toast(featured ? 'Marked as featured' : 'Removed from featured');
-  } catch (e) { toast('Error: ' + e.message, true); }
+// ── DELETE ─────────────────────────────────────────────────────
+function confirmDeleteProduct(id) {
+  editingProductId = id;
+  if (confirm('Delete this product and all its images?')) deleteProduct();
+}
+async function deleteProduct() {
+  if (!editingProductId) return;
+  await db.from('product_images').delete().eq('product_id', editingProductId);
+  await db.from('products').delete().eq('id', editingProductId);
+  toast('Product deleted');
+  closeProdModal();
+  loadProducts();
 }
 
-function switchTab(tabId, btn) {
+// ── TABS ───────────────────────────────────────────────────────
+function switchTab(id, btn) {
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('is-active'));
   document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('is-active'));
-  document.getElementById('tab-' + tabId).classList.add('is-active');
+  document.getElementById('tab-' + id).classList.add('is-active');
   if (btn) btn.classList.add('is-active');
 }
 
-function toggleSelectAll(el) {
-  document.querySelectorAll('.row-check').forEach(c => c.checked = el.checked);
-}
-
-function exportProducts() {
-  const rows = [['Name', 'Brand', 'Category', 'Price', 'MRP', 'Stock', 'Status']];
-  allProducts.forEach(p => rows.push([p.name, p.brand?.name || '', p.category?.name || '', p.price, p.mrp || '', p.stock_qty, p.is_active ? 'Active' : 'Inactive']));
-  const csv = rows.map(r => r.map(c => `"${c}"`).join(',')).join('\n');
+// ── EXPORT ─────────────────────────────────────────────────────
+function exportCSV() {
+  const rows = [['Name','Price','MRP','Stock','Category','Brand','Status']];
+  allProducts.forEach(p => rows.push([p.name,p.price,p.mrp||'',p.stock_qty||0,p.category?.name||'',p.brand?.name||'',p.is_active?'Active':'Inactive']));
   const a = document.createElement('a');
-  a.href = 'data:text/csv,' + encodeURIComponent(csv);
+  a.href = 'data:text/csv,' + encodeURIComponent(rows.map(r => r.join(',')).join('\n'));
   a.download = 'wellfix-products.csv';
   a.click();
-  toast('Products exported as CSV');
 }
-
-function importCSV() { toast('CSV import: upload a file with columns: name, price, brand, category, stock', false); }
 </script>
 </body>
 </html>
