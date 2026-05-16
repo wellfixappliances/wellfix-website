@@ -44,7 +44,7 @@ function productCardHTML(p, isDark = false) {
   const safeName = name.replace(/'/g, "\\'").replace(/"/g, '&quot;');
 
   return `
-    <div class="${cls}" onclick="window.location.href=(location.pathname.includes('/pages/')?'':'pages/')+'product.html?id=${id}'" style="cursor:pointer;">
+    <div class="${cls}" onclick="window.location.href=(location.pathname.includes('/pages/')? '' : 'pages/')+'product.html?id=${id}'" style="cursor:pointer;">
       <div class="product-card__img-wrap">
         ${img
           ? `<img class="product-card__img" src="${img}" alt="${name}" loading="lazy">`
@@ -105,12 +105,12 @@ function addToCart(id, name, price, img, btn) {
   else state.cartItems.push({ id, name, price: Number(price), img, qty: 1 });
   saveCart();
   updateCartUI();
-  // Button feedback - clean text only, no SVG swap
+  // Button feedback
   if (btn) {
-    const orig = btn.textContent;
+    const orig = btn.innerHTML;
     btn.classList.add('is-added');
-    btn.textContent = '✓ Added';
-    setTimeout(() => { btn.classList.remove('is-added'); btn.textContent = orig; }, 1800);
+    btn.innerHTML = `<svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Added`;
+    setTimeout(() => { btn.classList.remove('is-added'); btn.innerHTML = orig; }, 1800);
   }
   showCartToast(name);
 }
