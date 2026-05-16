@@ -1,228 +1,98 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Media — WellFix Admin</title>
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Media Library — WellFix Admin</title>
 <link rel="icon" href="../assets/images/WELLFIX-FAVICON.png">
-<link rel="stylesheet" href="assets/css/admin.css">
-<style>
-.media-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;}
-.media-item{border:1.5px solid var(--gray-100);border-radius:var(--r-md);overflow:hidden;cursor:pointer;transition:all .2s;position:relative;}
-.media-item:hover,.media-item.sel{border-color:var(--color-primary);box-shadow:0 0 0 2px rgba(3,71,50,.1);}
-.media-item img{width:100%;height:110px;object-fit:cover;display:block;}
-.media-item .media-name{font-size:11px;padding:5px 7px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;background:#fff;}
-.media-item .media-check{position:absolute;top:6px;right:6px;width:18px;height:18px;background:var(--color-primary);border-radius:50%;display:none;align-items:center;justify-content:center;}
-.media-item.sel .media-check{display:flex;}
-.drop-zone{border:2px dashed var(--gray-200);border-radius:var(--r-lg);padding:40px;text-align:center;cursor:pointer;transition:all .2s;}
-.drop-zone.drag-over{border-color:var(--color-primary);background:var(--green-50);}
-.folder-tab{padding:6px 14px;border-radius:99px;font-size:12px;font-weight:600;cursor:pointer;border:1.5px solid transparent;}
-.folder-tab.active{background:var(--green-50);color:var(--green-700);border-color:var(--green-100);}
-.folder-tab:not(.active){color:var(--gray-500);}
-.folder-tab:not(.active):hover{background:var(--gray-50);}
-</style>
-</head>
+<link rel="stylesheet" href="assets/css/admin.css"></head>
 <body>
 <div class="admin-shell"><div id="adminShell"></div>
 <div class="main-wrap" id="mainWrap"><div class="page-content">
-
-<div class="pg-hd">
-  <div><h1>Media Library</h1><p id="mediaCount">Loading…</p></div>
-  <div class="pg-hd__actions">
-    <button class="btn btn-outline" id="deleteSelBtn" style="display:none;background:var(--red-100);color:var(--red-600);" onclick="deleteSelected()">Delete Selected</button>
-    <button class="btn btn-outline" id="copyUrlBtn" style="display:none;" onclick="copySelected()">Copy URL</button>
-    <button class="btn btn-primary" onclick="document.getElementById('fileInput').click()">Upload Files</button>
-    <input type="file" id="fileInput" multiple accept="image/*,video/*,.pdf" style="display:none;" onchange="handleUpload(this.files)">
+  <div class="pg-hd"><div><h1>Media Library</h1><p>All uploaded images and files</p></div>
+    <div class="pg-hd__actions">
+      <button class="btn btn-primary" onclick="document.getElementById('mediaUploadInput').click()">
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        Upload Files
+      </button>
+    </div>
   </div>
-</div>
-
-<!-- Upload Drop Zone -->
-<div class="card" style="margin-bottom:16px;padding:16px;">
-  <div class="drop-zone" id="dropZone" onclick="document.getElementById('fileInput').click()">
-    <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" width="36" height="36" style="opacity:.3;margin-bottom:12px;"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
-    <div style="font-weight:700;margin-bottom:4px;">Drop images here or click to upload</div>
-    <div style="font-size:12px;color:var(--gray-400);">JPG, PNG, WebP, PDF — Auto-resized & optimized</div>
-    <div id="uploadProgress" style="margin-top:12px;display:none;"></div>
+  <div class="upload-zone" id="dropZone" style="margin-bottom:20px;">
+    <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+    <p>Drag files here or <span onclick="document.getElementById('mediaUploadInput').click()">click to upload</span></p>
+    <p style="font-size:11px;margin-top:4px;">PNG, JPG, WebP, PDF — max 5MB per file</p>
   </div>
-</div>
-
-<!-- Folders -->
-<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;">
-  <div class="folder-tab active" id="folder-all" onclick="setFolder('all',this)">All Files</div>
-  <div class="folder-tab" id="folder-products" onclick="setFolder('products',this)">Products</div>
-  <div class="folder-tab" id="folder-brands" onclick="setFolder('brands',this)">Brands</div>
-  <div class="folder-tab" id="folder-banners" onclick="setFolder('banners',this)">Banners</div>
-  <div class="folder-tab" id="folder-blog" onclick="setFolder('blog',this)">Blog</div>
-  <div class="folder-tab" id="folder-general" onclick="setFolder('general',this)">General</div>
-</div>
-
-<!-- Search -->
-<div class="filter-bar" style="margin-bottom:12px;">
-  <div class="filter-search"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-    <input type="search" id="mediaSearch" placeholder="Search files…" oninput="filterMedia()">
+  <input type="file" id="mediaUploadInput" multiple accept="image/*" style="display:none;" onchange="uploadMediaFiles(this)">
+  <div id="uploadProgress" style="display:none;margin-bottom:16px;">
+    <div style="font-size:12px;color:var(--green-700);margin-bottom:6px;" id="uploadMsg">Uploading…</div>
+    <div style="height:5px;background:var(--gray-100);border-radius:99px;overflow:hidden;"><div id="uploadBar" style="height:100%;background:var(--green-600);width:0%;transition:width .3s;border-radius:99px;"></div></div>
   </div>
-  <div id="selCount" style="font-size:12px;color:var(--gray-400);white-space:nowrap;"></div>
-</div>
-
-<!-- Grid -->
-<div class="card" style="padding:16px;">
-  <div class="media-grid" id="mediaGrid"></div>
-</div>
-
-<!-- Detail Sidebar -->
-<div id="detailPanel" style="display:none;position:fixed;right:0;top:0;bottom:0;width:280px;background:#fff;border-left:1px solid var(--gray-100);box-shadow:-4px 0 16px rgba(0,0,0,.08);z-index:200;padding:20px;overflow-y:auto;">
-  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
-    <div style="font-weight:700;">File Details</div>
-    <button onclick="closeDetail()" style="background:none;border:none;cursor:pointer;font-size:18px;">✕</button>
+  <div class="card">
+    <div class="filter-bar">
+      <div class="filter-search"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><input type="search" id="mediaSearch" placeholder="Search files…" oninput="renderMedia()"></div>
+      <select class="filter-select" id="folderFilter" onchange="loadMedia()">
+        <option value="">All Folders</option><option value="products">Products</option><option value="banners">Banners</option><option value="blog">Blog</option><option value="general">General</option>
+      </select>
+      <span class="filter-spacer"></span>
+      <span style="font-size:12px;color:var(--gray-400);" id="mediaCount"></span>
+    </div>
+    <div class="card-body" id="mediaGridWrap">
+      <div style="display:flex;align-items:center;justify-content:center;padding:40px;"><div class="spinner"></div></div>
+    </div>
   </div>
-  <img id="detailImg" style="width:100%;border-radius:var(--r-md);margin-bottom:12px;max-height:200px;object-fit:contain;background:var(--gray-25);border:1px solid var(--gray-100);">
-  <div id="detailInfo"></div>
-  <div style="margin-top:12px;display:flex;flex-direction:column;gap:6px;">
-    <button class="btn btn-outline" onclick="copyDetail()">Copy URL</button>
-    <button class="btn" style="background:var(--red-100);color:var(--red-600);" onclick="deleteDetail()">Delete File</button>
-  </div>
-</div>
-
 </div></div></div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="../backend/config/supabase.js"></script>
 <script src="assets/js/shell.js"></script>
 <script>
-let allMedia = [], selected = new Set(), currentFolder = 'all', currentDetail = null;
-
-async function load() {
-  // Try to get from media table first
-  const { data } = await db.from('media').select('*').order('created_at',{ascending:false}).limit(200);
-  if (data?.length) {
-    allMedia = data;
-  } else {
-    // Fallback: list from storage
-    const folders = ['products','brands','banners','blog','general'];
-    allMedia = [];
-    for (const folder of folders) {
-      try {
-        const { data: files } = await db.storage.from('media').list(folder, {limit:50});
-        (files||[]).forEach(f => {
-          const { data: urlData } = db.storage.from('media').getPublicUrl(`${folder}/${f.name}`);
-          allMedia.push({ id: folder+'/'+f.name, filename: folder+'/'+f.name, original_name: f.name, url: urlData.publicUrl, folder, size: f.metadata?.size||0, mime_type: f.metadata?.mimetype||'image/jpeg', created_at: f.created_at });
-        });
-      } catch(e) {}
-    }
+let mediaFiles=[];
+(async()=>{
+  await AdminShell.init('Media Library');
+  setupDragDrop();
+  await loadMedia();
+})();
+async function loadMedia(){
+  const folder=document.getElementById('folderFilter').value;
+  mediaFiles=await WF.media.getAll(folder||undefined);
+  renderMedia();
+}
+function renderMedia(){
+  const q=document.getElementById('mediaSearch').value.toLowerCase();
+  const f=mediaFiles.filter(m=>!q||m.original_name?.toLowerCase().includes(q)||m.filename.toLowerCase().includes(q));
+  document.getElementById('mediaCount').textContent=`${f.length} files`;
+  if(!f.length){document.getElementById('mediaGridWrap').innerHTML=`<div style="text-align:center;padding:40px;color:var(--gray-300);">No files found. Upload some images to get started.</div>`;return;}
+  document.getElementById('mediaGridWrap').innerHTML=`<div class="media-grid">${f.map(m=>`
+    <div class="media-thumb" onclick="selectMedia('${m.id}','${m.url}')">
+      <div class="media-thumb__img"><img src="${m.url}" alt="${m.original_name||m.filename}" loading="lazy" onerror="this.parentElement.innerHTML='<div style=\\'display:flex;align-items:center;justify-content:center;height:100%;color:var(--gray-300);font-size:24px;\\'>📄</div>'"></div>
+      <div class="media-thumb__label">${m.original_name||m.filename}</div>
+    </div>`).join('')}</div>`;
+}
+async function uploadMediaFiles(input){
+  const files=Array.from(input.files);if(!files.length)return;
+  const prog=document.getElementById('uploadProgress');const bar=document.getElementById('uploadBar');const msg=document.getElementById('uploadMsg');
+  prog.style.display='block';
+  for(let i=0;i<files.length;i++){
+    msg.textContent=`Uploading ${i+1} of ${files.length}: ${files[i].name}`;
+    bar.style.width=`${Math.round((i/files.length)*100)}%`;
+    try{await WF.media.upload(files[i],'general');}catch(e){toast('Failed: '+e.message,true);}
   }
-  document.getElementById('mediaCount').textContent = `${allMedia.length} files`;
-  filterMedia();
+  bar.style.width='100%';msg.textContent='Upload complete!';
+  setTimeout(()=>{prog.style.display='none';bar.style.width='0%';},1500);
+  input.value='';await loadMedia();toast(`${files.length} file(s) uploaded!`);
 }
-
-function setFolder(folder, btn) {
-  currentFolder = folder;
-  document.querySelectorAll('.folder-tab').forEach(t=>t.classList.remove('active'));
-  btn.classList.add('active');
-  filterMedia();
+function selectMedia(id,url){
+  navigator.clipboard.writeText(url).then(()=>toast('URL copied: '+url.split('/').pop()));
 }
-
-function filterMedia() {
-  const q = document.getElementById('mediaSearch').value.toLowerCase();
-  let filtered = allMedia.filter(f => {
-    if (currentFolder !== 'all' && f.folder !== currentFolder) return false;
-    if (q && !f.original_name?.toLowerCase().includes(q)) return false;
-    return true;
+function setupDragDrop(){
+  const zone=document.getElementById('dropZone');
+  zone.addEventListener('dragover',e=>{e.preventDefault();zone.classList.add('drag-over');});
+  zone.addEventListener('dragleave',()=>zone.classList.remove('drag-over'));
+  zone.addEventListener('drop',e=>{
+    e.preventDefault();zone.classList.remove('drag-over');
+    const dt=e.dataTransfer;if(!dt.files.length)return;
+    const input=document.getElementById('mediaUploadInput');
+    const transfer=new DataTransfer();
+    Array.from(dt.files).forEach(f=>transfer.items.add(f));
+    input.files=transfer.files;uploadMediaFiles(input);
   });
-  renderMedia(filtered);
 }
-
-function renderMedia(list) {
-  const grid = document.getElementById('mediaGrid');
-  if (!list.length) { grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--gray-400);">No files found. Upload some images!</div>'; return; }
-  grid.innerHTML = list.map(f => `
-    <div class="media-item ${selected.has(f.id)?'sel':''}" onclick="toggleSelect('${f.id}',event)" ondblclick="showDetail('${f.id}')">
-      <img src="${f.url}" alt="${f.original_name}" loading="lazy" onerror="this.style.background='var(--gray-100)';this.style.height='110px';">
-      <div class="media-check"><svg fill="white" viewBox="0 0 24 24" width="10" height="10"><polyline points="20 6 9 17 4 12"/></svg></div>
-      <div class="media-name">${f.original_name||f.filename||'file'}</div>
-    </div>`).join('');
-  updateSelUI();
-}
-
-function toggleSelect(id, e) {
-  if (selected.has(id)) selected.delete(id);
-  else selected.add(id);
-  updateSelUI();
-  filterMedia();
-}
-
-function updateSelUI() {
-  const count = selected.size;
-  document.getElementById('selCount').textContent = count > 0 ? `${count} selected` : '';
-  document.getElementById('deleteSelBtn').style.display = count > 0 ? 'block' : 'none';
-  document.getElementById('copyUrlBtn').style.display = count === 1 ? 'block' : 'none';
-}
-
-function showDetail(id) {
-  const f = allMedia.find(x=>x.id===id);
-  if (!f) return;
-  currentDetail = f;
-  document.getElementById('detailImg').src = f.url;
-  document.getElementById('detailInfo').innerHTML = `
-    <div style="font-size:13px;font-weight:600;margin-bottom:8px;word-break:break-all;">${f.original_name||f.filename}</div>
-    <div style="font-size:12px;color:var(--gray-400);margin-bottom:4px;">📁 ${f.folder||'general'}</div>
-    ${f.size ? `<div style="font-size:12px;color:var(--gray-400);margin-bottom:4px;">📦 ${(f.size/1024).toFixed(1)} KB</div>` : ''}
-    <div style="margin-top:10px;background:var(--gray-50);border:1px solid var(--gray-100);border-radius:var(--r-sm);padding:8px;word-break:break-all;font-size:10px;">${f.url}</div>`;
-  document.getElementById('detailPanel').style.display = 'block';
-}
-
-function closeDetail() { document.getElementById('detailPanel').style.display='none'; currentDetail=null; }
-function copyDetail() { if(currentDetail) { navigator.clipboard.writeText(currentDetail.url); toast('URL copied!'); } }
-
-async function deleteDetail() {
-  if (!currentDetail || !confirm('Delete this file?')) return;
-  try {
-    await db.storage.from('media').remove([currentDetail.filename]);
-    await db.from('media').delete().eq('id', currentDetail.id);
-  } catch(e) {}
-  toast('File deleted'); closeDetail(); load();
-}
-
-async function deleteSelected() {
-  if (!confirm(`Delete ${selected.size} file(s)?`)) return;
-  for (const id of selected) {
-    const f = allMedia.find(x=>x.id===id);
-    if (f) {
-      try { await db.storage.from('media').remove([f.filename]); } catch(e){}
-      try { await db.from('media').delete().eq('id',id); } catch(e){}
-    }
-  }
-  selected.clear(); toast('Files deleted'); load();
-}
-
-function copySelected() {
-  const id = [...selected][0];
-  const f = allMedia.find(x=>x.id===id);
-  if (f) { navigator.clipboard.writeText(f.url); toast('URL copied!'); }
-}
-
-async function handleUpload(files) {
-  const prog = document.getElementById('uploadProgress');
-  prog.style.display = 'block';
-  let done = 0;
-  for (const file of Array.from(files)) {
-    prog.innerHTML = `<div style="font-size:12px;">Uploading ${done+1}/${files.length}: ${file.name}…</div>`;
-    try {
-      const result = await uploadFile(file, currentFolder === 'all' ? 'general' : currentFolder);
-      // Save to media table
-      await db.from('media').insert({ filename: result.filename||file.name, original_name: file.name, url: result.url, folder: currentFolder === 'all' ? 'general' : currentFolder, size: file.size, mime_type: file.type });
-      done++;
-    } catch(e) {
-      toast('Upload failed: ' + e.message, true);
-    }
-  }
-  prog.style.display = 'none';
-  toast(`${done} file(s) uploaded!`);
-  load();
-}
-
-// Drag and drop
-const dz = document.getElementById('dropZone');
-dz.addEventListener('dragover', e => { e.preventDefault(); dz.classList.add('drag-over'); });
-dz.addEventListener('dragleave', () => dz.classList.remove('drag-over'));
-dz.addEventListener('drop', e => { e.preventDefault(); dz.classList.remove('drag-over'); handleUpload(e.dataTransfer.files); });
-
-(async()=>{ await AdminShell.init('Media','media'); load(); })();
-</script></body></html>
+</script>
+</body></html>
