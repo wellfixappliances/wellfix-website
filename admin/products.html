@@ -74,8 +74,8 @@
 </div>
 
 <!-- PRODUCT MODAL -->
-<div class="modal-overlay" id="prodOverlay" style="display:none;"></div>
-<div class="modal" id="prodModal" style="display:none;max-width:760px;max-height:90vh;overflow-y:auto;">
+<div class="modal-overlay" id="prodOverlay" onclick="if(event.target===this)closeProdModal()" style="display:none;align-items:flex-start;justify-content:center;padding:20px 16px;overflow-y:auto;">
+<div class="modal" id="prodModal" style="max-width:760px;max-height:90vh;overflow-y:auto;width:100%;margin:auto;">
   <div class="modal-hd">
     <h3 id="prodModalTitle">Add Product</h3>
     <button class="modal-close" onclick="closeProdModal()">✕</button>
@@ -243,6 +243,8 @@
     </button>
   </div>
 </div>
+</div><!-- /modal -->
+</div><!-- /modal-overlay -->
 
 </div></div></div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -357,8 +359,8 @@ function openProductModal(id = null) {
   renderImageGallery();
   document.getElementById('prodModalTitle').textContent = 'Add Product';
   document.getElementById('prodDeleteBtn').style.display = 'none';
-  document.getElementById('prodOverlay').style.display = 'block';
-  document.getElementById('prodModal').style.display = 'block';
+  document.getElementById('prodOverlay').style.display = 'flex';
+  
   switchTab('basic', document.querySelector('.tab-btn'));
 }
 
@@ -402,14 +404,13 @@ async function editProduct(id) {
   renderImageGallery();
   document.getElementById('prodModalTitle').textContent = 'Edit Product';
   document.getElementById('prodDeleteBtn').style.display = 'block';
-  document.getElementById('prodOverlay').style.display = 'block';
-  document.getElementById('prodModal').style.display = 'block';
+  document.getElementById('prodOverlay').style.display = 'flex';
+  
   switchTab('basic', document.querySelector('.tab-btn'));
 }
 
 function closeProdModal() {
   document.getElementById('prodOverlay').style.display = 'none';
-  document.getElementById('prodModal').style.display = 'none';
 }
 
 function clearForm() {
