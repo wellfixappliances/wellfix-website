@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Orders — WellFix Admin</title>
-<link rel="icon" href="../frontend/assets/images/WELLFIX-FAVICON.png">
+<link rel="icon" href="../assets/images/WELLFIX-FAVICON.png">
 <link rel="stylesheet" href="assets/css/admin.css">
 </head>
 <body>
@@ -170,9 +170,7 @@ function renderOrdersTable() {
 
 function goPage(pg) { currentPage = pg; renderOrdersTable(); }
 
-let currentOrderId = null;
 async function viewOrder(id) {
-  currentOrderId = id;
   const order = await WF.orders.getById(id);
   document.getElementById('orderModalTitle').textContent = `Order ${order.order_number}`;
   document.getElementById('orderModalBody').innerHTML = `
@@ -207,16 +205,7 @@ async function viewOrder(id) {
       <div style="display:flex;gap:24px;font-size:16px;font-weight:800;font-family:var(--font-display);">
         <span>Total</span><span>${formatCurrency(order.total)}</span>
       </div>
-      <div style="font-size:12px;color:var(--gray-500);display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
-        Payment: ${order.payment_method.toUpperCase()} — ${renderBadge(order.payment_status)}
-        <select onchange="updatePaymentStatus('${order.id}', this.value)" style="font-size:11px;padding:2px 6px;border:1px solid var(--gray-200);border-radius:4px;">
-          <option value="pending" ${order.payment_status==='pending'?'selected':''}>Pending</option>
-          <option value="pending_verification" ${order.payment_status==='pending_verification'?'selected':''}>Awaiting Verification</option>
-          <option value="paid" ${order.payment_status==='paid'?'selected':''}>Paid ✓</option>
-          <option value="failed" ${order.payment_status==='failed'?'selected':''}>Failed</option>
-          <option value="refunded" ${order.payment_status==='refunded'?'selected':''}>Refunded</option>
-        </select>
-      </div>
+      <div style="font-size:12px;color:var(--gray-500);">Payment: ${order.payment_method.toUpperCase()} — ${renderBadge(order.payment_status)}</div>
     </div>`;
   document.getElementById('orderModalFt').innerHTML = `
     <select class="form-select" id="statusSelect" style="width:160px;height:34px;">
@@ -253,6 +242,54 @@ function exportOrders() {
 function setupRealtime() {
   WF.realtime.onOrdersChange(loadOrders);
 }
+
+let _currentOrderId = null;
+const _origViewOrder = window.viewOrder;
+
+// Override viewOrder to capture ID
+window.viewOrder = async function(id) {
+  _currentOrderId = id;
+  if (_origViewOrder) await _origViewOrder(id);
+  else {
+    // Inline fallback
+    const { data: o } = await db.from('orders').select('*, items:order_items(*)').eq('id',id).single();
+    if (!o) return;
+    document.getElementById('modalTitle').textContent = 'Order ' + o.order_number;
+    // Payment status selector
+    const payHtml = `<div style="margin:10px 0;padding:12px;background:var(--gray-25);border-radius:var(--r-md);">
+      <div style="font-size:12px;font-weight:700;color:var(--gray-500);margin-bottom:6px;">PAYMENT STATUS</div>
+      <select onchange="updateOrderPayment('${o.id}',this.value)" style="font-size:12px;padding:5px 8px;border:1px solid var(--gray-200);border-radius:4px;width:100%;">
+        <option value="pending" ${o.payment_status==='pending'?'selected':''}>Pending</option>
+        <option value="pending_verification" ${o.payment_status==='pending_verification'?'selected':''}>Awaiting Verification</option>
+        <option value="paid" ${o.payment_status==='paid'?'selected':''}>✓ Paid</option>
+        <option value="failed" ${o.payment_status==='failed'?'selected':''}>Failed</option>
+        <option value="refunded" ${o.payment_status==='refunded'?'selected':''}>Refunded</option>
+      </select>
+    </div>`;
+    document.getElementById('modalContent').innerHTML = payHtml;
+    openModal();
+  }
+};
+
+async function updateOrderPayment(id, status) {
+  await db.from('orders').update({ payment_status: status }).eq('id', id);
+  toast('Payment status → ' + status);
+  if (typeof loadOrders === 'function') loadOrders();
+}
+
+async function deleteOrder(id) {
+  if (!confirm('Delete this order permanently? This cannot be undone.')) return;
+  await db.from('order_items').delete().eq('order_id', id||_currentOrderId);
+  await db.from('orders').delete().eq('id', id||_currentOrderId);
+  toast('Order deleted'); closeModal();
+  if (typeof loadOrders === 'function') loadOrders();
+}
+
+async function updatePaymentStatus(id, status) {
+  await db.from('orders').update({ payment_status: status }).eq('id', id);
+  toast('Payment status updated');
+}
+
 </script>
 </body>
 </html>
