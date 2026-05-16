@@ -1,171 +1,109 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Settings — WellFix Admin</title>
 <link rel="icon" href="../assets/images/WELLFIX-FAVICON.png">
-<link rel="stylesheet" href="assets/css/admin.css">
-</head>
+<link rel="stylesheet" href="assets/css/admin.css"></head>
 <body>
 <div class="admin-shell"><div id="adminShell"></div>
 <div class="main-wrap" id="mainWrap"><div class="page-content">
-<div class="pg-hd">
-  <div><h1>Settings</h1><p>Full store configuration — all changes save to database</p></div>
-  <div class="pg-hd__actions"><button class="btn btn-primary" onclick="saveAll()">
-    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="13" height="13"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
-    Save All Settings
-  </button></div>
-</div>
-<div style="display:grid;grid-template-columns:190px 1fr;gap:16px;align-items:start;">
-  <div class="card" style="padding:8px;position:sticky;top:70px;">
-    <div id="settingsNav" style="display:flex;flex-direction:column;gap:2px;">
-      <div class="settings-nav-btn is-active" onclick="show('store',this)">🏪 Store Info</div>
-      <div class="settings-nav-btn" onclick="show('contact',this)">📞 Contact</div>
-      <div class="settings-nav-btn" onclick="show('payment',this)">💳 Payments</div>
-      <div class="settings-nav-btn" onclick="show('shipping',this)">🚚 Shipping</div>
-      <div class="settings-nav-btn" onclick="show('social',this)">📱 Social</div>
-      <div class="settings-nav-btn" onclick="show('seo',this)">🔍 SEO</div>
-      <div class="settings-nav-btn" onclick="show('notifications',this)">🔔 Notifications</div>
-    </div>
+  <div class="pg-hd"><div><h1>Settings</h1><p>Store configuration</p></div>
+    <div class="pg-hd__actions"><button class="btn btn-primary" onclick="saveSettings()">Save All Settings</button></div>
   </div>
-  <div>
-    <!-- Store Info -->
-    <div id="sec-store" class="card settings-sec">
-      <div class="card-hd"><span class="card-title">Store Information</span></div>
-      <div class="card-body"><div class="form-grid form-2">
-        <div class="form-group"><label class="form-label">Store Name</label><input class="form-input" id="s_store_name" placeholder="WellFix Appliances"></div>
-        <div class="form-group"><label class="form-label">Tagline</label><input class="form-input" id="s_tagline" placeholder="Kerala's Trusted Appliance Store"></div>
-        <div class="form-group" style="grid-column:1/-1"><label class="form-label">Store Address</label><textarea class="form-textarea" id="s_store_address" style="min-height:60px;"></textarea></div>
-        <div class="form-group"><label class="form-label">Business Hours</label><input class="form-input" id="s_store_hours"></div>
-        <div class="form-group"><label class="form-label">Currency Symbol</label><input class="form-input" id="s_currency_symbol" placeholder="₹"></div>
-        <div class="form-group"><label class="form-label">Logo URL</label><input class="form-input" id="s_logo_url" placeholder="https://..."></div>
-        <div class="form-group"><label class="form-label">Favicon URL</label><input class="form-input" id="s_favicon_url" placeholder="https://..."></div>
-      </div></div>
-    </div>
-    <!-- Contact -->
-    <div id="sec-contact" class="card settings-sec" style="display:none;">
-      <div class="card-hd"><span class="card-title">Contact Details</span></div>
-      <div class="card-body"><div class="form-grid form-2">
-        <div class="form-group"><label class="form-label">Phone Number</label><input class="form-input" id="s_store_phone" placeholder="+91 85900 04349"></div>
-        <div class="form-group"><label class="form-label">WhatsApp Number</label><input class="form-input" id="s_whatsapp_number" placeholder="918590004349"></div>
-        <div class="form-group"><label class="form-label">Email</label><input class="form-input" id="s_store_email" type="email"></div>
-        <div class="form-group"><label class="form-label">Support Email</label><input class="form-input" id="s_support_email" type="email"></div>
-      </div></div>
-    </div>
-    <!-- Payment -->
-    <div id="sec-payment" class="card settings-sec" style="display:none;">
-      <div class="card-hd"><span class="card-title">Payment Methods</span></div>
-      <div class="card-body" style="display:flex;flex-direction:column;gap:12px;">
-        <label style="display:flex;align-items:center;justify-content:space-between;padding:14px;background:var(--gray-25);border:1.5px solid var(--gray-100);border-radius:var(--r-md);">
-          <div><div style="font-weight:600;">Cash on Delivery (COD)</div><div style="font-size:12px;color:var(--gray-400);">Customer pays when order arrives</div></div>
-          <label class="toggle"><input type="checkbox" id="s_cod_enabled" checked><span class="toggle-track"></span></label>
-        </label>
-        <label style="display:flex;align-items:center;justify-content:space-between;padding:14px;background:var(--gray-25);border:1.5px solid var(--gray-100);border-radius:var(--r-md);">
-          <div><div style="font-weight:600;">UPI Payment</div><div style="font-size:12px;color:var(--gray-400);">Scan QR and pay online</div></div>
-          <label class="toggle"><input type="checkbox" id="s_upi_enabled" checked><span class="toggle-track"></span></label>
-        </label>
-        <div class="form-group"><label class="form-label">UPI ID</label><input class="form-input" id="s_upi_id" placeholder="8301879406@ybl"></div>
-        <div class="form-group"><label class="form-label">UPI Name (shown on QR)</label><input class="form-input" id="s_upi_name" placeholder="WellFix Appliances"></div>
-        <label style="display:flex;align-items:center;justify-content:space-between;padding:14px;background:var(--gray-25);border:1.5px solid var(--gray-100);border-radius:var(--r-md);">
-          <div><div style="font-weight:600;">WhatsApp Orders</div><div style="font-size:12px;color:var(--gray-400);">Allow ordering directly via WhatsApp</div></div>
-          <label class="toggle"><input type="checkbox" id="s_whatsapp_orders" checked><span class="toggle-track"></span></label>
-        </label>
+  <div style="display:grid;grid-template-columns:200px 1fr;gap:20px;">
+    <div class="card" style="padding:8px;height:fit-content;">
+      <div style="display:flex;flex-direction:column;gap:2px;" id="settingsNav">
+        <div class="settings-nav-btn is-active" onclick="showSection('store',this)">🏪 Store Info</div>
+        <div class="settings-nav-btn" onclick="showSection('contact',this)">📞 Contact</div>
+        <div class="settings-nav-btn" onclick="showSection('shipping',this)">🚚 Shipping</div>
+        <div class="settings-nav-btn" onclick="showSection('payment',this)">💳 Payment</div>
+        <div class="settings-nav-btn" onclick="showSection('social',this)">📱 Social Media</div>
       </div>
     </div>
-    <!-- Shipping -->
-    <div id="sec-shipping" class="card settings-sec" style="display:none;">
-      <div class="card-hd"><span class="card-title">Shipping Settings</span></div>
-      <div class="card-body"><div class="form-grid form-2">
-        <div class="form-group"><label class="form-label">Free Shipping Above (₹)</label><input class="form-input" type="number" id="s_free_shipping_above" placeholder="999"></div>
-        <div class="form-group"><label class="form-label">Default Shipping Fee (₹)</label><input class="form-input" type="number" id="s_shipping_fee" placeholder="60"></div>
-        <div class="form-group" style="grid-column:1/-1"><label class="form-label">Delivery Districts (comma separated)</label><textarea class="form-textarea" id="s_delivery_areas" placeholder="Thrissur, Ernakulam, Calicut…" style="min-height:60px;"></textarea></div>
-      </div></div>
-    </div>
-    <!-- Social -->
-    <div id="sec-social" class="card settings-sec" style="display:none;">
-      <div class="card-hd"><span class="card-title">Social Media Links</span></div>
-      <div class="card-body"><div class="form-grid">
-        <div class="form-group"><label class="form-label">Facebook</label><input class="form-input" id="s_facebook" placeholder="https://facebook.com/..."></div>
-        <div class="form-group"><label class="form-label">Instagram</label><input class="form-input" id="s_instagram" placeholder="https://instagram.com/..."></div>
-        <div class="form-group"><label class="form-label">YouTube</label><input class="form-input" id="s_youtube" placeholder="https://youtube.com/..."></div>
-        <div class="form-group"><label class="form-label">Twitter/X</label><input class="form-input" id="s_twitter" placeholder="https://twitter.com/..."></div>
-      </div></div>
-    </div>
-    <!-- SEO -->
-    <div id="sec-seo" class="card settings-sec" style="display:none;">
-      <div class="card-hd"><span class="card-title">SEO Settings</span></div>
-      <div class="card-body"><div class="form-grid">
-        <div class="form-group"><label class="form-label">Meta Title</label><input class="form-input" id="s_meta_title" placeholder="WellFix Appliances — Kerala's Best Appliance Store"></div>
-        <div class="form-group"><label class="form-label">Meta Description</label><textarea class="form-textarea" id="s_meta_description" placeholder="Buy and repair home appliances in Kerala…" style="min-height:60px;"></textarea></div>
-        <div class="form-group"><label class="form-label">Google Analytics ID</label><input class="form-input" id="s_ga_id" placeholder="G-XXXXXXXXXX"></div>
-        <div class="form-group"><label class="form-label">Google Search Console</label><input class="form-input" id="s_gsc_id" placeholder="Verification code"></div>
-      </div></div>
-    </div>
-    <!-- Notifications -->
-    <div id="sec-notifications" class="card settings-sec" style="display:none;">
-      <div class="card-hd"><span class="card-title">Notifications</span></div>
-      <div class="card-body" style="display:flex;flex-direction:column;gap:12px;">
-        <label style="display:flex;align-items:center;justify-content:space-between;padding:14px;background:var(--gray-25);border:1.5px solid var(--gray-100);border-radius:var(--r-md);">
-          <div><div style="font-weight:600;">New Order WhatsApp Alert</div><div style="font-size:12px;color:var(--gray-400);">Get WhatsApp message for each new order</div></div>
-          <label class="toggle"><input type="checkbox" id="s_wa_order_alert" checked><span class="toggle-track"></span></label>
-        </label>
-        <label style="display:flex;align-items:center;justify-content:space-between;padding:14px;background:var(--gray-25);border:1.5px solid var(--gray-100);border-radius:var(--r-md);">
-          <div><div style="font-weight:600;">Low Stock Alerts</div><div style="font-size:12px;color:var(--gray-400);">Alert when product stock falls below threshold</div></div>
-          <label class="toggle"><input type="checkbox" id="s_low_stock_alert" checked><span class="toggle-track"></span></label>
-        </label>
-        <div class="form-group"><label class="form-label">Low Stock Threshold (units)</label><input class="form-input" type="number" id="s_low_stock_threshold" placeholder="5"></div>
-        <div class="form-group"><label class="form-label">Admin Notification Email</label><input class="form-input" type="email" id="s_notification_email" placeholder="admin@wellfixappliances.com"></div>
+    <div>
+      <div id="section-store" class="settings-section card">
+        <div class="card-hd"><span class="card-title">Store Information</span></div>
+        <div class="card-body"><div class="form-grid form-2" style="gap:14px;">
+          <div class="form-group"><label class="form-label">Store Name</label><input class="form-input" id="s_store_name" value="WellFix Appliances"></div>
+          <div class="form-group"><label class="form-label">Tagline</label><input class="form-input" id="s_tagline" value="Kerala's Trusted Appliance Store"></div>
+          <div class="form-group" style="grid-column:1/-1;"><label class="form-label">Address</label><textarea class="form-textarea" id="s_store_address" style="min-height:60px;">Kerala, India</textarea></div>
+          <div class="form-group"><label class="form-label">Business Hours</label><input class="form-input" id="s_store_hours" value="Mon–Sat: 9:00 AM – 7:00 PM"></div>
+          <div class="form-group"><label class="form-label">Currency Symbol</label><input class="form-input" id="s_currency_symbol" value="₹"></div>
+        </div></div>
+      </div>
+      <div id="section-contact" class="settings-section card" style="display:none;">
+        <div class="card-hd"><span class="card-title">Contact Details</span></div>
+        <div class="card-body"><div class="form-grid form-2" style="gap:14px;">
+          <div class="form-group"><label class="form-label">Phone Number</label><input class="form-input" id="s_store_phone" value="+91 85900 04349"></div>
+          <div class="form-group"><label class="form-label">WhatsApp Number</label><input class="form-input" id="s_store_whatsapp" value="+91 85900 04349"></div>
+          <div class="form-group"><label class="form-label">Email</label><input class="form-input" id="s_store_email" value="info@wellfixappliances.com"></div>
+          <div class="form-group"><label class="form-label">Support Email</label><input class="form-input" id="s_support_email" value="support@wellfixappliances.com"></div>
+        </div></div>
+      </div>
+      <div id="section-shipping" class="settings-section card" style="display:none;">
+        <div class="card-hd"><span class="card-title">Shipping Settings</span></div>
+        <div class="card-body"><div class="form-grid form-2" style="gap:14px;">
+          <div class="form-group"><label class="form-label">Free Shipping Above (₹)</label><input class="form-input" type="number" id="s_free_shipping_above" value="999"></div>
+          <div class="form-group"><label class="form-label">Default Shipping Fee (₹)</label><input class="form-input" type="number" id="s_shipping_fee" value="60"></div>
+          <div class="form-group" style="grid-column:1/-1;"><label class="form-label">Delivery Areas</label><textarea class="form-textarea" id="s_delivery_areas" style="min-height:60px;">Thrissur, Ernakulam, Calicut, Trivandrum, Palakkad</textarea></div>
+        </div></div>
+      </div>
+      <div id="section-payment" class="settings-section card" style="display:none;">
+        <div class="card-hd"><span class="card-title">Payment Methods</span></div>
+        <div class="card-body" style="display:flex;flex-direction:column;gap:14px;">
+          <label style="display:flex;align-items:center;justify-content:space-between;padding:12px 14px;background:var(--gray-25);border:1.5px solid var(--gray-100);border-radius:var(--r-md);">
+            <div><div style="font-weight:600;">Cash on Delivery (COD)</div><div style="font-size:12px;color:var(--gray-400);">Customer pays at delivery</div></div>
+            <label class="toggle"><input type="checkbox" checked><span class="toggle-track"></span></label>
+          </label>
+          <label style="display:flex;align-items:center;justify-content:space-between;padding:12px 14px;background:var(--gray-25);border:1.5px solid var(--gray-100);border-radius:var(--r-md);">
+            <div><div style="font-weight:600;">UPI / Online Payment</div><div style="font-size:12px;color:var(--gray-400);">Via payment gateway</div></div>
+            <label class="toggle"><input type="checkbox"><span class="toggle-track"></span></label>
+          </label>
+        </div>
+      </div>
+      <div id="section-social" class="settings-section card" style="display:none;">
+        <div class="card-hd"><span class="card-title">Social Media Links</span></div>
+        <div class="card-body"><div class="form-grid" style="gap:12px;">
+          <div class="form-group"><label class="form-label">Facebook</label><input class="form-input" placeholder="https://facebook.com/wellfixappliances"></div>
+          <div class="form-group"><label class="form-label">Instagram</label><input class="form-input" placeholder="https://instagram.com/wellfixappliances"></div>
+          <div class="form-group"><label class="form-label">YouTube</label><input class="form-input" placeholder="https://youtube.com/wellfixappliances"></div>
+        </div></div>
       </div>
     </div>
   </div>
-</div>
 </div></div></div>
 <style>
 .settings-nav-btn{padding:9px 12px;border-radius:var(--r-sm);font-size:13px;font-weight:500;color:var(--gray-600);cursor:pointer;transition:all var(--t);}
 .settings-nav-btn:hover{background:var(--gray-50);color:var(--gray-900);}
 .settings-nav-btn.is-active{background:var(--green-50);color:var(--green-700);font-weight:600;}
-</style><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="../backend/config/supabase.js"></script>
 <script src="assets/js/shell.js"></script>
 <script>
-const SETTINGS_KEYS = ['store_name','tagline','store_address','store_hours','currency_symbol','logo_url','favicon_url','store_phone','whatsapp_number','store_email','support_email','upi_id','upi_name','free_shipping_above','shipping_fee','delivery_areas','facebook','instagram','youtube','twitter','meta_title','meta_description','ga_id','gsc_id','low_stock_threshold','notification_email'];
-const TOGGLE_KEYS = ['cod_enabled','upi_enabled','whatsapp_orders','wa_order_alert','low_stock_alert'];
-
-function show(id, btn) {
-  document.querySelectorAll('.settings-sec').forEach(s=>s.style.display='none');
+(async()=>{
+  await AdminShell.init('Settings');
+  const settings=await WF.settings.getAll();
+  Object.keys(settings).forEach(key=>{
+    const el=document.getElementById('s_'+key);
+    if(el)el.value=settings[key];
+  });
+})();
+function showSection(id,btn){
+  document.querySelectorAll('.settings-section').forEach(s=>s.style.display='none');
   document.querySelectorAll('.settings-nav-btn').forEach(b=>b.classList.remove('is-active'));
-  document.getElementById('sec-'+id).style.display='block';
+  document.getElementById('section-'+id).style.display='block';
   btn.classList.add('is-active');
 }
-
-async function loadSettings() {
-  const settings = await WF.settings.getAll();
-  SETTINGS_KEYS.forEach(key => {
-    const el = document.getElementById('s_'+key);
-    if (el && settings[key] !== undefined) el.value = settings[key];
-  });
-  TOGGLE_KEYS.forEach(key => {
-    const el = document.getElementById('s_'+key);
-    if (el && settings[key] !== undefined) el.checked = settings[key] === 'true' || settings[key] === true;
-  });
-}
-
-async function saveAll() {
-  const btn = document.querySelector('.pg-hd__actions .btn-primary');
-  btn.textContent = 'Saving…'; btn.disabled = true;
-  try {
-    for (const key of SETTINGS_KEYS) {
-      const el = document.getElementById('s_'+key);
-      if (el) await WF.settings.set(key, el.value);
+async function saveSettings(){
+  const fields=['store_name','tagline','store_address','store_hours','currency_symbol','store_phone','store_whatsapp','store_email','free_shipping_above','shipping_fee'];
+  try{
+    for(const key of fields){
+      const el=document.getElementById('s_'+key);
+      if(el)await WF.settings.set(key,el.value);
     }
-    for (const key of TOGGLE_KEYS) {
-      const el = document.getElementById('s_'+key);
-      if (el) await WF.settings.set(key, el.checked.toString());
-    }
-    toast('All settings saved! Website will reflect changes.');
-  } catch(e) { toast('Error: '+e.message, true); }
-  btn.textContent = 'Save All Settings'; btn.disabled = false;
+    toast('Settings saved! Store updated.');
+  }catch(e){toast('Error: '+e.message,true);}
 }
-
-(async()=>{ await AdminShell.init('Settings','settings'); loadSettings(); })();
-</script></body></html>
+</script>
+</body></html>
