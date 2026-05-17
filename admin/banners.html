@@ -2,337 +2,788 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Banners — WellFix Admin</title>
 <link rel="icon" href="../assets/images/WELLFIX-FAVICON.png">
 <link rel="stylesheet" href="assets/css/admin.css">
+<style>
+/* ══════════════════════════════════════════════
+   BANNER MANAGEMENT — PROFESSIONAL CMS
+   LIVE DIMENSIONS FROM PRODUCTION WEBSITE:
+   Hero Main (desktop): ~380px height, 1-col
+   Hero Cards (desktop): ~180px height, 2-col
+   Promo Banner (large): 160px+ min-height, 2fr
+   Promo Banner (small): 160px+ min-height, 1fr
+   Mobile hero: 200px height
+   Mobile cards: 140px height
+   ══════════════════════════════════════════════ */
+
+/* Position tabs */
+.pos-tabs{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:14px;padding:2px 0;}
+.ptab{padding:6px 14px;border-radius:99px;font-size:12px;font-weight:600;cursor:pointer;border:1.5px solid var(--gray-150,#e0e0e0);background:#fff;color:var(--gray-500);transition:all .15s;white-space:nowrap;}
+.ptab:hover{border-color:var(--gray-300);color:var(--gray-700);}
+.ptab.on{border-color:var(--green-700);background:var(--green-700);color:#fff;}
+.ptab-cnt{font-size:10px;margin-left:3px;opacity:.7;}
+
+/* KPI strip */
+.b-kpi{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px;}
+@media(max-width:800px){.b-kpi{grid-template-columns:repeat(2,1fr);}}
+.bk{background:#fff;border:1px solid var(--gray-100);border-radius:10px;padding:12px 16px;box-shadow:0 1px 2px rgba(0,0,0,.04);position:relative;overflow:hidden;}
+.bk::before{content:'';position:absolute;top:0;left:0;width:3px;height:100%;border-radius:10px 0 0 10px;}
+.bk.gn::before{background:#22c55e;}.bk.bl::before{background:#3b82f6;}.bk.am::before{background:#f59e0b;}.bk.rd::before{background:#ef4444;}
+.bk-val{font-family:var(--font-display);font-size:20px;font-weight:800;color:var(--gray-900);line-height:1;letter-spacing:-.3px;}
+.bk-lbl{font-size:11px;color:var(--gray-400);margin-top:3px;}
+
+/* Live dimension guide */
+.dim-guide{background:var(--gray-25);border:1px solid var(--gray-100);border-radius:10px;padding:12px 16px;margin-bottom:14px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;}
+.dim-item{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--gray-600);}
+.dim-device{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--gray-400);}
+.dim-val{font-family:monospace;font-weight:700;color:var(--gray-900);background:#fff;border:1px solid var(--gray-200);border-radius:4px;padding:1px 6px;font-size:11px;}
+.dim-sep{width:1px;height:24px;background:var(--gray-200);}
+
+/* Banner grid */
+.banner-mgr-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:14px;}
+
+/* Banner card */
+.bcrd{background:#fff;border:1px solid var(--gray-100);border-radius:10px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.04);transition:box-shadow .2s;}
+.bcrd:hover{box-shadow:0 4px 16px rgba(0,0,0,.08);}
+.bcrd-preview{position:relative;overflow:hidden;background:var(--gray-50);}
+.bcrd-preview img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .4s ease;}
+.bcrd:hover .bcrd-preview img{transform:scale(1.04);}
+.bcrd-no-img{display:flex;align-items:center;justify-content:center;flex-direction:column;gap:6px;color:var(--gray-300);background:var(--gray-50);}
+.bcrd-no-img svg{width:28px;height:28px;}
+.bcrd-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.7) 0%,transparent 55%);pointer-events:none;}
+.bcrd-badges{position:absolute;top:8px;left:8px;right:8px;display:flex;align-items:flex-start;justify-content:space-between;}
+.bcrd-pos{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;background:rgba(0,0,0,.5);color:#fff;padding:2px 7px;border-radius:3px;backdrop-filter:blur(4px);}
+.bcrd-sched{font-size:9px;font-weight:700;background:#f59e0b;color:#fff;padding:2px 7px;border-radius:3px;}
+.bcrd-overlay-text{position:absolute;bottom:10px;left:12px;right:12px;}
+.bcrd-title{font-family:var(--font-display);font-size:14px;font-weight:800;color:#fff;line-height:1.3;text-shadow:0 1px 3px rgba(0,0,0,.4);}
+.bcrd-subtitle{font-size:11px;color:rgba(255,255,255,.7);margin-top:2px;text-shadow:0 1px 2px rgba(0,0,0,.3);}
+.bcrd-foot{padding:10px 14px;display:flex;align-items:center;justify-content:space-between;}
+.bcrd-info{flex:1;min-width:0;}
+.bcrd-name{font-weight:700;font-size:13px;color:var(--gray-900);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.bcrd-meta{font-size:10px;color:var(--gray-400);margin-top:2px;}
+.bcrd-actions{display:flex;align-items:center;gap:5px;flex-shrink:0;}
+.bcrd-ra{width:26px;height:26px;border-radius:5px;border:1px solid var(--gray-200);background:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;}
+.bcrd-ra:hover{background:var(--gray-50);}
+.bcrd-ra svg{width:12px;height:12px;stroke:var(--gray-500);fill:none;stroke-width:2;}
+.bcrd-ra.danger:hover{background:#fef2f2;border-color:#fecaca;}
+.bcrd-ra.danger:hover svg{stroke:#dc2626;}
+
+/* Add card */
+.bcrd-add{border:2px dashed var(--gray-200);background:var(--gray-25);cursor:pointer;display:flex;align-items:center;justify-content:center;min-height:200px;border-radius:10px;transition:all .2s;}
+.bcrd-add:hover{border-color:var(--green-400);background:var(--green-50);}
+.bcrd-add svg{width:24px;height:24px;color:var(--gray-300);}
+.bcrd-add span{font-size:12px;font-weight:600;color:var(--gray-400);margin-top:6px;}
+
+/* Preview device tabs */
+.dev-tabs{display:flex;background:var(--gray-50);border:1px solid var(--gray-150,#e0e0e0);border-radius:6px;padding:2px;gap:1px;margin-bottom:10px;}
+.dev-tab{flex:1;padding:5px 8px;border-radius:4px;font-size:11px;font-weight:600;color:var(--gray-500);cursor:pointer;text-align:center;border:none;background:none;transition:all .15s;}
+.dev-tab.on{background:#fff;color:var(--gray-900);box-shadow:0 1px 3px rgba(0,0,0,.1);}
+
+/* Live preview */
+.live-preview{border:1px solid var(--gray-100);border-radius:8px;overflow:hidden;background:var(--gray-50);position:relative;}
+.lp-desktop .lp-img-wrap{aspect-ratio:16/4.7;}
+.lp-desktop .lp-img-wrap.hero-main{aspect-ratio:16/9.4;}
+.lp-desktop .lp-img-wrap.promo-main{aspect-ratio:16/5;}
+.lp-tablet .lp-img-wrap{aspect-ratio:4/3;}
+.lp-mobile .lp-img-wrap{aspect-ratio:9/16;max-width:220px;margin:0 auto;}
+.lp-img-wrap{overflow:hidden;}
+.lp-img-wrap img{width:100%;height:100%;object-fit:cover;display:block;}
+.lp-overlay{position:absolute;inset:0;background:linear-gradient(to right,rgba(0,0,0,.65) 0%,transparent 60%);pointer-events:none;}
+.lp-text{position:absolute;bottom:16px;left:16px;right:50%;}
+.lp-tag{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:rgba(255,255,255,.6);margin-bottom:4px;}
+.lp-title{font-size:16px;font-weight:800;color:#fff;line-height:1.25;font-family:var(--font-display);}
+.lp-cta{display:inline-block;margin-top:6px;background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.35);color:#fff;font-size:11px;font-weight:700;padding:4px 10px;border-radius:4px;}
+.lp-device-label{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--gray-400);text-align:center;padding:5px;background:#fff;border-top:1px solid var(--gray-100);}
+
+/* Upload zone */
+.up-zone{border:2px dashed var(--gray-200);border-radius:8px;background:#fff;cursor:pointer;transition:all .2s;text-align:center;padding:20px;position:relative;}
+.up-zone:hover,.up-zone.over{border-color:var(--green-400);background:var(--green-50);}
+.up-zone input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;}
+.up-zone-preview{width:100%;border-radius:6px;max-height:120px;object-fit:cover;margin-bottom:8px;display:none;}
+.up-zone-preview.show{display:block;}
+.up-prog{margin-top:6px;display:none;}
+.up-prog-bar{height:3px;background:var(--gray-100);border-radius:99px;overflow:hidden;}
+.up-prog-fill{height:100%;background:var(--green-500);border-radius:99px;transition:width .2s;width:0%;}
+.up-prog-msg{font-size:10px;color:var(--gray-400);margin-top:3px;}
+
+/* Toggle */
+.tog{display:flex;align-items:center;cursor:pointer;}
+.tog input{display:none;}
+.tog-tr{width:28px;height:16px;background:var(--gray-200);border-radius:99px;position:relative;transition:background .2s;flex-shrink:0;}
+.tog input:checked+.tog-tr{background:var(--green-500);}
+.tog-tr::after{content:'';width:12px;height:12px;background:#fff;border-radius:50%;position:absolute;top:2px;left:2px;transition:transform .2s;box-shadow:0 1px 3px rgba(0,0,0,.2);}
+.tog input:checked+.tog-tr::after{transform:translateX(12px);}
+
+/* Drag sort */
+.bcrd.dragging{opacity:.4;border:2px dashed var(--green-400);}
+.bcrd.drag-over{border-color:var(--green-500);background:var(--green-50);}
+
+/* Skeleton */
+.sk{background:linear-gradient(90deg,var(--gray-100) 25%,var(--gray-50) 50%,var(--gray-100) 75%);background-size:200% 100%;animation:sk 1.4s infinite;border-radius:6px;}
+@keyframes sk{to{background-position:-200% 0;}}
+
+/* Empty */
+.empty-b{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:48px 24px;text-align:center;grid-column:1/-1;}
+.empty-b svg{width:40px;height:40px;opacity:.15;color:var(--gray-500);margin-bottom:12px;}
+.empty-b h3{font-family:var(--font-display);font-size:15px;font-weight:700;color:var(--gray-600);margin-bottom:4px;}
+.empty-b p{font-size:12px;color:var(--gray-400);}
+
+/* Form modal split */
+.b-modal-split{display:grid;grid-template-columns:1fr 320px;min-height:420px;}
+@media(max-width:800px){.b-modal-split{grid-template-columns:1fr;}}
+.b-modal-l{padding:18px;border-right:1px solid var(--gray-100);}
+.b-modal-r{padding:18px;background:var(--gray-25);}
+@media(max-width:800px){.b-modal-l{border-right:none;border-bottom:1px solid var(--gray-100);}.b-modal-r{background:#fff;}}
+.sec-hd{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--gray-400);margin-bottom:8px;margin-top:16px;padding-bottom:5px;border-bottom:1px solid var(--gray-50);}
+.sec-hd:first-child{margin-top:0;}
+
+/* SEO preview */
+.seo-prev{background:#fff;border:1px solid var(--gray-100);border-radius:8px;padding:10px 12px;margin-top:8px;}
+.seo-url{font-size:11px;color:#1a0dab;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.seo-title-p{font-size:13px;font-weight:600;color:#1a0dab;line-height:1.3;margin:2px 0;}
+.seo-desc-p{font-size:11px;color:#545454;line-height:1.4;}
+
+@media(max-width:768px){.b-modal-split{grid-template-columns:1fr;}}
+</style>
 </head>
 <body>
 <div class="admin-shell">
-  <div id="adminShell"></div>
-  <div class="main-wrap" id="mainWrap">
-    <div class="page-content">
+<div id="adminShell"></div>
+<div class="main-wrap" id="mainWrap">
+<div class="page-content">
 
-      <div class="pg-hd">
-        <div>
-          <h1>Banner Management</h1>
-          <p>Upload and manage homepage hero banners — changes update the website immediately</p>
-        </div>
-        <div class="pg-hd__actions">
-          <button class="btn btn-primary" onclick="openBannerModal()">
-            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-            Add Banner
-          </button>
-        </div>
-      </div>
-
-      <div class="alert alert-warning" style="margin-bottom:20px;">
-        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-        <div>
-          <strong>Recommended banner sizes:</strong> Desktop: 1920×720px WebP (max 250KB) · Mobile: 1080×1350px WebP (max 180KB)
-        </div>
-      </div>
-
-      <div class="tabs">
-        <button class="tab-btn is-active" onclick="filterPosition('hero', this)">Hero Banners</button>
-        <button class="tab-btn" onclick="filterPosition('promo', this)">Promo Banners</button>
-        <button class="tab-btn" onclick="filterPosition('category', this)">Category Banners</button>
-      </div>
-
-      <div id="bannersGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:16px;">
-        <div class="skeleton" style="height:220px;border-radius:14px;"></div>
-        <div class="skeleton" style="height:220px;border-radius:14px;"></div>
-      </div>
-
-    </div>
+<!-- HEADER -->
+<div class="pg-hd">
+  <div>
+    <h1>Banner Management</h1>
+    <p style="font-size:12px;color:var(--gray-400);margin-top:2px;" id="bannerSub">Loading…</p>
+  </div>
+  <div class="pg-hd__actions">
+    <button class="btn btn-outline" onclick="exportBanners()">Export</button>
+    <button class="btn btn-primary" onclick="openModal()">
+      <svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" width="12" height="12"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      Add Banner
+    </button>
   </div>
 </div>
 
-<!-- Banner Modal -->
-<div class="modal-overlay" id="bannerModal">
-  <div class="modal" style="max-width:680px;">
-    <div class="modal-hd">
-      <div class="modal-title" id="bannerModalTitle">Add Banner</div>
-      <button class="modal-close" onclick="closeBannerModal()"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
-    </div>
-    <div class="modal-body">
-      <input type="hidden" id="bannerId">
-      <div class="form-grid form-2" style="gap:14px;">
-        <div class="form-group" style="grid-column:1/-1;">
-          <label class="form-label">Banner Title <span class="req">*</span></label>
-          <input class="form-input" id="bTitle" placeholder="e.g. Premium Kitchen Appliances">
-        </div>
-        <div class="form-group" style="grid-column:1/-1;">
-          <label class="form-label">Subtitle / Description</label>
-          <input class="form-input" id="bSubtitle" placeholder="e.g. Original brands. Unbeatable prices.">
-        </div>
+<!-- KPI -->
+<div class="b-kpi" id="bannerKpi">
+  <div class="bk gn"><div class="sk" style="height:46px;"></div></div>
+  <div class="bk bl"><div class="sk" style="height:46px;"></div></div>
+  <div class="bk am"><div class="sk" style="height:46px;"></div></div>
+  <div class="bk rd"><div class="sk" style="height:46px;"></div></div>
+</div>
+
+<!-- LIVE DIMENSION GUIDE -->
+<div class="dim-guide" id="dimGuide">
+  <div style="font-size:11px;font-weight:700;color:var(--gray-700);">Live Website Dimensions</div>
+  <div class="dim-sep"></div>
+  <div class="dim-item"><span class="dim-device">Desktop Main Hero</span><span class="dim-val">Full-width × 380px</span></div>
+  <div class="dim-item"><span class="dim-device">Desktop Cards</span><span class="dim-val">Full-width × 180px</span></div>
+  <div class="dim-item"><span class="dim-device">Promo Banner</span><span class="dim-val">2:1 ratio × 160px+</span></div>
+  <div class="dim-sep"></div>
+  <div class="dim-item"><span class="dim-device">Mobile Main</span><span class="dim-val">Full-width × 200px</span></div>
+  <div class="dim-item"><span class="dim-device">Mobile Cards</span><span class="dim-val">Full-width × 140px</span></div>
+  <div style="margin-left:auto;font-size:11px;color:var(--green-600);font-weight:600;">Auto-fit on upload</div>
+</div>
+
+<!-- POSITION TABS -->
+<div class="pos-tabs" id="posTabs"></div>
+
+<!-- MAIN GRID -->
+<div class="banner-mgr-grid" id="bannerGrid">
+  <div class="bcrd"><div class="sk" style="height:200px;border-radius:10px;"></div></div>
+  <div class="bcrd"><div class="sk" style="height:200px;border-radius:10px;"></div></div>
+  <div class="bcrd"><div class="sk" style="height:200px;border-radius:10px;"></div></div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     BANNER MODAL — SPLIT LAYOUT
+═══════════════════════════════════════ -->
+<div class="modal-overlay" id="bannerOverlay" onclick="if(event.target===this)closeModal()" style="display:none;align-items:flex-start;justify-content:center;padding:20px 16px;overflow-y:auto;">
+<div class="modal" id="bannerModal" style="max-width:840px;width:100%;margin:auto;max-height:90vh;overflow-y:auto;">
+  <div class="modal-hd">
+    <h3 id="modalTitle">Add Banner</h3>
+    <button class="modal-close" onclick="closeModal()">✕</button>
+  </div>
+  <div class="b-modal-split">
+    <!-- LEFT: Form -->
+    <div class="b-modal-l">
+      <div class="sec-hd">Banner Content</div>
+      <div class="form-group" style="margin-bottom:10px;">
+        <label class="form-label">Banner Title *</label>
+        <input class="form-input" id="bTitle" placeholder="e.g. Premium Kitchen Appliances" oninput="updatePreview()">
+      </div>
+      <div class="form-group" style="margin-bottom:10px;">
+        <label class="form-label">Subtitle</label>
+        <input class="form-input" id="bSub" placeholder="e.g. Original brands. Unbeatable prices." oninput="updatePreview()">
+      </div>
+      <div class="form-grid form-2" style="margin-bottom:10px;">
         <div class="form-group">
           <label class="form-label">CTA Button Text</label>
-          <input class="form-input" id="bCTA" placeholder="Shop Now">
+          <input class="form-input" id="bCTA" placeholder="Shop Now" oninput="updatePreview()">
         </div>
         <div class="form-group">
-          <label class="form-label">CTA Link URL</label>
+          <label class="form-label">CTA Link</label>
           <input class="form-input" id="bCTAUrl" placeholder="/pages/products.html">
         </div>
+      </div>
+      <div class="form-group" style="margin-bottom:10px;">
+        <label class="form-label">Badge / Label Text</label>
+        <input class="form-input" id="bBadge" placeholder="e.g. New Arrivals 2025" oninput="updatePreview()">
+      </div>
+
+      <div class="sec-hd">Placement & Settings</div>
+      <div class="form-grid form-2" style="margin-bottom:10px;">
         <div class="form-group">
-          <label class="form-label">Badge Text</label>
-          <input class="form-input" id="bBadge" placeholder="e.g. New Arrivals 2025">
-        </div>
-        <div class="form-group">
-          <label class="form-label">Position</label>
-          <select class="form-select" id="bPosition">
-            <option value="hero">Hero (Main)</option>
-            <option value="promo">Promo Banner</option>
+          <label class="form-label">Position / Type</label>
+          <select class="form-input" id="bPosition" onchange="updateDimGuide()">
+            <option value="hero">Hero Main (Full-width)</option>
+            <option value="hero_card">Hero Card</option>
+            <option value="promo">Promo Banner (Large)</option>
+            <option value="promo_side">Promo Banner (Side)</option>
             <option value="category">Category Banner</option>
+            <option value="flash_sale">Flash Sale Banner</option>
+            <option value="offer_strip">Offer Strip</option>
+            <option value="popup">Popup Banner</option>
           </select>
         </div>
         <div class="form-group">
           <label class="form-label">Sort Order</label>
           <input class="form-input" type="number" id="bSort" value="0" min="0">
         </div>
+      </div>
+      <div class="form-grid form-2" style="margin-bottom:10px;">
+        <div class="form-group">
+          <label class="form-label">Linked Category</label>
+          <select class="form-input" id="bCategory"><option value="">None</option></select>
+        </div>
         <div class="form-group">
           <label class="form-label">Status</label>
-          <select class="form-select" id="bStatus">
-            <option value="true">Active</option>
-            <option value="false">Inactive</option>
+          <select class="form-input" id="bStatus"><option value="true">Active — live on website</option><option value="false">Inactive — hidden</option></select>
+        </div>
+      </div>
+      <div class="form-grid form-2" style="margin-bottom:10px;">
+        <div class="form-group">
+          <label class="form-label">Schedule Start</label>
+          <input class="form-input" type="datetime-local" id="bStart">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Schedule Expiry</label>
+          <input class="form-input" type="datetime-local" id="bEnd">
+        </div>
+      </div>
+      <div class="form-grid form-2">
+        <div class="form-group">
+          <label class="form-label">Text Color Theme</label>
+          <select class="form-input" id="bTextTheme" onchange="updatePreview()">
+            <option value="light">Light Text (on dark image)</option>
+            <option value="dark">Dark Text (on light image)</option>
           </select>
         </div>
         <div class="form-group">
-          <label class="form-label">Start Date (optional)</label>
-          <input class="form-input" type="datetime-local" id="bStartsAt">
+          <label class="form-label">Overlay Opacity</label>
+          <select class="form-input" id="bOverlay" onchange="updatePreview()">
+            <option value="0.65">Standard (65%)</option>
+            <option value="0.45">Light (45%)</option>
+            <option value="0.80">Heavy (80%)</option>
+            <option value="0">None</option>
+          </select>
         </div>
-        <div class="form-group">
-          <label class="form-label">End Date (optional)</label>
-          <input class="form-input" type="datetime-local" id="bEndsAt">
-        </div>
+      </div>
 
-        <!-- Desktop image -->
-        <div class="form-group" style="grid-column:1/-1;">
-          <label class="form-label">Desktop Banner Image</label>
-          <div style="display:flex;gap:12px;align-items:flex-start;">
-            <div class="upload-zone" style="flex:1;padding:16px;" onclick="document.getElementById('desktopImgInput').click()" id="desktopDropzone">
-              <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" style="width:24px;height:24px;"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-              <p>Click to upload desktop image <span>1920×720px</span></p>
-            </div>
-            <div id="desktopPreview" style="display:none;width:160px;flex-shrink:0;">
-              <img id="desktopPreviewImg" style="width:100%;height:90px;object-fit:cover;border-radius:var(--r-md);border:1.5px solid var(--gray-100);">
-              <button onclick="clearDesktopImage()" style="width:100%;font-size:11px;color:var(--red-500);padding:4px;margin-top:4px;">Remove</button>
-            </div>
-          </div>
-          <input type="file" id="desktopImgInput" accept="image/*" style="display:none;" onchange="uploadDesktopImage(this)">
-          <input type="hidden" id="bDesktopUrl">
-        </div>
-
-        <!-- Mobile image -->
-        <div class="form-group" style="grid-column:1/-1;">
-          <label class="form-label">Mobile Banner Image</label>
-          <div style="display:flex;gap:12px;align-items:flex-start;">
-            <div class="upload-zone" style="flex:1;padding:16px;" onclick="document.getElementById('mobileImgInput').click()">
-              <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" style="width:24px;height:24px;"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-              <p>Click to upload mobile image <span>1080×1350px</span></p>
-            </div>
-            <div id="mobilePreview" style="display:none;width:80px;flex-shrink:0;">
-              <img id="mobilePreviewImg" style="width:100%;height:110px;object-fit:cover;border-radius:var(--r-md);border:1.5px solid var(--gray-100);">
-              <button onclick="clearMobileImage()" style="width:100%;font-size:11px;color:var(--red-500);padding:4px;margin-top:4px;">Remove</button>
-            </div>
-          </div>
-          <input type="file" id="mobileImgInput" accept="image/*" style="display:none;" onchange="uploadMobileImage(this)">
-          <input type="hidden" id="bMobileUrl">
-        </div>
-
+      <div class="sec-hd">SEO</div>
+      <div class="form-group" style="margin-bottom:8px;">
+        <label class="form-label">Alt Text</label>
+        <input class="form-input" id="bAlt" placeholder="Describe the banner image for screen readers" oninput="updateSEOPrev()">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Meta Title (for banner page)</label>
+        <input class="form-input" id="bMetaTitle" placeholder="SEO title" oninput="updateSEOPrev()">
       </div>
     </div>
-    <div class="modal-ft">
-      <button class="btn btn-secondary" onclick="closeBannerModal()">Cancel</button>
-      <button class="btn btn-primary" id="saveBannerBtn" onclick="saveBanner()">
-        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
-        Save Banner
-      </button>
+
+    <!-- RIGHT: Upload + Preview -->
+    <div class="b-modal-r">
+      <div class="sec-hd">Banner Image</div>
+      <div id="dimNote" style="font-size:11px;color:var(--green-700);background:var(--green-50);border-radius:6px;padding:7px 10px;margin-bottom:10px;"></div>
+      <div class="up-zone" id="upZone"
+        ondragover="upOver(event)" ondragleave="upLeave(event)" ondrop="upDrop(event)">
+        <input type="file" accept="image/*" onchange="handleUpload(this)">
+        <img id="upPreview" class="up-zone-preview">
+        <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" width="26" height="26" style="opacity:.2;margin-bottom:6px;" id="upIcon"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+        <div style="font-size:12px;font-weight:600;color:var(--gray-600);" id="upLbl">Drop image or click to upload</div>
+        <div style="font-size:10px;color:var(--gray-400);margin-top:2px;">PNG JPG WebP AVIF — Auto WebP conversion</div>
+        <div class="up-prog" id="upProg"><div class="up-prog-bar"><div class="up-prog-fill" id="upFill"></div></div><div class="up-prog-msg" id="upMsg"></div></div>
+      </div>
+      <button id="upRemove" onclick="removeImg()" style="display:none;margin-top:5px;width:100%;height:26px;border:1px solid var(--red-200);background:var(--red-50);color:var(--red-600);border-radius:5px;font-size:10px;font-weight:600;cursor:pointer;">Remove Image</button>
+
+      <div class="sec-hd">Live Preview</div>
+      <div class="dev-tabs">
+        <button class="dev-tab on" id="dsk-tab" onclick="setPrevDev('desktop',this)">Desktop</button>
+        <button class="dev-tab" id="mob-tab" onclick="setPrevDev('mobile',this)">Mobile</button>
+      </div>
+      <div class="live-preview lp-desktop" id="livePreview">
+        <div class="lp-img-wrap" id="lpImgWrap">
+          <img id="lpImg" src="" alt="" style="display:none;width:100%;height:100%;object-fit:cover;">
+          <div id="lpPlaceholder" style="width:100%;aspect-ratio:16/4.7;background:var(--gray-100);display:flex;align-items:center;justify-content:center;"><span style="font-size:11px;color:var(--gray-300);">Preview will appear here</span></div>
+        </div>
+        <div class="lp-overlay" id="lpOverlay"></div>
+        <div class="lp-text" id="lpText"></div>
+        <div class="lp-device-label" id="lpLabel">Desktop</div>
+      </div>
+
+      <div class="sec-hd">Search Preview</div>
+      <div class="seo-prev">
+        <div class="seo-url" id="seoUrl">wellfixappliances.github.io/wellfix-website/</div>
+        <div class="seo-title-p" id="seoTitle">Banner Title</div>
+        <div class="seo-desc-p" id="seoDesc">Banner description for search engines</div>
+      </div>
     </div>
   </div>
+  <div class="modal-ft">
+    <button class="btn btn-outline" onclick="closeModal()">Cancel</button>
+    <button class="btn" id="dupBtn" style="background:var(--gray-100);color:var(--gray-600);display:none;" onclick="duplicateBanner()">Duplicate</button>
+    <button class="btn" id="delBtn" style="background:var(--red-100);color:var(--red-600);display:none;" onclick="deleteBanner()">Delete</button>
+    <button class="btn btn-primary" id="saveBtn" onclick="saveBanner()">
+      <svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" width="12" height="12"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/></svg>
+      Save Banner
+    </button>
+  </div>
+</div>
 </div>
 
+</div></div></div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="../backend/config/supabase.js"></script>
 <script src="assets/js/shell.js"></script>
 <script>
-let allBanners = [], currentPosition = 'hero';
+'use strict';
+
+// LIVE WEBSITE DIMENSIONS (from production sections.css)
+const LIVE_DIMS = {
+  hero:       { w:'Full-width', h:'380px desktop / 200px mobile', ar:'varies', note:'Full-width hero. Auto-fit to container. Recommend: 1920×380px or wider.' },
+  hero_card:  { w:'~33% width', h:'180px desktop / 140px mobile', ar:'~3:1',   note:'Hero grid card. Recommend: 800×180px.' },
+  promo:      { w:'~66% width', h:'160px+ min',                   ar:'2:1',    note:'Large promo banner (2fr grid). Recommend: 1000×300px.' },
+  promo_side: { w:'~33% width', h:'160px+ min',                   ar:'1:1',    note:'Side promo banner (1fr grid). Recommend: 500×300px.' },
+  category:   { w:'Full-width', h:'180px',                        ar:'5:1',    note:'Category section banner. Recommend: 1200×240px.' },
+  flash_sale: { w:'Full-width', h:'160px',                        ar:'6:1',    note:'Flash sale strip. Recommend: 1200×200px.' },
+  offer_strip:{ w:'Full-width', h:'~50px',                        ar:'auto',   note:'Offer strip bar. Text-based. Small banner.' },
+  popup:      { w:'480px center', h:'480px',                      ar:'1:1',    note:'Centered popup. Recommend: 480×480px.' },
+};
+
+const POS_LABELS = {
+  hero:'Hero Main',hero_card:'Hero Card',promo:'Promo Large',promo_side:'Promo Side',
+  category:'Category',flash_sale:'Flash Sale',offer_strip:'Offer Strip',popup:'Popup',
+  all:'All Banners'
+};
+
+let allBanners = [], currentPos = 'all', editId = null, currentImgUrl = null;
+let prevDevice = 'desktop';
+let dragSrc = null;
 
 (async () => {
-  await AdminShell.init('Banners');
-  await loadBanners();
+  await AdminShell.init('Banners', 'banners');
+  await loadAll();
 })();
 
-async function loadBanners() {
-  allBanners = await WF.banners.getAll();
-  renderBanners();
+async function loadAll() {
+  const [bRes, cRes] = await Promise.all([
+    db.from('banners').select('*').order('sort_order'),
+    db.from('categories').select('id,name').eq('is_active', true).order('name'),
+  ]);
+  allBanners = bRes.data || [];
+  const cats = cRes.data || [];
+
+  // Populate category select in modal
+  document.getElementById('bCategory').innerHTML = '<option value="">None</option>' +
+    cats.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+
+  renderKPIs();
+  renderPosTabs();
+  renderGrid();
 }
 
-function filterPosition(pos, btn) {
-  currentPosition = pos;
-  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('is-active'));
-  btn.classList.add('is-active');
-  renderBanners();
+function renderKPIs() {
+  const total = allBanners.length;
+  const active = allBanners.filter(b => b.is_active).length;
+  const scheduled = allBanners.filter(b => b.starts_at || b.ends_at).length;
+  const noImg = allBanners.filter(b => !b.desktop_image_url).length;
+  document.getElementById('bannerSub').textContent = `${total} banners · ${active} active · ${scheduled} scheduled`;
+  document.getElementById('bannerKpi').innerHTML = [
+    { cls:'gn', val:total,     lbl:'Total Banners' },
+    { cls:'bl', val:active,    lbl:'Active Now' },
+    { cls:'am', val:scheduled, lbl:'Scheduled' },
+    { cls:'rd', val:noImg,     lbl:'No Image' },
+  ].map(k => `<div class="bk ${k.cls}"><div class="bk-val">${k.val}</div><div class="bk-lbl">${k.lbl}</div></div>`).join('');
 }
 
-function renderBanners() {
-  const filtered = allBanners.filter(b => b.position === currentPosition);
-  const grid = document.getElementById('bannersGrid');
-  if (!filtered.length) {
-    grid.innerHTML = `
-      <div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--gray-300);">
-        <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" style="width:40px;height:40px;margin:0 auto 12px;"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>
-        <div>No ${currentPosition} banners yet</div>
-        <button class="btn btn-primary btn-sm" style="margin-top:12px;" onclick="openBannerModal()">Add First Banner</button>
-      </div>
-      <div class="card" style="border:2px dashed var(--gray-150);display:flex;align-items:center;justify-content:center;min-height:180px;cursor:pointer;" onclick="openBannerModal()" onmouseover="this.style.borderColor='var(--green-400)'" onmouseout="this.style.borderColor='var(--gray-150)'">
-        <div style="text-align:center;color:var(--gray-300);">
-          <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" style="width:28px;height:28px;margin:0 auto 8px;"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-          <div style="font-size:13px;font-weight:600;">Add New Banner</div>
-        </div>
-      </div>`;
-    return;
-  }
-  grid.innerHTML = filtered.map(b => `
-    <div class="card">
-      <div style="position:relative;overflow:hidden;border-radius:var(--r-lg) var(--r-lg) 0 0;aspect-ratio:16/7;background:var(--gray-100);">
+function renderPosTabs() {
+  const counts = {};
+  allBanners.forEach(b => { counts[b.position] = (counts[b.position]||0)+1; });
+  const tabs = ['all','hero','hero_card','promo','promo_side','category','flash_sale','offer_strip','popup'];
+  document.getElementById('posTabs').innerHTML = tabs.map(p => {
+    const cnt = p === 'all' ? allBanners.length : (counts[p]||0);
+    return `<div class="ptab ${currentPos===p?'on':''}" onclick="setPos('${p}')">${POS_LABELS[p]}<span class="ptab-cnt">${cnt}</span></div>`;
+  }).join('');
+}
+
+function setPos(p) {
+  currentPos = p;
+  renderPosTabs();
+  renderGrid();
+  updateDimGuide();
+}
+
+function getPreviewHeight(pos) {
+  if (pos === 'hero') return '130px';
+  if (pos === 'popup') return '200px';
+  if (pos === 'offer_strip') return '60px';
+  return '100px';
+}
+
+function renderGrid() {
+  const el = document.getElementById('bannerGrid');
+  const list = currentPos === 'all' ? allBanners : allBanners.filter(b => b.position === currentPos);
+
+  const now = new Date();
+  const cards = list.map((b, i) => {
+    const isExpired = b.ends_at && new Date(b.ends_at) < now;
+    const isScheduled = b.starts_at && new Date(b.starts_at) > now;
+    const ph = getPreviewHeight(b.position || 'hero');
+    const opa = b.text_overlay_opacity ?? 0.65;
+    return `<div class="bcrd" draggable="true" id="bc-${b.id}"
+      ondragstart="dragStart('${b.id}')" ondragover="dragOver(event,'${b.id}')" ondrop="dragDrop(event,'${b.id}')" ondragend="dragEnd()">
+      <div class="bcrd-preview" style="height:${ph};">
         ${b.desktop_image_url
-          ? `<img src="${b.desktop_image_url}" style="width:100%;height:100%;object-fit:cover;" alt="${b.title}">`
-          : `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:var(--green-700);"><span style="color:rgba(255,255,255,.3);font-size:13px;">No image uploaded</span></div>`}
-        <div style="position:absolute;inset:0;background:linear-gradient(to right,rgba(0,0,0,.6) 0%,transparent 60%);padding:16px 18px;display:flex;flex-direction:column;justify-content:flex-end;">
-          ${b.badge_text ? `<span style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--gold-300);margin-bottom:4px;">${b.badge_text}</span>` : ''}
-          <div style="font-size:16px;font-weight:800;color:#fff;font-family:var(--font-display);">${b.title}</div>
-          ${b.subtitle ? `<div style="font-size:12px;color:rgba(255,255,255,.6);margin-top:3px;">${b.subtitle}</div>` : ''}
+          ? `<img src="${b.desktop_image_url}" alt="${b.title||''}" loading="lazy" style="width:100%;height:${ph};object-fit:cover;">`
+          : `<div class="bcrd-no-img" style="height:${ph};"><svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg><span style="font-size:11px;">No image</span></div>`}
+        <div class="bcrd-overlay" style="background:linear-gradient(to top,rgba(0,0,0,${opa}) 0%,transparent 55%);"></div>
+        <div class="bcrd-badges">
+          <span class="bcrd-pos">${POS_LABELS[b.position]||b.position||'—'}</span>
+          ${isScheduled ? '<span class="bcrd-sched">Scheduled</span>' : ''}
+          ${isExpired ? '<span class="bcrd-sched" style="background:#ef4444;">Expired</span>' : ''}
         </div>
-        <div style="position:absolute;top:8px;right:8px;">${renderBadge(b.is_active ? 'active' : 'inactive')}</div>
-        ${b.mobile_image_url ? `<div style="position:absolute;top:8px;left:8px;background:rgba(0,0,0,.5);color:#fff;font-size:9px;font-weight:700;padding:2px 7px;border-radius:3px;">✓ Mobile</div>` : ''}
+        ${b.title ? `<div class="bcrd-overlay-text"><div class="bcrd-title">${b.title}</div>${b.subtitle?`<div class="bcrd-subtitle">${b.subtitle}</div>`:''}</div>` : ''}
       </div>
-      <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;">
-        <div>
-          <div style="font-size:13px;font-weight:600;color:var(--gray-900);">${b.title}</div>
-          <div style="font-size:11px;color:var(--gray-400);">Sort: ${b.sort_order} · ${b.cta_text || 'No CTA'}</div>
+      <div class="bcrd-foot">
+        <div class="bcrd-info">
+          <div class="bcrd-name">${b.title||'Untitled'}</div>
+          <div class="bcrd-meta">Sort: ${b.sort_order??0} · ${b.cta_text||'No CTA'} ${b.starts_at?'· Starts '+new Date(b.starts_at).toLocaleDateString():''}</div>
         </div>
-        <div style="display:flex;align-items:center;gap:8px;">
-          <label class="toggle"><input type="checkbox" ${b.is_active ? 'checked' : ''} onchange="toggleBanner('${b.id}', this.checked)"><span class="toggle-track"></span></label>
-          <button class="btn-icon" onclick="editBanner('${b.id}')" title="Edit"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
-          <button class="btn-icon danger" onclick="deleteBanner('${b.id}', '${b.title.replace(/'/g, "\\'")}')"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg></button>
+        <div class="bcrd-actions">
+          <label class="tog" onclick="event.stopPropagation()">
+            <input type="checkbox" ${b.is_active?'checked':''} onchange="toggleBanner('${b.id}',this.checked)">
+            <span class="tog-tr"></span>
+          </label>
+          <button class="bcrd-ra" title="Copy URL" onclick="event.stopPropagation();copyUrl('${b.desktop_image_url||''}')">
+            <svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+          </button>
+          <button class="bcrd-ra" title="Edit" onclick="event.stopPropagation();editBanner('${b.id}')">
+            <svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4z"/></svg>
+          </button>
+          <button class="bcrd-ra danger" title="Delete" onclick="event.stopPropagation();deleteById('${b.id}')">
+            <svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg>
+          </button>
         </div>
-      </div>
-    </div>`).join('') +
-    `<div class="card" style="border:2px dashed var(--gray-150);display:flex;align-items:center;justify-content:center;min-height:180px;cursor:pointer;" onclick="openBannerModal()" onmouseover="this.style.borderColor='var(--green-400)'" onmouseout="this.style.borderColor='var(--gray-150)'">
-      <div style="text-align:center;color:var(--gray-300);">
-        <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" style="width:28px;height:28px;margin:0 auto 8px;"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-        <div style="font-size:13px;font-weight:600;">Add New Banner</div>
       </div>
     </div>`;
+  }).join('');
+
+  const addCard = `<div class="bcrd-add" onclick="openModal()">
+    <div style="text-align:center;">
+      <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" style="margin:0 auto;display:block;"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      <span>${currentPos==='all'?'Add Banner':`Add ${POS_LABELS[currentPos]} Banner`}</span>
+    </div>
+  </div>`;
+
+  el.innerHTML = list.length
+    ? cards + addCard
+    : `<div class="empty-b">
+        <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+        <h3>No ${currentPos==='all'?'':POS_LABELS[currentPos]+' '}banners yet</h3>
+        <p>Add your first banner — changes update website immediately</p>
+        <button class="btn btn-primary" style="margin-top:12px;" onclick="openModal()">Add Banner</button>
+      </div>` + addCard;
 }
 
-function openBannerModal(data = null) {
-  clearBannerForm();
-  if (data) fillBannerForm(data);
-  document.getElementById('bannerModalTitle').textContent = data ? 'Edit Banner' : 'Add Banner';
-  document.getElementById('bPosition').value = currentPosition;
-  document.getElementById('bannerModal').classList.add('is-open');
-  document.body.style.overflow = 'hidden';
+// DRAG SORT
+function dragStart(id) { dragSrc=id; setTimeout(()=>document.getElementById('bc-'+id)?.classList.add('dragging'),0); }
+function dragOver(e,id) { e.preventDefault(); document.querySelectorAll('.bcrd').forEach(c=>c.classList.toggle('drag-over',c.id==='bc-'+id&&id!==dragSrc)); }
+function dragDrop(e,id) {
+  e.preventDefault();
+  if(!dragSrc||dragSrc===id) return;
+  const srcIdx=allBanners.findIndex(b=>b.id===dragSrc);
+  const tgtIdx=allBanners.findIndex(b=>b.id===id);
+  const moved=allBanners.splice(srcIdx,1)[0];
+  allBanners.splice(tgtIdx,0,moved);
+  allBanners.forEach((b,i)=>{b.sort_order=i;db.from('banners').update({sort_order:i}).eq('id',b.id);});
+  dragSrc=null; renderGrid();
+  toast('Order saved');
 }
-function closeBannerModal() {
-  document.getElementById('bannerModal').classList.remove('is-open');
-  document.body.style.overflow = '';
-}
-document.getElementById('bannerModal').addEventListener('click', e => { if (e.target === e.currentTarget) closeBannerModal(); });
+function dragEnd() { document.querySelectorAll('.bcrd').forEach(c=>c.classList.remove('dragging','drag-over')); dragSrc=null; }
 
-function clearBannerForm() {
-  ['bannerId','bTitle','bSubtitle','bCTA','bCTAUrl','bBadge','bDesktopUrl','bMobileUrl'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
-  document.getElementById('bSort').value = 0;
-  document.getElementById('bStatus').value = 'true';
-  document.getElementById('bStartsAt').value = '';
-  document.getElementById('bEndsAt').value = '';
-  document.getElementById('desktopPreview').style.display = 'none';
-  document.getElementById('mobilePreview').style.display = 'none';
-}
-function fillBannerForm(b) {
-  document.getElementById('bannerId').value = b.id;
-  document.getElementById('bTitle').value = b.title || '';
-  document.getElementById('bSubtitle').value = b.subtitle || '';
-  document.getElementById('bCTA').value = b.cta_text || '';
-  document.getElementById('bCTAUrl').value = b.cta_url || '';
-  document.getElementById('bBadge').value = b.badge_text || '';
-  document.getElementById('bPosition').value = b.position || 'hero';
-  document.getElementById('bSort').value = b.sort_order || 0;
-  document.getElementById('bStatus').value = String(b.is_active !== false);
-  if (b.desktop_image_url) { document.getElementById('bDesktopUrl').value = b.desktop_image_url; document.getElementById('desktopPreviewImg').src = b.desktop_image_url; document.getElementById('desktopPreview').style.display = 'block'; }
-  if (b.mobile_image_url) { document.getElementById('bMobileUrl').value = b.mobile_image_url; document.getElementById('mobilePreviewImg').src = b.mobile_image_url; document.getElementById('mobilePreview').style.display = 'block'; }
+// MODAL
+function openModal(id=null) {
+  editId=null; currentImgUrl=null;
+  clearForm();
+  if(currentPos!=='all') document.getElementById('bPosition').value=currentPos;
+  updateDimGuide();
+  document.getElementById('modalTitle').textContent='Add Banner';
+  document.getElementById('delBtn').style.display='none';
+  document.getElementById('dupBtn').style.display='none';
+  document.getElementById('bannerOverlay').style.display='flex';
+  updatePreview();
 }
 
-async function uploadDesktopImage(input) {
-  const file = input.files[0]; if (!file) return;
-  const btn = document.getElementById('saveBannerBtn');
-  btn.disabled = true; btn.textContent = 'Uploading…';
+function editBanner(id) {
+  const b=allBanners.find(x=>x.id===id);if(!b)return;
+  editId=id; currentImgUrl=b.desktop_image_url||null;
+  document.getElementById('bTitle').value=b.title||'';
+  document.getElementById('bSub').value=b.subtitle||'';
+  document.getElementById('bCTA').value=b.cta_text||'';
+  document.getElementById('bCTAUrl').value=b.cta_url||'';
+  document.getElementById('bBadge').value=b.badge_text||'';
+  document.getElementById('bPosition').value=b.position||'hero';
+  document.getElementById('bSort').value=b.sort_order??0;
+  document.getElementById('bStatus').value=String(b.is_active!==false);
+  document.getElementById('bStart').value=b.starts_at?b.starts_at.slice(0,16):'';
+  document.getElementById('bEnd').value=b.ends_at?b.ends_at.slice(0,16):'';
+  document.getElementById('bAlt').value=b.alt_text||'';
+  document.getElementById('bMetaTitle').value=b.meta_title||'';
+  document.getElementById('bTextTheme').value=b.text_theme||'light';
+  document.getElementById('bOverlay').value=String(b.text_overlay_opacity??0.65);
+  if(b.desktop_image_url){
+    const prev=document.getElementById('upPreview');
+    prev.src=b.desktop_image_url;prev.classList.add('show');
+    document.getElementById('upIcon').style.display='none';
+    document.getElementById('upLbl').textContent='Click to replace';
+    document.getElementById('upRemove').style.display='block';
+  }else resetUpZone();
+  updateDimGuide();updatePreview();updateSEOPrev();
+  document.getElementById('modalTitle').textContent='Edit Banner';
+  document.getElementById('delBtn').style.display='block';
+  document.getElementById('dupBtn').style.display='block';
+  document.getElementById('bannerOverlay').style.display='flex';
+}
+
+function closeModal() { document.getElementById('bannerOverlay').style.display='none'; }
+
+function clearForm() {
+  ['bTitle','bSub','bCTA','bCTAUrl','bBadge','bAlt','bMetaTitle'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('bSort').value=0;
+  document.getElementById('bStatus').value='true';
+  document.getElementById('bStart').value='';document.getElementById('bEnd').value='';
+  document.getElementById('bTextTheme').value='light';
+  document.getElementById('bOverlay').value='0.65';
+  resetUpZone();updatePreview();updateSEOPrev();
+}
+
+function updateDimGuide() {
+  const pos=document.getElementById('bPosition').value;
+  const dim=LIVE_DIMS[pos]||LIVE_DIMS.hero;
+  document.getElementById('dimNote').textContent=`Live dimensions: ${dim.note}`;
+}
+
+// UPLOAD
+function upOver(e){e.preventDefault();document.getElementById('upZone').classList.add('over');}
+function upLeave(e){document.getElementById('upZone').classList.remove('over');}
+function upDrop(e){e.preventDefault();upLeave();const f=e.dataTransfer.files[0];if(f)processAndUpload(f);}
+function handleUpload(input){const f=input.files[0];if(f)processAndUpload(f);}
+
+async function processAndUpload(file) {
+  const pos=document.getElementById('bPosition').value;
+  const prog=document.getElementById('upProg');
+  const fill=document.getElementById('upFill');
+  const msg=document.getElementById('upMsg');
+  prog.style.display='block'; fill.style.width='20%'; msg.textContent='Converting to WebP…';
   try {
-    const { url } = await uploadFile(file, 'banners');
-    document.getElementById('bDesktopUrl').value = url;
-    document.getElementById('desktopPreviewImg').src = url;
-    document.getElementById('desktopPreview').style.display = 'block';
-    toast('Desktop image uploaded!');
-  } catch (e) { toast('Upload failed: ' + e.message, true); }
-  finally { btn.disabled = false; btn.innerHTML = '<svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Save Banner'; input.value = ''; }
+    // Smart processing: preserve aspect ratio, use contain with position background
+    const processed = await new Promise(resolve => {
+      const reader=new FileReader();
+      reader.onload=e=>{
+        const img=new Image();
+        img.onload=()=>{
+          // Target dimensions based on banner type
+          let W=1920,H=380;
+          if(pos==='hero_card'){W=800;H=180;}
+          else if(pos==='promo'){W=1000;H=300;}
+          else if(pos==='promo_side'){W=500;H=300;}
+          else if(pos==='popup'){W=480;H=480;}
+          else if(pos==='offer_strip'){W=1200;H=80;}
+          else if(pos==='category'){W=1200;H=240;}
+          else if(pos==='flash_sale'){W=1200;H=200;}
+          const canvas=document.createElement('canvas');
+          canvas.width=W;canvas.height=H;
+          const ctx=canvas.getContext('2d');
+          // Smart cover: scale to fill, center crop
+          const scale=Math.max(W/img.width,H/img.height);
+          const sw=img.width*scale,sh=img.height*scale;
+          ctx.drawImage(img,(W-sw)/2,(H-sh)/2,sw,sh);
+          canvas.toBlob(blob=>{
+            resolve(new File([blob],file.name.replace(/\.[^.]+$/,'')+'.webp',{type:'image/webp'}));
+          },'image/webp',0.88);
+        };
+        img.src=e.target.result;
+      };
+      reader.readAsDataURL(file);
+    });
+    fill.style.width='60%'; msg.textContent='Uploading to storage…';
+    const fname=`banners/${pos}-${Date.now()}-${Math.random().toString(36).slice(2)}.webp`;
+    let url;
+    for(const bucket of['media','products']){
+      const{error}=await db.storage.from(bucket).upload(fname,processed,{cacheControl:'3600',upsert:false});
+      if(!error){url=db.storage.from(bucket).getPublicUrl(fname).data.publicUrl;break;}
+    }
+    if(!url)throw new Error('Upload failed');
+    currentImgUrl=url;
+    fill.style.width='100%'; msg.textContent='Uploaded';
+    const prev=document.getElementById('upPreview');
+    prev.src=url;prev.classList.add('show');
+    document.getElementById('upIcon').style.display='none';
+    document.getElementById('upLbl').textContent='Click to replace';
+    document.getElementById('upRemove').style.display='block';
+    updatePreview();
+    setTimeout(()=>{prog.style.display='none';fill.style.width='0%';},1500);
+  }catch(e){toast('Upload failed: '+e.message,true);prog.style.display='none';}
 }
-async function uploadMobileImage(input) {
-  const file = input.files[0]; if (!file) return;
-  try {
-    const { url } = await uploadFile(file, 'banners');
-    document.getElementById('bMobileUrl').value = url;
-    document.getElementById('mobilePreviewImg').src = url;
-    document.getElementById('mobilePreview').style.display = 'block';
-    toast('Mobile image uploaded!');
-  } catch (e) { toast('Upload failed: ' + e.message, true); }
-  finally { input.value = ''; }
-}
-function clearDesktopImage() { document.getElementById('bDesktopUrl').value = ''; document.getElementById('desktopPreview').style.display = 'none'; }
-function clearMobileImage()  { document.getElementById('bMobileUrl').value = '';  document.getElementById('mobilePreview').style.display = 'none'; }
 
-async function saveBanner() {
-  const title = document.getElementById('bTitle').value.trim();
-  if (!title) { toast('Banner title is required', true); return; }
-  const id = document.getElementById('bannerId').value;
-  const data = {
-    title,
-    subtitle: document.getElementById('bSubtitle').value || null,
-    cta_text: document.getElementById('bCTA').value || null,
-    cta_url: document.getElementById('bCTAUrl').value || null,
-    badge_text: document.getElementById('bBadge').value || null,
-    position: document.getElementById('bPosition').value,
-    sort_order: parseInt(document.getElementById('bSort').value) || 0,
-    is_active: document.getElementById('bStatus').value === 'true',
-    desktop_image_url: document.getElementById('bDesktopUrl').value || null,
-    mobile_image_url: document.getElementById('bMobileUrl').value || null,
-    starts_at: document.getElementById('bStartsAt').value || null,
-    ends_at: document.getElementById('bEndsAt').value || null,
-  };
-  try {
-    if (id) await WF.banners.update(id, data);
-    else await WF.banners.create(data);
-    toast('Banner saved! Frontend updated automatically.');
-    closeBannerModal();
-    await loadBanners();
-  } catch (e) { toast('Error: ' + e.message, true); }
+function removeImg(){currentImgUrl=null;resetUpZone();updatePreview();}
+function resetUpZone(){
+  const p=document.getElementById('upPreview');p.src='';p.classList.remove('show');
+  document.getElementById('upIcon').style.display='block';
+  document.getElementById('upLbl').textContent='Drop image or click to upload';
+  document.getElementById('upRemove').style.display='none';
 }
 
-async function editBanner(id) {
-  const banner = allBanners.find(b => b.id === id);
-  openBannerModal(banner);
+// PREVIEW
+function setPrevDev(dev,el){
+  prevDevice=dev;
+  document.querySelectorAll('.dev-tab').forEach(t=>t.classList.remove('on'));el.classList.add('on');
+  const lp=document.getElementById('livePreview');
+  const wrap=document.getElementById('lpImgWrap');
+  const lbl=document.getElementById('lpLabel');
+  const pos=document.getElementById('bPosition').value;
+  lp.className='live-preview '+(dev==='desktop'?'lp-desktop':'lp-mobile');
+  if(dev==='desktop'){
+    wrap.style.cssText=pos==='hero'?'aspect-ratio:16/4.2':pos==='popup'?'aspect-ratio:1':pos==='offer_strip'?'aspect-ratio:15/1':'aspect-ratio:16/5';
+    lbl.textContent='Desktop Preview';
+  }else{
+    wrap.style.cssText=pos==='popup'?'aspect-ratio:1;max-width:200px;margin:0 auto':pos==='offer_strip'?'aspect-ratio:8/1':'aspect-ratio:9/16;max-width:180px;margin:0 auto';
+    lbl.textContent='Mobile Preview';
+  }
+  updatePreview();
 }
-async function deleteBanner(id, title) {
-  if (!confirmDialog(`Delete banner "${title}"?`)) return;
-  await WF.banners.delete(id);
-  toast('Banner deleted');
-  await loadBanners();
+
+function updatePreview(){
+  const title=document.getElementById('bTitle').value;
+  const sub=document.getElementById('bSub').value;
+  const cta=document.getElementById('bCTA').value;
+  const badge=document.getElementById('bBadge').value;
+  const opa=parseFloat(document.getElementById('bOverlay').value)||0.65;
+  const lpImg=document.getElementById('lpImg');
+  const lpPlaceholder=document.getElementById('lpPlaceholder');
+  const lpOverlay=document.getElementById('lpOverlay');
+  const lpText=document.getElementById('lpText');
+  if(currentImgUrl){
+    lpImg.src=currentImgUrl;lpImg.style.display='block';
+    lpPlaceholder.style.display='none';
+  }else{
+    lpImg.style.display='none';lpPlaceholder.style.display='flex';
+  }
+  lpOverlay.style.background=`linear-gradient(to right,rgba(0,0,0,${opa}) 0%,transparent 60%)`;
+  lpText.innerHTML=`${badge?`<div class="lp-tag">${badge}</div>`:''}${title?`<div class="lp-title">${title}</div>`:''}${sub?`<div style="font-size:11px;color:rgba(255,255,255,.7);margin-top:2px;">${sub}</div>`:''}${cta?`<div class="lp-cta">${cta}</div>`:''}`;
 }
-async function toggleBanner(id, active) {
-  await WF.banners.update(id, { is_active: active });
-  toast(active ? 'Banner activated' : 'Banner deactivated');
-  await loadBanners();
+
+function updateSEOPrev(){
+  const title=document.getElementById('bMetaTitle').value||document.getElementById('bTitle').value||'Banner';
+  const desc=document.getElementById('bAlt').value||'WellFix Appliances banner';
+  document.getElementById('seoTitle').textContent=title+' — WellFix Appliances';
+  document.getElementById('seoDesc').textContent=desc;
+}
+
+// SAVE
+async function saveBanner(){
+  const title=document.getElementById('bTitle').value.trim();
+  if(!title){toast('Banner title is required',true);return;}
+  const btn=document.getElementById('saveBtn');btn.textContent='Saving…';btn.disabled=true;
+  try{
+    const payload={
+      title,
+      subtitle:document.getElementById('bSub').value||null,
+      cta_text:document.getElementById('bCTA').value||null,
+      cta_url:document.getElementById('bCTAUrl').value||null,
+      badge_text:document.getElementById('bBadge').value||null,
+      position:document.getElementById('bPosition').value,
+      sort_order:parseInt(document.getElementById('bSort').value)||0,
+      is_active:document.getElementById('bStatus').value==='true',
+      starts_at:document.getElementById('bStart').value||null,
+      ends_at:document.getElementById('bEnd').value||null,
+      desktop_image_url:currentImgUrl||null,
+      alt_text:document.getElementById('bAlt').value||null,
+      meta_title:document.getElementById('bMetaTitle').value||null,
+      text_theme:document.getElementById('bTextTheme').value,
+      text_overlay_opacity:parseFloat(document.getElementById('bOverlay').value)||0.65,
+    };
+    if(editId)await db.from('banners').update(payload).eq('id',editId);
+    else await db.from('banners').insert(payload);
+    toast(editId?'Banner updated — website refreshed':'Banner added — now live on website');
+    closeModal();loadAll();
+  }catch(e){toast('Error: '+e.message,true);}
+  finally{btn.textContent='Save Banner';btn.disabled=false;}
+}
+
+// TOGGLE
+async function toggleBanner(id,val){
+  await db.from('banners').update({is_active:val}).eq('id',id);
+  const b=allBanners.find(x=>x.id===id);if(b)b.is_active=val;
+  toast(val?'Banner activated — now showing on website':'Banner deactivated');
+  renderGrid();renderKPIs();
+}
+
+// DELETE
+async function deleteBanner(){
+  if(!editId||!confirm('Delete this banner?'))return;
+  await db.from('banners').delete().eq('id',editId);
+  toast('Banner deleted');closeModal();loadAll();
+}
+async function deleteById(id){
+  if(!confirm('Delete this banner?'))return;
+  await db.from('banners').delete().eq('id',id);
+  allBanners=allBanners.filter(x=>x.id!==id);
+  toast('Banner deleted');renderGrid();renderKPIs();renderPosTabs();
+}
+
+// DUPLICATE
+async function duplicateBanner(){
+  if(!editId)return;
+  const b=allBanners.find(x=>x.id===editId);if(!b)return;
+  await db.from('banners').insert({...b,id:undefined,title:b.title+' (Copy)',is_active:false,sort_order:(b.sort_order||0)+1,created_at:undefined});
+  toast('Banner duplicated as inactive');closeModal();loadAll();
+}
+
+// COPY URL
+function copyUrl(url){
+  if(!url){toast('No image URL',true);return;}
+  navigator.clipboard.writeText(url).then(()=>toast('Image URL copied!'));
+}
+
+// EXPORT
+function exportBanners(){
+  const rows=[['Title','Position','Status','CTA','CTA URL','Sort','Starts','Ends','Image URL']];
+  allBanners.forEach(b=>rows.push([`"${b.title}"`,b.position||'',b.is_active?'Active':'Inactive',b.cta_text||'',b.cta_url||'',b.sort_order||0,b.starts_at||'',b.ends_at||'',b.desktop_image_url||'']));
+  const a=document.createElement('a');a.href='data:text/csv,'+encodeURIComponent(rows.map(r=>r.join(',')).join('\n'));a.download='wellfix-banners.csv';a.click();toast('Exported');
 }
 </script>
 </body>
 </html>
+<!-- SQL to run in Supabase for new banner columns:
+ALTER TABLE banners ADD COLUMN IF NOT EXISTS alt_text TEXT;
+ALTER TABLE banners ADD COLUMN IF NOT EXISTS meta_title TEXT;
+ALTER TABLE banners ADD COLUMN IF NOT EXISTS text_theme TEXT DEFAULT 'light';
+ALTER TABLE banners ADD COLUMN IF NOT EXISTS text_overlay_opacity NUMERIC DEFAULT 0.65;
+ALTER TABLE banners ADD COLUMN IF NOT EXISTS category_id UUID;
+-->
