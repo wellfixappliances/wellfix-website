@@ -586,59 +586,110 @@ function setPay(m,el){
 
 // ── CHARGE ────────────────────────────────────────────────
 async function chargeBill(){
-  if(!cart.length)return;
+  if(!cart.length){toast('Cart is empty',true);return;}
   const{sub,da,tax,tot}=calc();
-  // Always generate a fresh invoice number right before saving
   const invCode=await genInvNum();
   const btn=document.getElementById('chargeBtn');
+  const origText=btn.textContent;
   btn.textContent='Processing…';btn.disabled=true;
+
   try{
     const custName=cust?.name||document.getElementById('custInp').value||'Walk-in Customer';
+    const gstPct=parseFloat(document.getElementById('gstRate')?.value||'5');
+    const gstOn=document.getElementById('gstToggle')?.checked!==false;
+
+    // Mode-specific invoice type + payment status
+    const typeMap={sale:'sale',quote:'quotation',return:'return',refund:'refund'};
+    const statusMap={sale:'completed',quote:'draft',return:'returned',refund:'completed'};
+    const payStatusMap={sale:'paid',quote:'pending',return:'refunded',refund:'refunded'};
+
     const payload={
       invoice_number:invCode,
-      invoice_type:mode,
+      invoice_type:typeMap[mode]||'sale',
       customer_id:cust?.id||null,
       customer_name:custName,
       customer_phone:cust?.phone||null,
-      subtotal:sub,discount_amount:da,
-      tax_amount:tax,
-      tax_pct:parseFloat(document.getElementById('gstRate')?.value||'5'),
+      subtotal:sub,
+      discount_amount:da,
+      tax_amount:gstOn?tax:0,
+      tax_pct:gstOn?gstPct:0,
       total:tot,
-      paid_amount:tot,due_amount:0,
+      paid_amount:mode==='quote'?0:tot,
+      due_amount:mode==='quote'?tot:0,
       payment_method:payMethod,
       payment_reference:document.getElementById('refInp').value||null,
-      payment_status:'paid',
+      payment_status:payStatusMap[mode]||'paid',
       cashier:AdminShell.user?.profile?.full_name||AdminShell.user?.email||'Admin',
-      status:'completed',
+      status:statusMap[mode]||'completed',
     };
+
     const{data:inv,error}=await db.from('pos_invoices').insert(payload).select().single();
-    if(error)throw error;
-    await db.from('pos_invoice_items').insert(
-      cart.map(i=>({invoice_id:inv.id,product_id:i.id,product_name:i.name,sku:i.sku,quantity:i.qty,unit_price:i.price,total_price:i.total}))
+    if(error)throw new Error(error.message);
+
+    // Save items
+    const{error:itemErr}=await db.from('pos_invoice_items').insert(
+      cart.map(i=>({invoice_id:inv.id,product_id:i.id||null,product_name:i.name,sku:i.sku||null,quantity:i.qty,unit_price:i.price,total_price:i.total}))
     );
-    // Deduct stock
-    for(const i of cart){
-      const{data:p}=await db.from('products').select('stock_qty').eq('id',i.id).single();
-      if(p)await db.from('products').update({stock_qty:Math.max(0,(p.stock_qty||0)-i.qty)}).eq('id',i.id);
+    if(itemErr)throw new Error(itemErr.message);
+
+    // Stock: deduct on sale, restore on return
+    if(mode==='sale'){
+      for(const i of cart){
+        if(!i.id||i.id.startsWith('m'))continue;
+        const{data:p}=await db.from('products').select('stock_qty').eq('id',i.id).single();
+        if(p)await db.from('products').update({stock_qty:Math.max(0,(p.stock_qty||0)-i.qty)}).eq('id',i.id);
+      }
+    } else if(mode==='return'){
+      for(const i of cart){
+        if(!i.id||i.id.startsWith('m'))continue;
+        const{data:p}=await db.from('products').select('stock_qty').eq('id',i.id).single();
+        if(p)await db.from('products').update({stock_qty:(p.stock_qty||0)+i.qty}).eq('id',i.id);
+      }
     }
-    // Loyalty
-    if(cust?.id){
+
+    // Loyalty points — only on sale
+    if(mode==='sale'&&cust?.id){
       const pts=Math.floor(tot/100);
-      await db.from('customers').update({loyalty_points:(cust.loyalty_points||0)+pts,last_order_at:new Date().toISOString()}).eq('id',cust.id);
+      await db.from('customers').update({
+        loyalty_points:(cust.loyalty_points||0)+pts,
+        last_order_at:new Date().toISOString()
+      }).eq('id',cust.id);
     }
-    // Order record
-    await db.from('orders').insert({order_number:invCode,customer_name:custName,customer_phone:cust?.phone||null,total:tot,subtotal:sub,payment_method:payMethod,payment_status:'paid',status:'delivered',notes:'POS Invoice: '+invCode}).catch(()=>{});
-    // Print
-    openReceipt(inv,cart,payload);
-    toast('Bill charged — '+invCode);
+
+    // Create order record only for sales
+    if(mode==='sale'){
+      await db.from('orders').insert({
+        order_number:invCode,
+        customer_name:custName,
+        customer_phone:cust?.phone||null,
+        total:tot,subtotal:sub,
+        payment_method:payMethod,
+        payment_status:'paid',
+        status:'delivered',
+        notes:'POS Invoice: '+invCode
+      });
+    }
+
+    // Open receipt/print
+    openReceipt(inv,cart,payload,mode);
+    const msgs={sale:'Invoice '+invCode+' — ₹'+tot.toFixed(2),quote:'Quotation '+invCode+' saved',return:'Return '+invCode+' processed',refund:'Refund '+invCode+' processed'};
+    toast(msgs[mode]||'Done');
     clearBill();
     genInvNum();
-  }catch(e){toast('Error: '+e.message,true);}
-  finally{btn.disabled=false;calc();}
+
+  }catch(e){
+    toast('Error: '+e.message,true);
+    btn.disabled=false;
+    btn.textContent=origText;
+  }
+  finally{
+    if(!btn.disabled){btn.disabled=false;btn.textContent=origText;}
+    calc();
+  }
 }
 
 // ── RECEIPT ───────────────────────────────────────────────
-function openReceipt(inv,items,meta){
+function openReceipt(inv,items,meta,billMode='sale'){
   const w=window.open('','_blank','width=380,height=620');
   w.document.write(`<!DOCTYPE html><html><head><title>${inv.invoice_number}</title><style>
     *{margin:0;padding:0;box-sizing:border-box;}
@@ -654,7 +705,8 @@ function openReceipt(inv,items,meta){
     .ft{text-align:center;font-size:10px;color:#888;margin-top:12px;line-height:1.7;}
     @media print{button{display:none;}}
   </style></head><body>
-    <h2>WellFix Appliances</h2>
+    <h2>${billMode==='quote'?'QUOTATION':billMode==='return'?'RETURN NOTE':billMode==='refund'?'REFUND RECEIPT':'TAX INVOICE'}</h2>
+    <div style="text-align:center;font-size:10px;color:#888;margin-bottom:6px;">WellFix Appliances</div>
     <div class="c">Kerala, India · 8590004349<br>${UPI}</div>
     <div class="d"></div>
     <div class="r"><span>Invoice</span><b>${inv.invoice_number}</b></div>
@@ -754,12 +806,19 @@ function setMode(m,el){
   mode=m;
   document.querySelectorAll('.pos-seg-btn').forEach(b=>b.classList.remove('on'));el.classList.add('on');
   clearBill();
+  // Update charge button label per mode
+  const chargeBtn=document.getElementById('chargeBtn');
+  const modeLabels={sale:'Charge',quote:'Save Quote',return:'Process Return',refund:'Process Refund'};
+  chargeBtn.textContent=modeLabels[m]||'Charge';
+  // Show/hide GST for returns
+  document.getElementById('gstRow').style.display=m==='return'?'none':'flex';
+  toast({sale:'Sale mode',quote:'Quotation mode — no stock deducted',return:'Return mode — stock will be restored',refund:'Refund mode — mark payment refunded'}[m]||'');
 }
 
 // ── SHIFT ─────────────────────────────────────────────────
 async function openShift(){
   const t=new Date();t.setHours(0,0,0,0);
-  const{data:invs}=await db.from('pos_invoices').select('total,payment_method').gte('created_at',t.toISOString()).eq('status','completed').catch(()=>({data:[]}));
+  const{data:invs}=await db.from('pos_invoices').select('total,payment_method').gte('created_at',t.toISOString()).eq('status','completed');
   const list=invs||[];
   const rev=list.reduce((s,i)=>s+(+i.total||0),0);
   const cash=list.filter(i=>i.payment_method==='cash').reduce((s,i)=>s+(+i.total||0),0);
@@ -792,7 +851,7 @@ function closeShift(){document.getElementById('shiftOvl').style.display='none';}
 // ── INVOICE LIST ──────────────────────────────────────────
 async function openInvList(){
   document.getElementById('invOvl').style.display='flex';
-  const{data}=await db.from('pos_invoices').select('*').order('created_at',{ascending:false}).limit(60).catch(()=>({data:[]}));
+  const{data}=await db.from('pos_invoices').select('*').order('created_at',{ascending:false}).limit(60);
   const list=data||[];
   document.getElementById('invListBody').innerHTML=list.length?`
     <table class="inv-tbl-sm">
