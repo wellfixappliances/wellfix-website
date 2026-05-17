@@ -8,28 +8,25 @@ const BASE = '/wellfix-website';
 
 // All pages and their labels
 const ALL_PAGES = {
-  dashboard:      'Dashboard',
-  analytics:      'Analytics',
-  products:       'Products',
-  categories:     'Categories',
-  brands:         'Brands',
-  inventory:      'Inventory',
-  orders:         'Orders',
-  customers:      'Customers',
-  coupons:        'Coupons',
-  reviews:        'Reviews',
-  services:       'Bookings',
-  homepage:       'Homepage',
-  banners:        'Banners',
-  blog:           'Blog',
-  media:          'Media',
-  seo:            'SEO',
-  finance:        'Finance',
-  branches:       'Branches',
-  activity_logs:  'Activity Logs',
-  roles:          'Roles',
-  users:          'Users',
-  settings:       'Settings'
+  dashboard:  'Dashboard',
+  analytics:  'Analytics',
+  products:   'Products',
+  categories: 'Categories',
+  brands:     'Brands',
+  inventory:  'Inventory',
+  orders:     'Orders',
+  customers:  'Customers',
+  coupons:    'Coupons',
+  reviews:    'Reviews',
+  services:   'Bookings',
+  homepage:   'Homepage',
+  banners:    'Banners',
+  blog:       'Blog',
+  media:      'Media',
+  seo:        'SEO',
+  users:      'Users',
+  settings:   'Settings',
+  pos:        'Point of Sale'
 };
 
 const AdminShell = {
@@ -78,13 +75,13 @@ const AdminShell = {
 
   _defaultPermissions(role) {
     const perms = {
-      super_admin: { dashboard:true, analytics:true, products:true, categories:true, brands:true, inventory:true, orders:true, customers:true, coupons:true, reviews:true, services:true, homepage:true, banners:true, blog:true, media:true, seo:true, finance:true, branches:true, roles:true, activity_logs:true, users:true, settings:true },
-      admin:       { dashboard:true, analytics:true, products:true, categories:true, brands:true, inventory:true, orders:true, customers:true, coupons:true, reviews:true, services:true, homepage:true, banners:true, blog:true, media:true, seo:true, users:false, settings:false },
-      staff:       { dashboard:true, analytics:false, products:true, categories:false, brands:false, inventory:false, orders:true, customers:true, coupons:false, reviews:false, services:true, homepage:false, banners:false, blog:false, media:false, seo:false, users:false, settings:false },
-      pos_staff:   { dashboard:true, analytics:false, products:true, categories:false, brands:false, inventory:false, orders:true, customers:true, coupons:true, reviews:false, services:false, homepage:false, banners:false, blog:false, media:false, seo:false, users:false, settings:false },
-      accountant:  { dashboard:true, analytics:true, products:false, categories:false, brands:false, inventory:false, orders:true, customers:true, coupons:false, reviews:false, services:false, homepage:false, banners:false, blog:false, media:false, seo:false, users:false, settings:false },
-      inventory:   { dashboard:true, analytics:false, products:true, categories:false, brands:false, inventory:true, orders:false, customers:false, coupons:false, reviews:false, services:false, homepage:false, banners:false, blog:false, media:false, seo:false, users:false, settings:false },
-      content:     { dashboard:true, analytics:false, products:false, categories:true, brands:true, inventory:false, orders:false, customers:false, coupons:false, reviews:true, services:false, homepage:true, banners:true, blog:true, media:true, seo:false, users:false, settings:false },
+      super_admin: { dashboard:true, analytics:true, products:true, categories:true, brands:true, inventory:true, orders:true, customers:true, coupons:true, reviews:true, services:true, homepage:true, banners:true, blog:true, media:true, seo:true, users:true, settings:true , pos:true },
+      admin:       { dashboard:true, analytics:true, products:true, categories:true, brands:true, inventory:true, orders:true, customers:true, coupons:true, reviews:true, services:true, homepage:true, banners:true, blog:true, media:true, seo:true, users:false, settings:false, pos:true },
+      staff:       { dashboard:true, analytics:false, products:true, categories:false, brands:false, inventory:false, orders:true, customers:true, coupons:false, reviews:false, services:true, homepage:false, banners:false, blog:false, media:false, seo:false, users:false, settings:false, pos:false },
+      pos_staff:   { dashboard:true, analytics:false, products:true, categories:false, brands:false, inventory:false, orders:true, customers:true, coupons:true, reviews:false, services:false, homepage:false, banners:false, blog:false, media:false, seo:false, users:false, settings:false, pos:true },
+      accountant:  { dashboard:true, analytics:true, products:false, categories:false, brands:false, inventory:false, orders:true, customers:true, coupons:false, reviews:false, services:false, homepage:false, banners:false, blog:false, media:false, seo:false, users:false, settings:false, pos:false },
+      inventory:   { dashboard:true, analytics:false, products:true, categories:false, brands:false, inventory:true, orders:false, customers:false, coupons:false, reviews:false, services:false, homepage:false, banners:false, blog:false, media:false, seo:false, users:false, settings:false, pos:false },
+      content:     { dashboard:true, analytics:false, products:false, categories:true, brands:true, inventory:false, orders:false, customers:false, coupons:false, reviews:true, services:false, homepage:true, banners:true, blog:true, media:true, seo:false, users:false, settings:false, pos:false },
     };
     return perms[role] || perms['staff'];
   },
@@ -116,6 +113,9 @@ const AdminShell = {
       { group: 'Services', items: [
         { page: 'services', label: 'Bookings', d: 'M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z', badge: 'services' },
       ]},
+      { group: 'POS', items: [
+        { page: 'pos', label: 'Point of Sale', d: 'M3 3h18v4H3zM3 10h4v11H3zM10 10h11v11H10z' },
+      ]},
       { group: 'Content', items: [
         { page: 'homepage', label: 'Homepage', d: 'M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z' },
         { page: 'banners', label: 'Banners', d: 'M3 3h18v18H3z' },
@@ -124,10 +124,6 @@ const AdminShell = {
       ]},
       { group: 'System', items: [
         { page: 'seo', label: 'SEO', d: 'M11 11a4 4 0 107.07 2.93M11 11L17.07 13.93' },
-        { page: 'finance', label: 'Finance', d: 'M12 1v22M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6' },
-        { page: 'branches', label: 'Branches', d: 'M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z' },
-        { page: 'roles', label: 'Roles', d: 'M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z' },
-        { page: 'activity_logs', label: 'Activity Logs', d: 'M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8zM14 2v6h6M16 13H8M16 17H8M10 9H8' },
         { page: 'users', label: 'Users', d: 'M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2M9 11a4 4 0 100-8 4 4 0 000 8z' },
         { page: 'settings', label: 'Settings', d: 'M12 15a3 3 0 100-6 3 3 0 000 6z' },
       ]},
@@ -169,7 +165,7 @@ const AdminShell = {
       <aside class="sidebar" id="sidebar">
         <div class="sidebar__brand">
           <div class="sidebar__logo">
-            <img src="${BASE}/assets/images/WELLFIX-MAIN-LOGO.png" alt="W"
+            <img src="${BASE}/frontend/assets/images/WELLFIX-MAIN-LOGO.png" alt="W"
               onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"
               style="width:22px;height:22px;">
             <span style="display:none;font-family:var(--font-display);font-size:13px;font-weight:800;color:#fff;align-items:center;justify-content:center;">W</span>
