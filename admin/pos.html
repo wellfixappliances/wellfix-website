@@ -11,7 +11,7 @@
    WELLFIX POS — NEXT-GEN BILLING SYSTEM
    Scoped entirely — zero impact on other admin pages
    ═══════════════════════════════════════════════════════ */
-#posRoot{display:flex;flex-direction:column;height:calc(100vh - var(--topbar-h,56px));overflow:hidden;}
+#posRoot{display:flex;flex-direction:column;height:calc(100vh - var(--topbar-h,56px));overflow:hidden;min-height:0;}
 
 /* ── TOP BAR ── */
 .pos-bar{display:flex;align-items:center;gap:8px;padding:8px 14px;background:#fff;border-bottom:1px solid var(--gray-100);flex-shrink:0;flex-wrap:wrap;}
@@ -26,7 +26,7 @@
 .pos-back-btn svg{width:12px;height:12px;}
 
 /* ── LAYOUT ── */
-.pos-layout{display:grid;grid-template-columns:1fr 380px;flex:1;overflow:hidden;min-height:0;}
+.pos-layout{display:grid;grid-template-columns:1fr 380px;flex:1;overflow:hidden;min-height:0;height:0;}
 @media(max-width:960px){.pos-layout{grid-template-columns:1fr;}}
 
 /* ── LEFT PANEL ── */
@@ -184,24 +184,25 @@
 <div class="main-wrap" id="mainWrap">
 <div id="posRoot">
 
-<!-- TOP BAR -->
-<div class="pos-bar">
-  <div class="pos-bar-l">
-    <a href="dashboard.html" class="pos-back-btn">
-      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
-      Dashboard
-    </a>
-    <div class="pos-seg">
-      <button class="pos-seg-btn on" onclick="setMode('sale',this)">Sale</button>
-      <button class="pos-seg-btn" onclick="setMode('quote',this)">Quotation</button>
-      <button class="pos-seg-btn" onclick="setMode('return',this)">Return</button>
-    </div>
-    <span class="pos-invoice-num" id="invNumDisplay">Generating…</span>
+<!-- TOP BAR — minimal, nothing clips -->
+<div style="display:flex;align-items:center;gap:8px;padding:7px 12px;background:#fff;border-bottom:1px solid var(--gray-100);flex-shrink:0;flex-wrap:wrap;">
+  <!-- Back button -->
+  <a href="dashboard.html" style="display:flex;align-items:center;gap:4px;font-size:11px;font-weight:600;color:var(--gray-500);background:var(--gray-50);border:1px solid var(--gray-200);border-radius:5px;padding:4px 9px;text-decoration:none;flex-shrink:0;">
+    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="11" height="11"><polyline points="15 18 9 12 15 6"/></svg>
+    Back
+  </a>
+  <!-- Mode selector -->
+  <div style="display:flex;background:var(--gray-50);border:1px solid var(--gray-150,#dedede);border-radius:6px;padding:2px;gap:1px;flex-shrink:0;">
+    <button class="pos-seg-btn on" id="mb-sale" onclick="setMode('sale',this)">Sale</button>
+    <button class="pos-seg-btn" id="mb-quote" onclick="setMode('quote',this)">Quotation</button>
+    <button class="pos-seg-btn" id="mb-return" onclick="setMode('return',this)">Return</button>
+    <button class="pos-seg-btn" id="mb-refund" onclick="setMode('refund',this)">Refund</button>
   </div>
-  <div class="pos-bar-r">
-    <button class="btn btn-sm btn-outline" onclick="toggleHoldDrawer()">
-      Held <span id="holdCnt" style="font-size:10px;font-weight:800;color:var(--green-700);">0</span>
-    </button>
+  <!-- Invoice number -->
+  <span id="invNumDisplay" style="font-family:monospace;font-size:11px;font-weight:700;color:var(--green-700);background:var(--green-50);border:1px solid var(--green-100);border-radius:4px;padding:3px 8px;flex-shrink:0;">…</span>
+  <!-- Right actions -->
+  <div style="display:flex;align-items:center;gap:6px;margin-left:auto;flex-wrap:wrap;">
+    <button class="btn btn-sm btn-outline" onclick="toggleHoldDrawer()">Held <span id="holdCnt" style="font-size:10px;font-weight:800;color:var(--green-700);">0</span></button>
     <button class="btn btn-sm btn-outline" onclick="openShift()">Shift</button>
     <button class="btn btn-sm btn-outline" onclick="openInvList()">Invoices</button>
   </div>
@@ -804,7 +805,8 @@ function addManual(){
 // ── MODE ──────────────────────────────────────────────────
 function setMode(m,el){
   mode=m;
-  document.querySelectorAll('.pos-seg-btn').forEach(b=>b.classList.remove('on'));el.classList.add('on');
+  document.querySelectorAll('.pos-seg-btn').forEach(b=>b.classList.remove('on'));
+  el.classList.add('on');
   clearBill();
   // Update charge button label per mode
   const chargeBtn=document.getElementById('chargeBtn');
