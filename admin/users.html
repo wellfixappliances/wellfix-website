@@ -211,16 +211,18 @@ const PAGE_LABELS = {
   orders:'Orders', customers:'Customers', coupons:'Coupons',
   reviews:'Reviews', services:'Bookings', homepage:'Homepage',
   banners:'Banners', blog:'Blog', media:'Media',
-  seo:'SEO', users:'Users', settings:'Settings'
+  seo:'SEO', finance:'Finance', branches:'Branches',
+  roles:'Roles', activity_logs:'Activity Logs',
+  users:'Users', settings:'Settings', pos:'Point of Sale'
 };
 const DEFAULT_PERMS = {
-  super_admin: {dashboard:true,analytics:true,products:true,categories:true,brands:true,inventory:true,orders:true,customers:true,coupons:true,reviews:true,services:true,homepage:true,banners:true,blog:true,media:true,seo:true,users:true,settings:true},
-  admin:       {dashboard:true,analytics:true,products:true,categories:true,brands:true,inventory:true,orders:true,customers:true,coupons:true,reviews:true,services:true,homepage:true,banners:true,blog:true,media:true,seo:true,users:false,settings:false},
-  staff:       {dashboard:true,analytics:false,products:true,categories:false,brands:false,inventory:false,orders:true,customers:true,coupons:false,reviews:false,services:true,homepage:false,banners:false,blog:false,media:false,seo:false,users:false,settings:false},
-  pos_staff:   {dashboard:true,analytics:false,products:true,categories:false,brands:false,inventory:false,orders:true,customers:true,coupons:true,reviews:false,services:false,homepage:false,banners:false,blog:false,media:false,seo:false,users:false,settings:false},
-  accountant:  {dashboard:true,analytics:true,products:false,categories:false,brands:false,inventory:false,orders:true,customers:true,coupons:false,reviews:false,services:false,homepage:false,banners:false,blog:false,media:false,seo:false,users:false,settings:false},
-  inventory:   {dashboard:true,analytics:false,products:true,categories:false,brands:false,inventory:true,orders:false,customers:false,coupons:false,reviews:false,services:false,homepage:false,banners:false,blog:false,media:false,seo:false,users:false,settings:false},
-  content:     {dashboard:true,analytics:false,products:false,categories:true,brands:true,inventory:false,orders:false,customers:false,coupons:false,reviews:true,services:false,homepage:true,banners:true,blog:true,media:true,seo:false,users:false,settings:false},
+  super_admin: {dashboard:true,analytics:true,products:true,categories:true,brands:true,inventory:true,orders:true,customers:true,coupons:true,reviews:true,services:true,homepage:true,banners:true,blog:true,media:true,seo:true,finance:true,branches:true,roles:true,activity_logs:true,users:true,settings:true,pos:true},
+  admin:       {dashboard:true,analytics:true,products:true,categories:true,brands:true,inventory:true,orders:true,customers:true,coupons:true,reviews:true,services:true,homepage:true,banners:true,blog:true,media:true,seo:true,finance:true,branches:false,roles:false,activity_logs:true,users:false,settings:false,pos:true},
+  staff:       {dashboard:true,analytics:false,products:true,categories:false,brands:false,inventory:false,orders:true,customers:true,coupons:false,reviews:false,services:true,homepage:false,banners:false,blog:false,media:false,seo:false,finance:false,branches:false,roles:false,activity_logs:false,users:false,settings:false,pos:false},
+  pos_staff:   {dashboard:true,analytics:false,products:true,categories:false,brands:false,inventory:false,orders:true,customers:true,coupons:true,reviews:false,services:false,homepage:false,banners:false,blog:false,media:false,seo:false,finance:false,branches:false,roles:false,activity_logs:false,users:false,settings:false,pos:true},
+  accountant:  {dashboard:true,analytics:true,products:false,categories:false,brands:false,inventory:false,orders:true,customers:true,coupons:false,reviews:false,services:false,homepage:false,banners:false,blog:false,media:false,seo:false,finance:true,branches:false,roles:false,activity_logs:true,users:false,settings:false,pos:false},
+  inventory:   {dashboard:true,analytics:false,products:true,categories:false,brands:false,inventory:true,orders:false,customers:false,coupons:false,reviews:false,services:false,homepage:false,banners:false,blog:false,media:false,seo:false,finance:false,branches:false,roles:false,activity_logs:false,users:false,settings:false,pos:false},
+  content:     {dashboard:true,analytics:false,products:false,categories:true,brands:true,inventory:false,orders:false,customers:false,coupons:false,reviews:true,services:false,homepage:true,banners:true,blog:true,media:true,seo:false,finance:false,branches:false,roles:false,activity_logs:false,users:false,settings:false,pos:false},
 };
 
 (async () => {
