@@ -11,7 +11,17 @@
    WELLFIX POS — NEXT-GEN BILLING SYSTEM
    Scoped entirely — zero impact on other admin pages
    ═══════════════════════════════════════════════════════ */
-#posRoot{display:flex;flex-direction:column;height:calc(100vh - var(--topbar-h,56px));overflow:hidden;min-height:0;}
+/* POS overrides — scoped, no impact on other pages */
+#mainWrap{padding:0!important;}
+#posRoot{
+  display:flex;
+  flex-direction:column;
+  height:calc(100vh - var(--topbar-h,56px));
+  overflow:hidden;
+  min-height:0;
+  margin-top:0;
+  width:100%;
+}
 
 /* ── TOP BAR ── */
 .pos-bar{display:flex;align-items:center;gap:8px;padding:8px 14px;background:#fff;border-bottom:1px solid var(--gray-100);flex-shrink:0;flex-wrap:wrap;}
@@ -405,6 +415,20 @@ const UPI='8301879406@ybl';
 // ── BOOT ──────────────────────────────────────────────────
 (async()=>{
   await AdminShell.init('Point of Sale','pos');
+
+  // POS needs full screen — collapse sidebar automatically
+  const sidebar = document.getElementById('sidebar');
+  const topbar  = document.getElementById('topbar');
+  const mainWrap = document.getElementById('mainWrap');
+  if(sidebar && window.innerWidth > 900) {
+    sidebar.classList.add('is-collapsed');
+    if(topbar) topbar.classList.add('is-expanded');
+    if(mainWrap) mainWrap.classList.add('is-expanded');
+  }
+  if(sidebar && window.innerWidth <= 900) {
+    sidebar.classList.remove('is-mobile-open');
+  }
+
   genInvNum();
   await Promise.all([loadProds(),loadCats(),loadCusts()]);
   setupScanner();
