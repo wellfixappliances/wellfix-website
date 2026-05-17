@@ -1,103 +1,883 @@
 <!DOCTYPE html>
 <html lang="en">
-<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Brands — WellFix Admin</title>
 <link rel="icon" href="../assets/images/WELLFIX-FAVICON.png">
-<link rel="stylesheet" href="assets/css/admin.css"></head>
+<link rel="stylesheet" href="assets/css/admin.css">
+<style>
+/* ═══════════════════════════════════════════
+   BRANDS MODULE — PREMIUM DESIGN
+   ═══════════════════════════════════════════ */
+
+/* KPI */
+.bkpi{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:14px;}
+@media(max-width:1000px){.bkpi{grid-template-columns:repeat(3,1fr);}}
+@media(max-width:600px){.bkpi{grid-template-columns:repeat(2,1fr);gap:8px;}}
+.bk{background:#fff;border:1px solid var(--gray-100);border-radius:10px;padding:13px 16px;box-shadow:0 1px 2px rgba(0,0,0,.04);transition:box-shadow .2s;position:relative;overflow:hidden;cursor:pointer;}
+.bk:hover{box-shadow:0 3px 10px rgba(0,0,0,.07);}
+.bk::before{content:'';position:absolute;top:0;left:0;width:3px;height:100%;border-radius:10px 0 0 10px;}
+.bk.gn::before{background:#22c55e;}.bk.bl::before{background:#3b82f6;}.bk.am::before{background:#f59e0b;}.bk.pu::before{background:#8b5cf6;}.bk.te::before{background:#06b6d4;}
+.bk-val{font-family:var(--font-display);font-size:22px;font-weight:800;color:var(--gray-900);line-height:1;letter-spacing:-.4px;}
+.bk-lbl{font-size:11px;color:var(--gray-400);margin-top:3px;font-weight:500;}
+
+/* Toolbar */
+.b-toolbar{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-bottom:1px solid var(--gray-100);gap:8px;flex-wrap:wrap;}
+.b-toolbar-l,.b-toolbar-r{display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
+
+/* View switch */
+.v-seg{display:flex;background:var(--gray-50);border:1px solid var(--gray-150,#dedede);border-radius:6px;padding:2px;gap:1px;}
+.vb{padding:4px 10px;border-radius:4px;font-size:11px;font-weight:600;color:var(--gray-500);cursor:pointer;border:none;background:none;transition:all .15s;display:flex;align-items:center;gap:4px;}
+.vb svg{width:11px;height:11px;}
+.vb.on{background:#fff;color:var(--gray-900);box-shadow:0 1px 3px rgba(0,0,0,.1);}
+
+/* Bulk bar */
+.bulk-b{display:none;align-items:center;gap:8px;padding:8px 14px;background:var(--green-50);border-bottom:1px solid var(--green-100);}
+.bulk-b.show{display:flex;}
+.bk-cnt{font-size:12px;font-weight:700;color:var(--green-700);}
+
+/* ── TABLE ── */
+.br-tbl{width:100%;border-collapse:collapse;font-size:12px;}
+.br-tbl thead th{position:sticky;top:0;z-index:2;background:#fff;padding:8px 14px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--gray-400);border-bottom:1px solid var(--gray-100);text-align:left;white-space:nowrap;box-shadow:0 1px 0 var(--gray-100);}
+.br-tbl td{padding:9px 14px;border-bottom:1px solid var(--gray-50);vertical-align:middle;color:var(--gray-700);}
+.br-tbl tr:last-child td{border-bottom:none;}
+.br-tbl tbody tr{cursor:pointer;transition:background .1s;}
+.br-tbl tbody tr:hover td{background:var(--gray-25);}
+
+/* Logo cell */
+.logo-cell{width:64px;height:40px;border-radius:7px;background:var(--gray-50);border:1px solid var(--gray-100);display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0;}
+.logo-cell img{max-width:56px;max-height:34px;width:auto;height:auto;object-fit:contain;display:block;}
+.logo-cell svg{width:20px;height:20px;color:var(--gray-300);}
+
+/* SEO bar */
+.seo-b{display:flex;align-items:center;gap:5px;}
+.seo-t{width:44px;height:4px;background:var(--gray-100);border-radius:99px;overflow:hidden;}
+.seo-f{height:100%;border-radius:99px;}
+
+/* Status + toggle */
+.spill{display:inline-flex;align-items:center;font-size:10px;font-weight:700;padding:2px 7px;border-radius:99px;}
+.spill.active{background:#f0fdf4;color:#16a34a;}
+.spill.inactive{background:#f9fafb;color:#6b7280;}
+.tog{display:flex;align-items:center;cursor:pointer;}
+.tog input{display:none;}
+.tog-tr{width:28px;height:16px;background:var(--gray-200);border-radius:99px;position:relative;transition:background .2s;flex-shrink:0;}
+.tog input:checked+.tog-tr{background:var(--green-500);}
+.tog-tr::after{content:'';width:12px;height:12px;background:#fff;border-radius:50%;position:absolute;top:2px;left:2px;transition:transform .2s;box-shadow:0 1px 3px rgba(0,0,0,.2);}
+.tog input:checked+.tog-tr::after{transform:translateX(12px);}
+
+/* Row actions */
+.ra-wrap{display:flex;gap:3px;opacity:0;transition:opacity .15s;justify-content:flex-end;}
+tr:hover .ra-wrap{opacity:1;}
+.ra{width:26px;height:26px;border-radius:5px;border:1px solid var(--gray-200);background:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;}
+.ra:hover{background:var(--gray-50);border-color:var(--gray-300);}
+.ra svg{width:12px;height:12px;stroke:var(--gray-500);fill:none;stroke-width:2;}
+.ra.danger:hover{background:#fef2f2;border-color:#fecaca;}
+.ra.danger:hover svg{stroke:#dc2626;}
+
+/* ── GRID VIEW ── */
+.br-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px;padding:14px;}
+.br-card{background:#fff;border:1px solid var(--gray-100);border-radius:10px;overflow:hidden;transition:box-shadow .2s;cursor:pointer;}
+.br-card:hover{box-shadow:0 4px 16px rgba(0,0,0,.08);}
+.br-card-logo{height:110px;background:var(--gray-25);display:flex;align-items:center;justify-content:center;padding:16px;border-bottom:1px solid var(--gray-50);}
+.br-card-logo img{max-width:100%;max-height:80px;width:auto;height:auto;object-fit:contain;display:block;}
+.br-card-logo svg{width:36px;height:36px;color:var(--gray-200);}
+.br-card-body{padding:12px 14px;}
+.br-card-name{font-family:var(--font-display);font-size:14px;font-weight:700;color:var(--gray-900);}
+.br-card-slug{font-size:10px;color:var(--gray-400);margin-top:2px;font-family:monospace;}
+.br-card-meta{font-size:11px;color:var(--gray-500);margin-top:6px;}
+.br-card-foot{padding:8px 14px;border-top:1px solid var(--gray-50);display:flex;align-items:center;justify-content:space-between;}
+
+/* ── MODAL SPLIT ── */
+.modal-sp{display:grid;grid-template-columns:1fr 360px;gap:0;}
+@media(max-width:840px){.modal-sp{grid-template-columns:1fr;}}
+.modal-l{padding:20px;border-right:1px solid var(--gray-100);}
+.modal-r{padding:20px;background:var(--gray-25);}
+@media(max-width:840px){.modal-l{border-right:none;border-bottom:1px solid var(--gray-100);}.modal-r{background:#fff;}}
+.s-hd{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--gray-400);margin-bottom:10px;margin-top:18px;}
+.s-hd:first-child{margin-top:0;}
+
+/* Logo upload zones */
+.logo-zone{border:2px dashed var(--gray-200);border-radius:8px;background:#fff;cursor:pointer;transition:all .2s;text-align:center;padding:16px;position:relative;overflow:hidden;}
+.logo-zone:hover,.logo-zone.over{border-color:var(--green-400);background:var(--green-50);}
+.logo-zone input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;}
+.lz-preview{display:none;width:100%;height:70px;object-fit:contain;margin-bottom:8px;}
+.lz-preview.show{display:block;}
+.lz-lbl{font-size:11px;font-weight:600;color:var(--gray-600);}
+.lz-sub{font-size:10px;color:var(--gray-400);margin-top:2px;}
+.lz-prog{margin-top:6px;display:none;}
+.lz-prog-bar{height:3px;background:var(--gray-100);border-radius:99px;overflow:hidden;}
+.lz-prog-fill{height:100%;background:var(--green-500);border-radius:99px;transition:width .2s;width:0%;}
+.lz-prog-msg{font-size:10px;color:var(--gray-400);margin-top:3px;}
+
+/* Logo preview engine */
+.lprev-wrap{border-radius:8px;overflow:hidden;border:1px solid var(--gray-100);}
+.lprev-tabs{display:flex;border-bottom:1px solid var(--gray-100);}
+.lprev-tab{flex:1;padding:6px;font-size:10px;font-weight:700;text-align:center;cursor:pointer;color:var(--gray-400);transition:all .15s;border:none;background:none;}
+.lprev-tab.on{color:var(--gray-900);background:#fff;}
+.lprev-body{padding:14px;display:flex;align-items:center;justify-content:center;min-height:80px;}
+.lprev-body.dark{background:#0f172a;}
+.lprev-body.light{background:#fff;}
+.lprev-body.gray{background:#f1f5f9;}
+.lprev-body img{max-width:140px;max-height:60px;object-fit:contain;}
+
+/* SEO preview */
+.seo-prev{background:#fff;border:1px solid var(--gray-100);border-radius:8px;padding:12px 14px;}
+.seo-prev-url{font-size:11px;color:#1a0dab;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.seo-prev-title{font-size:14px;font-weight:600;color:#1a0dab;line-height:1.3;margin-bottom:3px;}
+.seo-prev-desc{font-size:12px;color:#545454;line-height:1.4;}
+
+/* Analytics mini */
+.an-mini{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:4px;}
+.am{background:#fff;border:1px solid var(--gray-100);border-radius:8px;padding:10px 12px;}
+.am-val{font-family:var(--font-display);font-size:16px;font-weight:800;color:var(--gray-900);}
+.am-lbl{font-size:10px;color:var(--gray-400);margin-top:2px;}
+
+/* Dropdown */
+.drop-m{position:relative;display:inline-block;}
+.drop-l{display:none;position:absolute;right:0;top:100%;margin-top:4px;background:#fff;border:1px solid var(--gray-150,#dedede);border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,.1);min-width:180px;z-index:200;overflow:hidden;}
+.drop-l.open{display:block;}
+.di{display:flex;align-items:center;gap:8px;padding:8px 12px;font-size:12px;font-weight:500;color:var(--gray-700);cursor:pointer;transition:background .1s;}
+.di:hover{background:var(--gray-50);}
+.di svg{width:13px;height:13px;stroke:var(--gray-400);fill:none;stroke-width:2;}
+.di.danger:hover{background:#fef2f2;color:#dc2626;}
+.di.danger:hover svg{stroke:#dc2626;}
+.d-sep{height:1px;background:var(--gray-100);margin:4px 0;}
+
+/* Empty */
+.empty-b{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:48px 24px;text-align:center;}
+.empty-b svg{width:40px;height:40px;opacity:.15;color:var(--gray-500);margin-bottom:12px;}
+.empty-b h3{font-family:var(--font-display);font-size:15px;font-weight:700;color:var(--gray-600);margin-bottom:4px;}
+.empty-b p{font-size:12px;color:var(--gray-400);}
+
+/* Skeleton */
+.sk{background:linear-gradient(90deg,var(--gray-100) 25%,var(--gray-50) 50%,var(--gray-100) 75%);background-size:200% 100%;animation:sk 1.4s infinite;border-radius:5px;}
+@keyframes sk{to{background-position:-200% 0;}}
+
+/* Pager */
+.pager{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-top:1px solid var(--gray-100);}
+.pager-info{font-size:11px;color:var(--gray-400);}
+.pager-btn{height:28px;min-width:28px;padding:0 8px;border:1px solid var(--gray-200);border-radius:5px;background:#fff;font-size:12px;font-weight:600;color:var(--gray-600);cursor:pointer;}
+.pager-btn:hover:not(:disabled){background:var(--gray-50);}
+.pager-btn:disabled{opacity:.4;cursor:default;}
+.pager-btn.on{background:var(--green-700);color:#fff;border-color:var(--green-700);}
+
+/* Display mode pills */
+.dm-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:8px;}
+.dm-opt{padding:8px 6px;border:2px solid var(--gray-100);border-radius:7px;text-align:center;cursor:pointer;transition:all .15s;font-size:11px;font-weight:600;color:var(--gray-500);}
+.dm-opt:hover,.dm-opt.sel{border-color:var(--green-400);background:var(--green-50);color:var(--green-700);}
+</style>
+</head>
 <body>
 <div class="admin-shell"><div id="adminShell"></div>
-<div class="main-wrap" id="mainWrap"><div class="page-content">
-  <div class="pg-hd"><div><h1>Brands</h1><p>Manage product brands</p></div>
-    <div class="pg-hd__actions"><button class="btn btn-primary" onclick="openBrandModal()">Add Brand</button></div>
+<div class="main-wrap" id="mainWrap">
+<div class="page-content">
+
+<!-- HEADER -->
+<div class="pg-hd">
+  <div>
+    <h1>Brands</h1>
+    <p style="font-size:12px;color:var(--gray-400);margin-top:2px;" id="brandSub">Loading…</p>
   </div>
-  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:16px;" id="brandsGrid">
-    <div class="skeleton" style="height:120px;border-radius:14px;"></div>
-    <div class="skeleton" style="height:120px;border-radius:14px;"></div>
-    <div class="skeleton" style="height:120px;border-radius:14px;"></div>
-  </div>
-</div></div></div>
-<div class="modal-overlay" id="brandModal">
-  <div class="modal" style="max-width:400px;">
-    <div class="modal-hd"><div class="modal-title" id="brandModalTitle">Add Brand</div><button class="modal-close" onclick="closeBrandModal()"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
-    <div class="modal-body">
-      <input type="hidden" id="brandId">
-      <div class="form-grid" style="gap:12px;">
-        <div class="form-group"><label class="form-label">Brand Name <span class="req">*</span></label><input class="form-input" id="brandName" oninput="document.getElementById('brandSlug').value=slugify(this.value)"></div>
-        <div class="form-group"><label class="form-label">Slug</label><input class="form-input" id="brandSlug"></div>
-        <div class="form-group"><label class="form-label">Description</label><textarea class="form-textarea" id="brandDesc" rows="2"></textarea></div>
+  <div class="pg-hd__actions">
+    <div class="drop-m" id="exportMenu">
+      <button class="btn btn-outline" onclick="toggleDrop('exportMenu')">Export</button>
+      <div class="drop-l" id="exportMenuList">
+        <div class="di" onclick="exportCSV();closeDrop('exportMenu')"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Export CSV</div>
+        <div class="di" onclick="exportJSON();closeDrop('exportMenu')"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Export JSON</div>
       </div>
     </div>
-    
-      <div class="form-group">
-        <label class="form-label">Logo Image</label>
-        <input class="form-input" id="bLogo" placeholder="Paste image URL or upload below" style="margin-bottom:6px;">
-        <div style="border:2px dashed var(--gray-200);border-radius:var(--r-md);padding:10px;text-align:center;cursor:pointer;" onclick="document.getElementById('bLogoFile').click()">
-          <input type="file" id="bLogoFile" accept="image/*" style="display:none;" onchange="uploadBrandLogo(this)">
-          <div id="bLogoPreview" style="font-size:12px;color:var(--gray-400);">Click to upload logo</div>
-        </div>
-      </div>
-      <div class="form-group">
-        <label class="form-label">Website Display Mode</label>
-        <select class="form-input" id="bDisplayMode">
-          <option value="text">Text Only (brand name)</option>
-          <option value="logo">Logo Only</option>
-          <option value="both">Logo + Text</option>
-        </select>
-      </div>
-      
-          <div class="form-group"><label class="form-label">Logo URL</label><input class="form-input" id="bLogo" placeholder="Paste image URL"></div>
-      <div class="form-group"><label class="form-label">Website Display</label><select class="form-input" id="bDisplayMode"><option value="text">Text Only</option><option value="logo">Logo Only</option><option value="both">Logo + Text</option></select></div>
-<div class="modal-ft"><button class="btn btn-secondary" onclick="closeBrandModal()">Cancel</button><button class="btn btn-primary" onclick="saveBrand()">Save Brand</button></div>
+    <button class="btn btn-outline" onclick="importCSV()">
+      <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="12" height="12"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
+      Import
+    </button>
+    <button class="btn btn-primary" onclick="openModal()">
+      <svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" width="12" height="12"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      Add Brand
+    </button>
   </div>
 </div>
+
+<!-- KPI -->
+<div class="bkpi" id="brandKpi">
+  <div class="bk gn"><div class="sk" style="height:50px;"></div></div>
+  <div class="bk bl"><div class="sk" style="height:50px;"></div></div>
+  <div class="bk am"><div class="sk" style="height:50px;"></div></div>
+  <div class="bk pu"><div class="sk" style="height:50px;"></div></div>
+  <div class="bk te"><div class="sk" style="height:50px;"></div></div>
+</div>
+
+<!-- MAIN CARD -->
+<div class="card" style="padding:0;">
+
+  <!-- Toolbar -->
+  <div class="b-toolbar">
+    <div class="b-toolbar-l">
+      <div class="filter-search" style="margin:0;">
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="search" id="bSearch" placeholder="Search brands…" oninput="debounceFilt()" style="width:180px;">
+      </div>
+      <select class="filter-select" id="fStatus" onchange="filterBrands()" style="height:34px;font-size:12px;">
+        <option value="">All Status</option>
+        <option value="active">Active</option>
+        <option value="inactive">Inactive</option>
+      </select>
+      <select class="filter-select" id="fFeat" onchange="filterBrands()" style="height:34px;font-size:12px;">
+        <option value="">All</option>
+        <option value="featured">Featured</option>
+        <option value="homepage">On Homepage</option>
+      </select>
+      <select class="filter-select" id="fSort" onchange="filterBrands()" style="height:34px;font-size:12px;">
+        <option value="name">Name A–Z</option>
+        <option value="name_desc">Name Z–A</option>
+        <option value="products">Most Products</option>
+        <option value="sort_order">Sort Order</option>
+        <option value="newest">Newest</option>
+      </select>
+    </div>
+    <div class="b-toolbar-r">
+      <span id="filtCount" style="font-size:11px;color:var(--gray-400);"></span>
+      <div class="v-seg">
+        <button class="vb on" id="vt" onclick="setView('table',this)">
+          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+          Table
+        </button>
+        <button class="vb" id="vg" onclick="setView('grid',this)">
+          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+          Grid
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bulk bar -->
+  <div class="bulk-b" id="bulkBar">
+    <input type="checkbox" id="chkAll" onchange="toggleAll(this)" style="cursor:pointer;">
+    <span class="bk-cnt" id="bulkCnt">0 selected</span>
+    <div style="display:flex;gap:6px;flex-wrap:wrap;">
+      <button class="btn btn-sm btn-outline" onclick="bulkActivate()">Activate</button>
+      <button class="btn btn-sm btn-outline" onclick="bulkDeactivate()">Deactivate</button>
+      <button class="btn btn-sm btn-outline" onclick="bulkFeatured()">Set Featured</button>
+      <button class="btn btn-sm" style="background:var(--red-100);color:var(--red-600);" onclick="bulkDelete()">Delete</button>
+    </div>
+    <button class="btn btn-sm btn-outline" onclick="clearSel()" style="margin-left:auto;">Clear</button>
+  </div>
+
+  <!-- TABLE -->
+  <div id="viewTable" style="overflow-x:auto;">
+    <table class="br-tbl">
+      <thead>
+        <tr>
+          <th style="width:36px;padding:8px;"><input type="checkbox" id="chkAllH" onchange="toggleAll(this)"></th>
+          <th style="min-width:60px;">Logo</th>
+          <th style="min-width:180px;" class="sort" onclick="setSort('name')">Brand</th>
+          <th onclick="setSort('products')" style="cursor:pointer;">Products</th>
+          <th>Revenue</th>
+          <th>Status</th>
+          <th>Featured</th>
+          <th>Homepage</th>
+          <th>SEO</th>
+          <th>Display Mode</th>
+          <th style="width:100px;text-align:right;">Actions</th>
+        </tr>
+      </thead>
+      <tbody id="brandTbody"></tbody>
+    </table>
+  </div>
+
+  <!-- GRID -->
+  <div id="viewGrid" style="display:none;">
+    <div class="br-grid" id="brandGrid"></div>
+  </div>
+
+  <!-- Pager -->
+  <div class="pager">
+    <span class="pager-info" id="pagerInfo"></span>
+    <div style="display:flex;gap:4px;" id="pagerBtns"></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     BRAND MODAL — SPLIT LAYOUT
+═══════════════════════════════════════════ -->
+<div class="modal-overlay" id="brandOverlay" onclick="if(event.target===this)closeModal()" style="display:none;align-items:flex-start;justify-content:center;padding:20px 16px;overflow-y:auto;">
+<div class="modal" id="brandModal" style="max-width:900px;width:100%;margin:auto;max-height:90vh;overflow-y:auto;">
+  <div class="modal-hd">
+    <h3 id="modalTitle">Add Brand</h3>
+    <button class="modal-close" onclick="closeModal()">✕</button>
+  </div>
+  <div class="modal-sp">
+    <!-- LEFT -->
+    <div class="modal-l">
+      <div class="s-hd">Brand Information</div>
+      <div class="form-group" style="margin-bottom:10px;">
+        <label class="form-label">Brand Name *</label>
+        <input class="form-input" id="mName" placeholder="e.g. Sujata" oninput="autoSlug()">
+      </div>
+      <div class="form-grid form-2" style="margin-bottom:10px;">
+        <div class="form-group"><label class="form-label">Slug</label><input class="form-input" id="mSlug" style="font-family:monospace;font-size:12px;"></div>
+        <div class="form-group"><label class="form-label">Country</label><input class="form-input" id="mCountry" placeholder="India"></div>
+      </div>
+      <div class="form-group" style="margin-bottom:10px;">
+        <label class="form-label">Description</label>
+        <textarea class="form-textarea" id="mDesc" placeholder="Brand description…" style="min-height:60px;"></textarea>
+      </div>
+      <div class="form-grid form-2" style="margin-bottom:10px;">
+        <div class="form-group"><label class="form-label">Website</label><input class="form-input" id="mWebsite" placeholder="https://..."></div>
+        <div class="form-group"><label class="form-label">Sort Order</label><input class="form-input" type="number" id="mSort" value="0"></div>
+      </div>
+      <div class="form-group" style="margin-bottom:10px;">
+        <label class="form-label">Brand Color</label>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <input type="color" id="mColor" value="#056b4b" style="width:36px;height:34px;border:1.5px solid var(--gray-200);border-radius:6px;cursor:pointer;padding:2px;">
+          <input class="form-input" id="mColorHex" placeholder="#056b4b" style="flex:1;font-family:monospace;" oninput="syncColor()">
+        </div>
+      </div>
+
+      <div class="s-hd">Visibility Controls</div>
+      <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:12px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 10px;background:var(--gray-25);border-radius:6px;border:1px solid var(--gray-100);">
+          <span style="font-size:12px;font-weight:500;color:var(--gray-700);">Active (visible on website)</span>
+          <label class="tog"><input type="checkbox" id="mActive" checked><span class="tog-tr"></span></label>
+        </div>
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 10px;background:var(--gray-25);border-radius:6px;border:1px solid var(--gray-100);">
+          <span style="font-size:12px;font-weight:500;color:var(--gray-700);">Featured brand</span>
+          <label class="tog"><input type="checkbox" id="mFeatured"><span class="tog-tr"></span></label>
+        </div>
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 10px;background:var(--gray-25);border-radius:6px;border:1px solid var(--gray-100);">
+          <span style="font-size:12px;font-weight:500;color:var(--gray-700);">Show on homepage</span>
+          <label class="tog"><input type="checkbox" id="mHomepage"><span class="tog-tr"></span></label>
+        </div>
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 10px;background:var(--gray-25);border-radius:6px;border:1px solid var(--gray-100);">
+          <span style="font-size:12px;font-weight:500;color:var(--gray-700);">Show in filters</span>
+          <label class="tog"><input type="checkbox" id="mFilters" checked><span class="tog-tr"></span></label>
+        </div>
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 10px;background:var(--gray-25);border-radius:6px;border:1px solid var(--gray-100);">
+          <span style="font-size:12px;font-weight:500;color:var(--gray-700);">Show in footer</span>
+          <label class="tog"><input type="checkbox" id="mFooter"><span class="tog-tr"></span></label>
+        </div>
+      </div>
+
+      <div class="s-hd">Analytics (Live Data)</div>
+      <div class="an-mini" id="mAnalytics">
+        <div class="am"><div class="sk" style="height:40px;"></div></div>
+        <div class="am"><div class="sk" style="height:40px;"></div></div>
+        <div class="am"><div class="sk" style="height:40px;"></div></div>
+        <div class="am"><div class="sk" style="height:40px;"></div></div>
+      </div>
+    </div>
+
+    <!-- RIGHT -->
+    <div class="modal-r">
+      <div class="s-hd">Brand Logo</div>
+      <div class="logo-zone" id="lzMain"
+        ondragover="lzOver(event,'lzMain')" ondragleave="lzLeave('lzMain')" ondrop="lzDrop(event,'lzMain','logo')">
+        <input type="file" accept="image/*" onchange="handleLogoUpload(this,'logo')">
+        <img id="lzMainPrev" class="lz-preview">
+        <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" width="24" height="24" style="opacity:.2;margin-bottom:6px;" id="lzMainIcon"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+        <div class="lz-lbl" id="lzMainLbl">Drop logo or click to upload</div>
+        <div class="lz-sub">PNG JPG SVG WebP AVIF — Auto WebP + transparent handling</div>
+        <div class="lz-prog" id="lzMainProg"><div class="lz-prog-bar"><div class="lz-prog-fill" id="lzMainFill"></div></div><div class="lz-prog-msg" id="lzMainMsg"></div></div>
+      </div>
+      <button id="lzMainRm" onclick="removeLogo('logo')" style="display:none;margin-top:5px;width:100%;height:26px;border:1px solid var(--red-200);background:var(--red-50);color:var(--red-600);border-radius:5px;font-size:10px;font-weight:600;cursor:pointer;">Remove</button>
+
+      <div class="s-hd">Logo Preview</div>
+      <div class="lprev-wrap" id="logoPreviewWrap" style="display:none;">
+        <div class="lprev-tabs">
+          <button class="lprev-tab on" onclick="setPrevMode('light',this)">Light</button>
+          <button class="lprev-tab" onclick="setPrevMode('dark',this)">Dark</button>
+          <button class="lprev-tab" onclick="setPrevMode('gray',this)">Gray</button>
+        </div>
+        <div class="lprev-body light" id="lprevBody">
+          <img id="lprevImg" src="" alt="">
+        </div>
+      </div>
+
+      <div class="s-hd">Display Mode</div>
+      <div class="dm-grid">
+        <div class="dm-opt sel" id="dm-auto" onclick="setDM('auto',this)">Auto</div>
+        <div class="dm-opt" id="dm-logo" onclick="setDM('logo',this)">Logo Only</div>
+        <div class="dm-opt" id="dm-text" onclick="setDM('text',this)">Text Only</div>
+        <div class="dm-opt" id="dm-both" onclick="setDM('both',this)">Logo + Text</div>
+        <div class="dm-opt" id="dm-dark" onclick="setDM('dark',this)">Dark BG</div>
+        <div class="dm-opt" id="dm-light" onclick="setDM('light',this)">Light BG</div>
+      </div>
+
+      <div class="s-hd">SEO Settings</div>
+      <div class="form-group" style="margin-bottom:8px;">
+        <label class="form-label">Meta Title</label>
+        <input class="form-input" id="mMetaTitle" placeholder="Brand SEO title…" oninput="updateSEO()">
+      </div>
+      <div class="form-group" style="margin-bottom:10px;">
+        <label class="form-label">Meta Description</label>
+        <textarea class="form-textarea" id="mMetaDesc" placeholder="SEO description…" style="min-height:55px;" oninput="updateSEO()"></textarea>
+      </div>
+      <div class="s-hd">Search Preview</div>
+      <div class="seo-prev">
+        <div class="seo-prev-url" id="seoUrl">wellfixappliances.com/brand/…</div>
+        <div class="seo-prev-title" id="seoTitle">Brand Name — WellFix</div>
+        <div class="seo-prev-desc" id="seoDesc">Brand description preview…</div>
+      </div>
+    </div>
+  </div>
+  <div class="modal-ft">
+    <button class="btn btn-outline" onclick="closeModal()">Cancel</button>
+    <button class="btn" id="dupBtn" style="background:var(--gray-100);color:var(--gray-600);display:none;" onclick="duplicateBrand()">Duplicate</button>
+    <button class="btn" id="delBtn" style="background:var(--red-100);color:var(--red-600);display:none;" onclick="deleteBrand()">Delete</button>
+    <button class="btn btn-primary" id="saveBtn" onclick="saveBrand()">
+      <svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" width="12" height="12"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/></svg>
+      Save Brand
+    </button>
+  </div>
+</div>
+</div>
+
+</div></div></div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="../backend/config/supabase.js"></script>
 <script src="assets/js/shell.js"></script>
 <script>
-let brands=[];
+'use strict';
+let allBrands=[], allProds=[], filteredBrands=[], prodCounts={}, brandRevenue={};
+let editId=null, currentView='table', currentLogo=null, currentDM='auto';
+let selectedIds=new Set(), sortCol='name', sortDir=1;
+let page=0; const PER=25;
+let filtTimer=null;
+
 (async()=>{
-  await AdminShell.init('Brands');
-  await loadBrands();
+  await AdminShell.init('Brands','brands');
+  await loadData();
+  document.addEventListener('click',e=>{
+    if(!e.target.closest('.drop-m')) document.querySelectorAll('.drop-l').forEach(d=>d.classList.remove('open'));
+  });
 })();
-async function loadBrands(){
-  brands=await WF.brands.getAll();
-  document.getElementById('brandsGrid').innerHTML=brands.map(b=>`
-    <div class="card" style="padding:18px;text-align:center;">
-      <div style="font-family:var(--font-display);font-size:20px;font-weight:800;color:var(--gray-700);margin-bottom:6px;">${b.name}</div>
-      <div style="font-size:11px;color:var(--gray-400);margin-bottom:12px;">${b.slug}</div>
-      ${renderBadge(b.is_active?'active':'inactive')}
-      <div style="display:flex;gap:6px;justify-content:center;margin-top:12px;">
-        <button class="btn btn-secondary btn-sm" onclick="editBrand('${b.id}')">Edit</button>
-        <button class="btn btn-sm btn-danger" onclick="deleteBrand('${b.id}','${b.name}')">Delete</button>
+
+async function loadData(){
+  const[bRes,pRes]=await Promise.all([
+    db.from('brands').select('*').order('sort_order').order('name'),
+    db.from('products').select('id,brand_id,price,stock_qty').eq('is_active',true),
+  ]);
+  allBrands=bRes.data||[];
+  allProds=pRes.data||[];
+  prodCounts={};allProds.forEach(p=>{if(p.brand_id)prodCounts[p.brand_id]=(prodCounts[p.brand_id]||0)+1;});
+  // Revenue per brand from order_items
+  const ids=allBrands.map(b=>b.id);
+  if(ids.length){
+    const{data:items}=await db.from('order_items')
+      .select('total_price,product_id')
+      .in('product_id',allProds.map(p=>p.id).slice(0,200));
+    const pidBrand={};allProds.forEach(p=>{if(p.brand_id)pidBrand[p.id]=p.brand_id;});
+    (items||[]).forEach(i=>{const bid=pidBrand[i.product_id];if(bid)brandRevenue[bid]=(brandRevenue[bid]||0)+(parseFloat(i.total_price)||0);});
+  }
+  renderKPIs();filterBrands();
+}
+
+function renderKPIs(){
+  const total=allBrands.length,active=allBrands.filter(b=>b.is_active).length;
+  const feat=allBrands.filter(b=>b.is_featured).length,withLogo=allBrands.filter(b=>b.logo_url).length;
+  const homepage=allBrands.filter(b=>b.show_on_homepage).length;
+  document.getElementById('brandSub').textContent=`${total} brands · ${active} active · ${feat} featured`;
+  document.getElementById('brandKpi').innerHTML=[
+    {cls:'gn',val:total,lbl:'Total Brands'},
+    {cls:'bl',val:active,lbl:'Active'},
+    {cls:'am',val:feat,lbl:'Featured'},
+    {cls:'pu',val:homepage,lbl:'On Homepage'},
+    {cls:'te',val:withLogo,lbl:'With Logo'},
+  ].map(k=>`<div class="bk ${k.cls}"><div class="bk-val">${k.val}</div><div class="bk-lbl">${k.lbl}</div></div>`).join('');
+}
+
+function debounceFilt(){clearTimeout(filtTimer);filtTimer=setTimeout(filterBrands,250);}
+function setSort(col){if(sortCol===col)sortDir*=-1;else{sortCol=col;sortDir=1;}filterBrands();}
+
+function filterBrands(){
+  const q=document.getElementById('bSearch').value.toLowerCase();
+  const st=document.getElementById('fStatus').value;
+  const ft=document.getElementById('fFeat').value;
+  const sr=document.getElementById('fSort').value;
+  let list=allBrands.filter(b=>{
+    if(q&&!b.name?.toLowerCase().includes(q)&&!b.slug?.toLowerCase().includes(q)) return false;
+    if(st==='active'&&!b.is_active) return false;
+    if(st==='inactive'&&b.is_active) return false;
+    if(ft==='featured'&&!b.is_featured) return false;
+    if(ft==='homepage'&&!b.show_on_homepage) return false;
+    return true;
+  });
+  if(sr==='name')list.sort((a,b)=>(a.name||'').localeCompare(b.name||''));
+  else if(sr==='name_desc')list.sort((a,b)=>(b.name||'').localeCompare(a.name||''));
+  else if(sr==='products')list.sort((a,b)=>(prodCounts[b.id]||0)-(prodCounts[a.id]||0));
+  else if(sr==='sort_order')list.sort((a,b)=>(a.sort_order||0)-(b.sort_order||0));
+  else list.reverse();
+  filteredBrands=list;page=0;
+  document.getElementById('filtCount').textContent=`${list.length} brands`;
+  renderView();
+}
+
+function setView(v,el){
+  currentView=v;
+  ['vt','vg'].forEach(id=>document.getElementById(id)?.classList.remove('on'));el.classList.add('on');
+  document.getElementById('viewTable').style.display=v==='table'?'block':'none';
+  document.getElementById('viewGrid').style.display=v==='grid'?'block':'none';
+  renderView();
+}
+function renderView(){if(currentView==='table')renderTable();else renderGrid();renderPager();}
+
+function seoScore(b){
+  let s=0;
+  if(b.name)s+=25;if(b.slug)s+=15;if(b.description)s+=20;
+  if(b.meta_title)s+=25;if(b.meta_description)s+=15;return s;
+}
+function seoColor(s){return s>=80?'#22c55e':s>=50?'#f59e0b':'#ef4444';}
+
+function logoCell(b){
+  if(b.logo_url) return`<div class="logo-cell"><img src="${b.logo_url}" alt="${b.name}" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';"><svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" style="display:none;"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>`;
+  return`<div class="logo-cell" style="background:${b.brand_color||'var(--gray-50)'}22;"><svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>`;
+}
+
+function renderTable(){
+  const tbody=document.getElementById('brandTbody');
+  const slice=filteredBrands.slice(page*PER,(page+1)*PER);
+  if(!slice.length){
+    tbody.innerHTML=`<tr><td colspan="11"><div class="empty-b"><svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg><h3>No brands found</h3><p>Add your first brand to get started</p></div></td></tr>`;
+    return;
+  }
+  tbody.innerHTML=slice.map(b=>{
+    const cnt=prodCounts[b.id]||0,rev=brandRevenue[b.id]||0,sc=seoScore(b),chk=selectedIds.has(b.id)?'checked':'';
+    return`<tr onclick="editBrand('${b.id}')" id="brow-${b.id}">
+      <td style="padding:8px;width:36px;" onclick="event.stopPropagation()"><input type="checkbox" ${chk} onchange="toggleSel('${b.id}',this)"></td>
+      <td onclick="event.stopPropagation()">${logoCell(b)}</td>
+      <td>
+        <div style="font-weight:700;font-size:13px;color:var(--gray-900);">${b.name}</div>
+        <div style="font-size:10px;color:var(--gray-400);font-family:monospace;">/${b.slug||'—'}</div>
+        ${b.country?`<div style="font-size:10px;color:var(--gray-400);margin-top:1px;">${b.country}</div>`:''}
+      </td>
+      <td><span style="font-weight:700;">${cnt}</span> <span style="font-size:10px;color:var(--gray-400);">products</span></td>
+      <td style="font-weight:700;font-size:12px;">${rev>0?formatCurrency(rev):'<span style="color:var(--gray-300);">—</span>'}</td>
+      <td><span class="spill ${b.is_active?'active':'inactive'}">${b.is_active?'Active':'Inactive'}</span></td>
+      <td onclick="event.stopPropagation()">
+        <label class="tog"><input type="checkbox" ${b.is_featured?'checked':''} onchange="toggleField('${b.id}','is_featured',this.checked)"><span class="tog-tr"></span></label>
+      </td>
+      <td onclick="event.stopPropagation()">
+        <label class="tog"><input type="checkbox" ${b.show_on_homepage?'checked':''} onchange="toggleField('${b.id}','show_on_homepage',this.checked)"><span class="tog-tr"></span></label>
+      </td>
+      <td>
+        <div class="seo-b">
+          <div class="seo-t"><div class="seo-f" style="width:${sc}%;background:${seoColor(sc)};"></div></div>
+          <span style="font-size:10px;font-weight:700;color:${seoColor(sc)};">${sc}%</span>
+        </div>
+      </td>
+      <td><span style="font-size:10px;font-weight:600;color:var(--gray-500);background:var(--gray-50);padding:2px 6px;border-radius:4px;">${b.display_mode||'auto'}</span></td>
+      <td onclick="event.stopPropagation()">
+        <div class="ra-wrap">
+          <button class="ra" title="Edit" onclick="editBrand('${b.id}')"><svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4z"/></svg></button>
+          <button class="ra" title="Duplicate" onclick="duplicateById('${b.id}')"><svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg></button>
+          <button class="ra danger" title="Delete" onclick="deleteById('${b.id}')"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg></button>
+        </div>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+function renderGrid(){
+  const el=document.getElementById('brandGrid'),slice=filteredBrands.slice(page*PER,(page+1)*PER);
+  if(!slice.length){el.innerHTML='<div class="empty-b" style="grid-column:1/-1;"><svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" width="40" height="40"><rect x="3" y="3" width="18" height="18" rx="2"/></svg><h3>No brands</h3><p>Add your first brand</p></div>';return;}
+  el.innerHTML=slice.map(b=>`
+    <div class="br-card" onclick="editBrand('${b.id}')">
+      <div class="br-card-logo" style="${b.brand_color?`background:${b.brand_color}18;`:''}">
+        ${b.logo_url
+          ?`<img src="${b.logo_url}" alt="${b.name}" loading="lazy">`
+          :`<svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" width="36" height="36" style="color:var(--gray-200);"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>`}
       </div>
-    </div>`).join('')+`
-    <div class="card" style="border:2px dashed var(--gray-150);display:flex;align-items:center;justify-content:center;min-height:120px;cursor:pointer;" onclick="openBrandModal()" onmouseover="this.style.borderColor='var(--green-400)'" onmouseout="this.style.borderColor='var(--gray-150)'">
-      <div style="text-align:center;color:var(--gray-300);"><div style="font-size:28px;margin-bottom:4px;">+</div><div style="font-size:13px;font-weight:600;">Add Brand</div></div>
-    </div>`;
+      <div class="br-card-body">
+        <div class="br-card-name">${b.name}</div>
+        <div class="br-card-slug">/${b.slug||'—'}</div>
+        <div class="br-card-meta">${prodCounts[b.id]||0} products${brandRevenue[b.id]?` · ${formatCurrency(brandRevenue[b.id])}`:''}</div>
+      </div>
+      <div class="br-card-foot">
+        <span class="spill ${b.is_active?'active':'inactive'}">${b.is_active?'Active':'Off'}</span>
+        ${b.is_featured?'<span style="font-size:10px;font-weight:700;color:var(--green-600);">Featured</span>':''}
+        <span style="font-size:10px;color:${seoColor(seoScore(b))};font-weight:700;">SEO ${seoScore(b)}%</span>
+      </div>
+    </div>`).join('');
 }
-function openBrandModal(data=null){
-  document.getElementById('brandId').value=data?.id||'';
-  document.getElementById('brandName').value=data?.name||'';
-  document.getElementById('brandSlug').value=data?.slug||'';
-  document.getElementById('brandDesc').value=data?.description||'';
-  document.getElementById('brandModalTitle').textContent=data?'Edit Brand':'Add Brand';
-  document.getElementById('brandModal').classList.add('is-open');document.body.style.overflow='hidden';
+
+function renderPager(){
+  const total=filteredBrands.length,pages=Math.ceil(total/PER);
+  document.getElementById('pagerInfo').textContent=total?`${page*PER+1}–${Math.min((page+1)*PER,total)} of ${total}`:'';
+  const el=document.getElementById('pagerBtns');
+  if(pages<=1){el.innerHTML='';return;}
+  let h=`<button class="pager-btn" onclick="goPage(${Math.max(0,page-1)})" ${page===0?'disabled':''}>←</button>`;
+  for(let i=0;i<pages;i++)h+=`<button class="pager-btn ${i===page?'on':''}" onclick="goPage(${i})">${i+1}</button>`;
+  h+=`<button class="pager-btn" onclick="goPage(${Math.min(pages-1,page+1)})" ${page>=pages-1?'disabled':''}>→</button>`;
+  el.innerHTML=h;
 }
-function closeBrandModal(){document.getElementById('brandModal').classList.remove('is-open');document.body.style.overflow='';}
-document.getElementById('brandModal').addEventListener('click',e=>{if(e.target===e.currentTarget)closeBrandModal();});
+function goPage(n){page=n;renderView();}
+
+function toggleSel(id,cb){if(cb.checked)selectedIds.add(id);else selectedIds.delete(id);updateBulk();}
+function toggleAll(cb){filteredBrands.slice(page*PER,(page+1)*PER).forEach(b=>{if(cb.checked)selectedIds.add(b.id);else selectedIds.delete(b.id);});renderView();updateBulk();}
+function updateBulk(){const n=selectedIds.size;document.getElementById('bulkBar').classList.toggle('show',n>0);document.getElementById('bulkCnt').textContent=`${n} selected`;}
+function clearSel(){selectedIds.clear();renderView();updateBulk();}
+
+async function bulkUpdate(payload){for(const id of selectedIds)await db.from('brands').update(payload).eq('id',id);clearSel();loadData();}
+async function bulkActivate(){await bulkUpdate({is_active:true});toast(`${selectedIds.size} brands activated`);}
+async function bulkDeactivate(){await bulkUpdate({is_active:false});toast(`${selectedIds.size} brands deactivated`);}
+async function bulkFeatured(){await bulkUpdate({is_featured:true});toast(`${selectedIds.size} brands featured`);}
+async function bulkDelete(){if(!confirm(`Delete ${selectedIds.size} brands?`))return;for(const id of selectedIds)await db.from('brands').delete().eq('id',id);toast('Brands deleted');clearSel();loadData();}
+
+async function toggleField(id,field,val){
+  await db.from('brands').update({[field]:val}).eq('id',id);
+  const b=allBrands.find(x=>x.id===id);if(b)b[field]=val;
+  toast(val?`${field.replace(/_/g,' ')} enabled`:`${field.replace(/_/g,' ')} disabled`);
+}
+
+// MODAL
+function openModal(){
+  editId=null;currentLogo=null;currentDM='auto';
+  clearForm();loadAnalytics(null);
+  document.getElementById('modalTitle').textContent='Add Brand';
+  document.getElementById('delBtn').style.display='none';
+  document.getElementById('dupBtn').style.display='none';
+  document.getElementById('brandOverlay').style.display='flex';
+}
+
+async function editBrand(id){
+  const b=allBrands.find(x=>x.id===id);if(!b)return;
+  editId=id;currentLogo=b.logo_url||null;currentDM=b.display_mode||'auto';
+  document.getElementById('mName').value=b.name||'';
+  document.getElementById('mSlug').value=b.slug||'';
+  document.getElementById('mDesc').value=b.description||'';
+  document.getElementById('mCountry').value=b.country||'';
+  document.getElementById('mWebsite').value=b.website||'';
+  document.getElementById('mSort').value=b.sort_order??0;
+  document.getElementById('mColor').value=b.brand_color||'#056b4b';
+  document.getElementById('mColorHex').value=b.brand_color||'';
+  document.getElementById('mActive').checked=b.is_active!==false;
+  document.getElementById('mFeatured').checked=!!b.is_featured;
+  document.getElementById('mHomepage').checked=!!b.show_on_homepage;
+  document.getElementById('mFilters').checked=b.show_in_filters!==false;
+  document.getElementById('mFooter').checked=!!b.show_in_footer;
+  document.getElementById('mMetaTitle').value=b.meta_title||'';
+  document.getElementById('mMetaDesc').value=b.meta_description||'';
+  // Logo preview
+  if(b.logo_url){
+    const prev=document.getElementById('lzMainPrev');
+    prev.src=b.logo_url;prev.classList.add('show');
+    document.getElementById('lzMainIcon').style.display='none';
+    document.getElementById('lzMainLbl').textContent='Click to change';
+    document.getElementById('lzMainRm').style.display='block';
+    showLogoPreview(b.logo_url);
+  }else resetLogoZone();
+  // Display mode
+  setDM(currentDM,document.getElementById('dm-'+currentDM));
+  updateSEO();loadAnalytics(id);
+  document.getElementById('modalTitle').textContent='Edit Brand';
+  document.getElementById('delBtn').style.display='block';
+  document.getElementById('dupBtn').style.display='block';
+  document.getElementById('brandOverlay').style.display='flex';
+}
+
+function closeModal(){document.getElementById('brandOverlay').style.display='none';}
+
+function clearForm(){
+  ['mName','mSlug','mDesc','mCountry','mWebsite','mMetaTitle','mMetaDesc'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  document.getElementById('mSort').value=0;
+  document.getElementById('mColor').value='#056b4b';
+  document.getElementById('mColorHex').value='';
+  document.getElementById('mActive').checked=true;
+  document.getElementById('mFeatured').checked=false;
+  document.getElementById('mHomepage').checked=false;
+  document.getElementById('mFilters').checked=true;
+  document.getElementById('mFooter').checked=false;
+  resetLogoZone();setDM('auto',document.getElementById('dm-auto'));updateSEO();
+}
+
+function autoSlug(){if(!editId)document.getElementById('mSlug').value=slugify(document.getElementById('mName').value);updateSEO();}
+function syncColor(){const v=document.getElementById('mColorHex').value;if(v.match(/^#[0-9a-f]{6}$/i))document.getElementById('mColor').value=v;}
+
+function updateSEO(){
+  const slug=document.getElementById('mSlug').value||'brand-name';
+  const title=document.getElementById('mMetaTitle').value||document.getElementById('mName').value||'Brand Name';
+  const desc=document.getElementById('mMetaDesc').value||'Brand description preview…';
+  document.getElementById('seoUrl').textContent=`wellfixappliances.github.io/wellfix-website/pages/products.html?brand=${slug}`;
+  document.getElementById('seoTitle').textContent=title+' — WellFix Appliances';
+  document.getElementById('seoDesc').textContent=desc.slice(0,155)+(desc.length>155?'…':'');
+}
+
+function setDM(mode,el){
+  currentDM=mode;
+  document.querySelectorAll('.dm-opt').forEach(d=>d.classList.remove('sel'));
+  if(el)el.classList.add('sel');
+}
+
+function setPrevMode(mode,el){
+  document.querySelectorAll('.lprev-tab').forEach(t=>t.classList.remove('on'));el.classList.add('on');
+  const body=document.getElementById('lprevBody');
+  body.className='lprev-body '+mode;
+}
+
+function showLogoPreview(url){
+  const wrap=document.getElementById('logoPreviewWrap');
+  wrap.style.display='block';
+  document.getElementById('lprevImg').src=url;
+}
+
+// ANALYTICS
+async function loadAnalytics(brandId){
+  const el=document.getElementById('mAnalytics');
+  if(!brandId){el.innerHTML='<div class="am"><div class="am-val">—</div><div class="am-lbl">Products</div></div><div class="am"><div class="am-val">—</div><div class="am-lbl">Revenue</div></div><div class="am"><div class="am-val">—</div><div class="am-lbl">In Stock</div></div><div class="am"><div class="am-val">—</div><div class="am-lbl">Low Stock</div></div>';return;}
+  el.innerHTML='<div class="am"><div class="sk" style="height:40px;"></div></div>'.repeat(4);
+  const prods=allProds.filter(p=>p.brand_id===brandId);
+  const cnt=prods.length;
+  const inStock=prods.filter(p=>(p.stock_qty||0)>0).length;
+  const lowStock=prods.filter(p=>(p.stock_qty||0)<=5&&(p.stock_qty||0)>0).length;
+  const rev=brandRevenue[brandId]||0;
+  el.innerHTML=`<div class="am"><div class="am-val">${cnt}</div><div class="am-lbl">Products</div></div><div class="am"><div class="am-val">${formatCurrency(rev)}</div><div class="am-lbl">Revenue</div></div><div class="am"><div class="am-val">${inStock}</div><div class="am-lbl">In Stock</div></div><div class="am"><div class="am-val">${lowStock}</div><div class="am-lbl">Low Stock</div></div>`;
+}
+
+// LOGO UPLOAD
+function lzOver(e,id){e.preventDefault();document.getElementById(id).classList.add('over');}
+function lzLeave(id){document.getElementById(id).classList.remove('over');}
+function lzDrop(e,id,type){e.preventDefault();lzLeave(id);const f=e.dataTransfer.files[0];if(f)processLogo(f,type);}
+function handleLogoUpload(input,type){const f=input.files[0];if(f)processLogo(f,type);}
+
+async function processLogo(file, type){
+  const prog=document.getElementById('lzMainProg');
+  const fill=document.getElementById('lzMainFill');
+  const msg=document.getElementById('lzMainMsg');
+  prog.style.display='block';fill.style.width='20%';msg.textContent='Processing image…';
+  try{
+    // Client-side: smart contain resize, preserve transparency, WebP
+    const processed=await new Promise(resolve=>{
+      const reader=new FileReader();
+      reader.onload=e=>{
+        const img=new Image();
+        img.onload=()=>{
+          // Use 400x200 for landscape logos (wider than tall) else 200x200
+          const isWide=img.width/img.height>1.5;
+          const W=isWide?400:200,H=isWide?200:200;
+          const canvas=document.createElement('canvas');canvas.width=W;canvas.height=H;
+          const ctx=canvas.getContext('2d');
+          // Transparent background to preserve PNG transparency
+          ctx.clearRect(0,0,W,H);
+          // Smart contain with 10% padding
+          const scale=Math.min((W*0.8)/img.width,(H*0.8)/img.height);
+          const sw=img.width*scale,sh=img.height*scale;
+          ctx.drawImage(img,(W-sw)/2,(H-sh)/2,sw,sh);
+          canvas.toBlob(blob=>{
+            resolve(new File([blob],file.name.replace(/\.[^.]+$/,'')+'.webp',{type:'image/webp'}));
+          },'image/webp',0.92);
+        };
+        img.src=e.target.result;
+      };
+      reader.readAsDataURL(file);
+    });
+    fill.style.width='60%';msg.textContent='Uploading to storage…';
+    const fname=`brands/${Date.now()}-${Math.random().toString(36).slice(2)}.webp`;
+    let url;
+    for(const bucket of['products','media']){
+      const{error}=await db.storage.from(bucket).upload(fname,processed,{cacheControl:'3600',upsert:false});
+      if(!error){url=db.storage.from(bucket).getPublicUrl(fname).data.publicUrl;break;}
+    }
+    if(!url)throw new Error('Upload failed — check Supabase storage bucket');
+    currentLogo=url;fill.style.width='100%';msg.textContent='Uploaded';
+    const prev=document.getElementById('lzMainPrev');
+    prev.src=url;prev.classList.add('show');
+    document.getElementById('lzMainIcon').style.display='none';
+    document.getElementById('lzMainLbl').textContent='Click to change';
+    document.getElementById('lzMainRm').style.display='block';
+    showLogoPreview(url);
+    setTimeout(()=>{prog.style.display='none';fill.style.width='0%';},1500);
+  }catch(e){toast('Logo upload failed: '+e.message,true);prog.style.display='none';}
+}
+
+function removeLogo(type){currentLogo=null;resetLogoZone();document.getElementById('logoPreviewWrap').style.display='none';}
+function resetLogoZone(){
+  const prev=document.getElementById('lzMainPrev');prev.src='';prev.classList.remove('show');
+  document.getElementById('lzMainIcon').style.display='block';
+  document.getElementById('lzMainLbl').textContent='Drop logo or click to upload';
+  document.getElementById('lzMainRm').style.display='none';
+  document.getElementById('lzMainProg').style.display='none';
+}
+
+// SAVE
 async function saveBrand(){
-  const name=document.getElementById('brandName').value.trim();if(!name){toast('Name required',true);return;}
-  const id=document.getElementById('brandId').value;
-  const data={name,slug:document.getElementById('brandSlug').value||slugify(name),description:document.getElementById('brandDesc').value||null,is_active:true,logo_url:document.getElementById('brandLogo')?.value||'',display_mode:document.getElementById('brandDisplayMode')?.value||'text'};
-  try{if(id)await WF.brands.update(id,data);else await WF.brands.create(data);toast('Brand saved!');closeBrandModal();await loadBrands();}
-  catch(e){toast('Error: '+e.message,true);}
+  const name=document.getElementById('mName').value.trim();
+  if(!name){toast('Brand name is required',true);return;}
+  const btn=document.getElementById('saveBtn');btn.textContent='Saving…';btn.disabled=true;
+  try{
+    const payload={
+      name,
+      slug:document.getElementById('mSlug').value||slugify(name),
+      description:document.getElementById('mDesc').value||null,
+      country:document.getElementById('mCountry').value||null,
+      website:document.getElementById('mWebsite').value||null,
+      sort_order:parseInt(document.getElementById('mSort').value)||0,
+      brand_color:document.getElementById('mColor').value||null,
+      is_active:document.getElementById('mActive').checked,
+      is_featured:document.getElementById('mFeatured').checked,
+      show_on_homepage:document.getElementById('mHomepage').checked,
+      show_in_filters:document.getElementById('mFilters').checked,
+      show_in_footer:document.getElementById('mFooter').checked,
+      display_mode:currentDM,
+      logo_url:currentLogo||null,
+      meta_title:document.getElementById('mMetaTitle').value||null,
+      meta_description:document.getElementById('mMetaDesc').value||null,
+    };
+    if(editId)await db.from('brands').update(payload).eq('id',editId);
+    else await db.from('brands').insert(payload);
+    toast(editId?'Brand updated — website synced':'Brand created — now live on website');
+    closeModal();loadData();
+  }catch(e){toast('Error: '+e.message,true);}
+  finally{btn.textContent='Save Brand';btn.disabled=false;}
 }
-function editBrand(id){const b=brands.find(b=>b.id===id);openBrandModal(b);}
-async function deleteBrand(id,name){
-  if(!confirmDialog(`Delete brand "${name}"?`))return;
-  const{error}=await db.from('brands').delete().eq('id',id);
-  if(error){toast('Error: '+error.message,true);return;}
-  toast('Brand deleted');await loadBrands();
+
+// DELETE
+async function deleteBrand(){
+  if(!editId||!confirm('Delete this brand? Products will remain.'))return;
+  await db.from('brands').delete().eq('id',editId);
+  toast('Brand deleted');closeModal();loadData();
 }
+async function deleteById(id){if(!confirm('Delete this brand?'))return;await db.from('brands').delete().eq('id',id);toast('Brand deleted');loadData();}
+
+// DUPLICATE
+async function duplicateBrand(){
+  if(!editId)return;
+  const b=allBrands.find(x=>x.id===editId);if(!b)return;
+  await db.from('brands').insert({...b,id:undefined,name:b.name+' (Copy)',slug:b.slug+'-copy-'+Date.now().toString().slice(-4),is_active:false,created_at:undefined});
+  toast('Brand duplicated as inactive');closeModal();loadData();
+}
+async function duplicateById(id){const b=allBrands.find(x=>x.id===id);if(!b)return;editId=id;await duplicateBrand();editId=null;}
+
+// EXPORT / IMPORT
+function exportCSV(){
+  const rows=[['Name','Slug','Country','Products','Revenue','Status','Featured','Homepage','Display Mode','Website']];
+  allBrands.forEach(b=>rows.push([`"${b.name}"`,b.slug||'',b.country||'',prodCounts[b.id]||0,brandRevenue[b.id]||0,b.is_active?'Active':'Inactive',b.is_featured?'Yes':'No',b.show_on_homepage?'Yes':'No',b.display_mode||'auto',b.website||'']));
+  const a=document.createElement('a');a.href='data:text/csv,'+encodeURIComponent(rows.map(r=>r.join(',')).join('\n'));a.download='wellfix-brands.csv';a.click();toast('CSV exported');
+}
+function exportJSON(){
+  const a=document.createElement('a');a.href='data:application/json,'+encodeURIComponent(JSON.stringify(allBrands,null,2));a.download='wellfix-brands.json';a.click();toast('JSON exported');
+}
+function importCSV(){
+  const input=document.createElement('input');input.type='file';input.accept='.csv';
+  input.onchange=async e=>{
+    const file=e.target.files[0];if(!file)return;
+    const text=await file.text();
+    const lines=text.split('\n').map(l=>l.trim()).filter(Boolean);
+    const headers=lines[0].split(',').map(h=>h.replace(/"/g,'').trim());
+    let done=0;
+    for(const line of lines.slice(1)){
+      const vals=line.split(',').map(v=>v.replace(/"/g,'').trim());
+      const row={};headers.forEach((h,i)=>row[h]=vals[i]||'');
+      if(!row.name)continue;
+      const payload={name:row.name,slug:row.slug||slugify(row.name),is_active:row.status!=='Inactive',is_featured:row.featured==='Yes',website:row.website||null,country:row.country||null};
+      try{await db.from('brands').insert(payload);done++;}catch(e){}
+    }
+    toast(`Imported ${done} brands`);loadData();
+  };
+  input.click();
+}
+
+// DROPDOWN
+function toggleDrop(id){const el=document.getElementById(id+'List');document.querySelectorAll('.drop-l').forEach(d=>{if(d!==el)d.classList.remove('open');});el.classList.toggle('open');}
+function closeDrop(id){document.getElementById(id+'List').classList.remove('open');}
 </script>
-</body></html>
+</body>
+</html>
