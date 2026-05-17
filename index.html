@@ -669,85 +669,123 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="backend/config/supabase.js"></script>
-<script src="assets/js/app.js">
-// ── LIVE BANNER LOADER — reads from admin panel DB ────────
+<script src="assets/js/app.js"></script>
+<script>
+// ── LIVE BANNER SYSTEM ─────────────────────────────────────
+// Waits for Supabase db to be ready (retries up to 3s)
+function waitForDB(fn, tries = 0) {
+  if (typeof db !== 'undefined') { fn(); return; }
+  if (tries > 30) return; // give up after 3s
+  setTimeout(() => waitForDB(fn, tries + 1), 100);
+}
+
 async function loadLiveBanners() {
   try {
-    const { data } = await db.from('banners')
+    const { data, error } = await db
+      .from('banners')
       .select('id,title,subtitle,cta_text,cta_url,badge_text,position,sort_order,is_active,desktop_image_url')
-      .eq('is_active', true)
       .order('sort_order');
-    if (!data || !data.length) return; // keep fallback static
 
+    if (error || !data || !data.length) return;
+
+    // Filter: active + schedule check
     const now = new Date();
     const active = data.filter(b => {
+      if (!b.is_active) return false;
       if (b.starts_at && new Date(b.starts_at) > now) return false;
       if (b.ends_at && new Date(b.ends_at) < now) return false;
       return true;
     });
 
-    // Hero cards
-    const heroMain = active.filter(b => b.position === 'hero');
+    // ── HERO SECTION ──────────────────────────────
+    const heroMain  = active.filter(b => b.position === 'hero');
     const heroCards = active.filter(b => b.position === 'hero_card');
-    const heroGrid = document.getElementById('heroGrid');
+    const heroGrid  = document.getElementById('heroGrid');
 
-    if (heroGrid && (heroMain.length || heroCards.length)) {
-      let heroHTML = '';
-      heroMain.forEach(b => {
-        heroHTML += `<div class="hero-card hero-card--main" style="grid-column:span 1;">
-          <img class="hero-card__img" src="${b.desktop_image_url}" alt="${b.title||''}" loading="eager">
-          <div class="hero-card__overlay">
-            ${b.badge_text ? `<div class="hero-card__tag">${b.badge_text}</div>` : ''}
-            <div class="hero-card__title">${(b.title||'').replace(/ /g,'<br>')}</div>
-            ${b.cta_text ? `<a href="${b.cta_url||'#'}" class="hero-card__cta hero-card__cta--gold">${b.cta_text}<svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></a>` : ''}
-          </div>
-        </div>`;
-      });
-      heroCards.forEach(b => {
-        heroHTML += `<div class="hero-card">
-          <img class="hero-card__img" src="${b.desktop_image_url}" alt="${b.title||''}" loading="eager">
-          <div class="hero-card__overlay">
-            ${b.badge_text ? `<div class="hero-card__label">${b.badge_text}</div>` : ''}
-            <div class="hero-card__title">${(b.title||'').replace(/ /g,'<br>')}</div>
-            ${b.cta_text ? `<a href="${b.cta_url||'#'}" class="hero-card__cta">${b.cta_text}<svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></a>` : ''}
-          </div>
-        </div>`;
-      });
-      if (heroHTML) heroGrid.innerHTML = heroHTML;
+    if (heroGrid) {
+      // Only rebuild if we have DB banners
+      if (heroMain.length || heroCards.length) {
+        const SVG_ARROW = `<svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>`;
+
+        let heroHTML = '';
+
+        // Main hero (span 1 col, tall 380px)
+        if (heroMain.length) {
+          const b = heroMain[0];
+          heroHTML += `<div class="hero-card hero-card--main" style="grid-column:span 1;">
+            <img class="hero-card__img" src="${b.desktop_image_url||''}" alt="${b.title||''}" loading="eager" style="width:100%;height:380px;object-fit:cover;">
+            <div class="hero-card__overlay">
+              ${b.badge_text ? `<div class="hero-card__tag">${b.badge_text}</div>` : ''}
+              <div class="hero-card__title">${b.title||''}</div>
+              ${b.subtitle ? `<div style="font-size:13px;color:rgba(255,255,255,.7);margin-top:4px;">${b.subtitle}</div>` : ''}
+              ${b.cta_text ? `<a href="${b.cta_url||'#'}" class="hero-card__cta hero-card__cta--gold">${b.cta_text} ${SVG_ARROW}</a>` : ''}
+            </div>
+          </div>`;
+        }
+
+        // Side hero cards (smaller, 180px)
+        heroCards.forEach(b => {
+          heroHTML += `<div class="hero-card">
+            <img class="hero-card__img" src="${b.desktop_image_url||''}" alt="${b.title||''}" loading="eager" style="width:100%;height:180px;object-fit:cover;">
+            <div class="hero-card__overlay">
+              ${b.badge_text ? `<div class="hero-card__label">${b.badge_text}</div>` : ''}
+              <div class="hero-card__title">${b.title||''}</div>
+              ${b.cta_text ? `<a href="${b.cta_url||'#'}" class="hero-card__cta">${b.cta_text} ${SVG_ARROW}</a>` : ''}
+            </div>
+          </div>`;
+        });
+
+        heroGrid.innerHTML = heroHTML;
+      }
+      // If all hero banners deactivated → hide section gracefully
+      else if (data.some(b => ['hero','hero_card'].includes(b.position))) {
+        heroGrid.closest('section').style.display = 'none';
+      }
     }
 
-    // Promo banners
+    // ── PROMO SECTION ─────────────────────────────
     const promoMain = active.filter(b => b.position === 'promo');
     const promoSide = active.filter(b => b.position === 'promo_side');
     const promoGrid = document.getElementById('promoGrid');
     const promoSideGrid = document.getElementById('promoSideGrid');
+    const promoSection = promoGrid ? promoGrid.closest('section') : null;
 
-    function bannerCardHTML(b) {
+    const SVG_ARROW = `<svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>`;
+
+    function bannerCard(b) {
       return `<div class="banner-card">
-        <img src="${b.desktop_image_url}" alt="${b.title||''}">
+        <img src="${b.desktop_image_url||''}" alt="${b.title||''}" loading="lazy">
         <div class="banner-card__overlay">
           ${b.badge_text ? `<div class="banner-card__label">${b.badge_text}</div>` : ''}
-          <div class="banner-card__title">${(b.title||'').replace(/ /g,'<br>')}</div>
-          ${b.cta_text ? `<div class="banner-card__cta">${b.cta_text}<svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></div>` : ''}
+          <div class="banner-card__title">${b.title||''}</div>
+          ${b.cta_text ? `<div class="banner-card__cta">${b.cta_text} ${SVG_ARROW}</div>` : ''}
         </div>
       </div>`;
     }
 
     if (promoGrid && promoMain.length) {
-      const mainBanner = promoGrid.querySelector('.banner-card');
-      if (mainBanner) mainBanner.outerHTML = bannerCardHTML(promoMain[0]);
+      // Replace entire promo grid with DB data
+      promoGrid.innerHTML = `
+        ${bannerCard(promoMain[0])}
+        <div style="display:flex;flex-direction:column;gap:var(--sp-3);" id="promoSideGrid">
+          ${promoSide.map(bannerCard).join('')}
+        </div>`;
+      // If no side banners, make main banner full width
+      if (!promoSide.length) {
+        promoGrid.style.gridTemplateColumns = '1fr';
+      }
+    } else if (promoSection && data.some(b => ['promo','promo_side'].includes(b.position))) {
+      // All promo banners deactivated → hide section
+      promoSection.style.display = 'none';
     }
-    if (promoSideGrid && promoSide.length) {
-      promoSideGrid.innerHTML = promoSide.map(bannerCardHTML).join('') || promoSideGrid.innerHTML;
-    }
+
   } catch(e) {
-    // Fail silently — static fallback stays visible
+    // Fail silently — static HTML remains as fallback
   }
 }
-// Load live banners after DB is ready
-document.addEventListener('DOMContentLoaded', () => {
-  if (typeof db !== 'undefined') loadLiveBanners();
-});
+
+// Wait for DB then load — handles async script loading
+document.addEventListener('DOMContentLoaded', () => waitForDB(loadLiveBanners));
 
 </script>
 </body>
