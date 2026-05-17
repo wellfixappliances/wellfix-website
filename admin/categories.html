@@ -1,93 +1,1017 @@
 <!DOCTYPE html>
 <html lang="en">
-<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Categories — WellFix Admin</title>
 <link rel="icon" href="../assets/images/WELLFIX-FAVICON.png">
-<link rel="stylesheet" href="assets/css/admin.css"></head>
+<link rel="stylesheet" href="assets/css/admin.css">
+<style>
+/* ═══════════════════════════════════════════
+   CATEGORIES DESIGN SYSTEM
+   ═══════════════════════════════════════════ */
+
+/* KPI row */
+.cat-kpi{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:14px;}
+@media(max-width:1000px){.cat-kpi{grid-template-columns:repeat(3,1fr);}}
+@media(max-width:600px){.cat-kpi{grid-template-columns:repeat(2,1fr);}}
+.ck{background:#fff;border:1px solid var(--gray-100);border-radius:10px;padding:13px 16px;box-shadow:0 1px 2px rgba(0,0,0,.04);transition:box-shadow .2s;position:relative;overflow:hidden;}
+.ck:hover{box-shadow:0 3px 10px rgba(0,0,0,.07);}
+.ck::before{content:'';position:absolute;top:0;left:0;width:3px;height:100%;border-radius:10px 0 0 10px;}
+.ck.gn::before{background:#22c55e;}.ck.bl::before{background:#3b82f6;}.ck.am::before{background:#f59e0b;}.ck.pu::before{background:#8b5cf6;}.ck.te::before{background:#06b6d4;}
+.ck-val{font-family:var(--font-display);font-size:22px;font-weight:800;color:var(--gray-900);line-height:1;letter-spacing:-.4px;}
+.ck-label{font-size:11px;color:var(--gray-400);margin-top:3px;font-weight:500;}
+
+/* Toolbar */
+.cat-toolbar{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-bottom:1px solid var(--gray-100);gap:8px;flex-wrap:wrap;}
+.cat-toolbar-l,.cat-toolbar-r{display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
+
+/* View tabs */
+.view-seg{display:flex;background:var(--gray-50);border:1px solid var(--gray-150,#dedede);border-radius:6px;padding:2px;gap:1px;}
+.vs-btn{padding:4px 10px;border-radius:4px;font-size:11px;font-weight:600;color:var(--gray-500);cursor:pointer;border:none;background:none;transition:all .15s;display:flex;align-items:center;gap:4px;}
+.vs-btn.on{background:#fff;color:var(--gray-900);box-shadow:0 1px 3px rgba(0,0,0,.1);}
+.vs-btn svg{width:12px;height:12px;}
+
+/* Bulk bar */
+.bulk-bar{display:none;align-items:center;gap:8px;padding:8px 14px;background:var(--green-50);border-bottom:1px solid var(--green-100);}
+.bulk-bar.show{display:flex;}
+.bulk-count{font-size:12px;font-weight:700;color:var(--green-700);}
+
+/* Table */
+.cat-tbl{width:100%;border-collapse:collapse;font-size:12px;}
+.cat-tbl thead th{position:sticky;top:0;background:#fff;z-index:2;padding:8px 14px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--gray-400);border-bottom:1px solid var(--gray-100);text-align:left;white-space:nowrap;box-shadow:0 1px 0 var(--gray-100);}
+.cat-tbl th.sort{cursor:pointer;user-select:none;}
+.cat-tbl th.sort:hover{color:var(--gray-700);}
+.cat-tbl td{padding:9px 14px;border-bottom:1px solid var(--gray-50);vertical-align:middle;color:var(--gray-700);}
+.cat-tbl tr:last-child td{border-bottom:none;}
+.cat-tbl tbody tr{transition:background .1s;cursor:pointer;}
+.cat-tbl tbody tr:hover td{background:var(--gray-25);}
+.cat-thumb{width:36px;height:36px;border-radius:7px;overflow:hidden;background:var(--gray-50);border:1px solid var(--gray-100);flex-shrink:0;display:flex;align-items:center;justify-content:center;}
+.cat-thumb img{width:100%;height:100%;object-fit:cover;}
+.cat-thumb svg{width:16px;height:16px;color:var(--gray-300);}
+.cat-name{font-weight:700;color:var(--gray-900);font-size:13px;}
+.cat-slug{font-size:10px;color:var(--gray-400);margin-top:1px;font-family:monospace;}
+.depth-indent{display:inline-block;width:16px;height:1px;border-top:1px dashed var(--gray-200);margin-right:4px;vertical-align:middle;}
+.row-actions{display:flex;gap:3px;opacity:0;transition:opacity .15s;justify-content:flex-end;}
+tr:hover .row-actions{opacity:1;}
+.ra{width:26px;height:26px;border-radius:5px;border:1px solid var(--gray-200);background:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;}
+.ra:hover{background:var(--gray-50);border-color:var(--gray-300);}
+.ra svg{width:12px;height:12px;stroke:var(--gray-500);fill:none;stroke-width:2;}
+.ra.danger:hover{background:#fef2f2;border-color:#fecaca;}
+.ra.danger:hover svg{stroke:#dc2626;}
+
+/* Grid view */
+.cat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;padding:14px;}
+.cat-grid-card{background:#fff;border:1px solid var(--gray-100);border-radius:10px;overflow:hidden;transition:box-shadow .2s;cursor:pointer;}
+.cat-grid-card:hover{box-shadow:0 4px 14px rgba(0,0,0,.08);}
+.cgc-img{width:100%;height:110px;background:var(--gray-50);position:relative;overflow:hidden;}
+.cgc-img img{width:100%;height:100%;object-fit:cover;}
+.cgc-img-placeholder{width:100%;height:100%;display:flex;align-items:center;justify-content:center;}
+.cgc-img-placeholder svg{width:32px;height:32px;color:var(--gray-200);}
+.cgc-body{padding:12px;}
+.cgc-name{font-weight:700;font-size:13px;color:var(--gray-900);}
+.cgc-meta{font-size:11px;color:var(--gray-400);margin-top:3px;}
+.cgc-foot{padding:8px 12px;border-top:1px solid var(--gray-50);display:flex;align-items:center;justify-content:space-between;}
+
+/* Tree view */
+.tree-node{border-left:2px solid var(--gray-100);margin-left:20px;padding-left:14px;position:relative;}
+.tree-node::before{content:'';position:absolute;left:-2px;top:20px;width:14px;height:1px;background:var(--gray-150,#dedede);}
+.tree-root{border-left:none;margin-left:0;padding-left:0;}
+.tree-root>.tree-node::before{left:0;}
+.tree-item{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:8px;transition:background .1s;cursor:pointer;margin-bottom:2px;}
+.tree-item:hover{background:var(--gray-50);}
+.tree-toggle{width:16px;height:16px;border-radius:3px;border:1px solid var(--gray-200);background:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.tree-toggle svg{width:8px;height:8px;stroke:var(--gray-500);}
+.tree-spacer{width:16px;flex-shrink:0;}
+.tree-name{font-weight:600;font-size:13px;color:var(--gray-800);flex:1;}
+.tree-count{font-size:11px;color:var(--gray-400);}
+
+/* Status pill */
+.spill{display:inline-flex;align-items:center;gap:3px;font-size:10px;font-weight:700;padding:2px 7px;border-radius:99px;}
+.spill.active{background:#f0fdf4;color:#16a34a;}
+.spill.inactive{background:#f9fafb;color:#6b7280;}
+
+/* SEO score bar */
+.seo-bar{display:flex;align-items:center;gap:5px;}
+.seo-track{width:48px;height:4px;background:var(--gray-100);border-radius:99px;overflow:hidden;}
+.seo-fill{height:100%;border-radius:99px;}
+
+/* Toggle switch */
+.tog{display:flex;align-items:center;cursor:pointer;}
+.tog input{display:none;}
+.tog-track{width:28px;height:16px;background:var(--gray-200);border-radius:99px;position:relative;transition:background .2s;flex-shrink:0;}
+.tog input:checked+.tog-track{background:var(--green-500);}
+.tog-track::after{content:'';width:12px;height:12px;background:#fff;border-radius:50%;position:absolute;top:2px;left:2px;transition:transform .2s;box-shadow:0 1px 3px rgba(0,0,0,.2);}
+.tog input:checked+.tog-track::after{transform:translateX(12px);}
+
+/* Dropdown */
+.drop-menu{position:relative;display:inline-block;}
+.drop-list{display:none;position:absolute;right:0;top:100%;margin-top:4px;background:#fff;border:1px solid var(--gray-150,#dedede);border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,.1);min-width:180px;z-index:200;overflow:hidden;}
+.drop-list.open{display:block;}
+.drop-item{display:flex;align-items:center;gap:8px;padding:8px 12px;font-size:12px;font-weight:500;color:var(--gray-700);cursor:pointer;transition:background .1s;}
+.drop-item:hover{background:var(--gray-50);}
+.drop-item svg{width:13px;height:13px;stroke:var(--gray-400);fill:none;stroke-width:2;}
+.drop-item.danger:hover{background:#fef2f2;color:#dc2626;}
+.drop-item.danger:hover svg{stroke:#dc2626;}
+.drop-sep{height:1px;background:var(--gray-100);margin:4px 0;}
+
+/* Modal split layout */
+.modal-split{display:grid;grid-template-columns:1fr 340px;gap:0;min-height:400px;}
+@media(max-width:800px){.modal-split{grid-template-columns:1fr;}}
+.modal-left{padding:20px;border-right:1px solid var(--gray-100);}
+.modal-right{padding:20px;background:var(--gray-25);}
+@media(max-width:800px){.modal-left{border-right:none;border-bottom:1px solid var(--gray-100);}.modal-right{background:#fff;}}
+
+/* Section heading */
+.sec-hd{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--gray-400);margin-bottom:10px;margin-top:20px;}
+.sec-hd:first-child{margin-top:0;}
+
+/* Image upload zone */
+.img-zone{border:2px dashed var(--gray-200);border-radius:8px;padding:20px;text-align:center;cursor:pointer;transition:all .2s;background:#fff;position:relative;}
+.img-zone:hover,.img-zone.over{border-color:var(--green-400);background:var(--green-50);}
+.img-zone input{position:absolute;inset:0;opacity:0;cursor:pointer;}
+.img-zone-preview{width:100%;height:80px;object-fit:cover;border-radius:5px;margin-bottom:8px;display:none;}
+.img-zone-lbl{font-size:12px;font-weight:600;color:var(--gray-600);}
+.img-zone-sub{font-size:10px;color:var(--gray-400);margin-top:2px;}
+
+/* SEO preview */
+.seo-preview{background:#fff;border:1px solid var(--gray-100);border-radius:8px;padding:12px 14px;}
+.seo-url{font-size:11px;color:#1a0dab;margin-bottom:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.seo-title-prev{font-size:14px;font-weight:600;color:#1a0dab;line-height:1.3;margin-bottom:3px;}
+.seo-desc-prev{font-size:12px;color:#545454;line-height:1.4;}
+
+/* Analytics mini */
+.an-mini{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;}
+.am{background:#fff;border:1px solid var(--gray-100);border-radius:8px;padding:10px 12px;}
+.am-val{font-family:var(--font-display);font-size:16px;font-weight:800;color:var(--gray-900);}
+.am-lbl{font-size:10px;color:var(--gray-400);margin-top:2px;}
+
+/* Empty state */
+.empty-cat{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:48px 24px;text-align:center;}
+.empty-cat svg{width:40px;height:40px;opacity:.15;color:var(--gray-500);margin-bottom:12px;}
+.empty-cat h3{font-family:var(--font-display);font-size:15px;font-weight:700;color:var(--gray-600);margin-bottom:4px;}
+.empty-cat p{font-size:12px;color:var(--gray-400);}
+
+/* Skeleton */
+.sk{background:linear-gradient(90deg,var(--gray-100) 25%,var(--gray-50) 50%,var(--gray-100) 75%);background-size:200% 100%;animation:sk 1.4s infinite;border-radius:5px;}
+@keyframes sk{to{background-position:-200% 0;}}
+
+/* Pagination */
+.pager{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-top:1px solid var(--gray-100);}
+.pager-info{font-size:11px;color:var(--gray-400);}
+.pager-btn{height:28px;min-width:28px;padding:0 8px;border:1px solid var(--gray-200);border-radius:5px;background:#fff;font-size:12px;font-weight:600;color:var(--gray-600);cursor:pointer;}
+.pager-btn:hover:not(:disabled){background:var(--gray-50);}
+.pager-btn:disabled{opacity:.4;cursor:default;}
+.pager-btn.on{background:var(--green-700);color:#fff;border-color:var(--green-700);}
+</style>
+</head>
 <body>
 <div class="admin-shell"><div id="adminShell"></div>
-<div class="main-wrap" id="mainWrap"><div class="page-content">
-  <div class="pg-hd">
-    <div><h1>Categories</h1><p>Manage product categories</p></div>
-    <div class="pg-hd__actions"><button class="btn btn-primary" onclick="openCatModal()">Add Category</button></div>
-  </div>
-  <div class="card">
-    <div class="tbl-wrap">
-      <table>
-        <thead><tr><th>Category</th><th>Slug</th><th>Parent</th><th>Status</th><th>Actions</th></tr></thead>
-        <tbody id="catTbody"><tr><td colspan="5" style="text-align:center;padding:30px;"><div class="spinner" style="margin:0 auto;"></div></td></tr></tbody>
-      </table>
-    </div>
-  </div>
-</div></div></div>
+<div class="main-wrap" id="mainWrap">
+<div class="page-content">
 
-<div class="modal-overlay" id="catModal">
-  <div class="modal" style="max-width:480px;">
-    <div class="modal-hd"><div class="modal-title" id="catModalTitle">Add Category</div><button class="modal-close" onclick="closeCatModal()"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
-    <div class="modal-body">
-      <input type="hidden" id="catId">
-      <div class="form-grid" style="gap:12px;">
-        <div class="form-group"><label class="form-label">Name <span class="req">*</span></label><input class="form-input" id="catName" placeholder="e.g. Mixers & Grinders" oninput="document.getElementById('catSlug').value=slugify(this.value)"></div>
-        <div class="form-group"><label class="form-label">Slug</label><input class="form-input" id="catSlug" placeholder="auto-generated"></div>
-        <div class="form-group"><label class="form-label">Parent Category</label><select class="form-select" id="catParent"><option value="">None (Top Level)</option></select></div>
-        <div class="form-group"><label class="form-label">Description</label><textarea class="form-textarea" id="catDesc" rows="2"></textarea></div>
-        <div class="form-group"><label class="form-label">Sort Order</label><input class="form-input" type="number" id="catSort" value="0"></div>
+<!-- ── HEADER ─────────────────────────────────────────── -->
+<div class="pg-hd">
+  <div>
+    <h1>Categories</h1>
+    <p style="font-size:12px;color:var(--gray-400);margin-top:2px;" id="catSubtitle">Loading…</p>
+  </div>
+  <div class="pg-hd__actions">
+    <div class="drop-menu" id="exportMenu">
+      <button class="btn btn-outline" onclick="toggleDrop('exportMenu')">Export</button>
+      <div class="drop-list" id="exportMenuList">
+        <div class="drop-item" onclick="exportCSV();closeDrop('exportMenu')">
+          <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          Export CSV
+        </div>
+        <div class="drop-item" onclick="exportJSON();closeDrop('exportMenu')">
+          <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          Export JSON
+        </div>
       </div>
     </div>
-    <div class="modal-ft"><button class="btn btn-secondary" onclick="closeCatModal()">Cancel</button><button class="btn btn-primary" onclick="saveCat()">Save Category</button></div>
+    <button class="btn btn-outline" onclick="syncWebsite()">
+      <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="12" height="12"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/></svg>
+      Sync Website
+    </button>
+    <button class="btn btn-primary" onclick="openModal()">
+      <svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" width="12" height="12"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      Add Category
+    </button>
   </div>
 </div>
+
+<!-- ── KPI ROW ────────────────────────────────────────── -->
+<div class="cat-kpi" id="catKpi">
+  <div class="ck gn"><div class="sk" style="height:50px;"></div></div>
+  <div class="ck bl"><div class="sk" style="height:50px;"></div></div>
+  <div class="ck am"><div class="sk" style="height:50px;"></div></div>
+  <div class="ck pu"><div class="sk" style="height:50px;"></div></div>
+  <div class="ck te"><div class="sk" style="height:50px;"></div></div>
+</div>
+
+<!-- ── MAIN CARD ──────────────────────────────────────── -->
+<div class="card" style="padding:0;">
+
+  <!-- Toolbar -->
+  <div class="cat-toolbar">
+    <div class="cat-toolbar-l">
+      <div class="filter-search" style="margin:0;">
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="search" id="catSearch" placeholder="Search categories…" oninput="debounceFilter()" style="width:190px;">
+      </div>
+      <select class="filter-select" id="fStatus" onchange="filterCats()" style="height:34px;font-size:12px;">
+        <option value="">All Status</option>
+        <option value="active">Active</option>
+        <option value="inactive">Inactive</option>
+      </select>
+      <select class="filter-select" id="fParent" onchange="filterCats()" style="height:34px;font-size:12px;">
+        <option value="">All Levels</option>
+        <option value="top">Top Level Only</option>
+        <option value="child">Sub-categories Only</option>
+      </select>
+      <select class="filter-select" id="fSort" onchange="filterCats()" style="height:34px;font-size:12px;">
+        <option value="sort_order">Sort Order</option>
+        <option value="name">Name A–Z</option>
+        <option value="name_desc">Name Z–A</option>
+        <option value="products">Most Products</option>
+        <option value="newest">Newest</option>
+      </select>
+    </div>
+    <div class="cat-toolbar-r">
+      <span id="filterCount" style="font-size:11px;color:var(--gray-400);"></span>
+      <div class="view-seg">
+        <button class="vs-btn on" id="vt" onclick="setView('table',this)">
+          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+          Table
+        </button>
+        <button class="vs-btn" id="vg" onclick="setView('grid',this)">
+          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+          Grid
+        </button>
+        <button class="vs-btn" id="vtr" onclick="setView('tree',this)">
+          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
+          Tree
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bulk bar -->
+  <div class="bulk-bar" id="bulkBar">
+    <input type="checkbox" id="chkAll" onchange="toggleAll(this)" style="cursor:pointer;">
+    <span class="bulk-count" id="bulkCount">0 selected</span>
+    <div style="display:flex;gap:6px;flex-wrap:wrap;">
+      <button class="btn btn-sm btn-outline" onclick="bulkActivate()">Activate</button>
+      <button class="btn btn-sm btn-outline" onclick="bulkDeactivate()">Deactivate</button>
+      <button class="btn btn-sm btn-outline" onclick="bulkFeatured()">Set Featured</button>
+      <button class="btn btn-sm" style="background:var(--red-100);color:var(--red-600);" onclick="bulkDelete()">Delete</button>
+    </div>
+    <button class="btn btn-sm btn-outline" onclick="clearSel()" style="margin-left:auto;">Clear</button>
+  </div>
+
+  <!-- TABLE VIEW -->
+  <div id="viewTable" style="overflow-x:auto;">
+    <table class="cat-tbl">
+      <thead>
+        <tr>
+          <th style="width:36px;padding:8px;"><input type="checkbox" id="chkAllHead" onchange="toggleAll(this)"></th>
+          <th style="min-width:240px;" class="sort" onclick="setSort('name')">Category</th>
+          <th class="sort" onclick="setSort('products')">Products</th>
+          <th>Parent</th>
+          <th class="sort" onclick="setSort('sort_order')">Order</th>
+          <th>Status</th>
+          <th>Featured</th>
+          <th>SEO</th>
+          <th style="width:110px;text-align:right;">Actions</th>
+        </tr>
+      </thead>
+      <tbody id="catTbody"></tbody>
+    </table>
+  </div>
+
+  <!-- GRID VIEW -->
+  <div id="viewGrid" style="display:none;">
+    <div class="cat-grid" id="catGridContainer"></div>
+  </div>
+
+  <!-- TREE VIEW -->
+  <div id="viewTree" style="display:none;padding:14px;">
+    <div id="catTreeContainer"></div>
+  </div>
+
+  <!-- Pagination -->
+  <div class="pager">
+    <span class="pager-info" id="pagerInfo"></span>
+    <div style="display:flex;gap:4px;" id="pagerBtns"></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     CATEGORY MODAL — SPLIT LAYOUT
+══════════════════════════════════════════════════ -->
+<div class="modal-overlay" id="catOverlay" onclick="if(event.target===this)closeModal()" style="display:none;align-items:flex-start;justify-content:center;padding:20px 16px;overflow-y:auto;">
+<div class="modal" id="catModal" style="max-width:860px;width:100%;margin:auto;max-height:90vh;overflow-y:auto;">
+  <div class="modal-hd">
+    <h3 id="modalTitle">Add Category</h3>
+    <button class="modal-close" onclick="closeModal()">✕</button>
+  </div>
+  <div class="modal-split">
+    <!-- LEFT -->
+    <div class="modal-left">
+      <div class="sec-hd">Basic Information</div>
+      <div class="form-group" style="margin-bottom:12px;">
+        <label class="form-label">Category Name *</label>
+        <input class="form-input" id="mName" placeholder="e.g. Mixers & Grinders" oninput="autoSlug()">
+      </div>
+      <div class="form-group" style="margin-bottom:12px;">
+        <label class="form-label">URL Slug</label>
+        <input class="form-input" id="mSlug" placeholder="auto-generated" style="font-family:monospace;font-size:12px;">
+      </div>
+      <div class="form-group" style="margin-bottom:12px;">
+        <label class="form-label">Description</label>
+        <textarea class="form-textarea" id="mDesc" placeholder="Category description…" style="min-height:70px;"></textarea>
+      </div>
+      <div class="form-grid form-2" style="margin-bottom:12px;">
+        <div class="form-group">
+          <label class="form-label">Parent Category</label>
+          <select class="form-input" id="mParent"><option value="">None (Top Level)</option></select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Sort Order</label>
+          <input class="form-input" type="number" id="mSort" value="0" placeholder="0">
+        </div>
+      </div>
+
+      <div class="sec-hd">Visibility & Controls</div>
+      <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:14px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 10px;background:var(--gray-25);border-radius:6px;border:1px solid var(--gray-100);">
+          <span style="font-size:12px;font-weight:500;color:var(--gray-700);">Active (visible on website)</span>
+          <label class="tog"><input type="checkbox" id="mActive" checked><span class="tog-track"></span></label>
+        </div>
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 10px;background:var(--gray-25);border-radius:6px;border:1px solid var(--gray-100);">
+          <span style="font-size:12px;font-weight:500;color:var(--gray-700);">Featured (show on homepage)</span>
+          <label class="tog"><input type="checkbox" id="mFeatured"><span class="tog-track"></span></label>
+        </div>
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 10px;background:var(--gray-25);border-radius:6px;border:1px solid var(--gray-100);">
+          <span style="font-size:12px;font-weight:500;color:var(--gray-700);">Show in main menu</span>
+          <label class="tog"><input type="checkbox" id="mShowMenu" checked><span class="tog-track"></span></label>
+        </div>
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 10px;background:var(--gray-25);border-radius:6px;border:1px solid var(--gray-100);">
+          <span style="font-size:12px;font-weight:500;color:var(--gray-700);">Show in mobile nav</span>
+          <label class="tog"><input type="checkbox" id="mShowMobile" checked><span class="tog-track"></span></label>
+        </div>
+      </div>
+
+      <div class="sec-hd">Analytics (Live)</div>
+      <div class="an-mini" id="mAnalytics">
+        <div class="am"><div class="sk" style="height:40px;"></div></div>
+        <div class="am"><div class="sk" style="height:40px;"></div></div>
+        <div class="am"><div class="sk" style="height:40px;"></div></div>
+        <div class="am"><div class="sk" style="height:40px;"></div></div>
+      </div>
+    </div>
+
+    <!-- RIGHT -->
+    <div class="modal-right">
+      <div class="sec-hd">Category Image</div>
+      <div class="img-zone" id="imgZone" onclick="document.getElementById('mImgFile').click()"
+        ondragover="zoneOver(event)" ondragleave="zoneLeave(event)" ondrop="zoneDrop(event)">
+        <input type="file" id="mImgFile" accept="image/*" onchange="handleCatImg(this)" style="display:none;">
+        <img id="mImgPreview" class="img-zone-preview">
+        <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" width="28" height="28" style="opacity:.2;margin-bottom:6px;" id="mImgIcon"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
+        <div class="img-zone-lbl" id="mImgLbl">Drop image or click to upload</div>
+        <div class="img-zone-sub">JPG PNG WebP AVIF — Auto WebP conversion</div>
+      </div>
+      <button id="mImgRemove" style="display:none;margin-top:6px;width:100%;height:28px;border:1px solid var(--red-200);background:var(--red-50);color:var(--red-600);border-radius:5px;font-size:11px;font-weight:600;cursor:pointer;" onclick="removeCatImg()">Remove Image</button>
+      <div id="mImgProgress" style="display:none;margin-top:6px;">
+        <div style="height:3px;background:var(--gray-100);border-radius:99px;overflow:hidden;"><div id="mImgProgressFill" style="height:100%;background:var(--green-500);width:0%;transition:width .2s;border-radius:99px;"></div></div>
+        <div id="mImgProgressMsg" style="font-size:10px;color:var(--gray-400);margin-top:3px;"></div>
+      </div>
+
+      <div class="sec-hd">SEO Settings</div>
+      <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:12px;">
+        <div class="form-group">
+          <label class="form-label">Meta Title</label>
+          <input class="form-input" id="mMetaTitle" placeholder="SEO page title…" oninput="updateSeoPreview()">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Meta Description</label>
+          <textarea class="form-textarea" id="mMetaDesc" placeholder="SEO description…" style="min-height:60px;" oninput="updateSeoPreview()"></textarea>
+        </div>
+      </div>
+
+      <div class="sec-hd">Search Preview</div>
+      <div class="seo-preview">
+        <div class="seo-url" id="seoUrl">wellfixappliances.com/categories/…</div>
+        <div class="seo-title-prev" id="seoTitle">Category Name</div>
+        <div class="seo-desc-prev" id="seoDesc">Meta description will appear here…</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-ft">
+    <button class="btn btn-outline" onclick="closeModal()">Cancel</button>
+    <button class="btn" id="dupBtn" style="background:var(--gray-100);color:var(--gray-600);display:none;" onclick="duplicateCat()">Duplicate</button>
+    <button class="btn" id="delBtn" style="background:var(--red-100);color:var(--red-600);display:none;" onclick="deleteCat()">Delete</button>
+    <button class="btn btn-primary" id="saveBtn" onclick="saveCat()">
+      <svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" width="12" height="12"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/></svg>
+      Save Category
+    </button>
+  </div>
+</div>
+</div>
+
+</div></div></div>
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="../backend/config/supabase.js"></script>
 <script src="assets/js/shell.js"></script>
 <script>
-let cats=[];
-(async()=>{
-  await AdminShell.init('Categories');
-  await loadCats();
+'use strict';
+
+// ── STATE ─────────────────────────────────────────────────────
+let allCats = [], allProducts = [], filteredCats = [], prodCounts = {};
+let editId = null, currentView = 'table', currentImg = null;
+let selectedIds = new Set(), sortCol = 'sort_order', sortDir = 1;
+let page = 0; const PER = 30;
+let filterTimer = null;
+
+// ── INIT ──────────────────────────────────────────────────────
+(async () => {
+  await AdminShell.init('Categories', 'categories');
+  await Promise.all([loadData()]);
+  document.addEventListener('click', e => {
+    if (!e.target.closest('.drop-menu')) document.querySelectorAll('.drop-list').forEach(d => d.classList.remove('open'));
+  });
 })();
-async function loadCats(){
-  const {data}=await db.from('categories').select('*, parent:parent_id(name)').order('sort_order');
-  cats=data||[];
-  const sel=document.getElementById('catParent');
-  sel.innerHTML='<option value="">None (Top Level)</option>'+cats.map(c=>`<option value="${c.id}">${c.name}</option>`).join('');
-  document.getElementById('catTbody').innerHTML=cats.length?cats.map(c=>`<tr>
-    <td class="td-bold">${c.name}</td>
-    <td style="font-size:12px;color:var(--gray-400);">${c.slug}</td>
-    <td>${c.parent?.name||'—'}</td>
-    <td>${renderBadge(c.is_active?'active':'inactive')}</td>
-    <td>${actionBtns(`editCat('${c.id}')`,`deleteCat('${c.id}')`)}</td>
-  </tr>`).join(''):`<tr><td colspan="5" style="text-align:center;padding:30px;color:var(--gray-300);">No categories yet</td></tr>`;
+
+// ── LOAD ──────────────────────────────────────────────────────
+async function loadData() {
+  const [cRes, pRes] = await Promise.all([
+    db.from('categories').select('*').order('sort_order'),
+    db.from('products').select('id,category_id,is_active,is_featured,price,stock_qty').eq('is_active', true),
+  ]);
+  allCats = cRes.data || [];
+  allProducts = pRes.data || [];
+
+  // Build product counts per category
+  prodCounts = {};
+  allProducts.forEach(p => {
+    if (p.category_id) prodCounts[p.category_id] = (prodCounts[p.category_id] || 0) + 1;
+  });
+
+  // Populate parent selects
+  const opts = allCats.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+  document.getElementById('mParent').innerHTML = '<option value="">None (Top Level)</option>' + opts;
+
+  renderKPIs();
+  filterCats();
 }
-function openCatModal(data=null){
-  document.getElementById('catId').value=data?.id||'';
-  document.getElementById('catName').value=data?.name||'';
-  document.getElementById('catSlug').value=data?.slug||'';
-  document.getElementById('catDesc').value=data?.description||'';
-  document.getElementById('catSort').value=data?.sort_order||0;
-  document.getElementById('catParent').value=data?.parent_id||'';
-  document.getElementById('catModalTitle').textContent=data?'Edit Category':'Add Category';
-  document.getElementById('catModal').classList.add('is-open');
-  document.body.style.overflow='hidden';
+
+// ── KPI ───────────────────────────────────────────────────────
+function renderKPIs() {
+  const total    = allCats.length;
+  const active   = allCats.filter(c => c.is_active).length;
+  const featured = allCats.filter(c => c.is_featured).length;
+  const top      = allCats.filter(c => !c.parent_id).length;
+  const withImg  = allCats.filter(c => c.image_url).length;
+  document.getElementById('catSubtitle').textContent = `${total} total · ${active} active · ${featured} featured`;
+  document.getElementById('catKpi').innerHTML = [
+    { cls:'gn', val:total,    label:'Total Categories'  },
+    { cls:'bl', val:active,   label:'Active'            },
+    { cls:'am', val:top,      label:'Top Level'         },
+    { cls:'pu', val:featured, label:'Featured'          },
+    { cls:'te', val:withImg,  label:'With Image'        },
+  ].map(k => `<div class="ck ${k.cls}"><div class="ck-val">${k.val}</div><div class="ck-label">${k.label}</div></div>`).join('');
 }
-function closeCatModal(){document.getElementById('catModal').classList.remove('is-open');document.body.style.overflow='';}
-document.getElementById('catModal').addEventListener('click',e=>{if(e.target===e.currentTarget)closeCatModal();});
-async function saveCat(){
-  const name=document.getElementById('catName').value.trim();
-  if(!name){toast('Name required',true);return;}
-  const id=document.getElementById('catId').value;
-  const data={name,slug:document.getElementById('catSlug').value||slugify(name),description:document.getElementById('catDesc').value||null,sort_order:parseInt(document.getElementById('catSort').value)||0,parent_id:document.getElementById('catParent').value||null,is_active:true};
-  try{
-    if(id)await WF.categories.update(id,data);
-    else await WF.categories.create(data);
-    toast('Category saved! Frontend updated.');
-    closeCatModal();await loadCats();
-  }catch(e){toast('Error: '+e.message,true);}
+
+// ── FILTER + SORT ─────────────────────────────────────────────
+function debounceFilter() { clearTimeout(filterTimer); filterTimer = setTimeout(filterCats, 250); }
+
+function filterCats() {
+  const q      = document.getElementById('catSearch').value.toLowerCase();
+  const status = document.getElementById('fStatus').value;
+  const parent = document.getElementById('fParent').value;
+  const sort   = document.getElementById('fSort').value;
+
+  let list = allCats.filter(c => {
+    if (q && !c.name?.toLowerCase().includes(q) && !c.slug?.toLowerCase().includes(q)) return false;
+    if (status === 'active' && !c.is_active) return false;
+    if (status === 'inactive' && c.is_active) return false;
+    if (parent === 'top' && c.parent_id) return false;
+    if (parent === 'child' && !c.parent_id) return false;
+    return true;
+  });
+
+  if (sort === 'name')        list.sort((a,b) => (a.name||'').localeCompare(b.name||''));
+  else if (sort === 'name_desc') list.sort((a,b) => (b.name||'').localeCompare(a.name||''));
+  else if (sort === 'products')  list.sort((a,b) => (prodCounts[b.id]||0)-(prodCounts[a.id]||0));
+  else if (sort === 'newest')    list.reverse();
+  else list.sort((a,b) => (a.sort_order||0)-(b.sort_order||0));
+
+  filteredCats = list;
+  page = 0;
+  document.getElementById('filterCount').textContent = `${list.length} categories`;
+  renderView();
 }
-async function editCat(id){const c=cats.find(c=>c.id===id);openCatModal(c);}
-async function deleteCat(id){
-  if(!confirmDialog('Delete this category?'))return;
-  await WF.categories.delete(id);toast('Category deleted');await loadCats();
+
+function setSort(col) {
+  if (sortCol === col) sortDir *= -1; else { sortCol = col; sortDir = 1; }
+  filterCats();
 }
+
+// ── VIEW SWITCH ───────────────────────────────────────────────
+function setView(v, el) {
+  currentView = v;
+  ['vt','vg','vtr'].forEach(id => document.getElementById(id)?.classList.remove('on'));
+  el.classList.add('on');
+  document.getElementById('viewTable').style.display = v === 'table' ? 'block' : 'none';
+  document.getElementById('viewGrid').style.display  = v === 'grid'  ? 'block' : 'none';
+  document.getElementById('viewTree').style.display  = v === 'tree'  ? 'block' : 'none';
+  renderView();
+}
+
+function renderView() {
+  if (currentView === 'table') renderTable();
+  else if (currentView === 'grid') renderGrid();
+  else renderTree();
+  renderPager();
+}
+
+// ── TABLE ─────────────────────────────────────────────────────
+function seoScore(c) {
+  let score = 0;
+  if (c.name)                score += 30;
+  if (c.slug)                score += 15;
+  if (c.description)         score += 20;
+  if (c.meta_title)          score += 20;
+  if (c.meta_description)    score += 15;
+  return score;
+}
+
+function seoColor(s) {
+  if (s >= 80) return '#22c55e';
+  if (s >= 50) return '#f59e0b';
+  return '#ef4444';
+}
+
+function renderTable() {
+  const tbody = document.getElementById('catTbody');
+  const slice = filteredCats.slice(page * PER, (page + 1) * PER);
+
+  if (!slice.length) {
+    tbody.innerHTML = `<tr><td colspan="9">
+      <div class="empty-cat">
+        <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
+        <h3>No categories found</h3>
+        <p>Try adjusting filters or add your first category</p>
+      </div>
+    </td></tr>`;
+    return;
+  }
+
+  const parentMap = {};
+  allCats.forEach(c => { parentMap[c.id] = c.name; });
+
+  tbody.innerHTML = slice.map(c => {
+    const cnt    = prodCounts[c.id] || 0;
+    const depth  = c.parent_id ? 1 : 0;
+    const score  = seoScore(c);
+    const chk    = selectedIds.has(c.id) ? 'checked' : '';
+    return `<tr onclick="editCat('${c.id}')" id="row-${c.id}">
+      <td style="padding:8px;width:36px;" onclick="event.stopPropagation()">
+        <input type="checkbox" ${chk} onchange="toggleSel('${c.id}',this)">
+      </td>
+      <td>
+        <div style="display:flex;align-items:center;gap:10px;">
+          <div class="cat-thumb">
+            ${c.image_url
+              ? `<img src="${c.image_url}" alt="${c.name}" loading="lazy">`
+              : `<svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>`}
+          </div>
+          <div>
+            <div style="display:flex;align-items:center;gap:4px;">
+              ${depth ? '<span class="depth-indent"></span>' : ''}
+              <div class="cat-name">${c.name}</div>
+            </div>
+            <div class="cat-slug">/${c.slug || '—'}</div>
+          </div>
+        </div>
+      </td>
+      <td><span style="font-weight:700;">${cnt}</span> <span style="font-size:10px;color:var(--gray-400);">products</span></td>
+      <td style="font-size:12px;color:var(--gray-500);">${c.parent_id ? (parentMap[c.parent_id] || '—') : '<span style="font-size:10px;color:var(--gray-300);">Root</span>'}</td>
+      <td style="font-size:12px;color:var(--gray-400);">${c.sort_order ?? 0}</td>
+      <td><span class="spill ${c.is_active ? 'active' : 'inactive'}">${c.is_active ? 'Active' : 'Inactive'}</span></td>
+      <td>
+        <label class="tog" onclick="event.stopPropagation()">
+          <input type="checkbox" ${c.is_featured ? 'checked' : ''} onchange="toggleFeatured('${c.id}',this.checked)">
+          <span class="tog-track"></span>
+        </label>
+      </td>
+      <td>
+        <div class="seo-bar">
+          <div class="seo-track"><div class="seo-fill" style="width:${score}%;background:${seoColor(score)};"></div></div>
+          <span style="font-size:10px;font-weight:700;color:${seoColor(score)};">${score}%</span>
+        </div>
+      </td>
+      <td onclick="event.stopPropagation()">
+        <div class="row-actions">
+          <button class="ra" title="Edit" onclick="editCat('${c.id}')">
+            <svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4z"/></svg>
+          </button>
+          <button class="ra" title="Duplicate" onclick="duplicateById('${c.id}')">
+            <svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+          </button>
+          <button class="ra danger" title="Delete" onclick="deleteById('${c.id}')">
+            <svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg>
+          </button>
+        </div>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+// ── GRID VIEW ─────────────────────────────────────────────────
+function renderGrid() {
+  const slice = filteredCats.slice(page * PER, (page + 1) * PER);
+  const el = document.getElementById('catGridContainer');
+  if (!slice.length) {
+    el.innerHTML = '<div class="empty-cat" style="grid-column:1/-1;"><svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" width="40" height="40"><path d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg><h3>No categories</h3><p>Add your first category</p></div>';
+    return;
+  }
+  el.innerHTML = slice.map(c => `
+    <div class="cat-grid-card" onclick="editCat('${c.id}')">
+      <div class="cgc-img">
+        ${c.image_url
+          ? `<img src="${c.image_url}" alt="${c.name}" loading="lazy">`
+          : `<div class="cgc-img-placeholder"><svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg></div>`}
+        <span class="spill ${c.is_active?'active':'inactive'}" style="position:absolute;top:8px;right:8px;">${c.is_active?'Active':'Inactive'}</span>
+      </div>
+      <div class="cgc-body">
+        <div class="cgc-name">${c.name}</div>
+        <div class="cgc-meta">/${c.slug||'—'} · ${prodCounts[c.id]||0} products</div>
+      </div>
+      <div class="cgc-foot">
+        <span style="font-size:10px;color:var(--gray-400);">SEO ${seoScore(c)}%</span>
+        ${c.is_featured ? '<span style="font-size:10px;font-weight:700;color:var(--green-600);">Featured</span>' : ''}
+      </div>
+    </div>`).join('');
+}
+
+// ── TREE VIEW ─────────────────────────────────────────────────
+function renderTree() {
+  const el = document.getElementById('catTreeContainer');
+  const roots = allCats.filter(c => !c.parent_id);
+  const children = {};
+  allCats.filter(c => c.parent_id).forEach(c => {
+    if (!children[c.parent_id]) children[c.parent_id] = [];
+    children[c.parent_id].push(c);
+  });
+
+  function node(c, depth = 0) {
+    const kids = children[c.id] || [];
+    return `<div class="${depth === 0 ? 'tree-root' : 'tree-node'}">
+      <div class="tree-item" onclick="editCat('${c.id}')">
+        ${kids.length ? `<div class="tree-toggle"><svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></div>` : '<div class="tree-spacer"></div>'}
+        ${c.image_url ? `<img src="${c.image_url}" style="width:24px;height:24px;border-radius:4px;object-fit:cover;border:1px solid var(--gray-100);" loading="lazy">` : ''}
+        <span class="tree-name">${c.name}</span>
+        <span class="spill ${c.is_active?'active':'inactive'}" style="font-size:9px;">${c.is_active?'Active':'Off'}</span>
+        <span class="tree-count">${prodCounts[c.id]||0} products</span>
+      </div>
+      ${kids.map(k => node(k, depth + 1)).join('')}
+    </div>`;
+  }
+
+  el.innerHTML = roots.length
+    ? roots.map(r => node(r)).join('')
+    : '<div class="empty-cat"><svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" width="36" height="36"><path d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2"/></svg><h3>No categories yet</h3></div>';
+}
+
+// ── PAGINATION ────────────────────────────────────────────────
+function renderPager() {
+  const total = filteredCats.length;
+  const pages = Math.ceil(total / PER);
+  document.getElementById('pagerInfo').textContent = total ? `Showing ${page*PER+1}–${Math.min((page+1)*PER,total)} of ${total}` : '';
+  const el = document.getElementById('pagerBtns');
+  if (pages <= 1) { el.innerHTML = ''; return; }
+  let h = `<button class="pager-btn" onclick="goPage(${Math.max(0,page-1)})" ${page===0?'disabled':''}>←</button>`;
+  for (let i = 0; i < pages; i++) h += `<button class="pager-btn ${i===page?'on':''}" onclick="goPage(${i})">${i+1}</button>`;
+  h += `<button class="pager-btn" onclick="goPage(${Math.min(pages-1,page+1)})" ${page>=pages-1?'disabled':''}>→</button>`;
+  el.innerHTML = h;
+}
+function goPage(n) { page = n; renderView(); }
+
+// ── SELECTION ─────────────────────────────────────────────────
+function toggleSel(id, cb) {
+  if (cb.checked) selectedIds.add(id); else selectedIds.delete(id);
+  updateBulkBar();
+}
+function toggleAll(cb) {
+  filteredCats.slice(page*PER,(page+1)*PER).forEach(c => { if(cb.checked)selectedIds.add(c.id); else selectedIds.delete(c.id); });
+  renderView(); updateBulkBar();
+}
+function updateBulkBar() {
+  const n = selectedIds.size;
+  document.getElementById('bulkBar').classList.toggle('show', n > 0);
+  document.getElementById('bulkCount').textContent = `${n} selected`;
+}
+function clearSel() { selectedIds.clear(); renderView(); updateBulkBar(); }
+
+// ── BULK ──────────────────────────────────────────────────────
+async function bulkActivate()   { await bulkUpdate({is_active:true});  toast(`${selectedIds.size} categories activated`); }
+async function bulkDeactivate() { await bulkUpdate({is_active:false}); toast(`${selectedIds.size} categories deactivated`); }
+async function bulkFeatured()   { await bulkUpdate({is_featured:true});toast(`${selectedIds.size} categories featured`); }
+async function bulkUpdate(payload) {
+  for (const id of selectedIds) await db.from('categories').update(payload).eq('id', id);
+  clearSel(); loadData();
+}
+async function bulkDelete() {
+  if (!confirm(`Delete ${selectedIds.size} categories? Products will remain.`)) return;
+  for (const id of selectedIds) await db.from('categories').delete().eq('id', id);
+  toast('Categories deleted'); clearSel(); loadData();
+}
+
+// ── TOGGLE FEATURED ───────────────────────────────────────────
+async function toggleFeatured(id, val) {
+  await db.from('categories').update({ is_featured: val }).eq('id', id);
+  const c = allCats.find(x => x.id === id);
+  if (c) c.is_featured = val;
+  toast(val ? 'Category featured on homepage' : 'Removed from homepage');
+}
+
+// ── MODAL ─────────────────────────────────────────────────────
+function openModal() {
+  editId = null; currentImg = null;
+  clearForm();
+  loadAnalytics(null);
+  document.getElementById('modalTitle').textContent = 'Add Category';
+  document.getElementById('delBtn').style.display = 'none';
+  document.getElementById('dupBtn').style.display = 'none';
+  document.getElementById('catOverlay').style.display = 'flex';
+}
+
+async function editCat(id) {
+  const c = allCats.find(x => x.id === id);
+  if (!c) return;
+  editId = id;
+  currentImg = c.image_url || null;
+
+  document.getElementById('mName').value = c.name || '';
+  document.getElementById('mSlug').value = c.slug || '';
+  document.getElementById('mDesc').value = c.description || '';
+  document.getElementById('mParent').value = c.parent_id || '';
+  document.getElementById('mSort').value = c.sort_order ?? 0;
+  document.getElementById('mActive').checked = c.is_active !== false;
+  document.getElementById('mFeatured').checked = !!c.is_featured;
+  document.getElementById('mShowMenu').checked = c.show_in_menu !== false;
+  document.getElementById('mShowMobile').checked = c.show_in_mobile !== false;
+  document.getElementById('mMetaTitle').value = c.meta_title || '';
+  document.getElementById('mMetaDesc').value = c.meta_description || '';
+
+  if (c.image_url) {
+    const prev = document.getElementById('mImgPreview');
+    prev.src = c.image_url; prev.style.display = 'block';
+    document.getElementById('mImgIcon').style.display = 'none';
+    document.getElementById('mImgLbl').textContent = 'Click to change image';
+    document.getElementById('mImgRemove').style.display = 'block';
+  } else resetImgZone();
+
+  updateSeoPreview();
+  loadAnalytics(id);
+  document.getElementById('modalTitle').textContent = 'Edit Category';
+  document.getElementById('delBtn').style.display = 'block';
+  document.getElementById('dupBtn').style.display = 'block';
+  document.getElementById('catOverlay').style.display = 'flex';
+}
+
+function closeModal() { document.getElementById('catOverlay').style.display = 'none'; }
+
+function clearForm() {
+  ['mName','mSlug','mDesc','mMetaTitle','mMetaDesc'].forEach(id => { const el=document.getElementById(id); if(el)el.value=''; });
+  document.getElementById('mParent').value = '';
+  document.getElementById('mSort').value = 0;
+  document.getElementById('mActive').checked = true;
+  document.getElementById('mFeatured').checked = false;
+  document.getElementById('mShowMenu').checked = true;
+  document.getElementById('mShowMobile').checked = true;
+  resetImgZone();
+  updateSeoPreview();
+}
+
+function autoSlug() {
+  if (!editId) document.getElementById('mSlug').value = slugify(document.getElementById('mName').value);
+  updateSeoPreview();
+}
+
+function updateSeoPreview() {
+  const slug = document.getElementById('mSlug').value || 'category-name';
+  const title = document.getElementById('mMetaTitle').value || document.getElementById('mName').value || 'Category Name';
+  const desc = document.getElementById('mMetaDesc').value || 'Category description will appear here in search results…';
+  document.getElementById('seoUrl').textContent = `wellfixappliances.github.io/wellfix-website/pages/products.html?cat=${slug}`;
+  document.getElementById('seoTitle').textContent = title + ' — WellFix Appliances';
+  document.getElementById('seoDesc').textContent = desc.slice(0, 155) + (desc.length > 155 ? '…' : '');
+}
+
+// ── CATEGORY ANALYTICS ────────────────────────────────────────
+async function loadAnalytics(catId) {
+  const el = document.getElementById('mAnalytics');
+  if (!catId) {
+    el.innerHTML = '<div class="am"><div class="am-val">—</div><div class="am-lbl">Products</div></div><div class="am"><div class="am-val">—</div><div class="am-lbl">Orders</div></div><div class="am"><div class="am-val">—</div><div class="am-lbl">Revenue</div></div><div class="am"><div class="am-val">—</div><div class="am-lbl">Low Stock</div></div>';
+    return;
+  }
+  el.innerHTML = '<div class="am"><div class="sk" style="height:40px;"></div></div>'.repeat(4);
+  try {
+    const prods = allProducts.filter(p => p.category_id === catId);
+    const cnt = prods.length;
+    const lowStock = prods.filter(p => (p.stock_qty||0) <= 5).length;
+    const { data: items } = await db.from('order_items')
+      .select('total_price, quantity, product_id')
+      .in('product_id', prods.map(p => p.id).slice(0, 50));
+    const revenue = (items||[]).reduce((s,i) => s + (parseFloat(i.total_price)||0), 0);
+    const orders  = new Set((items||[]).map(i => i.product_id)).size;
+    el.innerHTML = `
+      <div class="am"><div class="am-val">${cnt}</div><div class="am-lbl">Products</div></div>
+      <div class="am"><div class="am-val">${orders}</div><div class="am-lbl">Sold Items</div></div>
+      <div class="am"><div class="am-val">${formatCurrency(revenue)}</div><div class="am-lbl">Revenue</div></div>
+      <div class="am"><div class="am-val">${lowStock}</div><div class="am-lbl">Low Stock</div></div>`;
+  } catch(e) {
+    el.innerHTML = '<div class="am"><div class="am-val">—</div><div class="am-lbl">No analytics</div></div>';
+  }
+}
+
+// ── SAVE ──────────────────────────────────────────────────────
+async function saveCat() {
+  const name = document.getElementById('mName').value.trim();
+  if (!name) { toast('Category name is required', true); return; }
+  const btn = document.getElementById('saveBtn');
+  btn.textContent = 'Saving…'; btn.disabled = true;
+  try {
+    const payload = {
+      name,
+      slug:             document.getElementById('mSlug').value || slugify(name),
+      description:      document.getElementById('mDesc').value || null,
+      parent_id:        document.getElementById('mParent').value || null,
+      sort_order:       parseInt(document.getElementById('mSort').value) || 0,
+      is_active:        document.getElementById('mActive').checked,
+      is_featured:      document.getElementById('mFeatured').checked,
+      show_in_menu:     document.getElementById('mShowMenu').checked,
+      show_in_mobile:   document.getElementById('mShowMobile').checked,
+      meta_title:       document.getElementById('mMetaTitle').value || null,
+      meta_description: document.getElementById('mMetaDesc').value || null,
+      image_url:        currentImg || null,
+    };
+    if (editId) {
+      await db.from('categories').update(payload).eq('id', editId);
+    } else {
+      await db.from('categories').insert(payload);
+    }
+    toast(editId ? 'Category updated — website synced' : 'Category created — now live on website');
+    closeModal();
+    loadData();
+  } catch(e) {
+    toast('Error: ' + e.message, true);
+  } finally {
+    btn.textContent = 'Save Category'; btn.disabled = false;
+  }
+}
+
+// ── DELETE ────────────────────────────────────────────────────
+async function deleteCat() {
+  if (!editId) return;
+  if (!confirm('Delete this category? Products will remain but will have no category.')) return;
+  await db.from('categories').delete().eq('id', editId);
+  toast('Category deleted');
+  closeModal(); loadData();
+}
+async function deleteById(id) {
+  if (!confirm('Delete this category?')) return;
+  await db.from('categories').delete().eq('id', id);
+  toast('Category deleted'); loadData();
+}
+
+// ── DUPLICATE ─────────────────────────────────────────────────
+async function duplicateCat() {
+  if (!editId) return;
+  const c = allCats.find(x => x.id === editId);
+  if (!c) return;
+  const { name, description, parent_id, sort_order, is_active, image_url, meta_title, meta_description } = c;
+  await db.from('categories').insert({
+    name: name + ' (Copy)',
+    slug: c.slug + '-copy-' + Date.now().toString().slice(-4),
+    description, parent_id, sort_order, is_active: false, image_url, meta_title, meta_description,
+  });
+  toast('Category duplicated as inactive');
+  closeModal(); loadData();
+}
+async function duplicateById(id) {
+  editId = id;
+  await duplicateCat();
+  editId = null;
+}
+
+// ── TOGGLE FEATURED INLINE ────────────────────────────────────
+// (defined above in table render)
+
+// ── IMAGE UPLOAD ──────────────────────────────────────────────
+function zoneOver(e)  { e.preventDefault(); document.getElementById('imgZone').classList.add('over'); }
+function zoneLeave()  { document.getElementById('imgZone').classList.remove('over'); }
+function zoneDrop(e)  { e.preventDefault(); zoneLeave(); const f=e.dataTransfer.files[0]; if(f)processAndUpload(f); }
+function handleCatImg(input) { const f=input.files[0]; if(f)processAndUpload(f); }
+
+async function processAndUpload(file) {
+  const prog = document.getElementById('mImgProgress');
+  const fill = document.getElementById('mImgProgressFill');
+  const msg  = document.getElementById('mImgProgressMsg');
+  prog.style.display = 'block';
+  msg.textContent = 'Converting to WebP…';
+  fill.style.width = '30%';
+  try {
+    // Client-side: resize + WebP
+    const processed = await new Promise(resolve => {
+      const reader = new FileReader();
+      reader.onload = e => {
+        const img = new Image();
+        img.onload = () => {
+          const c = document.createElement('canvas');
+          const W = 800, H = 400;
+          c.width = W; c.height = H;
+          const ctx = c.getContext('2d');
+          ctx.fillStyle = '#f5f5f5'; ctx.fillRect(0,0,W,H);
+          const scale = Math.min(W/img.width, H/img.height);
+          const sw = img.width*scale, sh = img.height*scale;
+          ctx.drawImage(img, (W-sw)/2, (H-sh)/2, sw, sh);
+          c.toBlob(blob => resolve(new File([blob], file.name.replace(/\.[^.]+$/,'')+'.webp', {type:'image/webp'})), 'image/webp', 0.88);
+        };
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    });
+    fill.style.width = '60%'; msg.textContent = 'Uploading…';
+    const filename = `categories/${Date.now()}-${Math.random().toString(36).slice(2)}.webp`;
+    let url;
+    for (const bucket of ['products','media']) {
+      const { error } = await db.storage.from(bucket).upload(filename, processed, { cacheControl: '3600', upsert: false });
+      if (!error) { url = db.storage.from(bucket).getPublicUrl(filename).data.publicUrl; break; }
+    }
+    if (!url) throw new Error('Upload failed — check storage bucket');
+    currentImg = url;
+    fill.style.width = '100%'; msg.textContent = 'Uploaded';
+    const prev = document.getElementById('mImgPreview');
+    prev.src = url; prev.style.display = 'block';
+    document.getElementById('mImgIcon').style.display = 'none';
+    document.getElementById('mImgLbl').textContent = 'Click to change';
+    document.getElementById('mImgRemove').style.display = 'block';
+    setTimeout(() => { prog.style.display='none'; fill.style.width='0%'; }, 1500);
+  } catch(e) {
+    toast('Image upload failed: ' + e.message, true);
+    prog.style.display = 'none';
+  }
+}
+
+function removeCatImg() {
+  currentImg = null; resetImgZone();
+}
+
+function resetImgZone() {
+  const prev = document.getElementById('mImgPreview');
+  prev.src=''; prev.style.display='none';
+  document.getElementById('mImgIcon').style.display='block';
+  document.getElementById('mImgLbl').textContent='Drop image or click to upload';
+  document.getElementById('mImgRemove').style.display='none';
+  document.getElementById('mImgFile').value='';
+}
+
+// ── EXPORT ────────────────────────────────────────────────────
+function exportCSV() {
+  const rows = [['Name','Slug','Parent','Products','Status','Featured','SEO Score']];
+  allCats.forEach(c => {
+    const parent = allCats.find(x => x.id === c.parent_id);
+    rows.push([`"${c.name}"`, c.slug||'', parent?.name||'', prodCounts[c.id]||0, c.is_active?'Active':'Inactive', c.is_featured?'Yes':'No', seoScore(c)+'%']);
+  });
+  const a = document.createElement('a');
+  a.href = 'data:text/csv,' + encodeURIComponent(rows.map(r=>r.join(',')).join('\n'));
+  a.download = 'wellfix-categories.csv'; a.click();
+  toast('CSV exported');
+}
+function exportJSON() {
+  const a = document.createElement('a');
+  a.href = 'data:application/json,' + encodeURIComponent(JSON.stringify(allCats, null, 2));
+  a.download = 'wellfix-categories.json'; a.click();
+  toast('JSON exported');
+}
+
+// ── SYNC ──────────────────────────────────────────────────────
+function syncWebsite() {
+  toast('Categories synced — website navigation updated automatically');
+}
+
+// ── DROPDOWN ─────────────────────────────────────────────────
+function toggleDrop(id) {
+  const el = document.getElementById(id+'List');
+  document.querySelectorAll('.drop-list').forEach(d => { if(d!==el)d.classList.remove('open'); });
+  el.classList.toggle('open');
+}
+function closeDrop(id) { document.getElementById(id+'List').classList.remove('open'); }
 </script>
-</body></html>
+</body>
+</html>
