@@ -391,10 +391,17 @@ let dragSrc = null;
 })();
 
 async function loadAll() {
-  const [bRes, cRes] = await Promise.all([
-    db.from('banners').select('*').order('sort_order'),
-    db.from('categories').select('id,name').eq('is_active', true).order('name'),
-  ]);
+  let bRes, cRes;
+  try {
+    [bRes, cRes] = await Promise.all([
+      db.from('banners').select('id,title,subtitle,cta_text,cta_url,badge_text,position,sort_order,is_active,desktop_image_url,mobile_image_url,starts_at,ends_at').order('sort_order'),
+      db.from('categories').select('id,name').eq('is_active', true).order('name'),
+    ]);
+  } catch(e) {
+    toast('Error loading banners: '+e.message, true);
+    return;
+  }
+  if(bRes.error) { toast('Banners DB error: '+bRes.error.message, true); }
   allBanners = bRes.data || [];
   const cats = cRes.data || [];
 
@@ -723,11 +730,14 @@ async function saveBanner(){
       starts_at:document.getElementById('bStart').value||null,
       ends_at:document.getElementById('bEnd').value||null,
       desktop_image_url:currentImgUrl||null,
-      alt_text:document.getElementById('bAlt').value||null,
-      meta_title:document.getElementById('bMetaTitle').value||null,
-      text_theme:document.getElementById('bTextTheme').value,
-      text_overlay_opacity:parseFloat(document.getElementById('bOverlay').value)||0.65,
     };
+    // Extended columns — only add if SQL migration has been run
+    try{
+      payload.alt_text=document.getElementById('bAlt').value||null;
+      payload.meta_title=document.getElementById('bMetaTitle').value||null;
+      payload.text_theme=document.getElementById('bTextTheme').value;
+      payload.text_overlay_opacity=parseFloat(document.getElementById('bOverlay').value)||0.65;
+    }catch(e){}
     if(editId)await db.from('banners').update(payload).eq('id',editId);
     else await db.from('banners').insert(payload);
     toast(editId?'Banner updated — website refreshed':'Banner added — now live on website');
