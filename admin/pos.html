@@ -11,15 +11,18 @@
    WELLFIX POS — NEXT-GEN BILLING SYSTEM
    Scoped entirely — zero impact on other admin pages
    ═══════════════════════════════════════════════════════ */
-/* POS overrides — scoped, no impact on other pages */
-#mainWrap{padding:0!important;}
+/* POS full-screen overrides */
+#mainWrap{padding:0!important;margin-left:0!important;width:100vw!important;}
+.topbar{display:none!important;}
+.sidebar{display:none!important;}
+.mobile-bottom-nav{display:none!important;}
+.sidebar-overlay{display:none!important;}
 #posRoot{
   display:flex;
   flex-direction:column;
-  height:calc(100vh - var(--topbar-h,56px));
+  height:100vh;
   overflow:hidden;
   min-height:0;
-  margin-top:0;
   width:100%;
 }
 
