@@ -1,92 +1,912 @@
 <!DOCTYPE html>
 <html lang="en">
-<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Inventory — WellFix Admin</title>
 <link rel="icon" href="../assets/images/WELLFIX-FAVICON.png">
-<link rel="stylesheet" href="assets/css/admin.css"></head>
+<link rel="stylesheet" href="assets/css/admin.css">
+<style>
+/* ══════════════════════════════════════════
+   INVENTORY MODULE — PROFESSIONAL DESIGN
+   ══════════════════════════════════════════ */
+
+/* KPI grid */
+.inv-kpi{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px;}
+@media(max-width:1000px){.inv-kpi{grid-template-columns:repeat(2,1fr);}}
+@media(max-width:480px){.inv-kpi{grid-template-columns:1fr 1fr;gap:8px;}}
+.ik{background:#fff;border:1px solid var(--gray-100);border-radius:10px;padding:13px 16px;box-shadow:0 1px 2px rgba(0,0,0,.04);transition:box-shadow .2s;position:relative;overflow:hidden;cursor:pointer;}
+.ik:hover{box-shadow:0 3px 10px rgba(0,0,0,.07);}
+.ik::before{content:'';position:absolute;top:0;left:0;width:3px;height:100%;border-radius:10px 0 0 10px;}
+.ik.gn::before{background:#22c55e;}.ik.bl::before{background:#3b82f6;}.ik.am::before{background:#f59e0b;}.ik.rd::before{background:#ef4444;}.ik.pu::before{background:#8b5cf6;}.ik.te::before{background:#06b6d4;}.ik.sl::before{background:#9ca3af;}
+.ik-val{font-family:var(--font-display);font-size:22px;font-weight:800;color:var(--gray-900);line-height:1;letter-spacing:-.4px;}
+.ik-lbl{font-size:11px;color:var(--gray-400);margin-top:3px;font-weight:500;}
+.ik-sub{font-size:10px;color:var(--gray-400);margin-top:2px;}
+
+/* Alert strip */
+.alert-strip{background:#fef2f2;border:1px solid #fecaca;border-radius:8px;padding:10px 14px;margin-bottom:12px;display:none;align-items:center;gap:10px;font-size:12px;color:#dc2626;}
+.alert-strip svg{width:16px;height:16px;flex-shrink:0;}
+.alert-strip.show{display:flex;}
+
+/* Toolbar */
+.inv-toolbar{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-bottom:1px solid var(--gray-100);gap:8px;flex-wrap:wrap;}
+.inv-toolbar-l,.inv-toolbar-r{display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
+
+/* Bulk bar */
+.bulk-b{display:none;align-items:center;gap:8px;padding:8px 14px;background:var(--green-50);border-bottom:1px solid var(--green-100);}
+.bulk-b.show{display:flex;}
+.bk-cnt{font-size:12px;font-weight:700;color:var(--green-700);}
+
+/* Table */
+.inv-tbl{width:100%;border-collapse:collapse;font-size:12px;}
+.inv-tbl thead th{position:sticky;top:0;z-index:2;background:#fff;padding:8px 12px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--gray-400);border-bottom:1px solid var(--gray-100);text-align:left;white-space:nowrap;box-shadow:0 1px 0 var(--gray-100);}
+.inv-tbl th.sort{cursor:pointer;}
+.inv-tbl th.sort:hover{color:var(--gray-700);}
+.inv-tbl td{padding:8px 12px;border-bottom:1px solid var(--gray-50);vertical-align:middle;color:var(--gray-700);}
+.inv-tbl tr:last-child td{border-bottom:none;}
+.inv-tbl tbody tr{transition:background .1s;}
+.inv-tbl tbody tr:hover td{background:var(--gray-25);}
+.prod-thumb{width:36px;height:36px;border-radius:7px;overflow:hidden;background:var(--gray-50);border:1px solid var(--gray-100);flex-shrink:0;display:flex;align-items:center;justify-content:center;}
+.prod-thumb img{width:100%;height:100%;object-fit:contain;padding:2px;}
+.prod-thumb svg{width:16px;height:16px;color:var(--gray-300);}
+
+/* Stock input inline */
+.stk-ctrl{display:flex;align-items:center;gap:4px;}
+.stk-btn{width:24px;height:24px;border-radius:4px;border:1px solid var(--gray-200);background:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:var(--gray-600);flex-shrink:0;transition:all .15s;}
+.stk-btn:hover{background:var(--gray-50);border-color:var(--gray-300);}
+.stk-btn.plus:hover{background:var(--green-50);border-color:var(--green-300);color:var(--green-700);}
+.stk-btn.minus:hover{background:#fef2f2;border-color:#fecaca;color:#dc2626;}
+.stk-inp{width:54px;height:24px;border:1.5px solid var(--gray-200);border-radius:4px;text-align:center;font-size:12px;font-weight:700;color:var(--gray-900);padding:0 4px;}
+.stk-inp:focus{outline:none;border-color:var(--green-400);}
+.stk-save{height:24px;padding:0 8px;border-radius:4px;border:none;background:var(--green-700);color:#fff;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;display:none;transition:all .15s;}
+.stk-save.show{display:block;}
+
+/* Status badges */
+.sbd{display:inline-flex;align-items:center;gap:3px;font-size:10px;font-weight:700;padding:2px 7px;border-radius:99px;white-space:nowrap;}
+.sbd.in{background:#f0fdf4;color:#16a34a;}
+.sbd.low{background:#fff7ed;color:#c2410c;}
+.sbd.out{background:#fef2f2;color:#dc2626;}
+.sbd.res{background:#eff6ff;color:#2563eb;}
+.sbd.inc{background:#f5f3ff;color:#7c3aed;}
+
+/* Margin pill */
+.margin-pill{font-size:10px;font-weight:700;padding:1px 6px;border-radius:99px;}
+.margin-pill.good{background:#f0fdf4;color:#16a34a;}
+.margin-pill.mid{background:#fffbeb;color:#d97706;}
+.margin-pill.low-m{background:#fef2f2;color:#dc2626;}
+
+/* Stock bar */
+.sbar-wrap{display:flex;align-items:center;gap:5px;}
+.sbar{width:50px;height:4px;background:var(--gray-100);border-radius:99px;overflow:hidden;flex-shrink:0;}
+.sbar-fill{height:100%;border-radius:99px;transition:width .3s;}
+
+/* Row actions */
+.ra-wrap{display:flex;gap:3px;opacity:0;transition:opacity .15s;}
+tr:hover .ra-wrap{opacity:1;}
+.ra{width:24px;height:24px;border-radius:4px;border:1px solid var(--gray-200);background:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;}
+.ra:hover{background:var(--gray-50);}
+.ra svg{width:11px;height:11px;stroke:var(--gray-500);fill:none;stroke-width:2;}
+
+/* Dropdown */
+.drop-m{position:relative;display:inline-block;}
+.drop-l{display:none;position:absolute;right:0;top:100%;margin-top:4px;background:#fff;border:1px solid var(--gray-150,#dedede);border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,.1);min-width:180px;z-index:200;overflow:hidden;}
+.drop-l.open{display:block;}
+.di{display:flex;align-items:center;gap:8px;padding:8px 12px;font-size:12px;font-weight:500;color:var(--gray-700);cursor:pointer;transition:background .1s;}
+.di:hover{background:var(--gray-50);}
+.di svg{width:13px;height:13px;stroke:var(--gray-400);fill:none;stroke-width:2;}
+.di.danger:hover{background:#fef2f2;color:#dc2626;}
+.d-sep{height:1px;background:var(--gray-100);margin:4px 0;}
+
+/* Adjust modal */
+.adj-modal-body{padding:20px;}
+.adj-type-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:16px;}
+.adj-type{padding:10px 8px;border:2px solid var(--gray-100);border-radius:8px;text-align:center;cursor:pointer;transition:all .15s;}
+.adj-type:hover,.adj-type.sel{border-color:var(--green-400);background:var(--green-50);}
+.adj-type-name{font-size:12px;font-weight:700;color:var(--gray-800);}
+.adj-type-desc{font-size:10px;color:var(--gray-400);margin-top:2px;}
+
+/* Bulk update modal */
+.bulk-fields{display:flex;flex-direction:column;gap:10px;}
+
+/* Log table */
+.log-tbl{width:100%;border-collapse:collapse;font-size:12px;}
+.log-tbl td{padding:8px 12px;border-bottom:1px solid var(--gray-50);vertical-align:middle;}
+.log-tbl tr:last-child td{border-bottom:none;}
+.adj-pill{font-size:11px;font-weight:700;padding:2px 7px;border-radius:99px;}
+.adj-pill.pos{background:#f0fdf4;color:#16a34a;}
+.adj-pill.neg{background:#fef2f2;color:#dc2626;}
+.adj-pill.neu{background:var(--gray-50);color:var(--gray-500);}
+
+/* Mobile card view */
+@media(max-width:768px){
+  .inv-tbl-wrap{display:none;}
+  .inv-cards{display:block;}
+}
+@media(min-width:769px){
+  .inv-tbl-wrap{display:block;}
+  .inv-cards{display:none;}
+}
+.inv-card{background:#fff;border:1px solid var(--gray-100);border-radius:10px;padding:14px;margin-bottom:10px;}
+.inv-card-hd{display:flex;align-items:center;gap:10px;margin-bottom:12px;}
+.inv-card-name{font-weight:700;font-size:13px;color:var(--gray-900);}
+.inv-card-sku{font-size:10px;color:var(--gray-400);font-family:monospace;margin-top:1px;}
+.inv-card-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:12px;}
+.inv-card-stat{text-align:center;padding:8px;background:var(--gray-25);border-radius:6px;}
+.inv-card-stat-val{font-family:var(--font-display);font-size:16px;font-weight:800;color:var(--gray-900);}
+.inv-card-stat-lbl{font-size:9px;color:var(--gray-400);text-transform:uppercase;letter-spacing:.05em;margin-top:1px;}
+.inv-card-actions{display:flex;gap:8px;}
+
+/* Insights panel */
+.insights-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px;}
+@media(max-width:600px){.insights-grid{grid-template-columns:1fr;}}
+.insight-panel{background:#fff;border:1px solid var(--gray-100);border-radius:10px;padding:14px;box-shadow:0 1px 2px rgba(0,0,0,.04);}
+.insight-title{font-family:var(--font-display);font-size:13px;font-weight:700;color:var(--gray-800);margin-bottom:12px;}
+.insight-row{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--gray-50);}
+.insight-row:last-child{border-bottom:none;}
+.insight-rank{width:18px;font-size:10px;font-weight:700;color:var(--gray-400);flex-shrink:0;}
+.insight-name{flex:1;font-size:12px;color:var(--gray-700);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.insight-val{font-size:11px;font-weight:700;color:var(--gray-900);white-space:nowrap;}
+.insight-bar-wrap{display:flex;align-items:center;gap:6px;margin-top:4px;}
+.insight-bar{flex:1;height:3px;background:var(--gray-100);border-radius:99px;overflow:hidden;}
+.insight-bar-fill{height:100%;border-radius:99px;background:var(--green-500);}
+
+/* Pager */
+.pager{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-top:1px solid var(--gray-100);}
+.pager-info{font-size:11px;color:var(--gray-400);}
+.pager-btn{height:28px;min-width:28px;padding:0 8px;border:1px solid var(--gray-200);border-radius:5px;background:#fff;font-size:12px;font-weight:600;color:var(--gray-600);cursor:pointer;}
+.pager-btn:hover:not(:disabled){background:var(--gray-50);}
+.pager-btn:disabled{opacity:.4;cursor:default;}
+.pager-btn.on{background:var(--green-700);color:#fff;border-color:var(--green-700);}
+
+/* Skeleton */
+.sk{background:linear-gradient(90deg,var(--gray-100) 25%,var(--gray-50) 50%,var(--gray-100) 75%);background-size:200% 100%;animation:sk 1.4s infinite;border-radius:5px;}
+@keyframes sk{to{background-position:-200% 0;}}
+
+/* Empty state */
+.empty-inv{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:48px 24px;text-align:center;}
+.empty-inv svg{width:40px;height:40px;opacity:.15;color:var(--gray-500);margin-bottom:12px;}
+.empty-inv h3{font-family:var(--font-display);font-size:15px;font-weight:700;color:var(--gray-600);margin-bottom:4px;}
+.empty-inv p{font-size:12px;color:var(--gray-400);}
+
+/* Mobile sticky bar */
+@media(max-width:768px){
+  .mobile-sticky-bar{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--gray-100);padding:10px 14px;display:flex;gap:8px;z-index:100;box-shadow:0 -4px 16px rgba(0,0,0,.08);}
+}
+@media(min-width:769px){.mobile-sticky-bar{display:none;}}
+</style>
+</head>
 <body>
-<div class="admin-shell"><div id="adminShell"></div>
-<div class="main-wrap" id="mainWrap"><div class="page-content">
-  <div class="pg-hd"><div><h1>Inventory</h1><p>Monitor and update stock levels</p></div>
-    <div class="pg-hd__actions">
-      <button class="btn btn-secondary" onclick="exportInventory()">Export</button>
-      <button class="btn btn-primary" onclick="toast('Select products to bulk update stock')">Bulk Update</button>
+<div class="admin-shell">
+<div id="adminShell"></div>
+<div class="main-wrap" id="mainWrap">
+<div class="page-content">
+
+<!-- HEADER -->
+<div class="pg-hd">
+  <div>
+    <h1>Inventory</h1>
+    <p style="font-size:12px;color:var(--gray-400);margin-top:2px;" id="invSub">Loading…</p>
+  </div>
+  <div class="pg-hd__actions">
+    <div class="drop-m" id="exportMenu">
+      <button class="btn btn-outline" onclick="toggleDrop('exportMenu')">Export</button>
+      <div class="drop-l" id="exportMenuList">
+        <div class="di" onclick="exportCSV();closeDrop('exportMenu')"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Export CSV</div>
+        <div class="di" onclick="exportLowStock();closeDrop('exportMenu')"><svg viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg>Low Stock Report</div>
+        <div class="di" onclick="exportOutOfStock();closeDrop('exportMenu')"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>Out of Stock Report</div>
+      </div>
     </div>
+    <button class="btn btn-outline" onclick="openImport()">
+      <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="12" height="12"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
+      Import
+    </button>
+    <button class="btn btn-primary" onclick="openBulkModal()">Bulk Update</button>
   </div>
-  <div id="lowStockAlert" style="display:none;" class="alert alert-danger" style="margin-bottom:16px;">
-    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-    <span id="lowStockMsg"></span>
+</div>
+
+<!-- ALERT STRIP -->
+<div class="alert-strip" id="alertStrip">
+  <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+  <span id="alertMsg"></span>
+</div>
+
+<!-- KPI GRID -->
+<div class="inv-kpi" id="invKpi">
+  <div class="ik gn"><div class="sk" style="height:54px;"></div></div>
+  <div class="ik bl"><div class="sk" style="height:54px;"></div></div>
+  <div class="ik am"><div class="sk" style="height:54px;"></div></div>
+  <div class="ik rd"><div class="sk" style="height:54px;"></div></div>
+</div>
+
+<!-- INSIGHTS ROW -->
+<div class="insights-grid" id="insightsGrid" style="display:none;">
+  <div class="insight-panel">
+    <div class="insight-title">Fast Moving Products</div>
+    <div id="fastMoving"><div class="sk" style="height:100px;border-radius:6px;"></div></div>
   </div>
-  <div class="card">
-    <div class="filter-bar">
-      <div class="filter-search"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><input type="search" id="invSearch" placeholder="Search products…" oninput="renderInventory()"></div>
-      <select class="filter-select" id="invFilter" onchange="renderInventory()">
-        <option value="">All Stock</option><option value="low">Low Stock</option><option value="out">Out of Stock</option>
+  <div class="insight-panel">
+    <div class="insight-title">Low Stock Alerts</div>
+    <div id="lowStockInsight"><div class="sk" style="height:100px;border-radius:6px;"></div></div>
+  </div>
+</div>
+
+<!-- MAIN CARD -->
+<div class="card" style="padding:0;">
+
+  <!-- Toolbar -->
+  <div class="inv-toolbar">
+    <div class="inv-toolbar-l">
+      <div class="filter-search" style="margin:0;">
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="search" id="invSearch" placeholder="Search name, SKU…" oninput="debounceFilter()" style="width:180px;">
+      </div>
+      <select class="filter-select" id="fCat" onchange="filterInv()" style="height:34px;font-size:12px;"><option value="">All Categories</option></select>
+      <select class="filter-select" id="fBrand" onchange="filterInv()" style="height:34px;font-size:12px;"><option value="">All Brands</option></select>
+      <select class="filter-select" id="fStatus" onchange="filterInv()" style="height:34px;font-size:12px;">
+        <option value="">All Stock</option>
+        <option value="in">In Stock</option>
+        <option value="low">Low Stock</option>
+        <option value="out">Out of Stock</option>
+        <option value="incoming">Incoming Stock</option>
+      </select>
+      <select class="filter-select" id="fSort" onchange="filterInv()" style="height:34px;font-size:12px;">
+        <option value="name">Name A–Z</option>
+        <option value="stock_asc">Stock: Low–High</option>
+        <option value="stock_desc">Stock: High–Low</option>
+        <option value="value_desc">Value: High–Low</option>
+        <option value="margin_desc">Margin: High–Low</option>
       </select>
     </div>
-    <div class="tbl-wrap">
-      <table>
-        <thead><tr><th>Product</th><th>SKU</th><th>In Stock</th><th>Reserved</th><th>Available</th><th>Stock Status</th><th>Actions</th></tr></thead>
-        <tbody id="invTbody"><tr><td colspan="7" style="text-align:center;padding:30px;"><div class="spinner" style="margin:0 auto;"></div></td></tr></tbody>
-      </table>
+    <div class="inv-toolbar-r">
+      <span id="filtCount" style="font-size:11px;color:var(--gray-400);"></span>
+      <button class="btn btn-sm btn-outline" onclick="toggleInsights()" id="insightBtn">Show Insights</button>
     </div>
   </div>
+
+  <!-- Bulk bar -->
+  <div class="bulk-b" id="bulkBar">
+    <input type="checkbox" id="chkAll" onchange="toggleAll(this)" style="cursor:pointer;">
+    <span class="bk-cnt" id="bulkCnt">0 selected</span>
+    <div style="display:flex;gap:6px;flex-wrap:wrap;">
+      <button class="btn btn-sm btn-outline" onclick="bulkAdjust()">Adjust Stock</button>
+      <button class="btn btn-sm btn-outline" onclick="bulkActivate()">Activate</button>
+      <button class="btn btn-sm btn-outline" onclick="bulkDeactivate()">Deactivate</button>
+      <button class="btn btn-sm" style="background:var(--red-100);color:var(--red-600);" onclick="bulkDelete()">Delete</button>
+    </div>
+    <button class="btn btn-sm btn-outline" onclick="clearSel()" style="margin-left:auto;">Clear</button>
+  </div>
+
+  <!-- DESKTOP TABLE -->
+  <div class="inv-tbl-wrap" style="overflow-x:auto;">
+    <table class="inv-tbl">
+      <thead>
+        <tr>
+          <th style="width:36px;padding:8px;"><input type="checkbox" id="chkAllH" onchange="toggleAll(this)"></th>
+          <th style="min-width:44px;">Image</th>
+          <th style="min-width:200px;" class="sort" onclick="setSort('name')">Product</th>
+          <th class="sort" onclick="setSort('sku')">SKU</th>
+          <th>Category</th>
+          <th>Brand</th>
+          <th class="sort" onclick="setSort('cost')">Cost</th>
+          <th class="sort" onclick="setSort('price')">Price</th>
+          <th>Margin</th>
+          <th class="sort" onclick="setSort('stock')">In Stock</th>
+          <th>Reserved</th>
+          <th>Incoming</th>
+          <th class="sort" onclick="setSort('threshold')">Min Level</th>
+          <th>Inv. Value</th>
+          <th>Status</th>
+          <th style="min-width:140px;">Quick Adjust</th>
+          <th style="width:80px;text-align:right;">Actions</th>
+        </tr>
+      </thead>
+      <tbody id="invTbody"></tbody>
+    </table>
+  </div>
+
+  <!-- MOBILE CARDS -->
+  <div class="inv-cards" id="invCards" style="padding:12px;"></div>
+
+  <!-- Pager -->
+  <div class="pager">
+    <span class="pager-info" id="pagerInfo"></span>
+    <div style="display:flex;gap:4px;" id="pagerBtns"></div>
+  </div>
+</div>
+
+<!-- STOCK LOG PANEL -->
+<div class="card" style="margin-top:12px;padding:0;" id="logCard" style="display:none;">
+  <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid var(--gray-50);">
+    <span style="font-family:var(--font-display);font-size:13px;font-weight:700;color:var(--gray-800);">Stock Adjustment Log</span>
+    <button class="btn btn-sm btn-outline" onclick="exportLog()">Export Log</button>
+  </div>
+  <div style="overflow-x:auto;">
+    <table class="log-tbl" id="logTable">
+      <thead><tr style="background:var(--gray-25);">
+        <th style="padding:8px 12px;font-size:10px;font-weight:700;text-transform:uppercase;color:var(--gray-400);">Product</th>
+        <th style="padding:8px 12px;font-size:10px;font-weight:700;text-transform:uppercase;color:var(--gray-400);">Adjustment</th>
+        <th style="padding:8px 12px;font-size:10px;font-weight:700;text-transform:uppercase;color:var(--gray-400);">Before</th>
+        <th style="padding:8px 12px;font-size:10px;font-weight:700;text-transform:uppercase;color:var(--gray-400);">After</th>
+        <th style="padding:8px 12px;font-size:10px;font-weight:700;text-transform:uppercase;color:var(--gray-400);">Reason</th>
+        <th style="padding:8px 12px;font-size:10px;font-weight:700;text-transform:uppercase;color:var(--gray-400);">Date</th>
+      </tr></thead>
+      <tbody id="logTbody"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- MOBILE STICKY BAR -->
+<div class="mobile-sticky-bar">
+  <button class="btn btn-outline" style="flex:1;" onclick="openBulkModal()">Bulk Update</button>
+  <button class="btn btn-primary" style="flex:1;" onclick="exportCSV()">Export</button>
+</div>
+
+<!-- ADJUST MODAL -->
+<div class="modal-overlay" id="adjOverlay" onclick="if(event.target===this)closeAdj()" style="display:none;align-items:center;justify-content:center;padding:20px;">
+<div class="modal" style="max-width:460px;width:100%;margin:auto;">
+  <div class="modal-hd"><h3 id="adjTitle">Adjust Stock</h3><button class="modal-close" onclick="closeAdj()">✕</button></div>
+  <div class="adj-modal-body">
+    <div id="adjProductInfo" style="background:var(--gray-25);border-radius:8px;padding:12px;margin-bottom:16px;font-size:12px;"></div>
+    <div class="adj-type-grid" id="adjTypeGrid">
+      <div class="adj-type sel" id="at-add" onclick="setAdjType('add',this)"><div class="adj-type-name">Add Stock</div><div class="adj-type-desc">Receive inventory</div></div>
+      <div class="adj-type" id="at-remove" onclick="setAdjType('remove',this)"><div class="adj-type-name">Remove Stock</div><div class="adj-type-desc">Write-off / loss</div></div>
+      <div class="adj-type" id="at-set" onclick="setAdjType('set',this)"><div class="adj-type-name">Set Exact</div><div class="adj-type-desc">Manual correction</div></div>
+    </div>
+    <div class="form-group" style="margin-bottom:12px;">
+      <label class="form-label">Quantity <span id="adjTypeLabel" style="color:var(--gray-400);">(to add)</span></label>
+      <input class="form-input" type="number" id="adjQty" placeholder="0" min="0">
+    </div>
+    <div class="form-group" style="margin-bottom:12px;">
+      <label class="form-label">Reason</label>
+      <select class="form-input" id="adjReason">
+        <option value="Restock">Restock / Purchase received</option>
+        <option value="Return">Customer return</option>
+        <option value="Correction">Manual correction</option>
+        <option value="Damaged">Damaged / Write-off</option>
+        <option value="Transfer">Branch transfer</option>
+        <option value="Other">Other</option>
+      </select>
+    </div>
+    <div id="adjPreview" style="background:var(--green-50);border-radius:6px;padding:10px 12px;font-size:12px;color:var(--green-700);display:none;margin-bottom:12px;"></div>
+  </div>
+  <div class="modal-ft">
+    <button class="btn btn-outline" onclick="closeAdj()">Cancel</button>
+    <button class="btn btn-primary" onclick="saveAdj()">Apply Adjustment</button>
+  </div>
+</div>
+</div>
+
+<!-- BULK UPDATE MODAL -->
+<div class="modal-overlay" id="bulkOverlay" onclick="if(event.target===this)closeBulk()" style="display:none;align-items:center;justify-content:center;padding:20px;">
+<div class="modal" style="max-width:420px;width:100%;margin:auto;">
+  <div class="modal-hd"><h3>Bulk Stock Update</h3><button class="modal-close" onclick="closeBulk()">✕</button></div>
+  <div style="padding:20px;">
+    <p style="font-size:12px;color:var(--gray-500);margin-bottom:16px;" id="bulkDesc">Update stock for all filtered products. Select products first using checkboxes for targeted update.</p>
+    <div class="bulk-fields">
+      <div class="form-group">
+        <label class="form-label">Update Type</label>
+        <select class="form-input" id="bulkType" onchange="updateBulkPreview()">
+          <option value="add">Add to current stock</option>
+          <option value="remove">Remove from stock</option>
+          <option value="set">Set exact stock level</option>
+          <option value="threshold">Update low stock threshold</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Quantity</label>
+        <input class="form-input" type="number" id="bulkQty" placeholder="0" min="0" oninput="updateBulkPreview()">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Reason</label>
+        <select class="form-input" id="bulkReason">
+          <option value="Bulk Restock">Bulk restock</option>
+          <option value="Correction">Inventory correction</option>
+          <option value="Damaged">Damaged goods write-off</option>
+          <option value="Other">Other</option>
+        </select>
+      </div>
+      <div id="bulkPreview" style="background:var(--gray-50);border-radius:6px;padding:10px 12px;font-size:12px;color:var(--gray-600);"></div>
+    </div>
+  </div>
+  <div class="modal-ft">
+    <button class="btn btn-outline" onclick="closeBulk()">Cancel</button>
+    <button class="btn btn-primary" onclick="runBulkUpdate()">Apply to <span id="bulkTargetCnt">all</span> Products</button>
+  </div>
+</div>
+</div>
+
 </div></div></div>
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="../backend/config/supabase.js"></script>
 <script src="assets/js/shell.js"></script>
 <script>
-let allProducts=[];
+'use strict';
+
+let allProducts=[], allItems=[], filteredProds=[];
+let selectedIds=new Set(), sortCol='name', sortDir=1;
+let page=0; const PER=30;
+let adjProductId=null, adjType='add';
+let filtTimer=null, insightsVisible=false;
+let stockLogs=[];
+
 (async()=>{
-  await AdminShell.init('Inventory');
-  allProducts=await WF.products.getAll({active:null});
-  const lowCount=allProducts.filter(p=>p.stock_qty<=(p.low_stock_threshold||5)).length;
-  if(lowCount>0){document.getElementById('lowStockAlert').style.display='flex';document.getElementById('lowStockMsg').textContent=`${lowCount} product(s) are low on stock — review and restock soon.`;}
-  renderInventory();
+  await AdminShell.init('Inventory','inventory');
+  await loadData();
+  document.addEventListener('click',e=>{
+    if(!e.target.closest('.drop-m')) document.querySelectorAll('.drop-l').forEach(d=>d.classList.remove('open'));
+  });
 })();
-function renderInventory(){
+
+async function loadData(){
+  document.getElementById('invTbody').innerHTML = `<tr><td colspan="17" style="padding:30px;text-align:center;"><div class="spinner" style="margin:0 auto;"></div></td></tr>`;
+  
+  const[pRes,iRes,cRes,bRes,logRes]=await Promise.all([
+    db.from('products').select('id,name,sku,barcode,price,mrp,cost_price,stock_qty,reserved_stock,incoming_stock,low_stock_threshold,max_stock_threshold,is_active,category_id,brand_id,category:categories(name),brand:brands(name),images:product_images(url,is_primary)').order('name'),
+    db.from('order_items').select('product_id,quantity,total_price').limit(500),
+    db.from('categories').select('id,name').eq('is_active',true).order('name'),
+    db.from('brands').select('id,name').eq('is_active',true).order('name'),
+    db.from('stock_logs').select('*').order('created_at',{ascending:false}).limit(50),
+  ]);
+
+  allProducts=pRes.data||[];
+  allItems=iRes.data||[];
+  stockLogs=logRes.data||[];
+
+  // Populate filters
+  const cats=cRes.data||[], brands=bRes.data||[];
+  document.getElementById('fCat').innerHTML='<option value="">All Categories</option>'+cats.map(c=>`<option value="${c.id}">${c.name}</option>`).join('');
+  document.getElementById('fBrand').innerHTML='<option value="">All Brands</option>'+brands.map(b=>`<option value="${b.id}">${b.name}</option>`).join('');
+
+  // Compute sales per product
+  const salesMap={};
+  allItems.forEach(i=>{
+    if(i.product_id){
+      if(!salesMap[i.product_id])salesMap[i.product_id]={qty:0,rev:0};
+      salesMap[i.product_id].qty+=i.quantity||1;
+      salesMap[i.product_id].rev+=parseFloat(i.total_price)||0;
+    }
+  });
+  allProducts.forEach(p=>{p._sales=salesMap[p.id]||{qty:0,rev:0};});
+
+  renderKPIs();
+  filterInv();
+  renderLog();
+  document.getElementById('logCard').style.display='block';
+
+  // Alerts
+  const lowCnt=allProducts.filter(p=>(p.stock_qty||0)<=(p.low_stock_threshold||5)&&(p.stock_qty||0)>0).length;
+  const outCnt=allProducts.filter(p=>(p.stock_qty||0)===0&&p.is_active).length;
+  if(outCnt>0||lowCnt>0){
+    document.getElementById('alertStrip').classList.add('show');
+    document.getElementById('alertMsg').textContent=`${outCnt} products out of stock · ${lowCnt} products running low. Review and restock.`;
+  }
+}
+
+function renderKPIs(){
+  const total=allProducts.length;
+  const activeProds=allProducts.filter(p=>p.is_active);
+  const totalStock=allProducts.reduce((s,p)=>s+(p.stock_qty||0),0);
+  const low=allProducts.filter(p=>p.is_active&&(p.stock_qty||0)>0&&(p.stock_qty||0)<=(p.low_stock_threshold||5)).length;
+  const out=allProducts.filter(p=>p.is_active&&(p.stock_qty||0)===0).length;
+  const incoming=allProducts.filter(p=>(p.incoming_stock||0)>0).length;
+  const invValue=allProducts.reduce((s,p)=>s+(p.stock_qty||0)*(p.price||0),0);
+  const costValue=allProducts.reduce((s,p)=>s+(p.stock_qty||0)*(p.cost_price||p.price||0),0);
+  const deadStock=allProducts.filter(p=>p.is_active&&(p.stock_qty||0)>0&&(p._sales?.qty||0)===0).length;
+  document.getElementById('invSub').textContent=`${total} products · ${totalStock.toLocaleString('en-IN')} total units · Updated now`;
+  document.getElementById('invKpi').innerHTML=[
+    {cls:'gn',val:total,lbl:'Total Products',sub:`${activeProds.length} active`},
+    {cls:'bl',val:totalStock.toLocaleString('en-IN'),lbl:'Total Stock Units',sub:`Value: ${formatCurrency(invValue)}`},
+    {cls:'am',val:low,lbl:'Low Stock',sub:`Below threshold`},
+    {cls:'rd',val:out,lbl:'Out of Stock',sub:`Needs restocking`},
+    {cls:'pu',val:incoming,lbl:'Incoming Stock',sub:`In transit`},
+    {cls:'te',val:formatCurrency(costValue),lbl:'Cost Value',sub:`Inventory cost`},
+    {cls:'gn',val:deadStock,lbl:'Dead Stock',sub:`No sales recorded`},
+    {cls:'sl',val:allProducts.filter(p=>(p._sales?.qty||0)>5).length,lbl:'Fast Moving',sub:`Sold 5+ units`},
+  ].map(k=>`<div class="ik ${k.cls}"><div class="ik-val">${k.val}</div><div class="ik-lbl">${k.lbl}</div><div class="ik-sub">${k.sub}</div></div>`).join('');
+}
+
+function debounceFilter(){clearTimeout(filtTimer);filtTimer=setTimeout(filterInv,250);}
+function setSort(col){if(sortCol===col)sortDir*=-1;else{sortCol=col;sortDir=1;}filterInv();}
+
+function filterInv(){
   const q=document.getElementById('invSearch').value.toLowerCase();
-  const f=document.getElementById('invFilter').value;
-  const filtered=allProducts.filter(p=>{
-    if(q&&!p.name.toLowerCase().includes(q))return false;
-    if(f==='low'&&p.stock_qty>(p.low_stock_threshold||5))return false;
-    if(f==='out'&&p.stock_qty!==0)return false;
+  const cat=document.getElementById('fCat').value;
+  const brand=document.getElementById('fBrand').value;
+  const status=document.getElementById('fStatus').value;
+  const sort=document.getElementById('fSort').value;
+
+  let list=allProducts.filter(p=>{
+    if(q&&!p.name?.toLowerCase().includes(q)&&!p.sku?.toLowerCase().includes(q)&&!p.barcode?.toLowerCase().includes(q)) return false;
+    if(cat&&p.category_id!==cat) return false;
+    if(brand&&p.brand_id!==brand) return false;
+    if(status==='in'&&(!p.is_active||(p.stock_qty||0)<=(p.low_stock_threshold||5))) return false;
+    if(status==='low'&&!((p.stock_qty||0)>0&&(p.stock_qty||0)<=(p.low_stock_threshold||5))) return false;
+    if(status==='out'&&(p.stock_qty||0)!==0) return false;
+    if(status==='incoming'&&!(p.incoming_stock>0)) return false;
     return true;
   });
-  document.getElementById('invTbody').innerHTML=filtered.length?filtered.map((p,i)=>{
-    const pct=Math.min(100,Math.round((p.stock_qty/60)*100));
-    const lvl=p.stock_qty===0?'low':pct>40?'high':pct>15?'medium':'low';
-    const statusLabel=p.stock_qty===0?'Out of Stock':p.stock_qty<=(p.low_stock_threshold||5)?'Low Stock':'In Stock';
-    const statusBadge=p.stock_qty===0?'badge-danger':p.stock_qty<=(p.low_stock_threshold||5)?'badge-pending':'badge-active';
+
+  if(sort==='name')list.sort((a,b)=>(a.name||'').localeCompare(b.name||''));
+  else if(sort==='stock_asc')list.sort((a,b)=>(a.stock_qty||0)-(b.stock_qty||0));
+  else if(sort==='stock_desc')list.sort((a,b)=>(b.stock_qty||0)-(a.stock_qty||0));
+  else if(sort==='value_desc')list.sort((a,b)=>((b.stock_qty||0)*(b.price||0))-((a.stock_qty||0)*(a.price||0)));
+  else if(sort==='margin_desc'){
+    list.sort((a,b)=>{
+      const ma=a.cost_price&&a.price?((a.price-a.cost_price)/a.price*100):0;
+      const mb=b.cost_price&&b.price?((b.price-b.cost_price)/b.price*100):0;
+      return mb-ma;
+    });
+  }
+
+  filteredProds=list;page=0;
+  document.getElementById('filtCount').textContent=`${list.length} products`;
+  renderTable();renderCards();renderPager();
+  if(insightsVisible)renderInsights();
+}
+
+function stockStatus(p){
+  const q=p.stock_qty||0;
+  const thresh=p.low_stock_threshold||5;
+  if(q===0)return{label:'Out of Stock',cls:'out'};
+  if(q<=thresh)return{label:'Low Stock',cls:'low'};
+  if((p.incoming_stock||0)>0)return{label:'Incoming',cls:'inc'};
+  return{label:'In Stock',cls:'in'};
+}
+
+function marginPct(p){
+  if(!p.cost_price||!p.price)return null;
+  return Math.round((p.price-p.cost_price)/p.price*100);
+}
+
+function stockBarColor(pct){
+  if(pct>=50)return '#22c55e';
+  if(pct>=20)return '#f59e0b';
+  return '#ef4444';
+}
+
+function renderTable(){
+  const tbody=document.getElementById('invTbody');
+  const slice=filteredProds.slice(page*PER,(page+1)*PER);
+  if(!slice.length){
+    tbody.innerHTML=`<tr><td colspan="17"><div class="empty-inv"><svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/></svg><h3>No products found</h3><p>Try adjusting filters</p></div></td></tr>`;
+    return;
+  }
+  const fmt=n=>n?'₹'+Number(n).toLocaleString('en-IN'):'—';
+  tbody.innerHTML=slice.map(p=>{
+    const chk=selectedIds.has(p.id)?'checked':'';
+    const st=stockStatus(p);
+    const m=marginPct(p);
+    const mCls=m===null?'':m>=30?'good':m>=15?'mid':'low-m';
+    const img=p.images?.find(i=>i.is_primary)?.url||p.images?.[0]?.url||'';
+    const maxS=p.max_stock_threshold||100;
+    const stkPct=Math.round(Math.min((p.stock_qty||0)/maxS*100,100));
+    const invVal=(p.stock_qty||0)*(p.price||0);
     return`<tr>
-      <td class="td-bold" style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${p.name}</td>
-      <td style="font-size:12px;color:var(--gray-400);">${p.sku||'SKU-'+String(i+100)}</td>
-      <td><strong>${p.stock_qty}</strong></td>
-      <td style="color:var(--gray-400);">0</td>
-      <td><strong>${p.stock_qty}</strong></td>
-      <td><span class="badge ${statusBadge}">${statusLabel}</span></td>
+      <td style="padding:8px;width:36px;" onclick="event.stopPropagation()"><input type="checkbox" ${chk} onchange="toggleSel('${p.id}',this)"></td>
       <td>
-        <div style="display:flex;align-items:center;gap:6px;">
-          <input type="number" class="form-input" style="width:70px;height:28px;font-size:12px;" value="${p.stock_qty}" id="stock_${p.id}" min="0">
-          <button class="btn btn-primary btn-sm" onclick="updateStock('${p.id}')">Update</button>
+        <div class="prod-thumb">
+          ${img?`<img src="${img}" alt="" loading="lazy">`:`<svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/></svg>`}
+        </div>
+      </td>
+      <td>
+        <div style="font-weight:700;font-size:12px;color:var(--gray-900);max-width:170px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${p.name}</div>
+        ${p.barcode?`<div style="font-size:10px;color:var(--gray-400);margin-top:1px;">Barcode: ${p.barcode}</div>`:''}
+      </td>
+      <td style="font-size:11px;color:var(--gray-400);font-family:monospace;">${p.sku||'—'}</td>
+      <td style="font-size:11px;color:var(--gray-500);">${p.category?.name||'—'}</td>
+      <td style="font-size:11px;color:var(--gray-500);">${p.brand?.name||'—'}</td>
+      <td style="font-size:12px;color:var(--gray-600);">${fmt(p.cost_price)}</td>
+      <td style="font-weight:700;font-size:12px;">${fmt(p.price)}</td>
+      <td>${m!==null?`<span class="margin-pill ${mCls}">${m}%</span>`:'<span style="color:var(--gray-300);font-size:11px;">—</span>'}</td>
+      <td>
+        <div class="sbar-wrap">
+          <div class="sbar"><div class="sbar-fill" style="width:${stkPct}%;background:${stockBarColor(stkPct)};"></div></div>
+          <span style="font-weight:700;font-size:12px;color:${(p.stock_qty||0)===0?'#dc2626':(p.stock_qty||0)<=(p.low_stock_threshold||5)?'#d97706':'var(--gray-900)'};">${p.stock_qty??0}</span>
+        </div>
+      </td>
+      <td style="font-size:12px;color:var(--gray-400);">${p.reserved_stock||0}</td>
+      <td style="font-size:12px;color:var(--gray-400);">${p.incoming_stock||0}</td>
+      <td style="font-size:12px;color:var(--gray-500);">${p.low_stock_threshold||5}</td>
+      <td style="font-weight:700;font-size:12px;">${invVal>0?fmt(invVal):'—'}</td>
+      <td><span class="sbd ${st.cls}">${st.label}</span></td>
+      <td onclick="event.stopPropagation()">
+        <div class="stk-ctrl">
+          <button class="stk-btn minus" onclick="stepStock('${p.id}',-1)">−</button>
+          <input class="stk-inp" type="number" id="stk_${p.id}" value="${p.stock_qty??0}" min="0" onchange="showSave('${p.id}')" oninput="showSave('${p.id}')">
+          <button class="stk-btn plus" onclick="stepStock('${p.id}',1)">+</button>
+          <button class="stk-save" id="save_${p.id}" onclick="quickSaveStock('${p.id}')">Save</button>
+        </div>
+      </td>
+      <td onclick="event.stopPropagation()">
+        <div class="ra-wrap">
+          <button class="ra" onclick="openAdj('${p.id}')" title="Adjust Stock"><svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></button>
+          <button class="ra" onclick="location.href='products.html'" title="Edit Product"><svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4z"/></svg></button>
         </div>
       </td>
     </tr>`;
-  }).join(''):`<tr><td colspan="7" style="text-align:center;padding:30px;color:var(--gray-300);">No products found</td></tr>`;
+  }).join('');
 }
-async function updateStock(id){
-  const newQty=parseInt(document.getElementById('stock_'+id).value)||0;
-  await WF.products.update(id,{stock_qty:newQty});
-  const p=allProducts.find(p=>p.id===id);if(p)p.stock_qty=newQty;
-  toast('Stock updated!');
-  renderInventory();
+
+function renderCards(){
+  const el=document.getElementById('invCards');
+  const slice=filteredProds.slice(page*PER,(page+1)*PER);
+  if(!slice.length){el.innerHTML='<div class="empty-inv"><svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" width="40" height="40"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/></svg><h3>No products found</h3></div>';return;}
+  const fmt=n=>n?'₹'+Number(n).toLocaleString('en-IN'):'—';
+  el.innerHTML=slice.map(p=>{
+    const st=stockStatus(p);
+    const img=p.images?.find(i=>i.is_primary)?.url||p.images?.[0]?.url||'';
+    return`<div class="inv-card">
+      <div class="inv-card-hd">
+        <div class="prod-thumb" style="width:42px;height:42px;">
+          ${img?`<img src="${img}" alt="" loading="lazy">`:`<svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/></svg>`}
+        </div>
+        <div style="flex:1;min-width:0;">
+          <div class="inv-card-name">${p.name}</div>
+          <div class="inv-card-sku">${p.sku||'—'} · ${p.category?.name||'—'}</div>
+        </div>
+        <span class="sbd ${st.cls}">${st.label}</span>
+      </div>
+      <div class="inv-card-grid">
+        <div class="inv-card-stat">
+          <div class="inv-card-stat-val" style="color:${(p.stock_qty||0)===0?'#dc2626':(p.stock_qty||0)<=(p.low_stock_threshold||5)?'#d97706':'inherit'}">${p.stock_qty??0}</div>
+          <div class="inv-card-stat-lbl">In Stock</div>
+        </div>
+        <div class="inv-card-stat">
+          <div class="inv-card-stat-val">${p.reserved_stock||0}</div>
+          <div class="inv-card-stat-lbl">Reserved</div>
+        </div>
+        <div class="inv-card-stat">
+          <div class="inv-card-stat-val" style="font-size:12px;">${fmt(p.price)}</div>
+          <div class="inv-card-stat-lbl">Price</div>
+        </div>
+      </div>
+      <div class="inv-card-actions">
+        <div class="stk-ctrl" style="flex:1;">
+          <button class="stk-btn minus" onclick="stepStock('${p.id}',-1)">−</button>
+          <input class="stk-inp" type="number" id="stk_${p.id}_m" value="${p.stock_qty??0}" min="0" oninput="showSaveM('${p.id}')">
+          <button class="stk-btn plus" onclick="stepStock('${p.id}',1)">+</button>
+          <button class="stk-save" id="save_${p.id}_m" onclick="quickSaveStock('${p.id}')">Save</button>
+        </div>
+        <button class="btn btn-sm btn-outline" onclick="openAdj('${p.id}')">Adjust</button>
+      </div>
+    </div>`;
+  }).join('');
 }
-function exportInventory(){
-  const rows=[['Product','SKU','Stock','Status']];
-  allProducts.forEach((p,i)=>rows.push([p.name,p.sku||'SKU-'+i,p.stock_qty,p.stock_qty===0?'Out of Stock':p.stock_qty<=5?'Low Stock':'In Stock']));
-  const csv=rows.map(r=>r.map(v=>`"${v}"`).join(',')).join('\n');
-  const a=document.createElement('a');a.href='data:text/csv,'+encodeURIComponent(csv);a.download='wellfix-inventory.csv';a.click();
-  toast('Inventory exported');
+
+function renderInsights(){
+  // Fast moving
+  const sorted=[...allProducts].sort((a,b)=>(b._sales?.qty||0)-(a._sales?.qty||0)).slice(0,6);
+  const maxQ=sorted[0]?._sales?.qty||1;
+  document.getElementById('fastMoving').innerHTML=sorted.filter(p=>(p._sales?.qty||0)>0).map((p,i)=>`
+    <div class="insight-row">
+      <div class="insight-rank">${i+1}</div>
+      <div>
+        <div class="insight-name" title="${p.name}">${p.name.length>24?p.name.slice(0,24)+'…':p.name}</div>
+        <div class="insight-bar-wrap"><div class="insight-bar"><div class="insight-bar-fill" style="width:${Math.round((p._sales.qty/maxQ)*100)}%;"></div></div></div>
+      </div>
+      <div class="insight-val">${p._sales.qty} sold</div>
+    </div>`).join('')||'<div style="padding:20px;text-align:center;font-size:12px;color:var(--gray-400);">No sales data yet</div>';
+
+  // Low stock sorted by urgency
+  const lowProds=allProducts.filter(p=>(p.stock_qty||0)<=(p.low_stock_threshold||5)&&p.is_active).sort((a,b)=>(a.stock_qty||0)-(b.stock_qty||0)).slice(0,6);
+  document.getElementById('lowStockInsight').innerHTML=lowProds.length?lowProds.map(p=>`
+    <div class="insight-row">
+      <div class="insight-rank" style="color:${(p.stock_qty||0)===0?'#dc2626':'#d97706'}">${(p.stock_qty||0)===0?'!':p.stock_qty}</div>
+      <div class="insight-name" title="${p.name}" style="flex:1;">${p.name.length>26?p.name.slice(0,26)+'…':p.name}</div>
+      <button class="btn btn-sm btn-outline" style="font-size:10px;height:22px;padding:0 6px;" onclick="openAdj('${p.id}')">Restock</button>
+    </div>`).join(''):'<div style="padding:20px;text-align:center;font-size:12px;color:var(--green-600);font-weight:600;">All products well stocked</div>';
 }
+
+function toggleInsights(){
+  insightsVisible=!insightsVisible;
+  const el=document.getElementById('insightsGrid');
+  el.style.display=insightsVisible?'grid':'none';
+  document.getElementById('insightBtn').textContent=insightsVisible?'Hide Insights':'Show Insights';
+  if(insightsVisible)renderInsights();
+}
+
+function renderPager(){
+  const total=filteredProds.length,pages=Math.ceil(total/PER);
+  document.getElementById('pagerInfo').textContent=total?`${page*PER+1}–${Math.min((page+1)*PER,total)} of ${total}`:'';
+  const el=document.getElementById('pagerBtns');
+  if(pages<=1){el.innerHTML='';return;}
+  let h=`<button class="pager-btn" onclick="goPage(${Math.max(0,page-1)})" ${page===0?'disabled':''}>←</button>`;
+  for(let i=0;i<Math.min(pages,7);i++)h+=`<button class="pager-btn ${i===page?'on':''}" onclick="goPage(${i})">${i+1}</button>`;
+  h+=`<button class="pager-btn" onclick="goPage(${Math.min(pages-1,page+1)})" ${page>=pages-1?'disabled':''}>→</button>`;
+  el.innerHTML=h;
+}
+function goPage(n){page=n;renderTable();renderCards();renderPager();}
+
+// SELECTION
+function toggleSel(id,cb){if(cb.checked)selectedIds.add(id);else selectedIds.delete(id);updateBulkBar();}
+function toggleAll(cb){filteredProds.slice(page*PER,(page+1)*PER).forEach(p=>{if(cb.checked)selectedIds.add(p.id);else selectedIds.delete(p.id);});renderTable();renderCards();updateBulkBar();}
+function updateBulkBar(){const n=selectedIds.size;document.getElementById('bulkBar').classList.toggle('show',n>0);document.getElementById('bulkCnt').textContent=`${n} selected`;}
+function clearSel(){selectedIds.clear();renderTable();renderCards();updateBulkBar();}
+
+// QUICK STOCK
+function stepStock(id,delta){
+  ['','_m'].forEach(sfx=>{
+    const inp=document.getElementById('stk_'+id+sfx);
+    if(inp){inp.value=Math.max(0,(parseInt(inp.value)||0)+delta);['showSave','showSaveM'].forEach((fn,i)=>{if(sfx===(!i?'':'_m')){}});}
+  });
+  showSave(id);showSaveM(id);
+}
+function showSave(id){document.getElementById('save_'+id)?.classList.add('show');}
+function showSaveM(id){document.getElementById('save_'+id+'_m')?.classList.add('show');}
+
+async function quickSaveStock(id){
+  const inp=document.getElementById('stk_'+id)||document.getElementById('stk_'+id+'_m');
+  const newQty=parseInt(inp?.value)||0;
+  const p=allProducts.find(x=>x.id===id);
+  const old=p?.stock_qty||0;
+  await db.from('products').update({stock_qty:newQty}).eq('id',id);
+  // Log
+  try{await db.from('stock_logs').insert({product_id:id,product_name:p?.name,adjustment:newQty-old,stock_before:old,stock_after:newQty,reason:'Quick update'});}catch(e){}
+  if(p)p.stock_qty=newQty;
+  document.getElementById('save_'+id)?.classList.remove('show');
+  document.getElementById('save_'+id+'_m')?.classList.remove('show');
+  toast('Stock updated');renderKPIs();filterInv();loadLog();
+}
+
+// ADJUST MODAL
+function openAdj(id){
+  adjProductId=id;adjType='add';
+  const p=allProducts.find(x=>x.id===id);if(!p)return;
+  document.getElementById('adjTitle').textContent='Adjust Stock — '+p.name.slice(0,30);
+  document.getElementById('adjProductInfo').innerHTML=`<strong>${p.name}</strong><br>Current Stock: <strong style="color:var(--green-700);">${p.stock_qty||0}</strong> · SKU: ${p.sku||'—'} · Threshold: ${p.low_stock_threshold||5}`;
+  document.getElementById('adjQty').value='';
+  document.getElementById('adjPreview').style.display='none';
+  setAdjType('add',document.getElementById('at-add'));
+  document.getElementById('adjOverlay').style.display='flex';
+}
+function closeAdj(){document.getElementById('adjOverlay').style.display='none';}
+function setAdjType(t,el){
+  adjType=t;
+  document.querySelectorAll('.adj-type').forEach(d=>d.classList.remove('sel'));el.classList.add('sel');
+  document.getElementById('adjTypeLabel').textContent=t==='add'?'(to add)':t==='remove'?'(to remove)':'(exact level)';
+  updateAdjPreview();
+}
+function updateAdjPreview(){
+  const p=allProducts.find(x=>x.id===adjProductId);if(!p)return;
+  const qty=parseInt(document.getElementById('adjQty').value)||0;
+  if(!qty)return;
+  const before=p.stock_qty||0;
+  let after=adjType==='add'?before+qty:adjType==='remove'?Math.max(0,before-qty):qty;
+  const el=document.getElementById('adjPreview');
+  el.style.display='block';
+  el.innerHTML=`Stock: <strong>${before}</strong> → <strong style="color:var(--green-700);">${after}</strong> (${adjType==='add'?'+':adjType==='remove'?'-':'='}${qty})`;
+}
+document.addEventListener('input',e=>{if(e.target.id==='adjQty')updateAdjPreview();});
+
+async function saveAdj(){
+  const p=allProducts.find(x=>x.id===adjProductId);if(!p)return;
+  const qty=parseInt(document.getElementById('adjQty').value)||0;
+  if(!qty&&adjType!=='set'){toast('Enter a quantity',true);return;}
+  const before=p.stock_qty||0;
+  const after=adjType==='add'?before+qty:adjType==='remove'?Math.max(0,before-qty):qty;
+  const reason=document.getElementById('adjReason').value;
+  await db.from('products').update({stock_qty:after}).eq('id',adjProductId);
+  try{await db.from('stock_logs').insert({product_id:adjProductId,product_name:p.name,adjustment:after-before,stock_before:before,stock_after:after,reason});}catch(e){}
+  p.stock_qty=after;
+  toast(`Stock ${adjType==='add'?'increased by '+qty:adjType==='remove'?'decreased by '+qty:'set to '+after}`);
+  closeAdj();renderKPIs();filterInv();loadLog();
+}
+
+// BULK UPDATE
+function openBulkModal(){
+  const n=selectedIds.size;
+  document.getElementById('bulkTargetCnt').textContent=n>0?n:'all filtered';
+  document.getElementById('bulkDesc').textContent=n>0?`Update stock for ${n} selected products.`:`Update stock for all ${filteredProds.length} filtered products.`;
+  updateBulkPreview();
+  document.getElementById('bulkOverlay').style.display='flex';
+}
+function closeBulk(){document.getElementById('bulkOverlay').style.display='none';}
+function updateBulkPreview(){
+  const type=document.getElementById('bulkType').value;
+  const qty=parseInt(document.getElementById('bulkQty').value)||0;
+  const el=document.getElementById('bulkPreview');
+  if(!qty){el.textContent='Enter a quantity to preview the change.';return;}
+  el.textContent=type==='add'?`Will add ${qty} units to each product's current stock.`:type==='remove'?`Will remove up to ${qty} units from each product.`:type==='set'?`Will set every product to exactly ${qty} units.`:`Will update low stock threshold to ${qty} for each product.`;
+}
+async function runBulkUpdate(){
+  const type=document.getElementById('bulkType').value;
+  const qty=parseInt(document.getElementById('bulkQty').value)||0;
+  const reason=document.getElementById('bulkReason').value;
+  const targets=selectedIds.size>0?allProducts.filter(p=>selectedIds.has(p.id)):filteredProds;
+  if(!targets.length){toast('No products to update',true);return;}
+  const btn=event.target;btn.textContent='Updating…';btn.disabled=true;
+  let done=0;
+  for(const p of targets){
+    const before=p.stock_qty||0;
+    let after=type==='add'?before+qty:type==='remove'?Math.max(0,before-qty):type==='set'?qty:before;
+    const threshold=type==='threshold'?qty:undefined;
+    const payload=type==='threshold'?{low_stock_threshold:qty}:{stock_qty:after};
+    await db.from('products').update(payload).eq('id',p.id);
+    try{if(type!=='threshold')await db.from('stock_logs').insert({product_id:p.id,product_name:p.name,adjustment:after-before,stock_before:before,stock_after:after,reason:'Bulk: '+reason});}catch(e){}
+    if(type!=='threshold')p.stock_qty=after;else p.low_stock_threshold=qty;
+    done++;
+  }
+  toast(`Updated ${done} products`);btn.textContent='Apply to';btn.disabled=false;
+  closeBulk();clearSel();renderKPIs();filterInv();loadLog();
+}
+
+// BULK SELECTION ACTIONS
+async function bulkActivate(){await bulkFieldUpdate({is_active:true});toast(`${selectedIds.size} products activated`);}
+async function bulkDeactivate(){await bulkFieldUpdate({is_active:false});toast(`${selectedIds.size} products deactivated`);}
+async function bulkAdjust(){if(!selectedIds.size){toast('Select products first',true);return;}openBulkModal();}
+async function bulkFieldUpdate(payload){for(const id of selectedIds)await db.from('products').update(payload).eq('id',id);clearSel();loadData();}
+async function bulkDelete(){
+  if(!selectedIds.size||!confirm(`Delete ${selectedIds.size} products?`))return;
+  for(const id of selectedIds){await db.from('product_images').delete().eq('product_id',id);await db.from('products').delete().eq('id',id);}
+  toast(`${selectedIds.size} products deleted`);clearSel();loadData();
+}
+
+// LOG
+async function loadLog(){
+  const{data}=await db.from('stock_logs').select('*').order('created_at',{ascending:false}).limit(50);
+  stockLogs=data||[];renderLog();
+}
+function renderLog(){
+  const tbody=document.getElementById('logTbody');
+  if(!stockLogs.length){tbody.innerHTML='<tr><td colspan="6" style="text-align:center;padding:20px;color:var(--gray-400);font-size:12px;">No adjustments logged yet</td></tr>';return;}
+  tbody.innerHTML=stockLogs.map(l=>{
+    const pos=l.adjustment>0,zero=l.adjustment===0;
+    return`<tr>
+      <td style="font-weight:600;font-size:12px;color:var(--gray-800);">${l.product_name||'—'}</td>
+      <td><span class="adj-pill ${pos?'pos':zero?'neu':'neg'}">${pos?'+':''}${l.adjustment}</span></td>
+      <td style="font-size:12px;color:var(--gray-500);">${l.stock_before??'—'}</td>
+      <td style="font-weight:700;font-size:12px;">${l.stock_after??'—'}</td>
+      <td style="font-size:12px;color:var(--gray-500);">${l.reason||'—'}</td>
+      <td style="font-size:11px;color:var(--gray-400);">${l.created_at?new Date(l.created_at).toLocaleDateString('en-IN',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}):'—'}</td>
+    </tr>`;
+  }).join('');
+}
+function exportLog(){
+  const rows=[['Product','Adjustment','Before','After','Reason','Date']];
+  stockLogs.forEach(l=>rows.push([l.product_name||'',l.adjustment,l.stock_before,l.stock_after,l.reason,l.created_at?new Date(l.created_at).toLocaleDateString():'']));
+  const a=document.createElement('a');a.href='data:text/csv,'+encodeURIComponent(rows.map(r=>r.map(v=>`"${v}"`).join(',')).join('\n'));a.download='wellfix-stock-log.csv';a.click();toast('Log exported');
+}
+
+// EXPORT
+function exportCSV(){
+  const rows=[['Name','SKU','Barcode','Category','Brand','Cost','Price','Margin%','Stock','Reserved','Incoming','Threshold','Inv.Value','Status']];
+  filteredProds.forEach(p=>{
+    const m=marginPct(p);const st=stockStatus(p);const invV=(p.stock_qty||0)*(p.price||0);
+    rows.push([`"${p.name}"`,p.sku||'',p.barcode||'',p.category?.name||'',p.brand?.name||'',p.cost_price||'',p.price||'',m!==null?m+'%':'',p.stock_qty||0,p.reserved_stock||0,p.incoming_stock||0,p.low_stock_threshold||5,invV,st.label]);
+  });
+  const a=document.createElement('a');a.href='data:text/csv,'+encodeURIComponent(rows.map(r=>r.join(',')).join('\n'));a.download='wellfix-inventory.csv';a.click();toast('Inventory exported');
+}
+function exportLowStock(){const orig=filteredProds;filteredProds=allProducts.filter(p=>(p.stock_qty||0)<=(p.low_stock_threshold||5)&&p.is_active);exportCSV();filteredProds=orig;}
+function exportOutOfStock(){const orig=filteredProds;filteredProds=allProducts.filter(p=>(p.stock_qty||0)===0&&p.is_active);exportCSV();filteredProds=orig;}
+
+function openImport(){
+  const input=document.createElement('input');input.type='file';input.accept='.csv';
+  input.onchange=async e=>{
+    const file=e.target.files[0];if(!file)return;
+    const text=await file.text();
+    const lines=text.split('\n').map(l=>l.trim()).filter(Boolean);
+    const headers=lines[0].split(',').map(h=>h.replace(/"/g,'').trim().toLowerCase());
+    let done=0;
+    for(const line of lines.slice(1)){
+      const vals=line.split(',').map(v=>v.replace(/"/g,'').trim());
+      const row={};headers.forEach((h,i)=>row[h]=vals[i]||'');
+      const p=allProducts.find(x=>x.sku===row.sku||x.name.toLowerCase()===row.name?.toLowerCase());
+      if(!p)continue;
+      const payload={};
+      if(row.stock!==undefined&&row.stock!=='')payload.stock_qty=parseInt(row.stock)||0;
+      if(row.stock_qty!==undefined&&row.stock_qty!=='')payload.stock_qty=parseInt(row.stock_qty)||0;
+      if(row.threshold!==undefined&&row.threshold!=='')payload.low_stock_threshold=parseInt(row.threshold)||5;
+      if(Object.keys(payload).length){await db.from('products').update(payload).eq('id',p.id);done++;}
+    }
+    toast(`Updated ${done} products from CSV`);loadData();
+  };
+  input.click();
+}
+
+// DROPDOWN
+function toggleDrop(id){const el=document.getElementById(id+'List');document.querySelectorAll('.drop-l').forEach(d=>{if(d!==el)d.classList.remove('open');});el.classList.toggle('open');}
+function closeDrop(id){document.getElementById(id+'List').classList.remove('open');}
 </script>
-</body></html>
+</body>
+</html>
