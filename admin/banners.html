@@ -390,6 +390,23 @@ let dragSrc = null;
   await loadAll();
 })();
 
+
+// Auto-seed current homepage banners if DB is empty
+async function autoSeedBanners() {
+  const defaults = [
+    {title:'Premium Kitchen Appliances',subtitle:null,cta_text:'Shop Now',cta_url:'#trending',badge_text:'New Arrivals 2025',position:'hero',sort_order:1,is_active:true,desktop_image_url:'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=900&q=80&auto=format&fit=crop'},
+    {title:'Mixer Grinders',subtitle:null,cta_text:'Shop Now',cta_url:'#',badge_text:'Top Sellers',position:'hero_card',sort_order:2,is_active:true,desktop_image_url:'https://images.unsplash.com/photo-1585771724684-38269d6639fd?w=600&q=80&auto=format&fit=crop'},
+    {title:'Gas Stoves',subtitle:null,cta_text:'Shop Now',cta_url:'#',badge_text:'Best Deals',position:'hero_card',sort_order:3,is_active:true,desktop_image_url:'https://images.unsplash.com/photo-1484154218962-a197022b5858?w=600&q=80&auto=format&fit=crop'},
+    {title:'Up to 30% Off on Top Brands',subtitle:null,cta_text:'Shop Now',cta_url:'#',badge_text:'Limited Time',position:'promo',sort_order:4,is_active:true,desktop_image_url:'https://images.unsplash.com/photo-1556909172-54557c7e4fb7?w=900&q=80&auto=format&fit=crop'},
+    {title:'Sujata Mixers',subtitle:null,cta_text:'Explore',cta_url:'#',badge_text:'Best Sellers',position:'promo_side',sort_order:5,is_active:true,desktop_image_url:'https://images.unsplash.com/photo-1585771724684-38269d6639fd?w=500&q=80&auto=format&fit=crop'},
+    {title:'Premium Fans',subtitle:null,cta_text:'View All',cta_url:'#',badge_text:'New Stock',position:'promo_side',sort_order:6,is_active:true,desktop_image_url:'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=500&q=80&auto=format&fit=crop'},
+  ];
+  for(const b of defaults) {
+    try { await db.from('banners').insert(b); } catch(e) {}
+  }
+  toast('Homepage banners loaded into admin panel');
+}
+
 async function loadAll() {
   let bRes, cRes;
   try {
@@ -403,6 +420,12 @@ async function loadAll() {
   }
   if(bRes.error) { toast('Banners DB error: '+bRes.error.message, true); }
   allBanners = bRes.data || [];
+  // If DB is empty, auto-seed from current homepage defaults
+  if(allBanners.length === 0) {
+    await autoSeedBanners();
+    const r2 = await db.from('banners').select('id,title,subtitle,cta_text,cta_url,badge_text,position,sort_order,is_active,desktop_image_url,mobile_image_url,starts_at,ends_at').order('sort_order');
+    allBanners = r2.data || [];
+  }
   const cats = cRes.data || [];
 
   // Populate category select in modal
