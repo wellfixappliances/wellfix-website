@@ -49,11 +49,16 @@ const AdminShell = {
     this.user = { ...session.user, profile };
 
     // Get permissions — use custom if set, else role defaults
-    this.permissions = profile.permissions || this._defaultPermissions(profile.role);
+    // Super admin always gets full access — can never be locked out
+    if (profile.role === 'super_admin') {
+      this.permissions = this._defaultPermissions('super_admin');
+    } else {
+      this.permissions = profile.permissions || this._defaultPermissions(profile.role);
+    }
 
     // Check if current page is allowed
     const currentPage = requiredPage || window.location.pathname.split('/').pop().replace('.html', '');
-    if (currentPage !== 'dashboard' && !this.permissions[currentPage]) {
+    if (profile.role !== 'super_admin' && currentPage !== 'dashboard' && !this.permissions[currentPage]) {
       // Not allowed — redirect to dashboard with message
       sessionStorage.setItem('wf_access_denied', currentPage);
       window.location.href = BASE + '/admin/dashboard.html';
