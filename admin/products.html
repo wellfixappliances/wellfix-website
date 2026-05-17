@@ -6,21 +6,73 @@
 <link rel="icon" href="../assets/images/WELLFIX-FAVICON.png">
 <link rel="stylesheet" href="assets/css/admin.css">
 <style>
-/* ── IMAGE GALLERY ─────────────────────── */
-.img-gallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:10px;margin-top:10px;}
+/* ── KPI STRIP ── */
+.prod-kpi{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px;}
+@media(max-width:900px){.prod-kpi{grid-template-columns:repeat(2,1fr);}}
+@media(max-width:480px){.prod-kpi{grid-template-columns:1fr 1fr;gap:8px;}}
+.pk{background:#fff;border:1px solid var(--gray-100);border-radius:10px;padding:13px 16px;position:relative;overflow:hidden;box-shadow:0 1px 2px rgba(0,0,0,.04);transition:box-shadow .2s;cursor:pointer;}
+.pk:hover{box-shadow:0 3px 12px rgba(0,0,0,.07);}
+.pk::before{content:'';position:absolute;top:0;left:0;width:3px;height:100%;border-radius:10px 0 0 10px;}
+.pk.c-green::before{background:#22c55e;}.pk.c-blue::before{background:#3b82f6;}.pk.c-amber::before{background:#f59e0b;}.pk.c-red::before{background:#ef4444;}.pk.c-purple::before{background:#8b5cf6;}.pk.c-teal::before{background:#06b6d4;}
+.pk-val{font-family:var(--font-display);font-size:22px;font-weight:800;color:var(--gray-900);line-height:1;letter-spacing:-.4px;}
+.pk-label{font-size:11px;color:var(--gray-400);margin-top:3px;font-weight:500;}
+.pk-sub{font-size:10px;color:var(--gray-400);margin-top:2px;}
+
+/* ── TOOLBAR ── */
+.prod-toolbar{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-bottom:1px solid var(--gray-100);gap:8px;flex-wrap:wrap;}
+.prod-toolbar-l{display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
+.prod-toolbar-r{display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
+.bulk-bar{display:none;align-items:center;gap:8px;padding:8px 14px;background:var(--green-50);border-bottom:1px solid var(--green-100);}
+.bulk-bar.show{display:flex;}
+.bulk-count{font-size:12px;font-weight:700;color:var(--green-700);}
+
+/* ── TABLE UPGRADES ── */
+.tbl-sticky thead th{position:sticky;top:0;background:#fff;z-index:2;box-shadow:0 1px 0 var(--gray-100);}
+.tbl-check{width:36px;padding:0 8px!important;}
+.tbl-check input{cursor:pointer;}
+.row-actions{display:flex;gap:3px;opacity:0;transition:opacity .15s;}
+tr:hover .row-actions{opacity:1;}
+.ra-btn{width:26px;height:26px;border-radius:5px;border:1px solid var(--gray-200);background:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;}
+.ra-btn:hover{background:var(--gray-50);border-color:var(--gray-300);}
+.ra-btn svg{width:12px;height:12px;stroke:var(--gray-500);}
+.ra-btn.danger:hover{background:var(--red-50);border-color:var(--red-200);}
+.ra-btn.danger:hover svg{stroke:var(--red-500);}
+
+/* ── STATUS BADGE ── */
+.s-pill{display:inline-flex;align-items:center;gap:3px;font-size:10px;font-weight:700;padding:2px 7px;border-radius:99px;}
+.s-pill.active{background:#f0fdf4;color:#16a34a;}
+.s-pill.inactive{background:#f9fafb;color:#6b7280;}
+.s-pill.low{background:#fff7ed;color:#c2410c;}
+.s-pill.out{background:#fef2f2;color:#dc2626;}
+
+/* ── QUICK EDIT ── */
+.qe-input{width:70px;height:26px;border:1.5px solid var(--color-primary);border-radius:4px;padding:0 6px;font-size:12px;font-weight:600;text-align:center;}
+.qe-input:focus{outline:none;}
+
+/* ── IMPORT MODAL ── */
+.import-drop{border:2px dashed var(--gray-200);border-radius:10px;padding:32px;text-align:center;cursor:pointer;transition:all .2s;background:var(--gray-25);}
+.import-drop:hover,.import-drop.over{border-color:var(--color-primary);background:var(--green-50);}
+.import-preview{margin-top:14px;border:1px solid var(--gray-100);border-radius:8px;overflow:hidden;display:none;}
+.import-preview table{width:100%;border-collapse:collapse;font-size:11px;}
+.import-preview th{padding:6px 10px;background:var(--gray-50);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--gray-400);border-bottom:1px solid var(--gray-100);}
+.import-preview td{padding:6px 10px;border-bottom:1px solid var(--gray-50);}
+.import-preview tr.err td{background:#fef2f2;color:#dc2626;}
+.import-preview tr.ok td{color:var(--gray-700);}
+
+/* ── IMAGE SYSTEM (preserved) ── */
+.img-gallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:10px;margin-top:10px;}
 .img-slot{position:relative;aspect-ratio:1;border-radius:8px;overflow:hidden;border:2px solid var(--gray-150,#e5e7eb);background:var(--gray-25);cursor:pointer;transition:border-color .2s;}
 .img-slot img{width:100%;height:100%;object-fit:contain;padding:4px;}
 .img-slot.is-primary{border-color:var(--color-primary);box-shadow:0 0 0 2px rgba(3,71,50,.15);}
-.img-slot.is-primary::after{content:'★ Main';position:absolute;bottom:0;left:0;right:0;background:var(--color-primary);color:#fff;font-size:9px;font-weight:700;text-align:center;padding:2px 0;}
+.img-slot.is-primary::after{content:'Main';position:absolute;bottom:0;left:0;right:0;background:var(--color-primary);color:#fff;font-size:9px;font-weight:700;text-align:center;padding:2px 0;}
 .img-slot .img-actions{position:absolute;top:4px;right:4px;display:none;flex-direction:column;gap:3px;}
 .img-slot:hover .img-actions{display:flex;}
-.img-act-btn{width:22px;height:22px;border-radius:4px;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:11px;}
+.img-act-btn{width:22px;height:22px;border-radius:4px;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;}
 .img-act-btn.star{background:#fbbf24;color:#fff;}
 .img-act-btn.del{background:#ef4444;color:#fff;}
-.img-add-slot{aspect-ratio:1;border-radius:8px;border:2px dashed var(--gray-200);background:var(--gray-25);cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;transition:all .2s;}
+.img-add-slot{aspect-ratio:1;border-radius:8px;border:2px dashed var(--gray-200);background:var(--gray-25);cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;transition:all .2s;min-height:100px;}
 .img-add-slot:hover,.img-add-slot.drag-over{border-color:var(--color-primary);background:var(--green-50);}
-.img-add-slot svg{opacity:.35;}
-.img-add-slot span{font-size:11px;color:var(--gray-400);font-weight:500;}
+.img-add-slot span{font-size:11px;color:var(--gray-400);font-weight:500;text-align:center;}
 .img-progress-wrap{margin-top:8px;display:none;}
 .img-progress-bar{height:4px;background:var(--gray-100);border-radius:99px;overflow:hidden;}
 .img-progress-fill{height:100%;background:var(--color-primary);border-radius:99px;transition:width .2s;width:0%;}
@@ -28,160 +80,250 @@
 .img-url-input{margin-top:8px;display:flex;gap:6px;}
 .img-url-input input{flex:1;height:34px;border:1.5px solid var(--gray-200);border-radius:6px;padding:0 10px;font-size:12px;outline:none;}
 .img-url-input input:focus{border-color:var(--color-primary);}
-.img-url-input button{height:34px;padding:0 12px;background:var(--color-primary);color:#fff;border:none;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;}
-/* drag sort */
+.img-url-input button{height:34px;padding:0 12px;background:var(--color-primary);color:#fff;border:none;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;}
 .img-slot.dragging{opacity:.4;border:2px dashed var(--color-primary);}
 .img-slot.drag-target{border-color:var(--green-400);}
-/* Tab nav */
-.tab-nav{display:flex;border-bottom:1.5px solid var(--gray-100);margin-bottom:16px;gap:2px;}
-.tab-btn{padding:8px 16px;font-size:13px;font-weight:600;color:var(--gray-400);cursor:pointer;border-bottom:2px solid transparent;background:none;border-top:none;border-left:none;border-right:none;margin-bottom:-1.5px;transition:all .15s;}
+
+/* ── TABS ── */
+.tab-nav{display:flex;border-bottom:1.5px solid var(--gray-100);margin-bottom:16px;gap:2px;overflow-x:auto;}
+.tab-btn{padding:8px 14px;font-size:12px;font-weight:600;color:var(--gray-400);cursor:pointer;border-bottom:2px solid transparent;background:none;border-top:none;border-left:none;border-right:none;margin-bottom:-1.5px;transition:all .15s;white-space:nowrap;}
 .tab-btn.is-active,.tab-btn:hover{color:var(--color-primary);}
 .tab-btn.is-active{border-bottom-color:var(--color-primary);}
 .tab-panel{display:none;}.tab-panel.is-active{display:block;}
+
+/* ── PAGINATION ── */
+.pager{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-top:1px solid var(--gray-100);}
+.pager-info{font-size:12px;color:var(--gray-400);}
+.pager-btns{display:flex;gap:4px;}
+.pager-btn{height:28px;min-width:28px;padding:0 8px;border:1px solid var(--gray-200);border-radius:5px;background:#fff;font-size:12px;font-weight:600;color:var(--gray-600);cursor:pointer;transition:all .15s;}
+.pager-btn:hover:not(:disabled){background:var(--gray-50);}
+.pager-btn.on{background:var(--color-primary);color:#fff;border-color:var(--color-primary);}
+.pager-btn:disabled{opacity:.4;cursor:default;}
+
+/* ── DROPDOWN ── */
+.drop-menu{position:relative;display:inline-block;}
+.drop-list{display:none;position:absolute;right:0;top:100%;margin-top:4px;background:#fff;border:1px solid var(--gray-150,#e0e0e0);border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,.1);min-width:180px;z-index:100;overflow:hidden;}
+.drop-list.open{display:block;}
+.drop-item{display:flex;align-items:center;gap:8px;padding:8px 12px;font-size:12px;font-weight:500;color:var(--gray-700);cursor:pointer;transition:background .1s;}
+.drop-item:hover{background:var(--gray-50);}
+.drop-item.danger:hover{background:#fef2f2;color:#dc2626;}
+.drop-sep{height:1px;background:var(--gray-100);margin:4px 0;}
+
+/* ── SKELETON ── */
+.sk{background:linear-gradient(90deg,var(--gray-100) 25%,var(--gray-50) 50%,var(--gray-100) 75%);background-size:200% 100%;animation:sk 1.4s infinite;border-radius:6px;}
+@keyframes sk{to{background-position:-200% 0;}}
 </style>
 </head>
 <body>
 <div class="admin-shell"><div id="adminShell"></div>
 <div class="main-wrap" id="mainWrap"><div class="page-content">
 
+<!-- PAGE HEADER -->
 <div class="pg-hd">
-  <div><h1>Products</h1><p id="prodCount">Loading…</p></div>
+  <div>
+    <h1>Products</h1>
+    <p id="prodCount" style="font-size:12px;color:var(--gray-400);margin-top:2px;">Loading…</p>
+  </div>
   <div class="pg-hd__actions">
-    <button class="btn btn-outline" onclick="exportCSV()">Export</button>
-    <button class="btn btn-primary" onclick="openProductModal()">+ Add Product</button>
+    <div class="drop-menu" id="importMenu">
+      <button class="btn btn-outline" onclick="toggleDrop('importMenu')">
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="12" height="12"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
+        Import
+      </button>
+      <div class="drop-list" id="importMenuList">
+        <div class="drop-item" onclick="openImportModal();closeDrop('importMenu')">
+          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="13" height="13"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          Import CSV / Excel
+        </div>
+        <div class="drop-item" onclick="downloadTemplate();closeDrop('importMenu')">
+          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="13" height="13"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+          Download Template
+        </div>
+      </div>
+    </div>
+    <div class="drop-menu" id="exportMenu">
+      <button class="btn btn-outline" onclick="toggleDrop('exportMenu')">Export</button>
+      <div class="drop-list" id="exportMenuList">
+        <div class="drop-item" onclick="exportCSV('all');closeDrop('exportMenu')">Export All (CSV)</div>
+        <div class="drop-item" onclick="exportCSV('filtered');closeDrop('exportMenu')">Export Filtered (CSV)</div>
+        <div class="drop-item" onclick="exportCSV('selected');closeDrop('exportMenu')">Export Selected (CSV)</div>
+        <div class="drop-sep"></div>
+        <div class="drop-item" onclick="exportInventory();closeDrop('exportMenu')">Inventory Report</div>
+        <div class="drop-item" onclick="exportLowStock();closeDrop('exportMenu')">Low Stock Report</div>
+      </div>
+    </div>
+    <button class="btn btn-primary" onclick="openProductModal()">
+      <svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" width="12" height="12"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      Add Product
+    </button>
   </div>
 </div>
 
-<div class="card">
-  <div class="filter-bar">
-    <div class="filter-search">
-      <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-      <input type="search" id="prodSearch" placeholder="Search products…" oninput="filterProducts()">
+<!-- KPI STRIP -->
+<div class="prod-kpi" id="prodKpi">
+  <div class="pk c-green"><div class="sk" style="height:54px;"></div></div>
+  <div class="pk c-blue"><div class="sk" style="height:54px;"></div></div>
+  <div class="pk c-amber"><div class="sk" style="height:54px;"></div></div>
+  <div class="pk c-red"><div class="sk" style="height:54px;"></div></div>
+</div>
+
+<!-- MAIN CARD -->
+<div class="card" style="padding:0;">
+
+  <!-- FILTER TOOLBAR -->
+  <div class="prod-toolbar">
+    <div class="prod-toolbar-l">
+      <div class="filter-search" style="margin:0;">
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="search" id="prodSearch" placeholder="Search by name, SKU…" oninput="filterProducts()" style="width:200px;">
+      </div>
+      <select class="filter-select" id="catFilter" onchange="filterProducts()" style="height:34px;font-size:12px;"><option value="">All Categories</option></select>
+      <select class="filter-select" id="brandFilter" onchange="filterProducts()" style="height:34px;font-size:12px;"><option value="">All Brands</option></select>
+      <select class="filter-select" id="statusFilter" onchange="filterProducts()" style="height:34px;font-size:12px;">
+        <option value="">All Status</option>
+        <option value="active">Active</option>
+        <option value="inactive">Inactive</option>
+        <option value="low">Low Stock</option>
+        <option value="out">Out of Stock</option>
+        <option value="featured">Featured</option>
+      </select>
     </div>
-    <select class="filter-select" id="catFilter" onchange="filterProducts()"><option value="">All Categories</option></select>
-    <select class="filter-select" id="brandFilter" onchange="filterProducts()"><option value="">All Brands</option></select>
-    <select class="filter-select" id="statusFilter" onchange="filterProducts()">
-      <option value="">All Status</option><option value="true">Active</option><option value="false">Inactive</option>
-    </select>
+    <div class="prod-toolbar-r">
+      <span id="filteredCount" style="font-size:11px;color:var(--gray-400);"></span>
+      <select class="filter-select" id="sortBy" onchange="filterProducts()" style="height:34px;font-size:12px;">
+        <option value="name">Sort: Name</option>
+        <option value="price_asc">Price: Low–High</option>
+        <option value="price_desc">Price: High–Low</option>
+        <option value="stock_asc">Stock: Low–High</option>
+        <option value="newest">Newest First</option>
+      </select>
+    </div>
   </div>
-  <div class="tbl-wrap">
+
+  <!-- BULK ACTION BAR -->
+  <div class="bulk-bar" id="bulkBar">
+    <span class="bulk-count" id="bulkCount">0 selected</span>
+    <div style="display:flex;gap:6px;flex-wrap:wrap;">
+      <button class="btn btn-sm btn-outline" onclick="bulkActivate()">Activate</button>
+      <button class="btn btn-sm btn-outline" onclick="bulkDeactivate()">Deactivate</button>
+      <button class="btn btn-sm btn-outline" onclick="bulkFeatured()">Set Featured</button>
+      <div class="drop-menu" id="bulkCatMenu">
+        <button class="btn btn-sm btn-outline" onclick="toggleDrop('bulkCatMenu')">Assign Category</button>
+        <div class="drop-list" id="bulkCatMenuList" style="min-width:160px;"></div>
+      </div>
+      <button class="btn btn-sm btn-outline" onclick="bulkExport()">Export Selected</button>
+      <button class="btn btn-sm" style="background:var(--red-100);color:var(--red-600);" onclick="bulkDelete()">Delete Selected</button>
+    </div>
+    <button class="btn btn-sm btn-outline" onclick="clearSelection()" style="margin-left:auto;">Clear</button>
+  </div>
+
+  <!-- TABLE -->
+  <div class="tbl-wrap tbl-sticky">
     <table>
-      <thead><tr><th>Product</th><th>Category</th><th>Brand</th><th>Price</th><th>Stock</th><th>Status</th><th>Actions</th></tr></thead>
+      <thead>
+        <tr>
+          <th class="tbl-check"><input type="checkbox" id="checkAll" onchange="toggleAll(this)"></th>
+          <th style="min-width:240px;">Product</th>
+          <th onclick="setSortTh('category')" style="cursor:pointer;">Category</th>
+          <th onclick="setSortTh('brand')" style="cursor:pointer;">Brand</th>
+          <th onclick="setSortTh('price')" style="cursor:pointer;min-width:90px;">Price</th>
+          <th onclick="setSortTh('stock')" style="cursor:pointer;">Stock</th>
+          <th>Status</th>
+          <th style="width:100px;text-align:right;">Actions</th>
+        </tr>
+      </thead>
       <tbody id="prodTbody"></tbody>
     </table>
   </div>
-  <div style="padding:10px 16px;font-size:12px;color:var(--gray-400);" id="prodPager"></div>
+
+  <!-- PAGINATION -->
+  <div class="pager">
+    <span class="pager-info" id="pagerInfo"></span>
+    <div class="pager-btns" id="pagerBtns"></div>
+  </div>
 </div>
 
-<!-- PRODUCT MODAL -->
+<!-- ══════════════════════════════════════════
+     PRODUCT MODAL
+══════════════════════════════════════════ -->
 <div class="modal-overlay" id="prodOverlay" onclick="if(event.target===this)closeProdModal()" style="display:none;align-items:flex-start;justify-content:center;padding:20px 16px;overflow-y:auto;">
-<div class="modal" id="prodModal" style="max-width:760px;max-height:90vh;overflow-y:auto;width:100%;margin:auto;">
+<div class="modal" id="prodModal" style="max-width:780px;width:100%;margin:auto;max-height:90vh;overflow-y:auto;">
   <div class="modal-hd">
     <h3 id="prodModalTitle">Add Product</h3>
     <button class="modal-close" onclick="closeProdModal()">✕</button>
   </div>
   <div class="modal-body">
-    <!-- TABS -->
     <div class="tab-nav">
       <button class="tab-btn is-active" onclick="switchTab('basic',this)">Basic Info</button>
       <button class="tab-btn" onclick="switchTab('images',this)">Images</button>
       <button class="tab-btn" onclick="switchTab('pricing',this)">Pricing & Stock</button>
-      <button class="tab-btn" onclick="switchTab('details',this)">Details</button>
-      <button class="tab-btn" onclick="switchTab('seo',this)">SEO</button>
+      <button class="tab-btn" onclick="switchTab('details',this)">Details & SEO</button>
+      <button class="tab-btn" onclick="switchTab('visibility',this)">Visibility</button>
     </div>
 
-    <!-- BASIC INFO -->
+    <!-- BASIC -->
     <div class="tab-panel is-active" id="tab-basic">
       <div class="form-grid form-2">
         <div class="form-group" style="grid-column:1/-1">
           <label class="form-label">Product Name *</label>
-          <input class="form-input" id="pName" placeholder="e.g. Sujata Powermatic Plus 900W" oninput="autoSlug()">
+          <input class="form-input" id="pName" placeholder="e.g. Sujata Powermatic Plus 900W Mixer" oninput="autoSlug()">
         </div>
-        <div class="form-group">
-          <label class="form-label">Category</label>
-          <select class="form-input" id="pCat"></select>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Brand</label>
-          <select class="form-input" id="pBrand"></select>
-        </div>
+        <div class="form-group"><label class="form-label">Category</label><select class="form-input" id="pCat"></select></div>
+        <div class="form-group"><label class="form-label">Brand</label><select class="form-input" id="pBrand"></select></div>
+        <div class="form-group"><label class="form-label">SKU</label><input class="form-input" id="pSku" placeholder="WF-SKU-001"></div>
+        <div class="form-group"><label class="form-label">Warranty</label><input class="form-input" id="pWarranty" placeholder="2 Year Manufacturer Warranty"></div>
         <div class="form-group" style="grid-column:1/-1">
-          <label class="form-label">Short Description</label>
-          <textarea class="form-textarea" id="pShortDesc" placeholder="Brief product summary…" style="min-height:60px;"></textarea>
+          <label class="form-label">Description</label>
+          <textarea class="form-textarea" id="pDesc" placeholder="Full product description…" style="min-height:90px;"></textarea>
         </div>
-        <div class="form-group" style="grid-column:1/-1">
-          <label class="form-label">Full Description</label>
-          <textarea class="form-textarea" id="pDesc" placeholder="Full product description…" style="min-height:100px;"></textarea>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Badge</label>
+        <div class="form-group"><label class="form-label">Badge</label>
           <select class="form-input" id="pBadge">
             <option value="">None</option>
-            <option value="hot">🔥 Hot</option>
-            <option value="sale">🏷️ Sale</option>
-            <option value="new">✨ New</option>
+            <option value="hot">Hot</option>
+            <option value="sale">Sale</option>
+            <option value="new">New</option>
+            <option value="bestseller">Bestseller</option>
           </select>
         </div>
-        <div class="form-group">
-          <label class="form-label">Warranty</label>
-          <input class="form-input" id="pWarranty" placeholder="e.g. 2 Year Manufacturer Warranty">
-        </div>
-        <div class="form-group">
-          <label class="form-label">Status</label>
+        <div class="form-group"><label class="form-label">Status</label>
           <select class="form-input" id="pStatus">
-            <option value="true">Active (visible on website)</option>
-            <option value="false">Inactive (hidden)</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Featured Product</label>
-          <select class="form-input" id="pFeatured">
-            <option value="false">No</option>
-            <option value="true">Yes — show on homepage</option>
+            <option value="true">Active — visible on website</option>
+            <option value="false">Inactive — hidden</option>
           </select>
         </div>
       </div>
     </div>
 
-    <!-- IMAGES TAB -->
+    <!-- IMAGES -->
     <div class="tab-panel" id="tab-images">
-      <div style="background:var(--green-50);border:1px solid var(--green-100);border-radius:8px;padding:10px 14px;margin-bottom:14px;font-size:12px;color:var(--green-700);">
-        <strong>✅ Auto-processed:</strong> All uploads auto-converted to WebP, resized to 800×800px, center-cropped. Drag images to reorder. Click ★ to set featured image.
+      <div style="background:var(--green-50);border:1px solid var(--green-100);border-radius:8px;padding:9px 13px;margin-bottom:12px;font-size:12px;color:var(--green-700);line-height:1.5;">
+        <strong>Auto-processed:</strong> All uploads auto-converted to WebP at 800×800px with smart contain — no distortion, no cropping, white background. Drag images to reorder. Click star to set main image.
       </div>
-
-      <!-- Drop zone + gallery -->
-      <div class="img-gallery" id="imgGallery">
-        <!-- populated by renderImageGallery() -->
-      </div>
-      <div class="img-add-slot" id="imgDropZone" onclick="document.getElementById('imgFileInput').click()"
+      <div class="img-gallery" id="imgGallery"></div>
+      <div class="img-add-slot" id="imgDropZone"
+        onclick="document.getElementById('imgFileInput').click()"
         ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event)">
-        <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" width="28" height="28"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
-        <span>Drop images here or click to upload</span>
-        <span style="font-size:10px;">JPG, PNG, WebP, AVIF, HEIC — max 5MB each</span>
+        <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" width="26" height="26" style="opacity:.3;"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
+        <span>Drop images or click to upload</span>
+        <span style="font-size:10px;">JPG PNG WebP AVIF HEIC — Auto WebP conversion</span>
       </div>
       <input type="file" id="imgFileInput" accept="image/*" multiple style="display:none;" onchange="handleImageUpload(this)">
-
-      <!-- Progress -->
       <div class="img-progress-wrap" id="imgProgressWrap">
         <div class="img-progress-bar"><div class="img-progress-fill" id="imgProgressFill"></div></div>
-        <div class="img-progress-msg" id="imgProgressMsg">Uploading…</div>
+        <div class="img-progress-msg" id="imgProgressMsg"></div>
       </div>
-
-      <!-- URL input fallback -->
-      <div style="margin-top:14px;padding-top:14px;border-top:1px solid var(--gray-100);">
-        <div style="font-size:11px;font-weight:700;color:var(--gray-400);text-transform:uppercase;letter-spacing:.04em;margin-bottom:6px;">Or add by URL</div>
+      <div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--gray-100);">
+        <div style="font-size:10px;font-weight:700;color:var(--gray-400);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px;">Add by URL</div>
         <div class="img-url-input">
-          <input type="url" id="imgUrlInput" placeholder="https://example.com/product-image.jpg">
-          <button onclick="addImageByUrl()">Add URL</button>
+          <input type="url" id="imgUrlInput" placeholder="https://example.com/image.jpg">
+          <button onclick="addImageByUrl()">Add</button>
         </div>
       </div>
-
-      <!-- Alt text for selected -->
-      <div id="imgAltWrap" style="display:none;margin-top:14px;padding-top:14px;border-top:1px solid var(--gray-100);">
-        <div style="font-size:11px;font-weight:700;color:var(--gray-400);text-transform:uppercase;letter-spacing:.04em;margin-bottom:6px;">Selected Image — Alt Text & SEO</div>
+      <div id="imgAltWrap" style="display:none;margin-top:12px;padding-top:12px;border-top:1px solid var(--gray-100);">
+        <div style="font-size:10px;font-weight:700;color:var(--gray-400);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px;">Selected Image Metadata</div>
         <div class="form-grid form-2">
-          <div class="form-group"><label class="form-label">Alt Text</label><input class="form-input" id="imgAltText" placeholder="Describe the image for SEO" oninput="updateSelectedImgMeta()"></div>
-          <div class="form-group"><label class="form-label">Image Title</label><input class="form-input" id="imgSeoTitle" placeholder="SEO title for this image" oninput="updateSelectedImgMeta()"></div>
+          <div class="form-group"><label class="form-label">Alt Text (SEO)</label><input class="form-input" id="imgAltText" oninput="updateSelectedImgMeta()"></div>
+          <div class="form-group"><label class="form-label">Image Title</label><input class="form-input" id="imgSeoTitle" oninput="updateSelectedImgMeta()"></div>
         </div>
       </div>
     </div>
@@ -189,62 +331,108 @@
     <!-- PRICING & STOCK -->
     <div class="tab-panel" id="tab-pricing">
       <div class="form-grid form-2">
-        <div class="form-group"><label class="form-label">Selling Price (₹) *</label><input class="form-input" type="number" id="pPrice" placeholder="0"></div>
-        <div class="form-group"><label class="form-label">MRP / Original Price (₹)</label><input class="form-input" type="number" id="pMrp" placeholder="0"></div>
-        <div class="form-group"><label class="form-label">Cost Price (₹)</label><input class="form-input" type="number" id="pCost" placeholder="0"></div>
-        <div class="form-group"><label class="form-label">Tax %</label><input class="form-input" type="number" id="pTax" placeholder="18" value="18"></div>
+        <div class="form-group"><label class="form-label">Selling Price (₹) *</label><input class="form-input" type="number" id="pPrice" placeholder="0" oninput="calcMargin()"></div>
+        <div class="form-group"><label class="form-label">MRP / Original (₹)</label><input class="form-input" type="number" id="pMrp" placeholder="0" oninput="calcMargin()"></div>
         <div class="form-group"><label class="form-label">Stock Quantity</label><input class="form-input" type="number" id="pStock" placeholder="0"></div>
         <div class="form-group"><label class="form-label">Low Stock Alert Below</label><input class="form-input" type="number" id="pLowStock" placeholder="5" value="5"></div>
-        <div class="form-group"><label class="form-label">SKU</label><input class="form-input" id="pSku" placeholder="WF-SKU-001"></div>
         <div class="form-group"><label class="form-label">Weight (kg)</label><input class="form-input" type="number" id="pWeight" placeholder="0.5" step="0.01"></div>
-        <div class="form-group">
-          <label class="form-label">COD Available</label>
-          <select class="form-input" id="pCod"><option value="true">Yes</option><option value="false">No</option></select>
-        </div>
-        <div class="form-group">
-          <label class="form-label">UPI Payment</label>
-          <select class="form-input" id="pUpi"><option value="true">Yes</option><option value="false">No</option></select>
-        </div>
+        <div class="form-group"><label class="form-label">Sort Order</label><input class="form-input" type="number" id="pSort" placeholder="0" value="0"></div>
       </div>
+      <div id="marginInfo" style="display:none;margin-top:10px;padding:10px 12px;background:var(--green-50);border-radius:8px;font-size:12px;color:var(--green-700);"></div>
     </div>
 
-    <!-- DETAILS -->
+    <!-- DETAILS & SEO -->
     <div class="tab-panel" id="tab-details">
-      <div class="form-group" style="margin-bottom:12px;">
-        <label class="form-label">Tags (comma separated)</label>
-        <input class="form-input" id="pTags" placeholder="mixer, kitchen, 900w, sujata">
-      </div>
-      <div class="form-group" style="margin-bottom:12px;">
-        <label class="form-label">Specifications (one per line: Key: Value)</label>
-        <textarea class="form-textarea" id="pSpecs" placeholder="Power: 900W&#10;Jars: 3&#10;Color: White&#10;Voltage: 230V" style="min-height:120px;font-family:monospace;"></textarea>
-      </div>
-      <div class="form-group">
-        <label class="form-label">Sort Order (lower = shown first)</label>
-        <input class="form-input" type="number" id="pSort" placeholder="0" value="0">
+      <div class="form-grid">
+        <div class="form-group"><label class="form-label">URL Slug</label><input class="form-input" id="pSlug" placeholder="product-name-here"></div>
+        <div class="form-group"><label class="form-label">Meta Title</label><input class="form-input" id="pMetaTitle" placeholder="SEO title for Google search…"></div>
+        <div class="form-group"><label class="form-label">Meta Description</label><textarea class="form-textarea" id="pMetaDesc" placeholder="SEO description…" style="min-height:60px;"></textarea></div>
+        <div class="form-group"><label class="form-label">Tags (comma separated)</label><input class="form-input" id="pTags" placeholder="mixer, kitchen, 900w"></div>
+        <div class="form-group"><label class="form-label">Specifications (Key: Value per line)</label>
+          <textarea class="form-textarea" id="pSpecs" placeholder="Power: 900W&#10;Jars: 3&#10;Voltage: 230V" style="min-height:100px;font-family:monospace;font-size:12px;"></textarea>
+        </div>
       </div>
     </div>
 
-    <!-- SEO -->
-    <div class="tab-panel" id="tab-seo">
-      <div class="form-grid">
-        <div class="form-group"><label class="form-label">URL Slug</label><input class="form-input" id="pSlug" placeholder="sujata-powermatic-plus-900w"></div>
-        <div class="form-group"><label class="form-label">Meta Title</label><input class="form-input" id="pMetaTitle" placeholder="Buy Sujata 900W Mixer in Kerala…"></div>
-        <div class="form-group"><label class="form-label">Meta Description</label><textarea class="form-textarea" id="pMetaDesc" placeholder="SEO description…" style="min-height:80px;"></textarea></div>
+    <!-- VISIBILITY -->
+    <div class="tab-panel" id="tab-visibility">
+      <div class="form-grid form-2">
+        <div class="form-group"><label class="form-label">Featured on Homepage</label>
+          <select class="form-input" id="pFeatured"><option value="false">No</option><option value="true">Yes</option></select>
+        </div>
+        <div class="form-group"><label class="form-label">Trending</label>
+          <select class="form-input" id="pTrending"><option value="false">No</option><option value="true">Yes</option></select>
+        </div>
+        <div class="form-group"><label class="form-label">Badge Label</label>
+          <select class="form-input" id="pBadge2">
+            <option value="">None</option><option value="hot">Hot</option><option value="sale">Sale</option>
+            <option value="new">New</option><option value="bestseller">Bestseller</option>
+          </select>
+        </div>
       </div>
     </div>
   </div>
-
   <div class="modal-ft">
     <button class="btn btn-outline" onclick="closeProdModal()">Cancel</button>
+    <button class="btn" id="prodDupBtn" style="background:var(--gray-100);color:var(--gray-600);display:none;" onclick="duplicateProduct()">Duplicate</button>
     <button class="btn" id="prodDeleteBtn" style="background:var(--red-100);color:var(--red-600);display:none;" onclick="deleteProduct()">Delete</button>
-    <button class="btn btn-primary" onclick="saveProduct()">
-      <svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" width="13" height="13"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/></svg>
+    <button class="btn btn-primary" id="prodSaveBtn" onclick="saveProduct()">
+      <svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" width="12" height="12"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/></svg>
       Save Product
     </button>
   </div>
 </div>
-</div><!-- /modal -->
-</div><!-- /modal-overlay -->
+</div>
+
+<!-- IMPORT MODAL -->
+<div class="modal-overlay" id="importOverlay" onclick="if(event.target===this)closeImport()" style="display:none;align-items:center;justify-content:center;padding:20px;">
+<div class="modal" style="max-width:640px;width:100%;margin:auto;">
+  <div class="modal-hd"><h3>Import Products</h3><button class="modal-close" onclick="closeImport()">✕</button></div>
+  <div class="modal-body">
+    <div class="import-drop" id="importDrop"
+      onclick="document.getElementById('importFile').click()"
+      ondragover="importDragOver(event)" ondragleave="importDragLeave(event)" ondrop="importDropFile(event)">
+      <input type="file" id="importFile" accept=".csv,.xlsx,.xls" style="display:none;" onchange="parseImportFile(this)">
+      <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" width="36" height="36" style="opacity:.2;margin-bottom:10px;"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+      <div style="font-weight:700;color:var(--gray-700);">Drop CSV or Excel file here</div>
+      <div style="font-size:12px;color:var(--gray-400);margin-top:4px;">or click to browse</div>
+      <div style="font-size:11px;color:var(--gray-300);margin-top:8px;">Supported: .csv, .xlsx, .xls</div>
+    </div>
+    <div class="import-preview" id="importPreview">
+      <div style="padding:10px 12px;border-bottom:1px solid var(--gray-100);display:flex;justify-content:space-between;align-items:center;">
+        <span style="font-size:12px;font-weight:700;" id="importSummary"></span>
+        <span style="font-size:11px;color:var(--gray-400);">Preview — first 5 rows</span>
+      </div>
+      <div style="overflow-x:auto;"><table><thead id="importThead"></thead><tbody id="importTbody"></tbody></table></div>
+    </div>
+    <div id="importActions" style="display:none;margin-top:14px;display:none;gap:8px;justify-content:flex-end;">
+      <button class="btn btn-outline" onclick="closeImport()">Cancel</button>
+      <button class="btn btn-primary" onclick="runImport()" id="importRunBtn">Import Products</button>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- QUICK EDIT MODAL -->
+<div class="modal-overlay" id="qeOverlay" onclick="if(event.target===this)closeQE()" style="display:none;align-items:center;justify-content:center;padding:20px;">
+<div class="modal" style="max-width:360px;width:100%;margin:auto;">
+  <div class="modal-hd"><h3 id="qeTitle">Quick Edit</h3><button class="modal-close" onclick="closeQE()">✕</button></div>
+  <div class="modal-body">
+    <div class="form-grid form-2">
+      <div class="form-group"><label class="form-label">Price (₹)</label><input class="form-input" type="number" id="qePrice"></div>
+      <div class="form-group"><label class="form-label">MRP (₹)</label><input class="form-input" type="number" id="qeMrp"></div>
+      <div class="form-group"><label class="form-label">Stock</label><input class="form-input" type="number" id="qeStock"></div>
+      <div class="form-group"><label class="form-label">Status</label>
+        <select class="form-input" id="qeStatus"><option value="true">Active</option><option value="false">Inactive</option></select>
+      </div>
+    </div>
+  </div>
+  <div class="modal-ft">
+    <button class="btn btn-outline" onclick="closeQE()">Cancel</button>
+    <button class="btn btn-primary" onclick="saveQE()">Save Changes</button>
+  </div>
+</div>
+</div>
 
 </div></div></div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -253,513 +441,581 @@
 <script>
 'use strict';
 
-// ── STATE ──────────────────────────────────────────────────────
-let allProducts = [], allCats = [], allBrands = [];
-let editingProductId = null;
-let editingImages = [];       // [{url, is_primary, sort_order, alt_text, seo_title}]
-let selectedImgIdx = null;
-let dragSrcIdx = null;
-const BUCKET = 'products';    // Supabase storage bucket name
+// ── STATE ─────────────────────────────────────────────────────
+let allProducts=[], allCats=[], allBrands=[], filteredProducts=[];
+let editingProductId=null, editingImages=[], selectedImgIdx=null, dragSrcIdx=null;
+let selectedIds=new Set();
+let sortCol='name', sortDir=1;
+let page=0; const PER=20;
+let qeProductId=null;
+let importRows=[];
+const BUCKET='products';
 
-// ── INIT ───────────────────────────────────────────────────────
-(async () => {
-  await AdminShell.init('Products', 'products');
-  await Promise.all([loadCats(), loadBrands(), loadProducts()]);
+// ── INIT ──────────────────────────────────────────────────────
+(async()=>{
+  await AdminShell.init('Products','products');
+  await Promise.all([loadCats(),loadBrands(),loadProducts()]);
+  document.addEventListener('click',e=>{
+    if(!e.target.closest('.drop-menu')) document.querySelectorAll('.drop-list').forEach(d=>d.classList.remove('open'));
+  });
 })();
 
-async function loadCats() {
-  const { data } = await db.from('categories').select('id,name').eq('is_active', true).order('sort_order');
-  allCats = data || [];
-  const sel = document.getElementById('catFilter');
-  const pSel = document.getElementById('pCat');
-  allCats.forEach(c => {
-    sel.innerHTML += `<option value="${c.id}">${c.name}</option>`;
-    pSel.innerHTML += `<option value="${c.id}">${c.name}</option>`;
-  });
-}
+// ── DROPDOWN ─────────────────────────────────────────────────
+function toggleDrop(id){const el=document.getElementById(id+'List');document.querySelectorAll('.drop-list').forEach(d=>{if(d!==el)d.classList.remove('open');});el.classList.toggle('open');}
+function closeDrop(id){document.getElementById(id+'List').classList.remove('open');}
 
-async function loadBrands() {
-  const { data } = await db.from('brands').select('id,name').eq('is_active', true).order('name');
-  allBrands = data || [];
-  const sel = document.getElementById('brandFilter');
-  const pSel = document.getElementById('pBrand');
-  allBrands.forEach(b => {
-    sel.innerHTML += `<option value="${b.id}">${b.name}</option>`;
-    pSel.innerHTML += `<option value="${b.id}">${b.name}</option>`;
-  });
+// ── LOAD DATA ─────────────────────────────────────────────────
+async function loadCats(){
+  const{data}=await db.from('categories').select('id,name').eq('is_active',true).order('sort_order');
+  allCats=data||[];
+  const opts=allCats.map(c=>`<option value="${c.id}">${c.name}</option>`).join('');
+  document.getElementById('catFilter').innerHTML+= opts;
+  document.getElementById('pCat').innerHTML+=opts;
+  document.getElementById('bulkCatMenuList').innerHTML=allCats.map(c=>`<div class="drop-item" onclick="bulkAssignCat('${c.id}','${c.name}');closeDrop('bulkCatMenu')">${c.name}</div>`).join('');
 }
-
-async function loadProducts() {
-  document.getElementById('prodTbody').innerHTML = skeletonRows(7, 8);
-  const { data, count } = await db.from('products')
-    .select('id,name,price,mrp,stock_qty,is_active,badge,category:categories(name),brand:brands(name),images:product_images(url,is_primary)', { count: 'exact' })
-    .order('sort_order', { ascending: true })
-    .order('created_at', { ascending: false })
-    .limit(200);
-  allProducts = data || [];
-  document.getElementById('prodCount').textContent = `${allProducts.length} products`;
+async function loadBrands(){
+  const{data}=await db.from('brands').select('id,name').eq('is_active',true).order('name');
+  allBrands=data||[];
+  const opts=allBrands.map(b=>`<option value="${b.id}">${b.name}</option>`).join('');
+  document.getElementById('brandFilter').innerHTML+=opts;
+  document.getElementById('pBrand').innerHTML+=opts;
+}
+async function loadProducts(){
+  document.getElementById('prodTbody').innerHTML=skeletonRows(6,8);
+  const{data}=await db.from('products')
+    .select('id,name,price,mrp,stock_qty,is_active,is_featured,is_trending,badge,sku,sort_order,low_stock_threshold,category_id,brand_id,category:categories(name),brand:brands(name),images:product_images(url,is_primary)')
+    .order('sort_order',{ascending:true}).order('created_at',{ascending:false}).limit(500);
+  allProducts=data||[];
+  renderKPIs();
   filterProducts();
 }
 
-function filterProducts() {
-  const q = document.getElementById('prodSearch').value.toLowerCase();
-  const cat = document.getElementById('catFilter').value;
-  const brand = document.getElementById('brandFilter').value;
-  const status = document.getElementById('statusFilter').value;
-  let list = allProducts.filter(p => {
-    if (cat && p.category_id !== cat) return false;
-    if (brand && p.brand_id !== brand) return false;
-    if (status !== '' && String(p.is_active) !== status) return false;
-    if (q && !p.name?.toLowerCase().includes(q)) return false;
-    return true;
-  });
-  renderProducts(list);
+// ── KPI CARDS ─────────────────────────────────────────────────
+function renderKPIs(){
+  const active=allProducts.filter(p=>p.is_active).length;
+  const inactive=allProducts.filter(p=>!p.is_active).length;
+  const low=allProducts.filter(p=>p.is_active&&(p.stock_qty||0)>0&&(p.stock_qty||0)<=(p.low_stock_threshold||5)).length;
+  const out=allProducts.filter(p=>p.is_active&&(p.stock_qty||0)===0).length;
+  const featured=allProducts.filter(p=>p.is_featured).length;
+  const invVal=allProducts.reduce((s,p)=>s+(p.stock_qty||0)*(p.price||0),0);
+  document.getElementById('prodCount').textContent=`${allProducts.length} total products`;
+  const K=(cls,val,label,sub,filter)=>`<div class="pk ${cls}" onclick="quickFilter('${filter}')"><div class="pk-val">${val}</div><div class="pk-label">${label}</div><div class="pk-sub">${sub}</div></div>`;
+  document.getElementById('prodKpi').innerHTML=
+    K('c-green',active,'Active Products',`${inactive} inactive`,'active')+
+    K('c-amber',low,'Low Stock',`${out} out of stock`,'low')+
+    K('c-red',out,'Out of Stock',`Click to filter`,'out')+
+    K('c-blue',featured,'Featured',`Inventory: ₹${Math.round(invVal/1000)}K`,'featured');
 }
 
-function renderProducts(list) {
-  const tbody = document.getElementById('prodTbody');
-  if (!list.length) {
-    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:30px;color:var(--gray-400);">No products found</td></tr>';
-    return;
+function quickFilter(val){
+  document.getElementById('statusFilter').value=val;
+  filterProducts();
+}
+
+// ── FILTER + SORT ─────────────────────────────────────────────
+function setSortTh(col){sortCol=col;sortDir*=-1;filterProducts();}
+
+function filterProducts(){
+  const q=document.getElementById('prodSearch').value.toLowerCase();
+  const cat=document.getElementById('catFilter').value;
+  const brand=document.getElementById('brandFilter').value;
+  const status=document.getElementById('statusFilter').value;
+  const sort=document.getElementById('sortBy').value;
+
+  let list=allProducts.filter(p=>{
+    if(q&&!p.name?.toLowerCase().includes(q)&&!p.sku?.toLowerCase().includes(q)) return false;
+    if(cat&&p.category_id!==cat) return false;
+    if(brand&&p.brand_id!==brand) return false;
+    if(status==='active'&&!p.is_active) return false;
+    if(status==='inactive'&&p.is_active) return false;
+    if(status==='low'&&!((p.stock_qty||0)>0&&(p.stock_qty||0)<=(p.low_stock_threshold||5))) return false;
+    if(status==='out'&&(p.stock_qty||0)!==0) return false;
+    if(status==='featured'&&!p.is_featured) return false;
+    return true;
+  });
+
+  if(sort==='price_asc') list.sort((a,b)=>(a.price||0)-(b.price||0));
+  else if(sort==='price_desc') list.sort((a,b)=>(b.price||0)-(a.price||0));
+  else if(sort==='stock_asc') list.sort((a,b)=>(a.stock_qty||0)-(b.stock_qty||0));
+  else if(sort==='newest') list.reverse();
+  else list.sort((a,b)=>(a.name||'').localeCompare(b.name||''));
+
+  filteredProducts=list;
+  page=0;
+  document.getElementById('filteredCount').textContent=`${list.length} products`;
+  renderProducts();
+}
+
+// ── RENDER TABLE ──────────────────────────────────────────────
+const PG=(n)=>`<button class="pager-btn ${n===page?'on':''}" onclick="goPage(${n})">${n+1}</button>`;
+
+function renderProducts(){
+  const tbody=document.getElementById('prodTbody');
+  if(!filteredProducts.length){
+    tbody.innerHTML='<tr><td colspan="8" style="text-align:center;padding:32px;color:var(--gray-400);font-size:13px;">No products match the current filters</td></tr>';
+    renderPager();return;
   }
-  tbody.innerHTML = list.map(p => {
-    const img = p.images?.find(i => i.is_primary)?.url || p.images?.[0]?.url || '';
-    const fmt = n => n ? '₹' + Number(n).toLocaleString('en-IN') : '—';
-    return `<tr>
+  const slice=filteredProducts.slice(page*PER,(page+1)*PER);
+  const fmt=n=>n?'₹'+Number(n).toLocaleString('en-IN'):'—';
+  tbody.innerHTML=slice.map(p=>{
+    const img=p.images?.find(i=>i.is_primary)?.url||p.images?.[0]?.url||'';
+    const qty=p.stock_qty??0;
+    const lowThresh=p.low_stock_threshold||5;
+    const stockColor=qty===0?'var(--red-500)':qty<=lowThresh?'#f59e0b':'inherit';
+    const stockLabel=qty===0?'<span class="s-pill out">Out</span>':qty<=lowThresh?`<span class="s-pill low">${qty} low</span>`:`<span style="font-weight:700;">${qty}</span>`;
+    const chk=selectedIds.has(p.id)?'checked':'';
+    return`<tr>
+      <td class="tbl-check"><input type="checkbox" ${chk} onchange="toggleSelect('${p.id}',this)"></td>
       <td>
         <div style="display:flex;align-items:center;gap:10px;">
-          <div style="width:42px;height:42px;border-radius:6px;overflow:hidden;background:var(--gray-50);border:1px solid var(--gray-100);flex-shrink:0;">
-            ${img ? `<img src="${img}" style="width:100%;height:100%;object-fit:contain;padding:3px;">` : '<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:18px;">📦</div>'}
+          <div style="width:40px;height:40px;border-radius:7px;overflow:hidden;background:var(--gray-50);border:1px solid var(--gray-100);flex-shrink:0;">
+            ${img?`<img src="${img}" style="width:100%;height:100%;object-fit:contain;padding:3px;" loading="lazy">`:'<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:var(--gray-300);font-size:16px;">—</div>'}
           </div>
-          <div>
-            <div class="td-bold">${p.name}</div>
-            ${p.badge ? `<span style="font-size:10px;background:var(--green-50);color:var(--green-700);padding:1px 6px;border-radius:99px;font-weight:600;">${p.badge.toUpperCase()}</span>` : ''}
+          <div style="min-width:0;">
+            <div style="font-weight:700;font-size:13px;color:var(--gray-900);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:180px;">${p.name}</div>
+            <div style="font-size:10px;color:var(--gray-400);">${p.sku||''} ${p.badge?`<span style="background:var(--green-50);color:var(--green-700);padding:1px 5px;border-radius:3px;font-weight:700;font-size:9px;">${p.badge.toUpperCase()}</span>`:''}</div>
           </div>
         </div>
       </td>
-      <td style="color:var(--gray-500);">${p.category?.name || '—'}</td>
-      <td style="color:var(--gray-500);">${p.brand?.name || '—'}</td>
+      <td style="color:var(--gray-500);font-size:12px;">${p.category?.name||'—'}</td>
+      <td style="color:var(--gray-500);font-size:12px;">${p.brand?.name||'—'}</td>
       <td>
-        <div class="td-bold">${fmt(p.price)}</div>
-        ${p.mrp && p.mrp > p.price ? `<div style="font-size:11px;text-decoration:line-through;color:var(--gray-400);">${fmt(p.mrp)}</div>` : ''}
+        <div style="font-weight:700;font-size:13px;">${fmt(p.price)}</div>
+        ${p.mrp&&p.mrp>p.price?`<div style="font-size:10px;text-decoration:line-through;color:var(--gray-400);">${fmt(p.mrp)}</div>`:''}
       </td>
-      <td><span style="font-weight:700;color:${p.stock_qty <= 5 ? 'var(--red-500)' : 'inherit'}">${p.stock_qty ?? '—'}</span></td>
-      <td>${renderBadge(p.is_active ? 'active' : 'inactive')}</td>
-      <td>${actionBtns(`editProduct('${p.id}')`, `confirmDeleteProduct('${p.id}')`)}</td>
+      <td>${stockLabel}</td>
+      <td><span class="s-pill ${p.is_active?'active':'inactive'}">${p.is_active?'Active':'Inactive'}</span></td>
+      <td>
+        <div class="row-actions" style="justify-content:flex-end;">
+          <button class="ra-btn" onclick="openQE('${p.id}')" title="Quick Edit">
+            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4z"/></svg>
+          </button>
+          <button class="ra-btn" onclick="editProduct('${p.id}')" title="Full Edit">
+            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+          </button>
+          <button class="ra-btn" onclick="duplicateById('${p.id}')" title="Duplicate">
+            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+          </button>
+          <button class="ra-btn danger" onclick="confirmDeleteById('${p.id}')" title="Delete">
+            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg>
+          </button>
+        </div>
+      </td>
     </tr>`;
   }).join('');
+  renderPager();
 }
 
-// ── MODAL ──────────────────────────────────────────────────────
-function openProductModal(id = null) {
-  editingProductId = null;
-  editingImages = [];
-  selectedImgIdx = null;
-  clearForm();
+function renderPager(){
+  const total=filteredProducts.length;
+  const pages=Math.ceil(total/PER);
+  document.getElementById('pagerInfo').textContent=total?`Showing ${page*PER+1}–${Math.min((page+1)*PER,total)} of ${total}`:'No products';
+  const btns=document.getElementById('pagerBtns');
+  if(pages<=1){btns.innerHTML='';return;}
+  let html=`<button class="pager-btn" onclick="goPage(${Math.max(0,page-1)})" ${page===0?'disabled':''}>←</button>`;
+  const maxShow=5;const half=Math.floor(maxShow/2);let start=Math.max(0,page-half);let end=Math.min(pages-1,start+maxShow-1);if(end-start<maxShow-1)start=Math.max(0,end-maxShow+1);
+  for(let i=start;i<=end;i++)html+=PG(i);
+  html+=`<button class="pager-btn" onclick="goPage(${Math.min(pages-1,page+1)})" ${page>=pages-1?'disabled':''}>→</button>`;
+  btns.innerHTML=html;
+}
+
+function goPage(n){page=n;renderProducts();}
+
+// ── SELECTION ─────────────────────────────────────────────────
+function toggleSelect(id,cb){
+  if(cb.checked)selectedIds.add(id);else selectedIds.delete(id);
+  updateBulkBar();
+}
+function toggleAll(cb){
+  const slice=filteredProducts.slice(page*PER,(page+1)*PER);
+  slice.forEach(p=>{if(cb.checked)selectedIds.add(p.id);else selectedIds.delete(p.id);});
+  renderProducts();updateBulkBar();
+}
+function updateBulkBar(){
+  const n=selectedIds.size;
+  document.getElementById('bulkBar').classList.toggle('show',n>0);
+  document.getElementById('bulkCount').textContent=`${n} selected`;
+}
+function clearSelection(){selectedIds.clear();document.getElementById('checkAll').checked=false;renderProducts();updateBulkBar();}
+
+// ── BULK ACTIONS ──────────────────────────────────────────────
+async function bulkActivate(){await bulkUpdate({is_active:true});toast(`${selectedIds.size} products activated`);}
+async function bulkDeactivate(){await bulkUpdate({is_active:false});toast(`${selectedIds.size} products deactivated`);}
+async function bulkFeatured(){await bulkUpdate({is_featured:true});toast(`${selectedIds.size} products featured`);}
+async function bulkAssignCat(catId,catName){await bulkUpdate({category_id:catId});toast(`Category "${catName}" assigned to ${selectedIds.size} products`);}
+async function bulkUpdate(payload){
+  for(const id of selectedIds) await db.from('products').update(payload).eq('id',id);
+  clearSelection();loadProducts();
+}
+async function bulkDelete(){
+  if(!confirm(`Delete ${selectedIds.size} selected products?`))return;
+  for(const id of selectedIds){await db.from('product_images').delete().eq('product_id',id);await db.from('products').delete().eq('id',id);}
+  toast(`${selectedIds.size} products deleted`);clearSelection();loadProducts();
+}
+function bulkExport(){
+  const sel=allProducts.filter(p=>selectedIds.has(p.id));
+  doCSVExport(sel,'wellfix-selected-products');
+}
+
+// ── QUICK EDIT ────────────────────────────────────────────────
+function openQE(id){
+  qeProductId=id;
+  const p=allProducts.find(x=>x.id===id);if(!p)return;
+  document.getElementById('qeTitle').textContent=p.name.length>30?p.name.slice(0,30)+'…':p.name;
+  document.getElementById('qePrice').value=p.price||'';
+  document.getElementById('qeMrp').value=p.mrp||'';
+  document.getElementById('qeStock').value=p.stock_qty??'';
+  document.getElementById('qeStatus').value=String(p.is_active!==false);
+  document.getElementById('qeOverlay').style.display='flex';
+}
+function closeQE(){document.getElementById('qeOverlay').style.display='none';qeProductId=null;}
+async function saveQE(){
+  if(!qeProductId)return;
+  const payload={
+    price:parseFloat(document.getElementById('qePrice').value)||null,
+    mrp:parseFloat(document.getElementById('qeMrp').value)||null,
+    stock_qty:parseInt(document.getElementById('qeStock').value)||0,
+    is_active:document.getElementById('qeStatus').value==='true',
+  };
+  await db.from('products').update(payload).eq('id',qeProductId);
+  toast('Product updated');closeQE();loadProducts();
+}
+
+// ── PRODUCT MODAL ─────────────────────────────────────────────
+function openProductModal(){
+  editingProductId=null;editingImages=[];selectedImgIdx=null;
+  clearForm();renderImageGallery();
+  document.getElementById('prodModalTitle').textContent='Add Product';
+  document.getElementById('prodDeleteBtn').style.display='none';
+  document.getElementById('prodDupBtn').style.display='none';
+  document.getElementById('prodOverlay').style.display='flex';
+  switchTab('basic',document.querySelector('.tab-btn'));
+}
+async function editProduct(id){
+  const{data:p}=await db.from('products').select('*,images:product_images(id,url,is_primary,sort_order,alt_text,seo_title)').eq('id',id).single();
+  if(!p)return;
+  editingProductId=id;
+  editingImages=(p.images||[]).sort((a,b)=>(a.sort_order||0)-(b.sort_order||0));
+  selectedImgIdx=null;
+  document.getElementById('pName').value=p.name||'';
+  document.getElementById('pDesc').value=p.description||'';
+  document.getElementById('pCat').value=p.category_id||'';
+  document.getElementById('pBrand').value=p.brand_id||'';
+  document.getElementById('pBadge').value=p.badge||'';
+  document.getElementById('pBadge2').value=p.badge||'';
+  document.getElementById('pWarranty').value=p.warranty||'';
+  document.getElementById('pStatus').value=String(p.is_active!==false);
+  document.getElementById('pFeatured').value=String(!!p.is_featured);
+  document.getElementById('pTrending').value=String(!!p.is_trending);
+  document.getElementById('pPrice').value=p.price||'';
+  document.getElementById('pMrp').value=p.mrp||'';
+  document.getElementById('pStock').value=p.stock_qty??'';
+  document.getElementById('pLowStock').value=p.low_stock_threshold||5;
+  document.getElementById('pSku').value=p.sku||'';
+  document.getElementById('pWeight').value=p.weight||'';
+  document.getElementById('pTags').value=(p.tags||[]).join(', ');
+  document.getElementById('pSlug').value=p.slug||'';
+  document.getElementById('pMetaTitle').value=p.seo_title||'';
+  document.getElementById('pMetaDesc').value=p.seo_description||'';
+  document.getElementById('pSort').value=p.sort_order||0;
+  if(p.specifications) document.getElementById('pSpecs').value=Object.entries(p.specifications).map(([k,v])=>`${k}: ${v}`).join('\n');
+  else document.getElementById('pSpecs').value='';
+  calcMargin();
   renderImageGallery();
-  document.getElementById('prodModalTitle').textContent = 'Add Product';
-  document.getElementById('prodDeleteBtn').style.display = 'none';
-  document.getElementById('prodOverlay').style.display = 'flex';
-  
-  switchTab('basic', document.querySelector('.tab-btn'));
+  document.getElementById('prodModalTitle').textContent='Edit Product';
+  document.getElementById('prodDeleteBtn').style.display='block';
+  document.getElementById('prodDupBtn').style.display='block';
+  document.getElementById('prodOverlay').style.display='flex';
+  switchTab('basic',document.querySelector('.tab-btn'));
+}
+function closeProdModal(){document.getElementById('prodOverlay').style.display='none';}
+function clearForm(){
+  ['pName','pDesc','pWarranty','pPrice','pMrp','pStock','pSku','pWeight','pTags','pSlug','pMetaTitle','pMetaDesc','pSpecs'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  document.getElementById('pBadge').value='';document.getElementById('pBadge2').value='';
+  document.getElementById('pStatus').value='true';document.getElementById('pFeatured').value='false';
+  document.getElementById('pTrending').value='false';
+  document.getElementById('pLowStock').value=5;document.getElementById('pSort').value=0;
+  document.getElementById('marginInfo').style.display='none';
+}
+function autoSlug(){if(!editingProductId)document.getElementById('pSlug').value=slugify(document.getElementById('pName').value);}
+function calcMargin(){
+  const price=parseFloat(document.getElementById('pPrice').value)||0;
+  const mrp=parseFloat(document.getElementById('pMrp').value)||0;
+  const el=document.getElementById('marginInfo');
+  if(mrp>price&&price>0){
+    const disc=Math.round((mrp-price)/mrp*100);
+    el.style.display='block';
+    el.innerHTML=`Discount: <strong>${disc}%</strong> off MRP · Customer saves <strong>₹${(mrp-price).toLocaleString('en-IN')}</strong>`;
+  } else el.style.display='none';
 }
 
-async function editProduct(id) {
-  const { data: p } = await db.from('products')
-    .select('*, images:product_images(id,url,is_primary,sort_order,alt_text,seo_title), category:categories(id,name), brand:brands(id,name)')
-    .eq('id', id).single();
-  if (!p) return;
-  editingProductId = id;
-  editingImages = (p.images || []).sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0));
-  selectedImgIdx = null;
-
-  document.getElementById('pName').value = p.name || '';
-  document.getElementById('pShortDesc').value = p.short_description || '';
-  document.getElementById('pDesc').value = p.description || '';
-  document.getElementById('pCat').value = p.category_id || '';
-  document.getElementById('pBrand').value = p.brand_id || '';
-  document.getElementById('pBadge').value = p.badge || '';
-  document.getElementById('pWarranty').value = p.warranty || '';
-  document.getElementById('pStatus').value = String(p.is_active !== false);
-  document.getElementById('pFeatured').value = String(!!p.is_featured);
-  document.getElementById('pPrice').value = p.price || '';
-  document.getElementById('pMrp').value = p.mrp || '';
-  document.getElementById('pCost').value = p.cost_price || '';
-  document.getElementById('pTax').value = p.tax_percent || 18;
-  document.getElementById('pStock').value = p.stock_qty ?? '';
-  document.getElementById('pLowStock').value = p.low_stock_threshold || 5;
-  document.getElementById('pSku').value = p.sku || '';
-  document.getElementById('pWeight').value = p.weight || '';
-  document.getElementById('pCod').value = String(p.cod_enabled !== false);
-  document.getElementById('pUpi').value = String(p.upi_enabled !== false);
-  document.getElementById('pTags').value = (p.tags || []).join(', ');
-  document.getElementById('pSlug').value = p.slug || '';
-  document.getElementById('pMetaTitle').value = p.meta_title || '';
-  document.getElementById('pMetaDesc').value = p.meta_description || '';
-  document.getElementById('pSort').value = p.sort_order || 0;
-  if (p.specifications) {
-    document.getElementById('pSpecs').value = Object.entries(p.specifications).map(([k, v]) => `${k}: ${v}`).join('\n');
-  }
-
-  renderImageGallery();
-  document.getElementById('prodModalTitle').textContent = 'Edit Product';
-  document.getElementById('prodDeleteBtn').style.display = 'block';
-  document.getElementById('prodOverlay').style.display = 'flex';
-  
-  switchTab('basic', document.querySelector('.tab-btn'));
-}
-
-function closeProdModal() {
-  document.getElementById('prodOverlay').style.display = 'none';
-}
-
-function clearForm() {
-  ['pName','pShortDesc','pDesc','pWarranty','pPrice','pMrp','pCost','pStock','pSku','pWeight','pTags','pSlug','pMetaTitle','pMetaDesc','pSpecs'].forEach(id => {
-    const el = document.getElementById(id);
-    if (el) el.value = '';
-  });
-  document.getElementById('pBadge').value = '';
-  document.getElementById('pStatus').value = 'true';
-  document.getElementById('pFeatured').value = 'false';
-  document.getElementById('pTax').value = 18;
-  document.getElementById('pLowStock').value = 5;
-  document.getElementById('pSort').value = 0;
-}
-
-function autoSlug() {
-  if (!editingProductId) {
-    document.getElementById('pSlug').value = slugify(document.getElementById('pName').value);
-  }
-}
-
-// ── IMAGE GALLERY ──────────────────────────────────────────────
-function renderImageGallery() {
-  const gallery = document.getElementById('imgGallery');
-  if (!editingImages.length) {
-    gallery.innerHTML = '';
-    return;
-  }
-  gallery.innerHTML = editingImages.map((img, i) => `
-    <div class="img-slot ${img.is_primary ? 'is-primary' : ''}"
-      draggable="true"
-      ondragstart="dragStart(${i})"
-      ondragover="dragOver(event, ${i})"
-      ondrop="dragDrop(event, ${i})"
-      ondragend="dragEnd()"
+// ── IMAGE SYSTEM (preserved exactly) ─────────────────────────
+function renderImageGallery(){
+  const gallery=document.getElementById('imgGallery');
+  gallery.innerHTML=editingImages.map((img,i)=>`
+    <div class="img-slot ${img.is_primary?'is-primary':''}" draggable="true"
+      ondragstart="dragStart(${i})" ondragover="dragOver(event,${i})" ondrop="dragDrop(event,${i})" ondragend="dragEnd()"
       onclick="selectImg(${i})">
-      <img src="${img.url}" alt="${img.alt_text || ''}" loading="lazy"
-        onerror="this.src='';this.parentElement.style.background='var(--gray-100)';">
+      <img src="${img.url}" alt="${img.alt_text||''}" loading="lazy" onerror="this.parentElement.style.background='var(--gray-100)';">
       <div class="img-actions">
-        <button class="img-act-btn star" onclick="event.stopPropagation();setPrimary(${i})" title="Set as main image">★</button>
-        <button class="img-act-btn del" onclick="event.stopPropagation();removeImg(${i})" title="Remove">✕</button>
+        <button class="img-act-btn star" onclick="event.stopPropagation();setPrimary(${i})">★</button>
+        <button class="img-act-btn del" onclick="event.stopPropagation();removeImg(${i})">✕</button>
       </div>
     </div>`).join('');
 }
+function selectImg(i){
+  selectedImgIdx=i;const img=editingImages[i];
+  document.getElementById('imgAltWrap').style.display='block';
+  document.getElementById('imgAltText').value=img.alt_text||'';
+  document.getElementById('imgSeoTitle').value=img.seo_title||'';
+  document.querySelectorAll('.img-slot').forEach((el,idx)=>{el.style.outline=idx===i?'2px solid var(--color-primary)':'';});
+}
+function updateSelectedImgMeta(){
+  if(selectedImgIdx===null)return;
+  editingImages[selectedImgIdx].alt_text=document.getElementById('imgAltText').value;
+  editingImages[selectedImgIdx].seo_title=document.getElementById('imgSeoTitle').value;
+}
+function setPrimary(i){editingImages=editingImages.map((img,idx)=>({...img,is_primary:idx===i}));renderImageGallery();toast('Main image set');}
+function removeImg(i){
+  editingImages.splice(i,1);
+  if(!editingImages.find(img=>img.is_primary)&&editingImages.length)editingImages[0].is_primary=true;
+  selectedImgIdx=null;document.getElementById('imgAltWrap').style.display='none';renderImageGallery();
+}
+function dragStart(i){dragSrcIdx=i;setTimeout(()=>document.querySelectorAll('.img-slot')[i]?.classList.add('dragging'),0);}
+function dragOver(e,i){e.preventDefault();document.querySelectorAll('.img-slot').forEach((el,idx)=>el.classList.toggle('drag-target',idx===i&&idx!==dragSrcIdx));}
+function dragDrop(e,i){e.preventDefault();if(dragSrcIdx===null||dragSrcIdx===i)return;const m=editingImages.splice(dragSrcIdx,1)[0];editingImages.splice(i,0,m);editingImages.forEach((img,idx)=>img.sort_order=idx);dragSrcIdx=null;renderImageGallery();}
+function dragEnd(){document.querySelectorAll('.img-slot').forEach(el=>{el.classList.remove('dragging','drag-target');});dragSrcIdx=null;}
+function handleDragOver(e){e.preventDefault();document.getElementById('imgDropZone').classList.add('drag-over');}
+function handleDragLeave(){document.getElementById('imgDropZone').classList.remove('drag-over');}
+function handleDrop(e){e.preventDefault();document.getElementById('imgDropZone').classList.remove('drag-over');if(e.dataTransfer.files.length)handleImageUpload({files:e.dataTransfer.files});}
 
-function selectImg(i) {
-  selectedImgIdx = i;
-  const img = editingImages[i];
-  const wrap = document.getElementById('imgAltWrap');
-  wrap.style.display = 'block';
-  document.getElementById('imgAltText').value = img.alt_text || '';
-  document.getElementById('imgSeoTitle').value = img.seo_title || '';
-  // Highlight selected
-  document.querySelectorAll('.img-slot').forEach((el, idx) => {
-    el.style.outline = idx === i ? '2px solid var(--color-primary)' : '';
-  });
-}
-
-function updateSelectedImgMeta() {
-  if (selectedImgIdx === null) return;
-  editingImages[selectedImgIdx].alt_text = document.getElementById('imgAltText').value;
-  editingImages[selectedImgIdx].seo_title = document.getElementById('imgSeoTitle').value;
-}
-
-function setPrimary(i) {
-  editingImages = editingImages.map((img, idx) => ({ ...img, is_primary: idx === i }));
-  renderImageGallery();
-  toast('Featured image updated');
-}
-
-function removeImg(i) {
-  editingImages.splice(i, 1);
-  if (!editingImages.find(img => img.is_primary) && editingImages.length) {
-    editingImages[0].is_primary = true;
-  }
-  selectedImgIdx = null;
-  document.getElementById('imgAltWrap').style.display = 'none';
-  renderImageGallery();
-}
-
-// ── DRAG SORT ──────────────────────────────────────────────────
-function dragStart(i) {
-  dragSrcIdx = i;
-  setTimeout(() => document.querySelectorAll('.img-slot')[i]?.classList.add('dragging'), 0);
-}
-function dragOver(e, i) {
-  e.preventDefault();
-  document.querySelectorAll('.img-slot').forEach((el, idx) => el.classList.toggle('drag-target', idx === i && idx !== dragSrcIdx));
-}
-function dragDrop(e, i) {
-  e.preventDefault();
-  if (dragSrcIdx === null || dragSrcIdx === i) return;
-  const moved = editingImages.splice(dragSrcIdx, 1)[0];
-  editingImages.splice(i, 0, moved);
-  editingImages.forEach((img, idx) => img.sort_order = idx);
-  dragSrcIdx = null;
-  renderImageGallery();
-}
-function dragEnd() {
-  document.querySelectorAll('.img-slot').forEach(el => { el.classList.remove('dragging', 'drag-target'); });
-  dragSrcIdx = null;
-}
-
-// ── DROP ZONE ──────────────────────────────────────────────────
-function handleDragOver(e) {
-  e.preventDefault();
-  document.getElementById('imgDropZone').classList.add('drag-over');
-}
-function handleDragLeave(e) {
-  document.getElementById('imgDropZone').classList.remove('drag-over');
-}
-function handleDrop(e) {
-  e.preventDefault();
-  document.getElementById('imgDropZone').classList.remove('drag-over');
-  if (e.dataTransfer.files.length) {
-    handleImageUpload({ files: e.dataTransfer.files });
-  }
-}
-
-// ── IMAGE UPLOAD ───────────────────────────────────────────────
-async function processImage(file) {
-  // Convert any format → WebP 800×800 center-crop
-  return new Promise((resolve, reject) => {
-    // Handle HEIC — browsers may not support it, fall back to original
-    const supportedTypes = ['image/jpeg','image/jpg','image/png','image/webp','image/avif','image/gif'];
-    if (!supportedTypes.includes(file.type) && !file.type.includes('heic')) {
-      resolve(file); // pass through unknown types
-      return;
-    }
-    const reader = new FileReader();
-    reader.onload = e => {
-      const img = new Image();
-      img.onload = () => {
-        const canvas = document.createElement('canvas');
-        const SIZE = 800;
-        canvas.width = SIZE;
-        canvas.height = SIZE;
-        const ctx = canvas.getContext('2d');
-        // White background (for transparent PNGs)
-        ctx.fillStyle = '#ffffff';
-        ctx.fillRect(0, 0, SIZE, SIZE);
-        // Smart contain: preserve full product, add padding if needed
-        // Use 'contain' logic: scale to fit within SIZE×SIZE with padding
-        const scale = Math.min(SIZE / img.width, SIZE / img.height) * 0.92; // 4% padding
-        const sw = img.width * scale;
-        const sh = img.height * scale;
-        const sx = (SIZE - sw) / 2;
-        const sy = (SIZE - sh) / 2;
-        ctx.drawImage(img, sx, sy, sw, sh);
-        canvas.toBlob(
-          blob => {
-            if (!blob) { resolve(file); return; }
-            const name = file.name.replace(/\.[^.]+$/, '') + '.webp';
-            resolve(new File([blob], name, { type: 'image/webp' }));
-          },
-          'image/webp',
-          0.88  // 88% quality — good balance
-        );
+async function processImage(file){
+  return new Promise(resolve=>{
+    const reader=new FileReader();
+    reader.onload=e=>{
+      const img=new Image();
+      img.onload=()=>{
+        const c=document.createElement('canvas');const S=800;c.width=c.height=S;
+        const ctx=c.getContext('2d');ctx.fillStyle='#fff';ctx.fillRect(0,0,S,S);
+        const scale=Math.min(S/img.width,S/img.height)*0.92;
+        const sw=img.width*scale,sh=img.height*scale;
+        ctx.drawImage(img,(S-sw)/2,(S-sh)/2,sw,sh);
+        c.toBlob(blob=>{
+          if(!blob){resolve(file);return;}
+          resolve(new File([blob],file.name.replace(/\.[^.]+$/,'')+'.webp',{type:'image/webp'}));
+        },'image/webp',0.88);
       };
-      img.onerror = () => resolve(file); // fallback
-      img.src = e.target.result;
+      img.onerror=()=>resolve(file);img.src=e.target.result;
     };
-    reader.onerror = () => resolve(file);
-    reader.readAsDataURL(file);
+    reader.onerror=()=>resolve(file);reader.readAsDataURL(file);
   });
 }
 
-async function uploadToStorage(file, folder) {
-  const ext = file.name.split('.').pop() || 'webp';
-  const filename = `${folder}/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
-  // Try 'products' bucket first, then 'media' bucket
-  let error, publicUrl;
-  for (const bucket of ['products', 'media']) {
-    const res = await db.storage.from(bucket).upload(filename, file, { cacheControl: '3600', upsert: false });
-    error = res.error;
-    if (!error) {
-      const { data: { publicUrl: url } } = db.storage.from(bucket).getPublicUrl(filename);
-      publicUrl = url;
-      break;
-    }
+async function uploadToStorage(file,folder){
+  const ext=file.name.split('.').pop()||'webp';
+  const filename=`${folder}/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+  let error,publicUrl;
+  for(const bucket of['products','media']){
+    const res=await db.storage.from(bucket).upload(filename,file,{cacheControl:'3600',upsert:false});
+    error=res.error;
+    if(!error){const{data:{publicUrl:url}}=db.storage.from(bucket).getPublicUrl(filename);publicUrl=url;break;}
   }
-  if (error) throw error;
-  return publicUrl;
+  if(error)throw error;return publicUrl;
 }
 
-async function handleImageUpload(input) {
-  const files = Array.from(input.files || []);
-  if (!files.length) return;
-
-  const progressWrap = document.getElementById('imgProgressWrap');
-  const progressFill = document.getElementById('imgProgressFill');
-  const progressMsg  = document.getElementById('imgProgressMsg');
-  progressWrap.style.display = 'block';
-
-  let uploaded = 0;
-  for (const file of files) {
-    progressMsg.textContent = `Processing ${uploaded + 1} of ${files.length}: ${file.name}`;
-    progressFill.style.width = `${Math.round((uploaded / files.length) * 100)}%`;
-    try {
-      // Step 1: client-side processing
-      progressMsg.textContent = `Converting ${file.name} to WebP…`;
-      const processed = await processImage(file);
-
-      // Step 2: upload
-      progressMsg.textContent = `Uploading ${processed.name}…`;
-      const url = await uploadToStorage(processed, 'products');
-
-      // Step 3: add to list
-      editingImages.push({
-        url,
-        is_primary: editingImages.length === 0,
-        sort_order: editingImages.length,
-        alt_text: '',
-        seo_title: ''
-      });
-      renderImageGallery();
-      uploaded++;
-    } catch (err) {
-      console.error('Upload error:', err);
-      toast(`Failed to upload ${file.name}: ${err.message}`, true);
-    }
+async function handleImageUpload(input){
+  const files=Array.from(input.files||[]);if(!files.length)return;
+  const pw=document.getElementById('imgProgressWrap');
+  const pf=document.getElementById('imgProgressFill');
+  const pm=document.getElementById('imgProgressMsg');
+  pw.style.display='block';let uploaded=0;
+  for(const file of files){
+    pm.textContent=`Converting ${file.name} to WebP…`;
+    pf.style.width=`${Math.round(uploaded/files.length*100)}%`;
+    try{
+      const processed=await processImage(file);
+      pm.textContent=`Uploading ${processed.name}…`;
+      const url=await uploadToStorage(processed,'products');
+      editingImages.push({url,is_primary:editingImages.length===0,sort_order:editingImages.length,alt_text:'',seo_title:''});
+      renderImageGallery();uploaded++;
+    }catch(err){toast(`Failed: ${err.message}`,true);}
   }
-
-  progressFill.style.width = '100%';
-  progressMsg.textContent = `✅ ${uploaded} image${uploaded !== 1 ? 's' : ''} uploaded successfully`;
-  setTimeout(() => {
-    progressWrap.style.display = 'none';
-    progressFill.style.width = '0%';
-  }, 2000);
-
-  if (input.value !== undefined) input.value = '';
+  pf.style.width='100%';pm.textContent=`${uploaded} image${uploaded!==1?'s':''} uploaded`;
+  setTimeout(()=>{pw.style.display='none';pf.style.width='0%';},2000);
+  if(input.value!==undefined)input.value='';
 }
 
-function addImageByUrl() {
-  const url = document.getElementById('imgUrlInput').value.trim();
-  if (!url || !url.startsWith('http')) { toast('Please enter a valid image URL', true); return; }
-  editingImages.push({ url, is_primary: editingImages.length === 0, sort_order: editingImages.length, alt_text: '', seo_title: '' });
-  renderImageGallery();
-  document.getElementById('imgUrlInput').value = '';
-  toast('Image added from URL');
+function addImageByUrl(){
+  const url=document.getElementById('imgUrlInput').value.trim();
+  if(!url||!url.startsWith('http')){toast('Enter a valid URL',true);return;}
+  editingImages.push({url,is_primary:editingImages.length===0,sort_order:editingImages.length,alt_text:'',seo_title:''});
+  renderImageGallery();document.getElementById('imgUrlInput').value='';toast('Image added');
 }
 
-// ── SAVE PRODUCT ───────────────────────────────────────────────
-async function saveProduct() {
-  const name = document.getElementById('pName').value.trim();
-  const price = parseFloat(document.getElementById('pPrice').value);
-  if (!name) { toast('Product name is required', true); switchTab('basic', document.querySelector('.tab-btn')); return; }
-  if (!price) { toast('Price is required', true); switchTab('pricing', document.querySelectorAll('.tab-btn')[2]); return; }
-
-  const btn = document.querySelector('.modal-ft .btn-primary');
-  btn.textContent = 'Saving…'; btn.disabled = true;
-
-  try {
-    // Parse specs
-    let specifications = {};
-    const specsRaw = document.getElementById('pSpecs').value.trim();
-    if (specsRaw) {
-      specsRaw.split('\n').forEach(line => {
-        const [k, ...v] = line.split(':');
-        if (k && v.length) specifications[k.trim()] = v.join(':').trim();
-      });
-    }
-
-    const payload = {
-      name,
-      slug: document.getElementById('pSlug').value || slugify(name),
-      sku: document.getElementById('pSku').value || null,
-      description: document.getElementById('pDesc').value || null,
-      warranty: document.getElementById('pWarranty').value || null,
-      badge: document.getElementById('pBadge').value || null,
-      is_active: document.getElementById('pStatus').value === 'true',
-      is_featured: document.getElementById('pFeatured').value === 'true',
-      is_trending: false,
-      price,
-      mrp: parseFloat(document.getElementById('pMrp').value) || null,
-      stock_qty: parseInt(document.getElementById('pStock').value) || 0,
-      low_stock_threshold: parseInt(document.getElementById('pLowStock').value) || 5,
-      weight: parseFloat(document.getElementById('pWeight').value) || null,
-      brand_id: document.getElementById('pBrand').value || null,
-      category_id: document.getElementById('pCat').value || null,
-      seo_title: document.getElementById('pMetaTitle').value || null,
-      seo_description: document.getElementById('pMetaDesc').value || null,
-      tags: document.getElementById('pTags').value.split(',').map(t => t.trim()).filter(Boolean),
-      sort_order: parseInt(document.getElementById('pSort').value) || 0,
+// ── SAVE PRODUCT ──────────────────────────────────────────────
+async function saveProduct(){
+  const name=document.getElementById('pName').value.trim();
+  const price=parseFloat(document.getElementById('pPrice').value);
+  if(!name){toast('Product name is required',true);switchTab('basic',document.querySelector('.tab-btn'));return;}
+  if(!price){toast('Price is required',true);switchTab('pricing',document.querySelectorAll('.tab-btn')[2]);return;}
+  const btn=document.getElementById('prodSaveBtn');btn.textContent='Saving…';btn.disabled=true;
+  try{
+    let specifications={};
+    const specsRaw=document.getElementById('pSpecs').value.trim();
+    if(specsRaw)specsRaw.split('\n').forEach(line=>{const[k,...v]=line.split(':');if(k&&v.length)specifications[k.trim()]=v.join(':').trim();});
+    const badgeVal=document.getElementById('pBadge').value||document.getElementById('pBadge2').value||null;
+    const payload={
+      name,slug:document.getElementById('pSlug').value||slugify(name),
+      sku:document.getElementById('pSku').value||null,
+      description:document.getElementById('pDesc').value||null,
+      warranty:document.getElementById('pWarranty').value||null,
+      badge:badgeVal,
+      is_active:document.getElementById('pStatus').value==='true',
+      is_featured:document.getElementById('pFeatured').value==='true',
+      is_trending:document.getElementById('pTrending').value==='true',
+      price,mrp:parseFloat(document.getElementById('pMrp').value)||null,
+      stock_qty:parseInt(document.getElementById('pStock').value)||0,
+      low_stock_threshold:parseInt(document.getElementById('pLowStock').value)||5,
+      weight:parseFloat(document.getElementById('pWeight').value)||null,
+      brand_id:document.getElementById('pBrand').value||null,
+      category_id:document.getElementById('pCat').value||null,
+      seo_title:document.getElementById('pMetaTitle').value||null,
+      seo_description:document.getElementById('pMetaDesc').value||null,
+      tags:document.getElementById('pTags').value.split(',').map(t=>t.trim()).filter(Boolean),
+      sort_order:parseInt(document.getElementById('pSort').value)||0,
+      specifications:Object.keys(specifications).length?specifications:null,
     };
-
-    let productId = editingProductId;
-    if (productId) {
-      await db.from('products').update(payload).eq('id', productId);
-    } else {
-      const { data, error } = await db.from('products').insert(payload).select().single();
-      if (error) throw error;
-      productId = data.id;
+    let productId=editingProductId;
+    if(productId){await db.from('products').update(payload).eq('id',productId);}
+    else{const{data,error}=await db.from('products').insert(payload).select().single();if(error)throw error;productId=data.id;}
+    await db.from('product_images').delete().eq('product_id',productId);
+    if(editingImages.length){
+      await db.from('product_images').insert(editingImages.map((img,i)=>({product_id:productId,url:img.url,is_primary:!!img.is_primary,sort_order:i,alt_text:img.alt_text||null,seo_title:img.seo_title||null})));
     }
-
-    // Save images — delete old, insert new
-    await db.from('product_images').delete().eq('product_id', productId);
-    if (editingImages.length) {
-      const imgPayload = editingImages.map((img, i) => ({
-        product_id: productId,
-        url: img.url,
-        is_primary: !!img.is_primary,
-        sort_order: i,
-        alt_text: img.alt_text || null,
-        seo_title: img.seo_title || null,
-      }));
-      await db.from('product_images').insert(imgPayload);
-    }
-
-    toast(editingProductId ? '✅ Product updated! Changes live on website.' : '✅ Product added! Now visible on website.');
-    closeProdModal();
-    loadProducts();
-  } catch (err) {
-    toast('Error: ' + err.message, true);
-  } finally {
-    btn.textContent = 'Save Product'; btn.disabled = false;
-  }
+    toast(editingProductId?'Product updated — live on website':'Product added — live on website');
+    closeProdModal();loadProducts();
+  }catch(err){toast('Error: '+err.message,true);}
+  finally{btn.textContent='Save Product';btn.disabled=false;}
 }
 
 // ── DELETE ─────────────────────────────────────────────────────
-function confirmDeleteProduct(id) {
-  editingProductId = id;
-  if (confirm('Delete this product and all its images?')) deleteProduct();
-}
-async function deleteProduct() {
-  if (!editingProductId) return;
-  await db.from('product_images').delete().eq('product_id', editingProductId);
-  await db.from('products').delete().eq('id', editingProductId);
-  toast('Product deleted');
-  closeProdModal();
-  loadProducts();
+function confirmDeleteById(id){editingProductId=id;if(confirm('Delete this product and all images?'))deleteProduct();}
+async function deleteProduct(){
+  if(!editingProductId)return;
+  await db.from('product_images').delete().eq('product_id',editingProductId);
+  await db.from('products').delete().eq('id',editingProductId);
+  toast('Product deleted');closeProdModal();editingProductId=null;loadProducts();
 }
 
-// ── TABS ───────────────────────────────────────────────────────
-function switchTab(id, btn) {
-  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('is-active'));
-  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('is-active'));
-  document.getElementById('tab-' + id).classList.add('is-active');
-  if (btn) btn.classList.add('is-active');
+// ── DUPLICATE ─────────────────────────────────────────────────
+async function duplicateProduct(){
+  if(!editingProductId)return;
+  const p=allProducts.find(x=>x.id===editingProductId);if(!p)return;
+  const{data,error}=await db.from('products').insert({...p,id:undefined,name:p.name+' (Copy)',slug:p.slug+'-copy-'+Date.now().toString().slice(-4),is_active:false,created_at:undefined}).select().single();
+  if(error){toast('Duplicate failed: '+error.message,true);return;}
+  if(editingImages.length){
+    await db.from('product_images').insert(editingImages.map((img,i)=>({product_id:data.id,url:img.url,is_primary:!!img.is_primary,sort_order:i,alt_text:img.alt_text||null})));
+  }
+  toast('Product duplicated as draft');closeProdModal();loadProducts();
+}
+async function duplicateById(id){
+  editingProductId=id;
+  const{data:p}=await db.from('products').select('*,images:product_images(url,is_primary,sort_order,alt_text)').eq('id',id).single();
+  if(!p)return;editingImages=p.images||[];
+  await duplicateProduct();editingProductId=null;
 }
 
-// ── EXPORT ─────────────────────────────────────────────────────
-function exportCSV() {
-  const rows = [['Name','Price','MRP','Stock','Category','Brand','Status']];
-  allProducts.forEach(p => rows.push([p.name,p.price,p.mrp||'',p.stock_qty||0,p.category?.name||'',p.brand?.name||'',p.is_active?'Active':'Inactive']));
-  const a = document.createElement('a');
-  a.href = 'data:text/csv,' + encodeURIComponent(rows.map(r => r.join(',')).join('\n'));
-  a.download = 'wellfix-products.csv';
-  a.click();
+// ── TABS ──────────────────────────────────────────────────────
+function switchTab(id,btn){
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('is-active'));
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('is-active'));
+  document.getElementById('tab-'+id).classList.add('is-active');
+  if(btn)btn.classList.add('is-active');
+}
+
+// ── EXPORT ────────────────────────────────────────────────────
+function doCSVExport(products,filename){
+  const rows=[['Name','SKU','Price','MRP','Stock','Category','Brand','Status','Featured','Slug']];
+  products.forEach(p=>rows.push([`"${p.name}"`,p.sku||'',p.price||0,p.mrp||'',p.stock_qty||0,p.category?.name||'',p.brand?.name||'',p.is_active?'Active':'Inactive',p.is_featured?'Yes':'No',p.slug||'']));
+  const a=document.createElement('a');a.href='data:text/csv,'+encodeURIComponent(rows.map(r=>r.join(',')).join('\n'));a.download=filename+'.csv';a.click();
+  toast('CSV exported');
+}
+function exportCSV(mode){
+  if(mode==='all')doCSVExport(allProducts,'wellfix-all-products');
+  else if(mode==='filtered')doCSVExport(filteredProducts,'wellfix-filtered-products');
+  else if(mode==='selected')doCSVExport(allProducts.filter(p=>selectedIds.has(p.id)),'wellfix-selected-products');
+}
+function exportInventory(){
+  const rows=[['Name','SKU','Stock','Low Threshold','Price','Value','Status']];
+  allProducts.forEach(p=>rows.push([`"${p.name}"`,p.sku||'',p.stock_qty||0,p.low_stock_threshold||5,p.price||0,(p.stock_qty||0)*(p.price||0),p.is_active?'Active':'Inactive']));
+  const a=document.createElement('a');a.href='data:text/csv,'+encodeURIComponent(rows.map(r=>r.join(',')).join('\n'));a.download='wellfix-inventory.csv';a.click();
+  toast('Inventory report exported');
+}
+function exportLowStock(){
+  const low=allProducts.filter(p=>(p.stock_qty||0)<=(p.low_stock_threshold||5));
+  doCSVExport(low,'wellfix-low-stock');
+}
+function downloadTemplate(){
+  const rows=[['name','sku','price','mrp','stock_qty','description','warranty','category_name','brand_name','tags'],['Example Product','WF-001','999','1299','100','Product description','1 Year','Mixers','Sujata','mixer,kitchen']];
+  const a=document.createElement('a');a.href='data:text/csv,'+encodeURIComponent(rows.map(r=>r.join(',')).join('\n'));a.download='wellfix-import-template.csv';a.click();
+  toast('Template downloaded');
+}
+
+// ── IMPORT ────────────────────────────────────────────────────
+function openImportModal(){document.getElementById('importOverlay').style.display='flex';importRows=[];document.getElementById('importPreview').style.display='none';document.getElementById('importActions').style.display='none';}
+function closeImport(){document.getElementById('importOverlay').style.display='none';}
+function importDragOver(e){e.preventDefault();document.getElementById('importDrop').classList.add('over');}
+function importDragLeave(){document.getElementById('importDrop').classList.remove('over');}
+function importDropFile(e){e.preventDefault();document.getElementById('importDrop').classList.remove('over');const f=e.dataTransfer.files[0];if(f)parseImportFile({files:[f]});}
+
+function parseImportFile(input){
+  const file=input.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    const text=e.target.result;
+    const lines=text.split('\n').map(l=>l.trim()).filter(Boolean);
+    const headers=lines[0].split(',').map(h=>h.replace(/"/g,'').trim());
+    importRows=lines.slice(1).map(line=>{
+      const vals=line.split(',').map(v=>v.replace(/"/g,'').trim());
+      const row={};headers.forEach((h,i)=>row[h]=vals[i]||'');
+      row._valid=!!(row.name&&row.price&&parseFloat(row.price)>0);
+      row._error=!row.name?'Missing name':!row.price?'Missing price':'';
+      return row;
+    });
+    const valid=importRows.filter(r=>r._valid).length;
+    const invalid=importRows.filter(r=>!r._valid).length;
+    document.getElementById('importSummary').textContent=`${valid} valid rows · ${invalid} errors`;
+    const thead=document.getElementById('importThead');
+    const tbody=document.getElementById('importTbody');
+    thead.innerHTML=`<tr>${['Status','Name','SKU','Price','Stock','Category'].map(h=>`<th>${h}</th>`).join('')}</tr>`;
+    tbody.innerHTML=importRows.slice(0,5).map(r=>`<tr class="${r._valid?'ok':'err'}">
+      <td>${r._valid?'<span style="color:#16a34a;font-weight:700;">OK</span>':`<span style="color:#dc2626;font-size:10px;">${r._error}</span>`}</td>
+      <td>${r.name||'—'}</td><td>${r.sku||'—'}</td><td>${r.price||'—'}</td><td>${r.stock_qty||'0'}</td><td>${r.category_name||'—'}</td>
+    </tr>`).join('');
+    document.getElementById('importPreview').style.display='block';
+    document.getElementById('importActions').style.display='flex';
+  };
+  reader.readAsText(file);
+}
+
+async function runImport(){
+  const valid=importRows.filter(r=>r._valid);
+  if(!valid.length){toast('No valid rows to import',true);return;}
+  const btn=document.getElementById('importRunBtn');btn.textContent='Importing…';btn.disabled=true;
+  let done=0,failed=0;
+  for(const row of valid){
+    try{
+      const cat=allCats.find(c=>c.name.toLowerCase()===row.category_name?.toLowerCase());
+      const brand=allBrands.find(b=>b.name.toLowerCase()===row.brand_name?.toLowerCase());
+      const payload={name:row.name,sku:row.sku||null,price:parseFloat(row.price),mrp:parseFloat(row.mrp)||null,stock_qty:parseInt(row.stock_qty)||0,description:row.description||null,warranty:row.warranty||null,is_active:true,slug:slugify(row.name),tags:row.tags?row.tags.split(',').map(t=>t.trim()):[]};
+      if(cat)payload.category_id=cat.id;
+      if(brand)payload.brand_id=brand.id;
+      await db.from('products').insert(payload);done++;
+    }catch(e){failed++;}
+  }
+  toast(`Imported ${done} products${failed?`, ${failed} failed`:''}`);
+  btn.textContent='Import Products';btn.disabled=false;
+  closeImport();loadProducts();
 }
 </script>
 </body>
