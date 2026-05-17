@@ -2,283 +2,815 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Orders — WellFix Admin</title>
 <link rel="icon" href="../assets/images/WELLFIX-FAVICON.png">
 <link rel="stylesheet" href="assets/css/admin.css">
+<style>
+/* ══════════════════════════════════════
+   ORDERS MODULE — ENTERPRISE DESIGN
+   ══════════════════════════════════════ */
+
+/* KPI row */
+.o-kpi{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px;}
+@media(max-width:900px){.o-kpi{grid-template-columns:repeat(2,1fr);}}
+@media(max-width:480px){.o-kpi{grid-template-columns:1fr 1fr;gap:8px;}}
+.ok{background:#fff;border:1px solid var(--gray-100);border-radius:10px;padding:13px 16px;box-shadow:0 1px 2px rgba(0,0,0,.04);position:relative;overflow:hidden;cursor:pointer;transition:box-shadow .2s;}
+.ok:hover{box-shadow:0 3px 10px rgba(0,0,0,.07);}
+.ok::before{content:'';position:absolute;top:0;left:0;width:3px;height:100%;border-radius:10px 0 0 10px;}
+.ok.gn::before{background:#22c55e;}.ok.bl::before{background:#3b82f6;}.ok.am::before{background:#f59e0b;}.ok.rd::before{background:#ef4444;}
+.ok-val{font-family:var(--font-display);font-size:22px;font-weight:800;color:var(--gray-900);line-height:1;letter-spacing:-.4px;}
+.ok-lbl{font-size:11px;color:var(--gray-400);margin-top:3px;font-weight:500;}
+.ok-sub{font-size:10px;color:var(--gray-400);margin-top:2px;}
+
+/* Status pills / tabs */
+.status-tabs{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:12px;}
+.stab{padding:5px 12px;border-radius:99px;font-size:11px;font-weight:700;cursor:pointer;border:1.5px solid var(--gray-150,#dedede);background:#fff;color:var(--gray-500);transition:all .15s;white-space:nowrap;}
+.stab:hover{border-color:var(--gray-300);color:var(--gray-700);}
+.stab.on{border-color:var(--green-700);background:var(--green-700);color:#fff;}
+.stab-cnt{background:rgba(255,255,255,.25);border-radius:99px;padding:0 5px;font-size:10px;margin-left:3px;}
+.stab.on .stab-cnt{background:rgba(255,255,255,.3);}
+.stab:not(.on) .stab-cnt{background:var(--gray-100);color:var(--gray-500);}
+
+/* Toolbar */
+.o-toolbar{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-bottom:1px solid var(--gray-100);gap:8px;flex-wrap:wrap;}
+.o-tl,.o-tr{display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
+
+/* Bulk bar */
+.bulk-b{display:none;align-items:center;gap:8px;padding:8px 14px;background:var(--green-50);border-bottom:1px solid var(--green-100);}
+.bulk-b.show{display:flex;}
+.bk-cnt{font-size:12px;font-weight:700;color:var(--green-700);}
+
+/* Table */
+.o-tbl{width:100%;border-collapse:collapse;font-size:12px;}
+.o-tbl thead th{position:sticky;top:0;z-index:2;background:#fff;padding:8px 12px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--gray-400);border-bottom:1px solid var(--gray-100);text-align:left;white-space:nowrap;box-shadow:0 1px 0 var(--gray-100);}
+.o-tbl td{padding:8px 12px;border-bottom:1px solid var(--gray-50);vertical-align:middle;color:var(--gray-700);}
+.o-tbl tr:last-child td{border-bottom:none;}
+.o-tbl tbody tr{cursor:pointer;transition:background .1s;}
+.o-tbl tbody tr:hover td{background:var(--gray-25);}
+.o-num{font-family:var(--font-display);font-weight:800;color:var(--green-700);font-size:12px;}
+
+/* Payment badge */
+.pay-badge{font-size:10px;font-weight:700;padding:2px 7px;border-radius:99px;text-transform:uppercase;}
+.pay-cod{background:#fff7ed;color:#c2410c;}
+.pay-upi{background:#eff6ff;color:#1d4ed8;}
+.pay-whatsapp{background:#f0fdf4;color:#15803d;}
+
+/* Pay status */
+.ps{font-size:10px;font-weight:700;padding:2px 7px;border-radius:99px;}
+.ps.paid{background:#f0fdf4;color:#16a34a;}
+.ps.pending{background:#fef3c7;color:#92400e;}
+.ps.pv{background:#fff7ed;color:#c2410c;}
+.ps.failed{background:#fef2f2;color:#dc2626;}
+.ps.refunded{background:#f5f3ff;color:#7c3aed;}
+
+/* Row actions */
+.ra-wrap{display:flex;gap:3px;opacity:0;transition:opacity .15s;}
+tr:hover .ra-wrap{opacity:1;}
+.ra{width:26px;height:26px;border-radius:5px;border:1px solid var(--gray-200);background:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;}
+.ra:hover{background:var(--gray-50);}
+.ra svg{width:12px;height:12px;stroke:var(--gray-500);fill:none;stroke-width:2;}
+.ra.danger:hover{background:#fef2f2;border-color:#fecaca;}
+.ra.danger:hover svg{stroke:#dc2626;}
+.ra.green:hover{background:var(--green-50);border-color:var(--green-300);}
+.ra.green:hover svg{stroke:var(--green-600);}
+
+/* Mobile cards */
+@media(max-width:768px){
+  .o-tbl-wrap{display:none;}
+  .o-cards{display:block;}
+}
+@media(min-width:769px){.o-cards{display:none;}}
+.o-card{background:#fff;border:1px solid var(--gray-100);border-radius:10px;padding:14px;margin-bottom:10px;cursor:pointer;transition:box-shadow .2s;}
+.o-card:hover{box-shadow:0 3px 10px rgba(0,0,0,.07);}
+.o-card-hd{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px;}
+.o-card-customer{font-weight:700;font-size:13px;color:var(--gray-900);}
+.o-card-phone{font-size:11px;color:var(--gray-400);margin-top:2px;}
+.o-card-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:10px;}
+.o-card-stat{text-align:center;padding:6px;background:var(--gray-25);border-radius:6px;}
+.o-card-stat-val{font-family:var(--font-display);font-size:14px;font-weight:800;color:var(--gray-900);}
+.o-card-stat-lbl{font-size:9px;color:var(--gray-400);text-transform:uppercase;letter-spacing:.04em;}
+.o-card-ft{display:flex;align-items:center;justify-content:space-between;padding-top:10px;border-top:1px solid var(--gray-50);}
+
+/* Detail modal */
+.o-detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+@media(max-width:600px){.o-detail-grid{grid-template-columns:1fr;}}
+.o-detail-sec{margin-bottom:16px;}
+.o-detail-hd{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--gray-400);margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid var(--gray-100);}
+.o-item-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--gray-50);}
+.o-item-row:last-child{border-bottom:none;}
+.o-item-thumb{width:38px;height:38px;border-radius:7px;overflow:hidden;background:var(--gray-50);border:1px solid var(--gray-100);flex-shrink:0;display:flex;align-items:center;justify-content:center;}
+.o-item-thumb img{width:100%;height:100%;object-fit:contain;padding:2px;}
+
+/* Timeline */
+.timeline{display:flex;flex-direction:column;gap:0;}
+.tl-item{display:flex;gap:12px;padding:8px 0;}
+.tl-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;margin-top:4px;}
+.tl-line{width:2px;background:var(--gray-100);margin:2px 0 2px 4px;min-height:20px;}
+.tl-text{font-size:12px;color:var(--gray-700);}
+.tl-time{font-size:10px;color:var(--gray-400);margin-top:1px;}
+
+/* Status flow */
+.status-flow{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:12px;}
+.sf-btn{padding:5px 12px;border-radius:5px;font-size:11px;font-weight:600;border:1.5px solid var(--gray-200);background:#fff;cursor:pointer;color:var(--gray-600);transition:all .15s;}
+.sf-btn:hover{border-color:var(--green-400);color:var(--green-700);}
+.sf-btn.current{border-color:var(--green-700);background:var(--green-700);color:#fff;cursor:default;}
+.sf-btn.done{border-color:var(--green-200);background:var(--green-50);color:var(--green-700);}
+
+/* Payment verify */
+.verify-box{background:var(--gray-25);border:1px solid var(--gray-100);border-radius:8px;padding:14px;margin-bottom:12px;}
+
+/* Dropdown */
+.drop-m{position:relative;display:inline-block;}
+.drop-l{display:none;position:absolute;right:0;top:100%;margin-top:4px;background:#fff;border:1px solid var(--gray-150,#dedede);border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,.1);min-width:190px;z-index:200;overflow:hidden;}
+.drop-l.open{display:block;}
+.di{display:flex;align-items:center;gap:8px;padding:8px 12px;font-size:12px;font-weight:500;color:var(--gray-700);cursor:pointer;transition:background .1s;}
+.di:hover{background:var(--gray-50);}
+.di svg{width:13px;height:13px;stroke:var(--gray-400);fill:none;stroke-width:2;}
+.di.danger:hover{background:#fef2f2;color:#dc2626;}
+.di.danger:hover svg{stroke:#dc2626;}
+.d-sep{height:1px;background:var(--gray-100);margin:4px 0;}
+
+/* Pager */
+.pager{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-top:1px solid var(--gray-100);}
+.pager-info{font-size:11px;color:var(--gray-400);}
+.pager-btn{height:28px;min-width:28px;padding:0 8px;border:1px solid var(--gray-200);border-radius:5px;background:#fff;font-size:12px;font-weight:600;color:var(--gray-600);cursor:pointer;}
+.pager-btn:hover:not(:disabled){background:var(--gray-50);}
+.pager-btn:disabled{opacity:.4;cursor:default;}
+.pager-btn.on{background:var(--green-700);color:#fff;border-color:var(--green-700);}
+
+/* Invoice */
+.invoice-wrap{font-family:var(--font-body);background:#fff;border-radius:10px;padding:24px;}
+.inv-header{display:flex;justify-content:space-between;margin-bottom:24px;}
+.inv-title{font-family:var(--font-display);font-size:22px;font-weight:800;color:var(--gray-900);}
+.inv-meta{font-size:12px;color:var(--gray-500);margin-top:3px;}
+.inv-table{width:100%;border-collapse:collapse;font-size:12px;margin:16px 0;}
+.inv-table th{padding:7px 10px;background:var(--gray-50);font-size:10px;font-weight:700;text-transform:uppercase;color:var(--gray-400);text-align:left;}
+.inv-table td{padding:7px 10px;border-bottom:1px solid var(--gray-50);}
+.inv-totals{display:flex;flex-direction:column;align-items:flex-end;gap:5px;margin-top:12px;}
+.inv-total-row{display:flex;gap:24px;font-size:13px;}
+.inv-grand{font-family:var(--font-display);font-size:18px;font-weight:800;}
+
+/* Skeleton */
+.sk{background:linear-gradient(90deg,var(--gray-100) 25%,var(--gray-50) 50%,var(--gray-100) 75%);background-size:200% 100%;animation:sk 1.4s infinite;border-radius:5px;}
+@keyframes sk{to{background-position:-200% 0;}}
+
+/* Empty */
+.empty-o{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:48px 24px;text-align:center;}
+.empty-o svg{width:40px;height:40px;opacity:.15;color:var(--gray-500);margin-bottom:12px;}
+.empty-o h3{font-family:var(--font-display);font-size:15px;font-weight:700;color:var(--gray-600);margin-bottom:4px;}
+.empty-o p{font-size:12px;color:var(--gray-400);}
+
+/* Mobile sticky */
+@media(max-width:768px){
+  .mobile-sticky{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--gray-100);padding:10px 14px;display:flex;gap:8px;z-index:100;box-shadow:0 -4px 16px rgba(0,0,0,.08);}
+}
+@media(min-width:769px){.mobile-sticky{display:none;}}
+</style>
 </head>
 <body>
 <div class="admin-shell">
-  <div id="adminShell"></div>
-  <div class="main-wrap" id="mainWrap">
-    <div class="page-content">
+<div id="adminShell"></div>
+<div class="main-wrap" id="mainWrap">
+<div class="page-content">
 
-      <div class="pg-hd">
-        <div><h1>Orders</h1><p id="orderCount">Loading orders…</p></div>
-        <div class="pg-hd__actions">
-          <button class="btn btn-secondary" onclick="exportOrders()">
-            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-            Export
-          </button>
-        </div>
+<!-- HEADER -->
+<div class="pg-hd">
+  <div>
+    <h1>Orders</h1>
+    <p style="font-size:12px;color:var(--gray-400);margin-top:2px;" id="orderSub">Loading…</p>
+  </div>
+  <div class="pg-hd__actions">
+    <div class="drop-m" id="exportMenu">
+      <button class="btn btn-outline" onclick="toggleDrop('exportMenu')">Export</button>
+      <div class="drop-l" id="exportMenuList">
+        <div class="di" onclick="exportOrders('all');closeDrop('exportMenu')"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Export All CSV</div>
+        <div class="di" onclick="exportOrders('filtered');closeDrop('exportMenu')"><svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>Export Filtered CSV</div>
+        <div class="di" onclick="exportOrders('selected');closeDrop('exportMenu')"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Export Selected</div>
+        <div class="d-sep"></div>
+        <div class="di" onclick="exportPendingPayments();closeDrop('exportMenu')">Pending Payments Report</div>
       </div>
-
-      <!-- Status tabs -->
-      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px;" id="statusTabs">
-        <button class="btn btn-primary btn-sm" data-status="" onclick="filterByStatus('')">All <span id="cnt-all" style="background:rgba(255,255,255,.25);border-radius:99px;padding:0 6px;font-size:11px;"></span></button>
-        <button class="btn btn-secondary btn-sm" data-status="pending" onclick="filterByStatus('pending')">Pending <span id="cnt-pending" style="background:var(--gray-100);border-radius:99px;padding:0 6px;font-size:11px;"></span></button>
-        <button class="btn btn-secondary btn-sm" data-status="confirmed" onclick="filterByStatus('confirmed')">Confirmed</button>
-        <button class="btn btn-secondary btn-sm" data-status="processing" onclick="filterByStatus('processing')">Processing</button>
-        <button class="btn btn-secondary btn-sm" data-status="delivered" onclick="filterByStatus('delivered')">Delivered</button>
-        <button class="btn btn-secondary btn-sm" data-status="cancelled" onclick="filterByStatus('cancelled')">Cancelled</button>
-      </div>
-
-      <div class="card">
-        <div class="filter-bar">
-          <div class="filter-search">
-            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-            <input type="search" id="orderSearch" placeholder="Search order, customer…" oninput="renderOrdersTable()">
-          </div>
-          <select class="filter-select" id="paymentFilter" onchange="renderOrdersTable()">
-            <option value="">All Payment</option>
-            <option value="cod">COD</option>
-            <option value="online">Online</option>
-            <option value="upi">UPI</option>
-          </select>
-          <div class="filter-spacer"></div>
-          <span style="font-size:12px;color:var(--gray-400);" id="revenueTotal"></span>
-        </div>
-        <div class="tbl-wrap">
-          <table>
-            <thead>
-              <tr>
-                <th>Order ID</th>
-                <th>Customer</th>
-                <th>Items</th>
-                <th>Total</th>
-                <th>Payment</th>
-                <th>Status</th>
-                <th>Date</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody id="ordersTbody">
-              <tr><td colspan="8" style="text-align:center;padding:30px;"><div class="spinner" style="margin:0 auto;"></div></td></tr>
-            </tbody>
-          </table>
-        </div>
-        <div class="pagination">
-          <span class="pg-info" id="pgInfo"></span>
-          <div id="pgNums" style="display:flex;gap:4px;"></div>
-        </div>
-      </div>
-
     </div>
+    <button class="btn btn-primary" onclick="openNewOrder()">+ New Order</button>
   </div>
 </div>
 
-<!-- Order detail modal -->
-<div class="modal-overlay" id="orderModal">
-  <div class="modal" style="max-width:620px;">
-    <div class="modal-hd">
-      <div class="modal-title" id="orderModalTitle">Order Details</div>
-      <button class="modal-close" onclick="closeOrderModal()"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+<!-- KPI -->
+<div class="o-kpi" id="oKpi">
+  <div class="ok gn"><div class="sk" style="height:54px;"></div></div>
+  <div class="ok bl"><div class="sk" style="height:54px;"></div></div>
+  <div class="ok am"><div class="sk" style="height:54px;"></div></div>
+  <div class="ok rd"><div class="sk" style="height:54px;"></div></div>
+</div>
+
+<!-- STATUS TABS -->
+<div class="status-tabs" id="statusTabs"></div>
+
+<!-- MAIN CARD -->
+<div class="card" style="padding:0;">
+
+  <!-- Toolbar -->
+  <div class="o-toolbar">
+    <div class="o-tl">
+      <div class="filter-search" style="margin:0;">
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="search" id="oSearch" placeholder="Order ID, customer, phone…" oninput="debounceFilter()" style="width:200px;">
+      </div>
+      <select class="filter-select" id="fPay" onchange="filterOrders()" style="height:34px;font-size:12px;">
+        <option value="">All Payment</option>
+        <option value="cod">COD</option>
+        <option value="upi">UPI</option>
+        <option value="whatsapp">WhatsApp</option>
+      </select>
+      <select class="filter-select" id="fPayStatus" onchange="filterOrders()" style="height:34px;font-size:12px;">
+        <option value="">All Pay Status</option>
+        <option value="pending">Pending</option>
+        <option value="pending_verification">Verify Queue</option>
+        <option value="paid">Paid</option>
+        <option value="failed">Failed</option>
+        <option value="refunded">Refunded</option>
+      </select>
+      <select class="filter-select" id="fSort" onchange="filterOrders()" style="height:34px;font-size:12px;">
+        <option value="newest">Newest First</option>
+        <option value="oldest">Oldest First</option>
+        <option value="value_desc">Highest Value</option>
+        <option value="value_asc">Lowest Value</option>
+        <option value="pending_first">Pending First</option>
+      </select>
     </div>
-    <div class="modal-body" id="orderModalBody"></div>
-    <div class="modal-ft" id="orderModalFt"></div>
+    <div class="o-tr">
+      <span id="filtCount" style="font-size:11px;color:var(--gray-400);"></span>
+      <span id="filtRevenue" style="font-size:11px;font-weight:700;color:var(--green-700);"></span>
+    </div>
+  </div>
+
+  <!-- Bulk bar -->
+  <div class="bulk-b" id="bulkBar">
+    <input type="checkbox" id="chkAll" onchange="toggleAll(this)" style="cursor:pointer;">
+    <span class="bk-cnt" id="bulkCnt">0 selected</span>
+    <div style="display:flex;gap:6px;flex-wrap:wrap;">
+      <button class="btn btn-sm btn-outline" onclick="bulkConfirm()">Confirm</button>
+      <button class="btn btn-sm btn-outline" onclick="bulkMarkPaid()">Mark Paid</button>
+      <button class="btn btn-sm btn-outline" onclick="bulkExport()">Export</button>
+      <button class="btn btn-sm" style="background:var(--red-100);color:var(--red-600);" onclick="bulkCancel()">Cancel</button>
+    </div>
+    <button class="btn btn-sm btn-outline" onclick="clearSel()" style="margin-left:auto;">Clear</button>
+  </div>
+
+  <!-- DESKTOP TABLE -->
+  <div class="o-tbl-wrap" style="overflow-x:auto;">
+    <table class="o-tbl">
+      <thead><tr>
+        <th style="width:36px;padding:8px;"><input type="checkbox" id="chkAllH" onchange="toggleAll(this)"></th>
+        <th>Order</th>
+        <th>Customer</th>
+        <th>Items</th>
+        <th style="min-width:90px;">Total</th>
+        <th>Payment</th>
+        <th>Pay Status</th>
+        <th>Status</th>
+        <th>Date</th>
+        <th style="width:100px;text-align:right;">Actions</th>
+      </tr></thead>
+      <tbody id="ordersTbody"></tbody>
+    </table>
+  </div>
+
+  <!-- MOBILE CARDS -->
+  <div class="o-cards" id="ordersCards" style="padding:12px;"></div>
+
+  <!-- Pager -->
+  <div class="pager">
+    <span class="pager-info" id="pagerInfo"></span>
+    <div style="display:flex;gap:4px;" id="pagerBtns"></div>
   </div>
 </div>
 
+<!-- MOBILE STICKY -->
+<div class="mobile-sticky">
+  <button class="btn btn-outline" style="flex:1;" onclick="filterOrders()">Refresh</button>
+  <button class="btn btn-primary" style="flex:1;" onclick="exportOrders('filtered')">Export</button>
+</div>
+
+<!-- ══════════════════════════════════
+     ORDER DETAIL MODAL
+══════════════════════════════════ -->
+<div class="modal-overlay" id="oDetailOverlay" onclick="if(event.target===this)closeDetail()" style="display:none;align-items:flex-start;justify-content:center;padding:20px 16px;overflow-y:auto;">
+<div class="modal" id="oDetailModal" style="max-width:760px;width:100%;margin:auto;max-height:90vh;overflow-y:auto;">
+  <div class="modal-hd">
+    <h3 id="detailTitle">Order Details</h3>
+    <div style="display:flex;gap:8px;">
+      <button class="btn btn-sm btn-outline" onclick="printInvoice()" id="printBtn" style="display:none;">Print Invoice</button>
+      <button class="modal-close" onclick="closeDetail()">✕</button>
+    </div>
+  </div>
+  <div class="modal-body" id="detailBody"></div>
+  <div class="modal-ft" id="detailFt"></div>
+</div>
+</div>
+
+</div></div></div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="../backend/config/supabase.js"></script>
 <script src="assets/js/shell.js"></script>
 <script>
-let allOrders = [], currentStatusFilter = '', currentPage = 1; const perPage = 15;
+'use strict';
+const PAID=['confirmed','processing','packed','shipped','out_for_delivery','delivered'];
+const ALL_STATUSES=['pending','confirmed','processing','packed','shipped','out_for_delivery','delivered','cancelled','return_requested','returned','refunded'];
+const STATUS_LABELS={pending:'Pending',confirmed:'Confirmed',processing:'Processing',packed:'Packed',shipped:'Shipped',out_for_delivery:'Out for Delivery',delivered:'Delivered',cancelled:'Cancelled',return_requested:'Return Req.',returned:'Returned',refunded:'Refunded'};
+const STATUS_COLORS={pending:'#f59e0b',confirmed:'#3b82f6',processing:'#8b5cf6',packed:'#06b6d4',shipped:'#0ea5e9',out_for_delivery:'#f97316',delivered:'#22c55e',cancelled:'#ef4444',return_requested:'#ec4899',returned:'#ec4899',refunded:'#9ca3af'};
 
-(async () => {
-  await AdminShell.init('Orders');
+let allOrders=[],filteredOrders=[],selectedIds=new Set();
+let currentStatus='',page=0;const PER=20;
+let filtTimer=null,currentOrderId=null;
+
+(async()=>{
+  await AdminShell.init('Orders','orders');
   await loadOrders();
-  setupRealtime();
+  document.addEventListener('click',e=>{if(!e.target.closest('.drop-m'))document.querySelectorAll('.drop-l').forEach(d=>d.classList.remove('open'));});
 })();
 
-async function loadOrders() {
-  allOrders = await WF.orders.getAll();
-  document.getElementById('orderCount').textContent = `${allOrders.length} total orders`;
-  document.getElementById('cnt-all').textContent = allOrders.length;
-  document.getElementById('cnt-pending').textContent = allOrders.filter(o => o.status === 'pending').length;
-  renderOrdersTable();
+async function loadOrders(){
+  document.getElementById('ordersTbody').innerHTML=`<tr><td colspan="10" style="text-align:center;padding:30px;"><div class="spinner" style="margin:0 auto;"></div></td></tr>`;
+  const{data}=await db.from('orders')
+    .select('id,order_number,customer_name,customer_phone,customer_email,total,subtotal,discount,delivery_charge,tax,status,payment_method,payment_status,payment_reference,shipping_address,shipping_city,shipping_district,shipping_pincode,notes,admin_notes,tracking_id,courier,assigned_to,created_at,items:order_items(id,product_id,product_name,product_image,quantity,unit_price,total_price)')
+    .order('created_at',{ascending:false})
+    .limit(300);
+  allOrders=data||[];
+  renderKPIs();renderStatusTabs();filterOrders();
 }
 
-function filterByStatus(status) {
-  currentStatusFilter = status;
-  currentPage = 1;
-  document.querySelectorAll('#statusTabs button').forEach(b => {
-    const isMatch = b.dataset.status === status;
-    b.className = isMatch ? 'btn btn-primary btn-sm' : 'btn btn-secondary btn-sm';
-  });
-  renderOrdersTable();
+function renderKPIs(){
+  const today=new Date();today.setHours(0,0,0,0);
+  const todayOrders=allOrders.filter(o=>new Date(o.created_at)>=today);
+  const todayRev=todayOrders.filter(o=>PAID.includes(o.status)).reduce((s,o)=>s+(parseFloat(o.total)||0),0);
+  const pending=allOrders.filter(o=>o.status==='pending').length;
+  const pendPayVal=allOrders.filter(o=>o.payment_status==='pending_verification').reduce((s,o)=>s+(parseFloat(o.total)||0),0);
+  const cancelled=allOrders.filter(o=>o.status==='cancelled').length;
+  document.getElementById('orderSub').textContent=`${allOrders.length} total · ${allOrders.filter(o=>PAID.includes(o.status)).length} confirmed`;
+  document.getElementById('oKpi').innerHTML=[
+    {cls:'gn',val:formatCurrency(todayRev),lbl:"Today's Revenue",sub:`${todayOrders.length} orders today`},
+    {cls:'bl',val:allOrders.length,lbl:'Total Orders',sub:`${allOrders.filter(o=>o.status==='delivered').length} delivered`},
+    {cls:'am',val:pending,lbl:'Pending Orders',sub:`${formatCurrency(pendPayVal)} verify queue`},
+    {cls:'rd',val:cancelled,lbl:'Cancelled',sub:`${allOrders.filter(o=>o.status==='returned').length} returned`},
+  ].map(k=>`<div class="ok ${k.cls}"><div class="ok-val">${k.val}</div><div class="ok-lbl">${k.lbl}</div><div class="ok-sub">${k.sub}</div></div>`).join('');
 }
 
-function renderOrdersTable() {
-  const q = document.getElementById('orderSearch').value.toLowerCase();
-  const pay = document.getElementById('paymentFilter').value;
-  let filtered = allOrders.filter(o => {
-    if (currentStatusFilter && o.status !== currentStatusFilter) return false;
-    if (q && !o.order_number.toLowerCase().includes(q) && !o.customer_name.toLowerCase().includes(q) && !(o.customer_phone || '').includes(q)) return false;
-    if (pay && o.payment_method !== pay) return false;
+function renderStatusTabs(){
+  const counts={};allOrders.forEach(o=>{counts[o.status]=(counts[o.status]||0)+1;});
+  const total=allOrders.length;
+  const tabs=[
+    {key:'',label:'All',cnt:total},
+    {key:'pending',label:'Pending',cnt:counts.pending||0},
+    {key:'confirmed',label:'Confirmed',cnt:counts.confirmed||0},
+    {key:'processing',label:'Processing',cnt:counts.processing||0},
+    {key:'shipped',label:'Shipped',cnt:counts.shipped||0},
+    {key:'delivered',label:'Delivered',cnt:counts.delivered||0},
+    {key:'cancelled',label:'Cancelled',cnt:counts.cancelled||0},
+    {key:'pending_verification',label:'Verify Pay',cnt:allOrders.filter(o=>o.payment_status==='pending_verification').length},
+  ];
+  document.getElementById('statusTabs').innerHTML=tabs.map(t=>`
+    <div class="stab ${currentStatus===t.key?'on':''}" onclick="setStatus('${t.key}')">
+      ${t.label}<span class="stab-cnt">${t.cnt}</span>
+    </div>`).join('');
+}
+
+function setStatus(s){currentStatus=s;page=0;renderStatusTabs();filterOrders();}
+function debounceFilter(){clearTimeout(filtTimer);filtTimer=setTimeout(filterOrders,250);}
+
+function filterOrders(){
+  const q=document.getElementById('oSearch').value.toLowerCase();
+  const pay=document.getElementById('fPay').value;
+  const paySt=document.getElementById('fPayStatus').value;
+  const sort=document.getElementById('fSort').value;
+
+  let list=allOrders.filter(o=>{
+    if(currentStatus==='pending_verification'&&o.payment_status!=='pending_verification') return false;
+    if(currentStatus&&currentStatus!=='pending_verification'&&o.status!==currentStatus) return false;
+    if(pay&&o.payment_method!==pay) return false;
+    if(paySt&&o.payment_status!==paySt) return false;
+    if(q&&!o.order_number?.toLowerCase().includes(q)&&!o.customer_name?.toLowerCase().includes(q)&&!(o.customer_phone||'').includes(q)) return false;
     return true;
   });
 
-  const revenue = filtered.reduce((s, o) => s + parseFloat(o.total || 0), 0);
-  document.getElementById('revenueTotal').textContent = `Total: ${formatCurrency(revenue)}`;
+  if(sort==='oldest')list=[...list].reverse();
+  else if(sort==='value_desc')list=[...list].sort((a,b)=>(parseFloat(b.total)||0)-(parseFloat(a.total)||0));
+  else if(sort==='value_asc')list=[...list].sort((a,b)=>(parseFloat(a.total)||0)-(parseFloat(b.total)||0));
+  else if(sort==='pending_first')list=[...list].sort((a,b)=>a.status==='pending'?-1:b.status==='pending'?1:0);
 
-  const start = (currentPage - 1) * perPage;
-  const page = filtered.slice(start, start + perPage);
-  const tbody = document.getElementById('ordersTbody');
-  if (!page.length) { tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;padding:30px;color:var(--gray-300);">No orders found</td></tr>`; return; }
-
-  tbody.innerHTML = page.map(o => `<tr>
-    <td class="td-bold" style="cursor:pointer;color:var(--green-700);" onclick="viewOrder('${o.id}')">${o.order_number}</td>
-    <td>
-      <div style="font-weight:600;">${o.customer_name}</div>
-      <div style="font-size:11px;color:var(--gray-400);">${o.customer_phone}</div>
-    </td>
-    <td>${(o.items || []).length} item${(o.items || []).length !== 1 ? 's' : ''}</td>
-    <td style="font-weight:700;">${formatCurrency(o.total)}</td>
-    <td><span style="font-size:11px;font-weight:600;color:var(--gray-600);text-transform:uppercase;">${o.payment_method}</span></td>
-    <td>${renderBadge(o.status)}</td>
-    <td>${formatDate(o.created_at)}</td>
-    <td>
-      <div style="display:flex;gap:4px;">
-        <button class="btn-icon" onclick="viewOrder('${o.id}')" title="View">
-          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-        </button>
-        <a href="https://wa.me/${(o.customer_phone || '').replace(/\D/g, '')}?text=Hi%20${encodeURIComponent(o.customer_name)}!%20Your%20WellFix%20order%20${o.order_number}%20status%20update."
-           target="_blank" class="btn-icon" title="WhatsApp">
-          <svg fill="currentColor" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347zM12 2C6.477 2 2 6.477 2 12c0 1.89.525 3.66 1.438 5.168L2 22l4.978-1.413A9.955 9.955 0 0012 22c5.523 0 10-4.477 10-10S17.523 2 12 2z"/></svg>
-        </a>
-        <button class="btn-icon" onclick="deleteOrder('${o.id}')" title="Delete" style="color:var(--red-500) !important;">
-          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
-        </button>
-      </div>
-    </td>
-  </tr>`).join('');
-
-  document.getElementById('pgInfo').textContent = `Showing ${start + 1}–${Math.min(start + perPage, filtered.length)} of ${filtered.length}`;
-  const pages = Math.ceil(filtered.length / perPage);
-  document.getElementById('pgNums').innerHTML = Array.from({ length: Math.min(5, pages) }, (_, i) =>
-    `<button class="pg-btn ${i + 1 === currentPage ? 'is-active' : ''}" onclick="goPage(${i + 1})">${i + 1}</button>`
-  ).join('');
+  filteredOrders=list;page=0;
+  const rev=list.filter(o=>PAID.includes(o.status)).reduce((s,o)=>s+(parseFloat(o.total)||0),0);
+  document.getElementById('filtCount').textContent=`${list.length} orders`;
+  document.getElementById('filtRevenue').textContent=list.length?`Rev: ${formatCurrency(rev)}`:'';
+  renderTable();renderCards();renderPager();
 }
 
-function goPage(pg) { currentPage = pg; renderOrdersTable(); }
-
-async function viewOrder(id) {
-  _currentOrderId = id;
-  const order = await WF.orders.getById(id);
-  document.getElementById('orderModalTitle').textContent = `Order ${order.order_number}`;
-  document.getElementById('orderModalBody').innerHTML = `
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;">
-      <div>
-        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--gray-400);margin-bottom:6px;">Customer</div>
-        <div style="font-weight:600;">${order.customer_name}</div>
-        <div style="font-size:12px;color:var(--gray-500);">${order.customer_phone}</div>
-        ${order.customer_email ? `<div style="font-size:12px;color:var(--gray-500);">${order.customer_email}</div>` : ''}
-      </div>
-      <div>
-        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--gray-400);margin-bottom:6px;">Delivery Address</div>
-        <div style="font-size:13px;color:var(--gray-600);line-height:1.6;">${order.shipping_address}<br>${order.shipping_city || ''}${order.shipping_district ? ', ' + order.shipping_district : ''}${order.shipping_pincode ? ' - ' + order.shipping_pincode : ''}</div>
-      </div>
-    </div>
-    <div style="border-top:1px solid var(--gray-100);padding-top:14px;margin-bottom:14px;">
-      <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--gray-400);margin-bottom:10px;">Order Items</div>
-      ${(order.items || []).map(item => `
-        <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--gray-50);">
-          <div style="display:flex;align-items:center;gap:10px;">
-            ${item.product_image ? `<img src="${item.product_image}" style="width:36px;height:36px;border-radius:var(--r-sm);object-fit:contain;background:var(--gray-50);border:1px solid var(--gray-100);">` : ''}
-            <div><div style="font-weight:600;font-size:13px;">${item.product_name}</div><div style="font-size:11px;color:var(--gray-400);">Qty: ${item.quantity} × ${formatCurrency(item.unit_price)}</div></div>
-          </div>
-          <div style="font-weight:700;">${formatCurrency(item.total_price)}</div>
-        </div>`).join('')}
-    </div>
-    <div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end;">
-      <div style="display:flex;gap:24px;font-size:13px;">
-        <span style="color:var(--gray-500);">Subtotal</span><span style="font-weight:600;">${formatCurrency(order.subtotal)}</span>
-      </div>
-      ${parseFloat(order.discount) > 0 ? `<div style="display:flex;gap:24px;font-size:13px;"><span style="color:var(--red-500);">Discount</span><span style="font-weight:600;color:var(--red-500);">-${formatCurrency(order.discount)}</span></div>` : ''}
-      <div style="display:flex;gap:24px;font-size:16px;font-weight:800;font-family:var(--font-display);">
-        <span>Total</span><span>${formatCurrency(order.total)}</span>
-      </div>
-      <div style="font-size:12px;color:var(--gray-500);">Payment: ${order.payment_method.toUpperCase()} — ${renderBadge(order.payment_status)}</div>
-    </div>`;
-  document.getElementById('orderModalFt').innerHTML = `
-    <button class="btn btn-secondary" onclick="deleteOrder('${order.id}')" style="margin-right:auto;color:var(--red-500);border-color:var(--red-200);">Delete Order</button>
-    <select class="form-select" id="statusSelect" style="width:160px;height:34px;">
-      ${['pending','confirmed','processing','shipped','delivered','cancelled'].map(s => `<option value="${s}" ${order.status === s ? 'selected' : ''}>${s.charAt(0).toUpperCase() + s.slice(1)}</option>`).join('')}
-    </select>
-    <button class="btn btn-secondary" onclick="closeOrderModal()">Close</button>
-    <button class="btn btn-primary" onclick="updateOrderStatus('${order.id}')">Update Status</button>`;
-  document.getElementById('orderModal').classList.add('is-open');
-  document.body.style.overflow = 'hidden';
+function payMethodBadge(m){
+  const cls=m==='cod'?'pay-cod':m==='upi'?'pay-upi':'pay-whatsapp';
+  return`<span class="pay-badge ${cls}">${(m||'—').toUpperCase()}</span>`;
+}
+function payStatusBadge(s){
+  const labels={pending:'Pending',pending_verification:'Verify',paid:'Paid',failed:'Failed',refunded:'Refunded',cod_pending:'COD Due'};
+  const cls=s==='paid'?'paid':s==='pending_verification'?'pv':s==='refunded'?'refunded':s==='failed'?'failed':'pending';
+  return`<span class="ps ${cls}">${labels[s]||s}</span>`;
+}
+function statusBadge(s){
+  const col=STATUS_COLORS[s]||'#9ca3af';
+  const lbl=STATUS_LABELS[s]||s;
+  return`<span style="font-size:10px;font-weight:700;padding:2px 7px;border-radius:99px;background:${col}18;color:${col};">${lbl}</span>`;
 }
 
-function closeOrderModal() {
-  document.getElementById('orderModal').classList.remove('is-open');
-  document.body.style.overflow = '';
-}
-document.getElementById('orderModal').addEventListener('click', e => { if (e.target === e.currentTarget) closeOrderModal(); });
-
-async function updateOrderStatus(id) {
-  const status = document.getElementById('statusSelect').value;
-  await WF.orders.updateStatus(id, status);
-  toast('Order status updated!');
-  closeOrderModal();
-  await loadOrders();
-}
-
-function exportOrders() {
-  const rows = [['Order ID', 'Customer', 'Phone', 'Total', 'Payment', 'Status', 'Date']];
-  allOrders.forEach(o => rows.push([o.order_number, o.customer_name, o.customer_phone, o.total, o.payment_method, o.status, formatDate(o.created_at)]));
-  const csv = rows.map(r => r.map(c => `"${c}"`).join(',')).join('\n');
-  const a = document.createElement('a'); a.href = 'data:text/csv,' + encodeURIComponent(csv); a.download = 'wellfix-orders.csv'; a.click();
-  toast('Orders exported');
-}
-
-function setupRealtime() {
-  WF.realtime.onOrdersChange(loadOrders);
-}
-
-let _currentOrderId = null;
-
-async function updateOrderPayment(id, status) {
-  await db.from('orders').update({ payment_status: status }).eq('id', id);
-  toast('Payment status → ' + status);
-  if (typeof loadOrders === 'function') loadOrders();
-}
-
-async function deleteOrder(id) {
-  const targetId = id || _currentOrderId;
-  if (!targetId) return;
-  if (!confirm('Delete this order permanently? This cannot be undone.')) return;
-  
-  try {
-    // Delete linked items first to prevent foreign key constraint violations
-    await db.from('order_items').delete().eq('order_id', targetId);
-    await db.from('orders').delete().eq('id', targetId);
-    
-    toast('Order deleted'); 
-    closeOrderModal();
-    await loadOrders();
-  } catch (error) {
-    console.error("Failed to delete order:", error);
-    toast('Error deleting order');
+function renderTable(){
+  const tbody=document.getElementById('ordersTbody');
+  const slice=filteredOrders.slice(page*PER,(page+1)*PER);
+  if(!slice.length){
+    tbody.innerHTML=`<tr><td colspan="10"><div class="empty-o"><svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg><h3>No orders found</h3><p>Try adjusting filters</p></div></td></tr>`;
+    return;
   }
+  tbody.innerHTML=slice.map(o=>{
+    const cnt=(o.items||[]).length;
+    const chk=selectedIds.has(o.id)?'checked':'';
+    return`<tr onclick="viewOrder('${o.id}')">
+      <td style="padding:8px;width:36px;" onclick="event.stopPropagation()"><input type="checkbox" ${chk} onchange="toggleSel('${o.id}',this)"></td>
+      <td>
+        <div class="o-num">${o.order_number}</div>
+        <div style="font-size:10px;color:var(--gray-400);">${formatDate(o.created_at)}</div>
+      </td>
+      <td>
+        <div style="font-weight:600;font-size:12px;">${o.customer_name||'—'}</div>
+        <div style="font-size:10px;color:var(--gray-400);">${o.customer_phone||''}</div>
+      </td>
+      <td style="font-size:12px;">${cnt} item${cnt!==1?'s':''}</td>
+      <td style="font-weight:700;font-size:13px;">${formatCurrency(o.total)}</td>
+      <td>${payMethodBadge(o.payment_method)}</td>
+      <td>${payStatusBadge(o.payment_status||'pending')}</td>
+      <td>${statusBadge(o.status)}</td>
+      <td style="font-size:11px;color:var(--gray-400);white-space:nowrap;">${formatDate(o.created_at)}</td>
+      <td onclick="event.stopPropagation()">
+        <div class="ra-wrap">
+          <button class="ra green" title="View" onclick="viewOrder('${o.id}')"><svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
+          ${o.payment_status==='pending_verification'?`<button class="ra green" title="Verify Payment" onclick="event.stopPropagation();quickVerify('${o.id}')"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></button>`:''}
+          <button class="ra" title="WhatsApp" onclick="event.stopPropagation();openWA('${o.customer_phone}','${o.customer_name}','${o.order_number}')"><svg viewBox="0 0 24 24" fill="none"><path d="M17.5 14.4c-.3-.1-1.8-.9-2-.9-.3-.1-.5-.1-.7.1-.2.3-.8 1-.9 1.2-.2.2-.3.2-.6.1-.3-.2-1.3-.5-2.4-1.5-.9-.8-1.5-1.8-1.7-2.1-.2-.3 0-.5.1-.6.1-.1.3-.3.5-.5.1-.2.2-.3.3-.5.1-.2 0-.4 0-.5-.1-.2-.7-1.6-.9-2.2-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.1.2 2.1 3.2 5.1 4.5.7.3 1.3.5 1.7.6.7.2 1.4.2 1.9.1.6-.1 1.8-.7 2-1.4.2-.7.2-1.3.2-1.4 0-.1-.3-.2-.6-.3z" stroke="currentColor" stroke-width="2"/><path d="M2 12C2 6.5 6.5 2 12 2s10 4.5 10 10-4.5 10-10 10c-1.9 0-3.7-.5-5.2-1.4L2 22l1.4-4.8C2.5 15.7 2 13.9 2 12z" stroke="currentColor" stroke-width="2"/></svg></button>
+          <button class="ra danger" title="Delete" onclick="event.stopPropagation();deleteOrder('${o.id}')"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg></button>
+        </div>
+      </td>
+    </tr>`;
+  }).join('');
 }
 
-async function updatePaymentStatus(id, status) {
-  await db.from('orders').update({ payment_status: status }).eq('id', id);
-  toast('Payment status updated');
+function renderCards(){
+  const el=document.getElementById('ordersCards');
+  const slice=filteredOrders.slice(page*PER,(page+1)*PER);
+  if(!slice.length){el.innerHTML='<div class="empty-o"><svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" width="40" height="40"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/></svg><h3>No orders</h3></div>';return;}
+  el.innerHTML=slice.map(o=>`
+    <div class="o-card" onclick="viewOrder('${o.id}')">
+      <div class="o-card-hd">
+        <div>
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:3px;">
+            <span class="o-num">${o.order_number}</span>
+            ${statusBadge(o.status)}
+          </div>
+          <div class="o-card-customer">${o.customer_name||'—'}</div>
+          <div class="o-card-phone">${o.customer_phone||''} · ${formatDate(o.created_at)}</div>
+        </div>
+        <div style="text-align:right;">
+          <div style="font-family:var(--font-display);font-size:16px;font-weight:800;">${formatCurrency(o.total)}</div>
+          <div style="margin-top:4px;">${payStatusBadge(o.payment_status||'pending')}</div>
+        </div>
+      </div>
+      <div class="o-card-grid">
+        <div class="o-card-stat"><div class="o-card-stat-val">${(o.items||[]).length}</div><div class="o-card-stat-lbl">Items</div></div>
+        <div class="o-card-stat"><div class="o-card-stat-val" style="font-size:10px;">${(o.payment_method||'—').toUpperCase()}</div><div class="o-card-stat-lbl">Method</div></div>
+        <div class="o-card-stat"><div class="o-card-stat-val" style="font-size:10px;">${o.shipping_district||'—'}</div><div class="o-card-stat-lbl">District</div></div>
+      </div>
+      <div class="o-card-ft" onclick="event.stopPropagation()">
+        ${o.payment_status==='pending_verification'?`<button class="btn btn-sm btn-primary" onclick="quickVerify('${o.id}')">Verify Payment</button>`:'<span></span>'}
+        <button class="btn btn-sm btn-outline" onclick="openWA('${o.customer_phone}','${o.customer_name}','${o.order_number}')">WhatsApp</button>
+      </div>
+    </div>`).join('');
 }
+
+function renderPager(){
+  const total=filteredOrders.length,pages=Math.ceil(total/PER);
+  document.getElementById('pagerInfo').textContent=total?`${page*PER+1}–${Math.min((page+1)*PER,total)} of ${total}`:'';
+  const el=document.getElementById('pagerBtns');
+  if(pages<=1){el.innerHTML='';return;}
+  let h=`<button class="pager-btn" onclick="goPage(${Math.max(0,page-1)})" ${page===0?'disabled':''}>←</button>`;
+  for(let i=0;i<Math.min(pages,7);i++)h+=`<button class="pager-btn ${i===page?'on':''}" onclick="goPage(${i})">${i+1}</button>`;
+  h+=`<button class="pager-btn" onclick="goPage(${Math.min(pages-1,page+1)})" ${page>=pages-1?'disabled':''}>→</button>`;
+  el.innerHTML=h;
+}
+function goPage(n){page=n;renderTable();renderCards();renderPager();}
+
+// SELECTION
+function toggleSel(id,cb){if(cb.checked)selectedIds.add(id);else selectedIds.delete(id);updateBulk();}
+function toggleAll(cb){filteredOrders.slice(page*PER,(page+1)*PER).forEach(o=>{if(cb.checked)selectedIds.add(o.id);else selectedIds.delete(o.id);});renderTable();renderCards();updateBulk();}
+function updateBulk(){const n=selectedIds.size;document.getElementById('bulkBar').classList.toggle('show',n>0);document.getElementById('bulkCnt').textContent=`${n} selected`;}
+function clearSel(){selectedIds.clear();renderTable();renderCards();updateBulk();}
+
+// BULK
+async function bulkUpdate(payload,msg){
+  for(const id of selectedIds){
+    await db.from('orders').update(payload).eq('id',id);
+    await logAction(id,msg,'bulk',null,payload.status||payload.payment_status);
+  }
+  toast(msg);clearSel();loadOrders();
+}
+function bulkConfirm(){bulkUpdate({status:'confirmed'},'Orders confirmed');}
+function bulkMarkPaid(){bulkUpdate({payment_status:'paid'},'Payments marked paid');}
+function bulkCancel(){if(!confirm(`Cancel ${selectedIds.size} orders? Stock will be restored.`))return;bulkUpdate({status:'cancelled'},'Orders cancelled');}
+function bulkExport(){const sel=allOrders.filter(o=>selectedIds.has(o.id));doCSVExport(sel);}
+
+// VIEW ORDER
+async function viewOrder(id){
+  currentOrderId=id;
+  const o=allOrders.find(x=>x.id===id);if(!o)return;
+  document.getElementById('detailTitle').textContent='Order '+o.order_number;
+  document.getElementById('printBtn').style.display='block';
+  // Load logs
+  const{data:logs}=await db.from('order_logs').select('*').eq('order_id',id).order('created_at',{ascending:false}).limit(20);
+
+  const items=o.items||[];
+  const subtotal=o.subtotal||items.reduce((s,i)=>s+(parseFloat(i.total_price)||0),0);
+  const disc=parseFloat(o.discount)||0;
+  const del=parseFloat(o.delivery_charge)||0;
+  const tax=parseFloat(o.tax)||0;
+
+  document.getElementById('detailBody').innerHTML=`
+    <!-- Status Flow -->
+    <div style="margin-bottom:16px;">
+      <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--gray-400);margin-bottom:8px;">Order Status</div>
+      <div class="status-flow">
+        ${['pending','confirmed','processing','packed','shipped','out_for_delivery','delivered'].map(s=>`
+          <div class="sf-btn ${o.status===s?'current':PAID.indexOf(s)<=PAID.indexOf(o.status)&&o.status!=='cancelled'?'done':''}" onclick="changeStatus('${id}','${s}')">${STATUS_LABELS[s]}</div>`).join('')}
+        <div class="sf-btn ${o.status==='cancelled'?'current':''}" style="${o.status==='cancelled'?'':'border-color:#fecaca;color:#ef4444;'}" onclick="changeStatus('${id}','cancelled')">Cancel</div>
+      </div>
+    </div>
+
+    <!-- Info Grid -->
+    <div class="o-detail-grid" style="margin-bottom:16px;">
+      <div class="o-detail-sec">
+        <div class="o-detail-hd">Customer</div>
+        <div style="font-weight:700;">${o.customer_name}</div>
+        <div style="font-size:12px;color:var(--gray-500);">${o.customer_phone}</div>
+        ${o.customer_email?`<div style="font-size:12px;color:var(--gray-500);">${o.customer_email}</div>`:''}
+        <div style="margin-top:8px;">
+          <a href="https://wa.me/${(o.customer_phone||'').replace(/\D/g,'')}?text=Hi ${encodeURIComponent(o.customer_name||'')}! Your order ${o.order_number} update." target="_blank" class="btn btn-sm btn-outline" style="font-size:11px;">WhatsApp</a>
+        </div>
+      </div>
+      <div class="o-detail-sec">
+        <div class="o-detail-hd">Shipping Address</div>
+        <div style="font-size:13px;color:var(--gray-600);line-height:1.7;">${o.shipping_address||'—'}<br>${o.shipping_city||''}${o.shipping_district?', '+o.shipping_district:''}${o.shipping_pincode?' - '+o.shipping_pincode:''}</div>
+      </div>
+    </div>
+
+    <!-- Payment -->
+    <div class="verify-box" style="margin-bottom:12px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+        <span style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--gray-400);">Payment</span>
+        <div style="display:flex;gap:6px;align-items:center;">
+          ${payMethodBadge(o.payment_method)}
+          ${payStatusBadge(o.payment_status||'pending')}
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        ${o.payment_status!=='paid'?`<button class="btn btn-sm btn-primary" onclick="verifyPayment('${id}')">Mark Paid</button>`:''}
+        ${o.payment_status==='pending_verification'?`<button class="btn btn-sm btn-outline" onclick="rejectPayment('${id}')">Reject</button>`:''}
+        ${o.payment_status==='paid'&&o.status==='delivered'?`<button class="btn btn-sm" style="background:var(--red-100);color:var(--red-600);" onclick="processRefund('${id}')">Refund</button>`:''}
+      </div>
+      ${o.payment_reference?`<div style="font-size:11px;color:var(--gray-500);margin-top:6px;">Ref: ${o.payment_reference}</div>`:''}
+      <div style="margin-top:8px;">
+        <input class="form-input" id="payRefInput" placeholder="Add payment reference / UTR / note" value="${o.payment_reference||''}" style="font-size:12px;height:32px;">
+        <button class="btn btn-sm btn-outline" onclick="savePayRef('${id}')" style="margin-top:4px;font-size:11px;">Save Reference</button>
+      </div>
+    </div>
+
+    <!-- Tracking -->
+    <div class="verify-box" style="margin-bottom:12px;">
+      <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--gray-400);margin-bottom:8px;">Delivery Tracking</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+        <div><label class="form-label" style="font-size:10px;">Courier</label><input class="form-input" id="courierInput" value="${o.courier||''}" placeholder="DTDC, Speed Post…" style="height:30px;font-size:12px;"></div>
+        <div><label class="form-label" style="font-size:10px;">Tracking ID</label><input class="form-input" id="trackingInput" value="${o.tracking_id||''}" placeholder="Tracking number" style="height:30px;font-size:12px;"></div>
+      </div>
+      <button class="btn btn-sm btn-outline" onclick="saveTracking('${id}')" style="margin-top:8px;font-size:11px;">Save Tracking</button>
+    </div>
+
+    <!-- Order Items -->
+    <div class="o-detail-sec" style="margin-bottom:12px;">
+      <div class="o-detail-hd">Order Items (${items.length})</div>
+      ${items.map(item=>`
+        <div class="o-item-row">
+          <div class="o-item-thumb">
+            ${item.product_image?`<img src="${item.product_image}" alt="" loading="lazy">`:`<svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" width="18" height="18"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/></svg>`}
+          </div>
+          <div style="flex:1;min-width:0;">
+            <div style="font-weight:600;font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${item.product_name||'—'}</div>
+            <div style="font-size:11px;color:var(--gray-400);">Qty: ${item.quantity||1} × ${formatCurrency(item.unit_price)}</div>
+          </div>
+          <div style="font-weight:700;font-size:13px;flex-shrink:0;">${formatCurrency(item.total_price)}</div>
+        </div>`).join('')}
+      <!-- Price breakdown -->
+      <div style="margin-top:12px;display:flex;flex-direction:column;gap:4px;padding-top:10px;border-top:1px solid var(--gray-100);">
+        <div style="display:flex;justify-content:space-between;font-size:12px;"><span style="color:var(--gray-500);">Subtotal</span><span>${formatCurrency(subtotal)}</span></div>
+        ${disc>0?`<div style="display:flex;justify-content:space-between;font-size:12px;"><span style="color:#ef4444;">Discount</span><span style="color:#ef4444;">−${formatCurrency(disc)}</span></div>`:''}
+        ${del>0?`<div style="display:flex;justify-content:space-between;font-size:12px;"><span style="color:var(--gray-500);">Delivery</span><span>${formatCurrency(del)}</span></div>`:''}
+        ${tax>0?`<div style="display:flex;justify-content:space-between;font-size:12px;"><span style="color:var(--gray-500);">Tax</span><span>${formatCurrency(tax)}</span></div>`:''}
+        <div style="display:flex;justify-content:space-between;font-family:var(--font-display);font-size:16px;font-weight:800;padding-top:6px;border-top:1px solid var(--gray-100);margin-top:2px;"><span>Total</span><span>${formatCurrency(o.total)}</span></div>
+      </div>
+    </div>
+
+    <!-- Notes -->
+    <div class="verify-box" style="margin-bottom:12px;">
+      <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--gray-400);margin-bottom:8px;">Admin Notes</div>
+      <textarea class="form-textarea" id="adminNotesInput" placeholder="Internal notes (not visible to customer)…" style="min-height:60px;font-size:12px;">${o.admin_notes||''}</textarea>
+      <button class="btn btn-sm btn-outline" onclick="saveAdminNotes('${id}')" style="margin-top:6px;font-size:11px;">Save Notes</button>
+    </div>
+
+    <!-- Activity Log -->
+    ${logs?.length?`<div class="o-detail-sec">
+      <div class="o-detail-hd">Activity Log</div>
+      <div class="timeline">
+        ${logs.map(l=>`<div class="tl-item">
+          <div><div class="tl-dot" style="background:${STATUS_COLORS[l.new_value]||'#9ca3af'};"></div></div>
+          <div>
+            <div class="tl-text"><strong>${l.action}</strong>${l.new_value?' → '+l.new_value:''}</div>
+            <div class="tl-time">${l.done_by} · ${l.created_at?new Date(l.created_at).toLocaleString('en-IN',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}):''}</div>
+          </div>
+        </div>`).join('')}
+      </div>
+    </div>`:''}`;
+
+  document.getElementById('detailFt').innerHTML=`
+    <button class="btn btn-outline" onclick="closeDetail()">Close</button>
+    <button class="btn" style="background:var(--red-100);color:var(--red-600);" onclick="deleteOrder('${id}')">Delete</button>
+    <button class="btn btn-outline" onclick="printInvoice()">Invoice</button>`;
+
+  document.getElementById('oDetailOverlay').style.display='flex';
+}
+function closeDetail(){document.getElementById('oDetailOverlay').style.display='none';}
+
+// STATUS CHANGE
+async function changeStatus(id,status){
+  if(status==='cancelled'&&!confirm('Cancel this order? Stock will be restored.')) return;
+  const o=allOrders.find(x=>x.id===id);
+  const old=o?.status;
+  await db.from('orders').update({status}).eq('id',id);
+  await logAction(id,'Status changed',old,status);
+  // Restore stock on cancel
+  if(status==='cancelled'&&o?.items?.length){
+    for(const item of o.items){
+      if(item.product_id&&item.quantity){
+        const{data:p}=await db.from('products').select('stock_qty').eq('id',item.product_id).single();
+        if(p)await db.from('products').update({stock_qty:(p.stock_qty||0)+(item.quantity||1)}).eq('id',item.product_id);
+      }
+    }
+  }
+  if(o)o.status=status;
+  toast('Status updated to: '+STATUS_LABELS[status]);
+  renderStatusTabs();filterOrders();
+  // Re-open with fresh data
+  viewOrder(id);
+}
+
+// PAYMENT
+async function verifyPayment(id){
+  await db.from('orders').update({payment_status:'paid',status:'confirmed'}).eq('id',id);
+  await logAction(id,'Payment verified','pending_verification','paid');
+  const o=allOrders.find(x=>x.id===id);if(o){o.payment_status='paid';o.status='confirmed';}
+  toast('Payment verified — order confirmed');
+  renderStatusTabs();filterOrders();viewOrder(id);
+}
+async function rejectPayment(id){
+  await db.from('orders').update({payment_status:'failed'}).eq('id',id);
+  await logAction(id,'Payment rejected','pending_verification','failed');
+  const o=allOrders.find(x=>x.id===id);if(o)o.payment_status='failed';
+  toast('Payment rejected');renderStatusTabs();filterOrders();viewOrder(id);
+}
+async function processRefund(id){
+  if(!confirm('Mark this order as refunded?'))return;
+  await db.from('orders').update({payment_status:'refunded',status:'refunded'}).eq('id',id);
+  await logAction(id,'Refund processed','paid','refunded');
+  const o=allOrders.find(x=>x.id===id);if(o){o.payment_status='refunded';o.status='refunded';}
+  toast('Refund processed');renderStatusTabs();filterOrders();viewOrder(id);
+}
+async function quickVerify(id){
+  await verifyPayment(id);
+  // Reload
+  const{data}=await db.from('orders').select('*,items:order_items(*)').eq('id',id).single();
+  const idx=allOrders.findIndex(x=>x.id===id);if(idx>=0&&data)allOrders[idx]=data;
+  renderTable();renderCards();
+}
+async function savePayRef(id){
+  const ref=document.getElementById('payRefInput')?.value||'';
+  await db.from('orders').update({payment_reference:ref}).eq('id',id);
+  const o=allOrders.find(x=>x.id===id);if(o)o.payment_reference=ref;
+  toast('Reference saved');
+}
+async function saveTracking(id){
+  const courier=document.getElementById('courierInput')?.value||'';
+  const tracking=document.getElementById('trackingInput')?.value||'';
+  await db.from('orders').update({courier,tracking_id:tracking,status:'shipped'}).eq('id',id);
+  await logAction(id,'Tracking added',null,tracking);
+  const o=allOrders.find(x=>x.id===id);if(o){o.courier=courier;o.tracking_id=tracking;o.status='shipped';}
+  toast('Tracking saved — status set to Shipped');filterOrders();viewOrder(id);
+}
+async function saveAdminNotes(id){
+  const n=document.getElementById('adminNotesInput')?.value||'';
+  await db.from('orders').update({admin_notes:n}).eq('id',id);
+  const o=allOrders.find(x=>x.id===id);if(o)o.admin_notes=n;
+  toast('Notes saved');
+}
+
+// DELETE
+async function deleteOrder(id){
+  if(!confirm('Delete this order permanently?'))return;
+  await db.from('order_items').delete().eq('order_id',id);
+  await db.from('order_logs').delete().eq('order_id',id);
+  await db.from('orders').delete().eq('id',id);
+  allOrders=allOrders.filter(x=>x.id!==id);
+  toast('Order deleted');closeDetail();renderStatusTabs();filterOrders();
+}
+
+// LOG
+async function logAction(orderId,action,oldVal,newVal,note){
+  const o=allOrders.find(x=>x.id===orderId);
+  try{await db.from('order_logs').insert({order_id:orderId,order_number:o?.order_number,action,old_value:oldVal,new_value:newVal,note:note||null,done_by:'Admin'});}catch(e){}
+}
+
+// WHATSAPP
+function openWA(phone,name,orderNum){
+  const num=(phone||'').replace(/\D/g,'');
+  if(!num){toast('No phone number',true);return;}
+  const msg=`Hi ${name||''}! Your WellFix order ${orderNum} has been received. Thank you for shopping with us!`;
+  window.open(`https://wa.me/${num}?text=${encodeURIComponent(msg)}`,'_blank');
+}
+
+// NEW ORDER (manual)
+function openNewOrder(){
+  // Simple redirect to ensure it's known this creates a manual order
+  toast('Use the website checkout or add products directly to create an order');
+}
+
+// INVOICE / PRINT
+function printInvoice(){
+  const o=allOrders.find(x=>x.id===currentOrderId);if(!o)return;
+  const items=o.items||[];
+  const subtotal=o.subtotal||items.reduce((s,i)=>s+(parseFloat(i.total_price)||0),0);
+  const disc=parseFloat(o.discount)||0;
+  const del=parseFloat(o.delivery_charge)||0;
+  const win=window.open('','_blank');
+  win.document.write(`<html><head><title>Invoice ${o.order_number}</title><style>
+    body{font-family:Arial,sans-serif;font-size:13px;padding:30px;max-width:650px;margin:0 auto;}
+    h1{font-size:26px;font-weight:800;margin:0 0 4px;}.meta{color:#666;font-size:12px;}
+    table{width:100%;border-collapse:collapse;margin:20px 0;}th{padding:8px;background:#f5f5f5;text-align:left;font-size:11px;text-transform:uppercase;}td{padding:8px;border-bottom:1px solid #eee;}
+    .total-row{display:flex;justify-content:space-between;font-size:13px;margin-top:5px;}.grand{font-size:18px;font-weight:800;}
+    @media print{button{display:none;}}
+  </style></head><body>
+    <div style="display:flex;justify-content:space-between;margin-bottom:24px;">
+      <div><h1>INVOICE</h1><div class="meta">${o.order_number} · ${new Date(o.created_at).toLocaleDateString('en-IN',{day:'numeric',month:'long',year:'numeric'})}</div></div>
+      <div style="text-align:right;"><div style="font-weight:700;font-size:16px;">WellFix Appliances</div><div class="meta">Kerala, India · 8590004349<br>wellfixappliances@gmail.com</div></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:20px;background:#f9fafb;padding:14px;border-radius:8px;">
+      <div><div style="font-size:10px;font-weight:700;text-transform:uppercase;color:#999;margin-bottom:4px;">Bill To</div><div style="font-weight:700;">${o.customer_name}</div><div class="meta">${o.customer_phone}<br>${o.shipping_address||''}<br>${o.shipping_city||''}${o.shipping_district?', '+o.shipping_district:''}</div></div>
+      <div style="text-align:right;"><div style="font-size:10px;font-weight:700;text-transform:uppercase;color:#999;margin-bottom:4px;">Payment</div><div style="font-weight:700;text-transform:uppercase;">${o.payment_method}</div><div class="meta">${(o.payment_status||'').replace(/_/g,' ')}</div></div>
+    </div>
+    <table><thead><tr><th>Product</th><th>Qty</th><th>Unit Price</th><th>Total</th></tr></thead><tbody>
+    ${items.map(i=>`<tr><td>${i.product_name||'—'}</td><td>${i.quantity||1}</td><td>₹${Number(i.unit_price).toLocaleString('en-IN')}</td><td>₹${Number(i.total_price).toLocaleString('en-IN')}</td></tr>`).join('')}
+    </tbody></table>
+    <div style="text-align:right;">
+      <div class="total-row"><span style="color:#666;">Subtotal</span><span>₹${Number(subtotal).toLocaleString('en-IN')}</span></div>
+      ${disc>0?`<div class="total-row"><span style="color:#ef4444;">Discount</span><span style="color:#ef4444;">−₹${Number(disc).toLocaleString('en-IN')}</span></div>`:''}
+      ${del>0?`<div class="total-row"><span style="color:#666;">Delivery</span><span>₹${Number(del).toLocaleString('en-IN')}</span></div>`:''}
+      <div class="total-row grand" style="margin-top:8px;padding-top:8px;border-top:2px solid #111;"><span>Total</span><span>₹${Number(o.total).toLocaleString('en-IN')}</span></div>
+    </div>
+    <div style="margin-top:24px;text-align:center;color:#999;font-size:11px;">Thank you for shopping with WellFix Appliances · UPI: 8301879406@ybl</div>
+    <button onclick="window.print()" style="margin-top:20px;padding:10px 20px;background:#034732;color:#fff;border:none;border-radius:6px;cursor:pointer;font-size:13px;font-weight:700;">Print Invoice</button>
+  </body></html>`);win.document.close();
+}
+
+// EXPORT
+function doCSVExport(orders){
+  const rows=[['Order','Customer','Phone','Items','Subtotal','Discount','Delivery','Total','Payment','Pay Status','Status','District','Date']];
+  orders.forEach(o=>{
+    const cnt=(o.items||[]).length;
+    rows.push([o.order_number,o.customer_name||'',o.customer_phone||'',cnt,o.subtotal||o.total||0,o.discount||0,o.delivery_charge||0,o.total||0,(o.payment_method||'').toUpperCase(),o.payment_status||'',o.status||'',o.shipping_district||'',new Date(o.created_at).toLocaleDateString()]);
+  });
+  const a=document.createElement('a');a.href='data:text/csv,'+encodeURIComponent(rows.map(r=>r.map(v=>`"${v}"`).join(',')).join('\n'));a.download='wellfix-orders.csv';a.click();toast('Exported');
+}
+function exportOrders(mode){
+  if(mode==='all')doCSVExport(allOrders);
+  else if(mode==='filtered')doCSVExport(filteredOrders);
+  else if(mode==='selected')doCSVExport(allOrders.filter(o=>selectedIds.has(o.id)));
+}
+function exportPendingPayments(){
+  const pend=allOrders.filter(o=>o.payment_status==='pending_verification');
+  doCSVExport(pend);
+  toast(`${pend.length} pending payment orders exported`);
+}
+
+// DROPDOWN
+function toggleDrop(id){const el=document.getElementById(id+'List');document.querySelectorAll('.drop-l').forEach(d=>{if(d!==el)d.classList.remove('open');});el.classList.toggle('open');}
+function closeDrop(id){document.getElementById(id+'List').classList.remove('open');}
 </script>
 </body>
 </html>
