@@ -263,7 +263,23 @@
         </div>
         <span id="sDisc" style="color:#ef4444;">-₹0</span>
       </div>
-      <div class="sr"><span>GST (5%)</span><span id="sTax">₹0</span></div>
+      <div class="sr" id="gstRow">
+        <div style="display:flex;align-items:center;gap:5px;">
+          <label class="tog" style="cursor:pointer;" title="Toggle GST">
+            <input type="checkbox" id="gstToggle" checked onchange="calc()" style="display:none;">
+            <span class="tog-tr"></span>
+          </label>
+          <span>GST</span>
+          <select id="gstRate" onchange="calc()" style="height:20px;border:1px solid var(--gray-200);border-radius:3px;font-size:10px;padding:0 3px;">
+            <option value="0">0%</option>
+            <option value="5" selected>5%</option>
+            <option value="12">12%</option>
+            <option value="18">18%</option>
+            <option value="28">28%</option>
+          </select>
+        </div>
+        <span id="sTax">₹0</span>
+      </div>
       <div class="sr grand"><span>TOTAL</span><span id="sTotal">₹0.00</span></div>
     </div>
 
@@ -413,9 +429,11 @@ async function loadCusts(){
   allCusts=data||[];
 }
 async function genInvNum(){
-  const{count}=await db.from('pos_invoices').select('*',{count:'exact',head:true}).catch(()=>({count:0}));
-  const n=(count||0)+1, d=new Date();
-  const code=`WF-POS-${d.getFullYear().toString().slice(-2)}${String(d.getMonth()+1).padStart(2,'0')}-${String(n).padStart(4,'0')}`;
+  // Use timestamp + random to guarantee uniqueness
+  const d=new Date();
+  const ts=d.getTime().toString().slice(-6);
+  const rand=Math.random().toString(36).slice(2,5).toUpperCase();
+  const code=`WF-${d.getFullYear().toString().slice(-2)}${String(d.getMonth()+1).padStart(2,'0')}-${ts}${rand}`;
   document.getElementById('invNumDisplay').textContent=code;
   return code;
 }
@@ -527,11 +545,18 @@ function calc(){
   const dn=parseFloat(document.getElementById('discN').value)||0;
   const dt=document.getElementById('discT').value;
   const da=dt==='pct'?sub*(dn/100):Math.min(dn,sub);
-  const afterD=sub-da;const tax=afterD*.05;const tot=afterD+tax;
+  const afterD=sub-da;
+  const gstRate=parseFloat(document.getElementById('gstRate')?.value||'5')/100;
+  const applyGST=document.getElementById('gstToggle')?.checked!==false;
+  const tax=applyGST?afterD*gstRate:0;
+  const tot=afterD+tax;
   document.getElementById('sItems').textContent=cart.reduce((s,i)=>s+i.qty,0);
   document.getElementById('sSub').textContent='₹'+sub.toLocaleString('en-IN');
   document.getElementById('sDisc').textContent='-₹'+da.toFixed(2);
-  document.getElementById('sTax').textContent='₹'+tax.toFixed(2);
+  const gstPct=parseFloat(document.getElementById('gstRate')?.value||'5');
+  const gstOn=document.getElementById('gstToggle')?.checked!==false;
+  document.getElementById('sTax').textContent=gstOn?'₹'+tax.toFixed(2):'Off';
+  document.getElementById('gstRow').style.opacity=gstOn?'1':'0.5';
   document.getElementById('sTotal').textContent='₹'+tot.toFixed(2);
   if(cart.length){
     document.getElementById('chargeBtn').disabled=false;
@@ -563,7 +588,8 @@ function setPay(m,el){
 async function chargeBill(){
   if(!cart.length)return;
   const{sub,da,tax,tot}=calc();
-  const invCode=document.getElementById('invNumDisplay').textContent;
+  // Always generate a fresh invoice number right before saving
+  const invCode=await genInvNum();
   const btn=document.getElementById('chargeBtn');
   btn.textContent='Processing…';btn.disabled=true;
   try{
@@ -574,7 +600,10 @@ async function chargeBill(){
       customer_id:cust?.id||null,
       customer_name:custName,
       customer_phone:cust?.phone||null,
-      subtotal:sub,discount_amount:da,tax_amount:tax,tax_pct:5,total:tot,
+      subtotal:sub,discount_amount:da,
+      tax_amount:tax,
+      tax_pct:parseFloat(document.getElementById('gstRate')?.value||'5'),
+      total:tot,
       paid_amount:tot,due_amount:0,
       payment_method:payMethod,
       payment_reference:document.getElementById('refInp').value||null,
@@ -735,14 +764,27 @@ async function openShift(){
   const rev=list.reduce((s,i)=>s+(+i.total||0),0);
   const cash=list.filter(i=>i.payment_method==='cash').reduce((s,i)=>s+(+i.total||0),0);
   const upi=list.filter(i=>i.payment_method==='upi').reduce((s,i)=>s+(+i.total||0),0);
+  const cardRev=list.filter(i=>i.payment_method==='card').reduce((s,i)=>s+(+i.total||0),0);
+  const splitRev=list.filter(i=>i.payment_method==='split').reduce((s,i)=>s+(+i.total||0),0);
   document.getElementById('shiftBody').innerHTML=`
-    <div style="background:var(--gray-25);border-radius:8px;padding:14px;">
+    <div style="background:var(--gray-25);border-radius:8px;padding:14px;margin-bottom:12px;">
       <div class="sstat"><span>Total Invoices</span><span class="sstat-v">${list.length}</span></div>
-      <div class="sstat"><span>Total Revenue</span><span class="sstat-v" style="color:var(--green-700);">₹${rev.toLocaleString('en-IN')}</span></div>
+      <div class="sstat"><span>Total Revenue</span><span class="sstat-v" style="color:var(--green-700);font-size:18px;">₹${rev.toLocaleString('en-IN')}</span></div>
       <div class="sstat"><span>Cash</span><span class="sstat-v">₹${cash.toLocaleString('en-IN')}</span></div>
       <div class="sstat"><span>UPI</span><span class="sstat-v">₹${upi.toLocaleString('en-IN')}</span></div>
-      <div class="sstat"><span>Card</span><span class="sstat-v">₹${list.filter(i=>i.payment_method==='card').reduce((s,i)=>s+(+i.total||0),0).toLocaleString('en-IN')}</span></div>
-    </div>`;
+      <div class="sstat"><span>Card</span><span class="sstat-v">₹${cardRev.toLocaleString('en-IN')}</span></div>
+      ${splitRev?`<div class="sstat"><span>Split</span><span class="sstat-v">₹${splitRev.toLocaleString('en-IN')}</span></div>`:''}
+    </div>
+    <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--gray-400);margin-bottom:8px;">Recent Bills</div>
+    ${list.slice(0,5).map(i=>`
+      <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--gray-50);font-size:12px;">
+        <div>
+          <div style="font-weight:700;color:var(--green-700);">${i.invoice_number}</div>
+          <div style="font-size:10px;color:var(--gray-400);">${i.customer_name||'Walk-in'} · ${(i.payment_method||'').toUpperCase()}</div>
+        </div>
+        <div style="font-weight:800;font-family:var(--font-display);">₹${Number(i.total).toLocaleString('en-IN')}</div>
+      </div>`).join('')}
+    ${!list.length?'<div style="text-align:center;color:var(--gray-400);font-size:12px;padding:12px;">No bills yet today</div>':''}`;
   document.getElementById('shiftOvl').style.display='flex';
 }
 function closeShift(){document.getElementById('shiftOvl').style.display='none';}
