@@ -26,7 +26,8 @@ const ALL_PAGES = {
   seo:        'SEO',
   users:      'Users',
   settings:   'Settings',
-  pos:        'Point of Sale'
+  pos:        'Point of Sale',
+  invoice_manager: 'Invoice Manager'
 };
 
 const AdminShell = {
@@ -80,10 +81,10 @@ const AdminShell = {
 
   _defaultPermissions(role) {
     const perms = {
-      super_admin: { dashboard:true, analytics:true, products:true, categories:true, brands:true, inventory:true, orders:true, customers:true, coupons:true, reviews:true, services:true, homepage:true, banners:true, blog:true, media:true, seo:true, finance:true, branches:true, roles:true, activity_logs:true, users:true, settings:true, pos:true },
-      admin:       { dashboard:true, analytics:true, products:true, categories:true, brands:true, inventory:true, orders:true, customers:true, coupons:true, reviews:true, services:true, homepage:true, banners:true, blog:true, media:true, seo:true, finance:true, branches:false, roles:false, activity_logs:true, users:false, settings:false, pos:true },
+      super_admin: { dashboard:true, analytics:true, products:true, categories:true, brands:true, inventory:true, orders:true, customers:true, coupons:true, reviews:true, services:true, homepage:true, banners:true, blog:true, media:true, seo:true, finance:true, branches:true, roles:true, activity_logs:true, users:true, settings:true, pos:true, invoice_manager:true },
+      admin:       { dashboard:true, analytics:true, products:true, categories:true, brands:true, inventory:true, orders:true, customers:true, coupons:true, reviews:true, services:true, homepage:true, banners:true, blog:true, media:true, seo:true, finance:true, branches:false, roles:false, activity_logs:true, users:false, settings:false, pos:true, invoice_manager:true },
       staff:       { dashboard:true, analytics:false, products:true, categories:false, brands:false, inventory:false, orders:true, customers:true, coupons:false, reviews:false, services:true, homepage:false, banners:false, blog:false, media:false, seo:false, finance:false, branches:false, roles:false, activity_logs:false, users:false, settings:false, pos:false },
-      pos_staff:   { dashboard:true, analytics:false, products:true, categories:false, brands:false, inventory:false, orders:true, customers:true, coupons:true, reviews:false, services:false, homepage:false, banners:false, blog:false, media:false, seo:false, finance:false, branches:false, roles:false, activity_logs:false, users:false, settings:false, pos:true },
+      pos_staff:   { dashboard:true, analytics:false, products:true, categories:false, brands:false, inventory:false, orders:true, customers:true, coupons:true, reviews:false, services:false, homepage:false, banners:false, blog:false, media:false, seo:false, finance:false, branches:false, roles:false, activity_logs:false, users:false, settings:false, pos:true, invoice_manager:true },
       accountant:  { dashboard:true, analytics:true, products:false, categories:false, brands:false, inventory:false, orders:true, customers:true, coupons:false, reviews:false, services:false, homepage:false, banners:false, blog:false, media:false, seo:false, finance:true, branches:false, roles:false, activity_logs:true, users:false, settings:false, pos:false },
       inventory:   { dashboard:true, analytics:false, products:true, categories:false, brands:false, inventory:true, orders:false, customers:false, coupons:false, reviews:false, services:false, homepage:false, banners:false, blog:false, media:false, seo:false, finance:false, branches:false, roles:false, activity_logs:false, users:false, settings:false, pos:false },
       content:     { dashboard:true, analytics:false, products:false, categories:true, brands:true, inventory:false, orders:false, customers:false, coupons:false, reviews:true, services:false, homepage:true, banners:true, blog:true, media:true, seo:false, finance:false, branches:false, roles:false, activity_logs:false, users:false, settings:false, pos:false },
@@ -120,6 +121,7 @@ const AdminShell = {
       ]},
       { group: 'POS', items: [
         { page: 'pos', label: 'Point of Sale', d: 'M3 3h18v4H3zM3 10h4v11H3zM10 10h11v11H10z' },
+        { page: 'invoice_manager', label: 'Invoice Manager', d: 'M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8zM14 2v6h6M16 13H8M16 17H8M10 9H8' },
       ]},
       { group: 'Content', items: [
         { page: 'homepage', label: 'Homepage', d: 'M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z' },
