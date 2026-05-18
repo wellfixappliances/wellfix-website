@@ -95,7 +95,13 @@
 .hero-card__overlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(to top, rgba(0,0,0,.7) 0%, rgba(0,0,0,.1) 55%, transparent 100%);
+  /* Direction changed to 'to top' to keep text readable at the bottom of the quad cards */
+  background: linear-gradient(
+    to top, 
+    rgba(2, 48, 32, 0.95) 0%,   /* Deep forest green at the bottom behind the text */
+    rgba(3, 71, 50, 0.6) 50%,   /* Transition zone mid-card */
+    rgba(3, 71, 50, 0.1) 100%   /* Very light green tint at the top to tint the white product backgrounds */
+  );
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
