@@ -420,7 +420,7 @@ async function processImg(file){
           canvas.width=W;canvas.height=H;
           const ctx=canvas.getContext('2d');
           ctx.fillStyle='#f5f5f5';ctx.fillRect(0,0,W,H);
-          // Square positions: contain. Others: cover
+          // Square positions: cover. Others: cover
           const sq=pos==='hero_card'||pos==='popup';
           const scale=sq?Math.min((W*.92)/img.width,(H*.92)/img.height):Math.max(W/img.width,H/img.height);
           const sw=img.width*scale,sh=img.height*scale;
@@ -494,10 +494,10 @@ function updateDimHint(){
   const pos=document.getElementById('fPos').value;
   const dim=DIMS[pos]||DIMS.hero;
   document.getElementById('dimHint').textContent=prevDev==='mobile'?`Mobile: ${dim.m}`:`Desktop: ${dim.d}`;
-  document.getElementById('sizeNote').textContent=`Upload recommended size: ${dim.d} (desktop) · ${dim.m} (mobile). Square positions auto-fit with contain mode.`;
+  document.getElementById('sizeNote').textContent=`Upload recommended size: ${dim.d} (desktop) · ${dim.m} (mobile). Square positions auto-fit with cover mode.`;
   // Auto-set fit for square
   const fitSel=document.getElementById('fFit');
-  if(pos==='hero_card'||pos==='popup') fitSel.value='contain';
+  if(pos==='hero_card'||pos==='popup') fitSel.value='cover';
   else if(!editId) fitSel.value='cover';
 }
 
