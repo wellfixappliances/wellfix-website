@@ -339,6 +339,68 @@ function skeletonRows(cols=6, rows=5) {
 }
 
 window.AdminShell = AdminShell;
+
+// ── AUTO REFRESH — syncs all admin pages every 2 minutes ──
+(function(){
+  const INTERVAL = 2 * 60 * 1000; // 2 minutes
+  // Pages with their own loadAll/loadData functions — call them silently
+  const refreshFns = ['loadAll','loadData','loadOrders','loadProducts','loadInvoices','loadCustomers'];
+
+  let refreshTimer = null;
+  let lastActivity = Date.now();
+
+  // Track user activity — pause refresh if user actively typing
+  ['click','keydown','scroll','touchstart'].forEach(ev => {
+    document.addEventListener(ev, () => { lastActivity = Date.now(); }, { passive: true });
+  });
+
+  function doRefresh() {
+    // Skip if user was active in last 30s (they might be mid-action)
+    if (Date.now() - lastActivity < 30000) return;
+
+    // Try page-specific refresh function first
+    for (const fn of refreshFns) {
+      if (typeof window[fn] === 'function') {
+        try { window[fn](); } catch(e) {}
+        return;
+      }
+    }
+    // Fallback: full page reload (only if no specific fn found)
+    window.location.reload();
+  }
+
+  function startRefresh() {
+    clearInterval(refreshTimer);
+    refreshTimer = setInterval(doRefresh, INTERVAL);
+  }
+
+  // Show countdown in topbar subtitle area
+  function startCountdown() {
+    let secs = INTERVAL / 1000;
+    const indicator = document.createElement('span');
+    indicator.id = 'refreshIndicator';
+    indicator.style.cssText = 'font-size:10px;color:var(--gray-300);margin-left:8px;';
+    const crumb = document.querySelector('.topbar__crumb');
+    if (crumb) crumb.appendChild(indicator);
+
+    setInterval(() => {
+      secs--;
+      if (secs <= 0) secs = INTERVAL / 1000;
+      if (indicator) indicator.textContent = `· sync in ${secs}s`;
+    }, 1000);
+  }
+
+  // Start after shell renders
+  document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(() => {
+      startRefresh();
+      startCountdown();
+    }, 1500);
+  });
+
+  // Also expose manual refresh
+  window.manualRefresh = doRefresh;
+})();
 window.toast = toast;
 window.formatCurrency = formatCurrency;
 window.formatDate = formatDate;
