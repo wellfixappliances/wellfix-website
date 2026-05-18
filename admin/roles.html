@@ -7,11 +7,11 @@
 <link rel="icon" href="../assets/images/WELLFIX-FAVICON.png">
 <link rel="stylesheet" href="assets/css/admin.css">
 <style>
-  /* Base Architecture Matched to WellFix Styling */
+  /* System Brand Alignments */
   body {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    background-color: #f9fafb;
-    color: #1f2937;
+    background-color: #f8fafc;
+    color: #0f172a;
     margin: 0;
     padding: 0;
     -webkit-font-smoothing: antialiased;
@@ -19,11 +19,10 @@
   
   .page-content {
     padding: 24px;
-    max-width: 1400px;
+    max-width: 1200px;
     margin: 0 auto;
   }
 
-  /* Header Pattern Alignment */
   .pg-hd {
     display: flex;
     justify-content: space-between;
@@ -35,47 +34,22 @@
     font-size: 22px;
     font-weight: 700;
     margin: 0 0 4px 0;
-    color: #111827;
+    color: #1e293b;
   }
 
   .pg-hd p {
     font-size: 13px;
-    color: #6b7280;
+    color: #64748b;
     margin: 0;
   }
 
-  /* Corporate WellFix UI Cards */
-  .card {
-    background: #ffffff;
-    border-radius: 12px;
-    border: 1px solid #e5e7eb;
-    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-    margin-bottom: 20px;
-    overflow: hidden;
-  }
-
-  .card-hd {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 16px 20px;
-    border-bottom: 1px solid #f3f4f6;
-  }
-
-  .card-title {
-    font-size: 15px;
-    font-weight: 600;
-    color: #111827;
-  }
-
-  /* Forest Green Action Buttons */
   .btn-primary {
-    background-color: #044327; /* Matched to WellFix branding */
+    background-color: #044327;
     color: #ffffff;
     border: none;
-    padding: 8px 14px;
+    padding: 10px 18px;
     font-size: 13px;
-    font-weight: 500;
+    font-weight: 600;
     border-radius: 6px;
     cursor: pointer;
     transition: background 0.15s ease;
@@ -84,13 +58,72 @@
     background-color: #03321d;
   }
 
-  /* Precision Switch Components (Matches Edit User Modal Screen) */
+  /* Two-Column App Grid (Collapses to 1 Column on Mobile) */
+  .roles-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(480px, 1fr));
+    gap: 20px;
+  }
+
+  /* Clean Professional Action Cards */
+  .role-card {
+    background: #ffffff;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+    display: flex;
+    flex-direction: column;
+  }
+
+  .role-card-hd {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 20px;
+    border-bottom: 1px solid #f1f5f9;
+    background: #ffffff;
+  }
+
+  .role-card-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: #044327;
+    text-transform: capitalize;
+  }
+
+  /* Active Modules List Container */
+  .role-card-body {
+    padding: 16px 20px;
+    flex-grow: 1;
+    min-height: 60px;
+  }
+
+  .active-permissions-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  /* Compact Permission Badge Component */
+  .permission-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: #f0fdf4;
+    border: 1px solid #bbf7d0;
+    color: #166534;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 500;
+  }
+
+  /* Standard Native-App Style Toggle */
   .toggle {
     position: relative;
     display: inline-flex;
     align-items: center;
     cursor: pointer;
-    user-select: none;
   }
 
   .toggle input {
@@ -103,9 +136,9 @@
   .toggle-track {
     position: relative;
     display: inline-block;
-    width: 40px;
-    height: 22px;
-    background-color: #e5e7eb;
+    width: 34px;
+    height: 20px;
+    background-color: #cbd5e1;
     border-radius: 100px;
     transition: background-color 0.15s ease-in-out;
   }
@@ -115,101 +148,91 @@
     position: absolute;
     top: 2px;
     left: 2px;
-    width: 18px;
-    height: 18px;
+    width: 16px;
+    height: 16px;
     background-color: #ffffff;
     border-radius: 50%;
-    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
     transition: transform 0.15s ease-in-out;
   }
 
   .toggle input:checked + .toggle-track {
-    background-color: #10b981; /* Precise Modal green active tint */
+    background-color: #10b981;
   }
 
   .toggle input:checked + .toggle-track::after {
-    transform: translateX(18px);
+    transform: translateX(14px);
   }
 
-  /* Balanced Desktop Table Matrix Architecture */
-  .tbl-wrap {
-    width: 100%;
-    overflow-x: auto;
+  /* Compact Add-Module Selector Block */
+  .role-card-ft {
+    padding: 12px 20px;
+    background: #f8fafc;
+    border-top: 1px solid #f1f5f9;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
   }
 
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 13px;
-    text-align: left;
-  }
-
-  th {
-    background: #fafafa;
-    color: #4b5563;
-    font-weight: 600;
-    padding: 14px 20px;
-    border-bottom: 1px solid #e5e7eb;
+  .add-label {
     font-size: 12px;
+    font-weight: 600;
+    color: #64748b;
     text-transform: uppercase;
-    letter-spacing: 0.03em;
+    letter-spacing: 0.02em;
   }
 
-  td {
-    padding: 14px 20px;
-    border-bottom: 1px solid #f3f4f6;
-    color: #374151;
+  .module-select {
+    flex-grow: 1;
+    max-width: 220px;
+    background-color: #ffffff;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    padding: 6px 10px;
+    font-size: 13px;
+    color: #334155;
+    outline: none;
+    cursor: pointer;
   }
 
-  tr:hover td {
-    background-color: #f9fafb;
+  .module-select:focus {
+    border-color: #044327;
   }
 
-  .module-name-cell {
-    font-weight: 500;
-    color: #111827;
-    text-transform: capitalize;
+  /* Empty State Handling */
+  .empty-state {
+    font-size: 13px;
+    color: #94a3b8;
+    font-style: italic;
+    padding: 4px 0;
   }
 
-  /* High-Fidelity Mobile App Optimization UI Structure */
-  .mobile-matrix-view {
-    display: none;
-    padding: 12px;
-    background: #f9fafb;
-  }
-
+  /* Mobile App UI Optimization Breakpoint */
   @media (max-width: 768px) {
-    .page-content { padding: 12px; }
-    .tbl-wrap { display: none; }
-    .mobile-matrix-view { display: block; }
-    
-    .mobile-role-section {
-      background: #ffffff;
-      border: 1px solid #e5e7eb;
-      border-radius: 10px;
-      margin-bottom: 14px;
-      box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+    .page-content {
+      padding: 16px;
     }
-    
-    .mobile-role-header {
-      background: #f8fafc;
-      padding: 12px 16px;
-      font-weight: 600;
-      font-size: 14px;
-      color: #044327;
-      text-transform: capitalize;
-      border-bottom: 1px solid #e5e7eb;
+    .pg-hd {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 16px;
     }
-
-    .mobile-row {
-      display: flex;
-      justify-content: space-between;
+    .btn-primary {
+      width: 100%;
+      text-align: center;
+      padding: 12px;
+    }
+    .roles-grid {
+      grid-template-columns: 1fr;
+      gap: 16px;
+    }
+    .role-card-ft {
+      flex-direction: row;
       align-items: center;
-      padding: 12px 16px;
-      border-bottom: 1px solid #f3f4f6;
     }
-    .mobile-row:last-child { border-bottom: none; }
-    .mobile-row-label { font-size: 13px; color: #4b5563; text-transform: capitalize; }
+    .module-select {
+      max-width: 60%;
+    }
   }
 </style>
 </head>
@@ -224,53 +247,10 @@
           <h1>Roles & Permissions</h1>
           <p>Configure what each role can access</p>
         </div>
-        <button class="btn btn-primary" onclick="saveMatrix()">Save Permissions</button>
+        <button class="btn btn-primary" onclick="saveMatrix()">Save Layout Matrix</button>
       </div>
 
-      <div class="card">
-        <div class="card-hd">
-          <span class="card-title">Permission Matrix</span>
-        </div>
-        
-        <div class="tbl-wrap">
-          <table id="matrixTable">
-            <thead id="matrixHead"></thead>
-            <tbody id="matrixBody"></tbody>
-          </table>
-        </div>
-
-        <div id="mobileMatrix" class="mobile-matrix-view"></div>
-      </div>
-
-      <div class="card">
-        <div class="card-hd"><span class="card-title">Role Descriptions</span></div>
-        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px;padding:16px;">
-          <div style="padding:14px;background:#f8fafc;border-radius:8px;border:1px solid #e5e7eb;">
-            <div style="font-weight:600;color:#044327;margin-bottom:4px;font-size:13px;">Super Admin</div>
-            <div style="font-size:12px;color:#6b7280;line-height:1.4;">Full access to all modules. Cannot be restricted.</div>
-          </div>
-          <div style="padding:14px;background:#f8fafc;border-radius:8px;border:1px solid #e5e7eb;">
-            <div style="font-weight:600;margin-bottom:4px;font-size:13px;color:#111827;">Admin</div>
-            <div style="font-size:12px;color:#6b7280;line-height:1.4;">Most modules except system settings and user management.</div>
-          </div>
-          <div style="padding:14px;background:#f8fafc;border-radius:8px;border:1px solid #e5e7eb;">
-            <div style="font-weight:600;margin-bottom:4px;font-size:13px;color:#111827;">Staff</div>
-            <div style="font-size:12px;color:#6b7280;line-height:1.4;">Orders, products, bookings. No financial access.</div>
-          </div>
-          <div style="padding:14px;background:#f8fafc;border-radius:8px;border:1px solid #e5e7eb;">
-            <div style="font-weight:600;margin-bottom:4px;font-size:13px;color:#111827;">Accountant</div>
-            <div style="font-size:12px;color:#6b7280;line-height:1.4;">Finance, orders view only. No product editing.</div>
-          </div>
-          <div style="padding:14px;background:#f8fafc;border-radius:8px;border:1px solid #e5e7eb;">
-            <div style="font-weight:600;margin-bottom:4px;font-size:13px;color:#111827;">Content</div>
-            <div style="font-size:12px;color:#6b7280;line-height:1.4;">Blog, banners, homepage. No order or product access.</div>
-          </div>
-          <div style="padding:14px;background:#f8fafc;border-radius:8px;border:1px solid #e5e7eb;">
-            <div style="font-weight:600;margin-bottom:4px;font-size:13px;color:#111827;">Inventory</div>
-            <div style="font-size:12px;color:#6b7280;line-height:1.4;">Products and stock management only.</div>
-          </div>
-        </div>
-      </div>
+      <div class="roles-grid" id="rolesGrid"></div>
 
     </div>
   </div>
@@ -280,72 +260,73 @@
 <script src="../backend/config/supabase.js"></script>
 <script src="assets/js/shell.js"></script>
 <script>
-const PAGES = ['dashboard','analytics','products','categories','brands','inventory','orders','customers','coupons','reviews','services','homepage','banners','blog','media','seo','finance','branches','roles','activity_logs','users','settings'];
+const PAGES = ['dashboard','analytics','products','categories','brands','inventory','orders','customers','coupons','reviews','services','homepage','banners','blog','media','seo','finance','branches','roles','activity_logs','users','settings','point_of_sale'];
 const ROLES = ['admin','staff','accountant','content','inventory','support'];
 const ROLE_DEFAULTS = {
-  admin:      {dashboard:1,analytics:1,products:1,categories:1,brands:1,inventory:1,orders:1,customers:1,coupons:1,reviews:1,services:1,homepage:1,banners:1,blog:1,media:1,seo:1,finance:0,branches:0,roles:0,activity_logs:0,users:0,settings:0},
-  staff:      {dashboard:1,analytics:0,products:1,categories:1,brands:0,inventory:1,orders:1,customers:1,coupons:0,reviews:1,services:1,homepage:0,banners:0,blog:0,media:0,seo:0,finance:0,branches:0,roles:0,activity_logs:0,users:0,settings:0},
-  accountant:{dashboard:1,analytics:1,products:0,categories:0,brands:0,inventory:0,orders:1,customers:1,coupons:0,reviews:0,services:0,homepage:0,banners:0,blog:0,media:0,seo:0,finance:1,branches:0,roles:0,activity_logs:1,users:0,settings:0},
-  content:   {dashboard:1,analytics:0,products:0,categories:1,brands:1,inventory:0,orders:0,customers:0,coupons:1,reviews:1,services:0,homepage:1,banners:1,blog:1,media:1,seo:1,finance:0,branches:0,roles:0,activity_logs:0,users:0,settings:0},
-  inventory: {dashboard:1,analytics:0,products:1,categories:1,brands:1,inventory:1,orders:0,customers:0,coupons:0,reviews:0,services:0,homepage:0,banners:0,blog:0,media:0,seo:0,finance:0,branches:0,roles:0,activity_logs:0,users:0,settings:0},
-  support:   {dashboard:1,analytics:0,products:0,categories:0,brands:0,inventory:0,orders:1,customers:1,coupons:0,reviews:1,services:1,homepage:0,banners:0,blog:0,media:0,seo:0,finance:0,branches:0,roles:0,activity_logs:0,users:0,settings:0},
+  admin:      {dashboard:1,analytics:1,products:1,categories:1,brands:1,inventory:1,orders:1,customers:1,coupons:1,reviews:1,services:1,homepage:1,banners:1,blog:1,media:1,seo:1,finance:0,branches:0,roles:0,activity_logs:0,users:0,settings:0,point_of_sale:0},
+  staff:      {dashboard:1,analytics:0,products:1,categories:1,brands:0,inventory:1,orders:1,customers:1,coupons:0,reviews:1,services:1,homepage:0,banners:0,blog:0,media:0,seo:0,finance:0,branches:0,roles:0,activity_logs:0,users:0,settings:0,point_of_sale:0},
+  accountant:{dashboard:1,analytics:1,products:0,categories:0,brands:0,inventory:0,orders:1,customers:1,coupons:0,reviews:0,services:0,homepage:0,banners:0,blog:0,media:0,seo:0,finance:1,branches:0,roles:0,activity_logs:1,users:0,settings:0,point_of_sale:0},
+  content:   {dashboard:1,analytics:0,products:0,categories:1,brands:1,inventory:0,orders:0,customers:0,coupons:1,reviews:1,services:0,homepage:1,banners:1,blog:1,media:1,seo:1,finance:0,branches:0,roles:0,activity_logs:0,users:0,settings:0,point_of_sale:0},
+  inventory: {dashboard:1,analytics:0,products:1,categories:1,brands:1,inventory:1,orders:0,customers:0,coupons:0,reviews:0,services:0,homepage:0,banners:0,blog:0,media:0,seo:0,finance:0,branches:0,roles:0,activity_logs:0,users:0,settings:0,point_of_sale:0},
+  support:   {dashboard:1,analytics:0,products:0,categories:0,brands:0,inventory:0,orders:1,customers:1,coupons:0,reviews:1,services:1,homepage:0,banners:0,blog:0,media:0,seo:0,finance:0,branches:0,roles:0,activity_logs:0,users:0,settings:0,point_of_sale:0},
 };
 let matrix = JSON.parse(JSON.stringify(ROLE_DEFAULTS));
 
 function renderMatrix() {
-  const head = document.getElementById('matrixHead');
-  const body = document.getElementById('matrixBody');
-  
-  // Clean Capitalized Table Column Definition Headers
-  head.innerHTML = `<tr><th style="min-width:160px;">Module</th>${ROLES.map(r=>`<th style="text-align:center;">${r}</th>`).join('')}</tr>`;
-  
-  body.innerHTML = PAGES.map(page => `
-    <tr>
-      <td class="module-name-cell">${page.replace(/_/g,' ')}</td>
-      ${ROLES.map(role => `
-        <td style="text-align:center;">
-          <label class="toggle">
-            <input type="checkbox" data-page="${page}" data-role="${role}" ${matrix[role]?.[page] ? 'checked' : ''} onchange="togglePerm('${page}','${role}',this.checked)">
-            <span class="toggle-track"></span>
-          </label>
-        </td>`).join('')}
-    </tr>`).join('');
+  const container = document.getElementById('rolesGrid');
+  container.innerHTML = ROLES.map(role => {
+    // Separate active modules from inactive modules for this role
+    const activePages = PAGES.filter(page => matrix[role]?.[page] === 1);
+    const inactivePages = PAGES.filter(page => !matrix[role]?.[page] || matrix[role]?.[page] === 0);
 
-  renderMobileMatrix();
-}
-
-function renderMobileMatrix() {
-  const container = document.getElementById('mobileMatrix');
-  
-  container.innerHTML = ROLES.map(role => `
-    <div class="mobile-role-section">
-      <div class="mobile-role-header">${role} Access Matrix</div>
-      ${PAGES.map(page => `
-        <div class="mobile-row">
-          <span class="mobile-row-label">${page.replace(/_/g,' ')}</span>
-          <label class="toggle">
-            <input type="checkbox" data-mob-page="${page}" data-mob-role="${role}" ${matrix[role]?.[page] ? 'checked' : ''} onchange="togglePerm('${page}','${role}',this.checked)">
-            <span class="toggle-track"></span>
-          </label>
+    return `
+      <div class="role-card" data-role-card="${role}">
+        <div class="role-card-hd">
+          <span class="role-card-title">${role} Role</span>
+          <span style="font-size: 12px; color: #64748b; font-weight: 500;">${activePages.length} Active</span>
         </div>
-      `).join('')}
-    </div>
-  `).join('');
+        
+        <div class="role-card-body">
+          <div class="active-permissions-list">
+            ${activePages.length === 0 ? '<div class="empty-state">No modules assigned. Access restricted.</div>' : ''}
+            ${activePages.map(page => `
+              <div class="permission-badge">
+                <span style="text-transform: capitalize;">${page.replace(/_/g,' ')}</span>
+                <label class="toggle">
+                  <input type="checkbox" checked onchange="modifyPermission('${role}', '${page}', false)">
+                  <span class="toggle-track"></span>
+                </label>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+
+        <div class="role-card-ft">
+          <span class="add-label">Grant Access:</span>
+          <select class="module-select" onchange="handleSelectAdd(this, '${role}')">
+            <option value="" disabled selected hidden>Choose Module...</option>
+            ${inactivePages.map(page => `
+              <option value="${page}">${page.replace(/_/g,' ')}</option>
+            `).join('')}
+            ${inactivePages.length === 0 ? '<option disabled>All modules assigned</option>' : ''}
+          </select>
+        </div>
+      </div>
+    `;
+  }).join('');
 }
 
-function togglePerm(page, role, val) {
+function modifyPermission(role, page, isChecked) {
   if (!matrix[role]) matrix[role] = {};
-  matrix[role][page] = val ? 1 : 0;
-  
-  // Instantly cross-bind dynamic visual selection states
-  const selectors = [
-    `input[data-page="${page}"][data-role="${role}"]`,
-    `input[data-mob-page="${page}"][data-mob-role="${role}"]`
-  ];
-  selectors.forEach(sel => {
-    const el = document.querySelector(sel);
-    if(el) el.checked = val;
-  });
+  matrix[role][page] = isChecked ? 1 : 0;
+  renderMatrix(); // Perform swift UI structural re-render
+}
+
+function handleSelectAdd(selectElement, role) {
+  const selectedPage = selectElement.value;
+  if (selectedPage) {
+    modifyPermission(role, selectedPage, true);
+  }
 }
 
 async function saveMatrix() {
@@ -353,13 +334,12 @@ async function saveMatrix() {
     for (const role of ROLES) {
       await db.from('role_permissions').upsert({ role, permissions: matrix[role] }, { onConflict: 'role' });
     }
-    alert('Permissions updated successfully.');
+    alert('Role matrix layout settings updated.');
   } catch(e) {
-    console.warn('Matrix data locally updated.');
+    console.warn('Matrix array configuration updated locally.');
   }
 }
 
-// Shell bootstrapping block
 (async()=>{ 
   if (typeof AdminShell !== 'undefined') {
     await AdminShell.init('Roles','roles'); 
