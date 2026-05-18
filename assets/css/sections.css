@@ -579,3 +579,64 @@
 }
 .review-card__name { font-size: var(--text-sm); font-weight: var(--weight-semi); }
 .review-card__loc  { font-size: var(--text-xs); color: var(--color-text-3); }
+
+/* ── NEW HERO LAYOUT: 1 main + 2×2 quad grid ── */
+.hero-new-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: var(--sp-3);
+  align-items: stretch;
+}
+
+/* Main hero — fills full height of quad grid */
+.hero-new-grid .hero-card--main .hero-card__img {
+  height: 100%;
+  min-height: 380px;
+  object-fit: cover;
+}
+.hero-new-grid .hero-card--main {
+  height: 100%;
+}
+
+/* 2×2 quad grid — right side */
+.hero-quad-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  gap: var(--sp-3);
+}
+
+/* Each quad card — square, equal height */
+.hero-card--quad .hero-card__img {
+  width: 100%;
+  height: 185px;
+  object-fit: cover;
+  display: block;
+}
+
+/* Tablet: stack main on top, quad 2×2 below */
+@media (max-width: 900px) {
+  .hero-new-grid {
+    grid-template-columns: 1fr;
+  }
+  .hero-new-grid .hero-card--main .hero-card__img {
+    min-height: 220px;
+    height: 220px;
+  }
+  .hero-quad-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+  .hero-card--quad .hero-card__img {
+    height: 140px;
+  }
+}
+
+/* Mobile: main full width, quad 2×2 */
+@media (max-width: 479px) {
+  .hero-card--quad .hero-card__img {
+    height: 120px;
+  }
+  .hero-quad-grid {
+    gap: var(--sp-2);
+  }
+}
