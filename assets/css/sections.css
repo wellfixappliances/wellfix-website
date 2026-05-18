@@ -69,7 +69,7 @@
 .hero-card__img {
   width: 100%;
   height: 100%;
-  object-fit: cover !important; /* Forces square/any aspect ratio image to autofit entirely with zero grey bars */
+  object-fit: cover !important; /* Forces square images to autofit zero grey bars */
   object-position: center center;
   display: block;
   transition: transform var(--t-slow) var(--ease);
@@ -163,6 +163,8 @@
   gap: 12px;
   align-items: stretch;
   width: 100%;
+  margin-top: 24px; /* Fixes "moved to top" look */
+  margin-bottom: 24px;
 }
 
 /* Left main container setup */
@@ -176,7 +178,7 @@
   grid-template-columns: 1fr 1fr;
   grid-template-rows: 1fr 1fr;
   gap: 12px;
-  height: 380px;
+  height: 380px; /* Aligns height with main card */
 }
 
 /* Individual quad adjustments */
@@ -186,54 +188,30 @@
 
 /* ── TABLET RESPONSIVE RECONSTRUCTION ── */
 @media (max-width: 900px) and (min-width: 601px) {
-  .hero-new-grid .hero-card--main {
-    height: 300px;
-  }
+  .hero-new-grid .hero-card--main,
   .hero-quad-grid {
     height: 300px;
-    gap: 8px;
   }
-  .hero-card--main .hero-card__title { 
-    font-size: var(--text-2xl); 
-  }
+  .hero-card--main .hero-card__title { font-size: var(--text-2xl); }
 }
 
-/* ── MOBILE RESPONSIVE PRESERVATION (≤600px) ── 
-   Maintains professional Desktop view system layout down to mobile screens 
-   without breaking into vertical lines */
+/* ── MOBILE RESPONSIVE PRESERVATION (≤600px) ── */
 @media (max-width: 600px) {
   .hero-new-grid {
-    grid-template-columns: 1.2fr 1fr; /* Retains clean asymmetrical split configuration on tiny devices */
-    gap: 6px;
+    grid-template-columns: 1.2fr 1fr; 
+    gap: 8px;
+    margin-top: 16px;
   }
-  .hero-new-grid .hero-card--main {
-    height: 180px; /* Perfectly scaled down layout to look balanced alongside the quad block */
-  }
-  .hero-card--main .hero-card__overlay {
-    padding: 12px;
-  }
-  .hero-card--main .hero-card__title {
-    font-size: var(--text-base);
-    margin-bottom: 4px;
-  }
-  .hero-card--main .hero-card__cta {
-    padding: 4px 8px;
-    font-size: 11px;
-  }
+  .hero-new-grid .hero-card--main,
   .hero-quad-grid {
-    height: 180px; /* Locks down layout box synchronization exactly matching left-side anchor height */
-    gap: 6px;
+    height: 200px; 
   }
-  .hero-card__overlay {
-    padding: 8px;
-  }
-  .hero-card__title {
-    font-size: 11px;
-    margin-bottom: 2px;
-  }
-  .hero-card__label {
-    font-size: 9px;
-  }
+  .hero-card--main .hero-card__overlay { padding: 12px; }
+  .hero-card--main .hero-card__title { font-size: var(--text-base); margin-bottom: 4px; }
+  .hero-card--main .hero-card__cta { padding: 4px 8px; font-size: 11px; }
+  .hero-card__overlay { padding: 8px; }
+  .hero-card__title { font-size: 11px; margin-bottom: 2px; }
+  .hero-card__label { font-size: 9px; }
 }
 
 /* ── Category Pills ────────────────────────── */
