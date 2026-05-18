@@ -4,394 +4,187 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Banners — WellFix Admin</title>
-<link rel="icon" href="../assets/images/WELLFIX-FAVICON.png">
+<link rel="icon" href="../frontend/assets/images/WELLFIX-FAVICON.png">
 <link rel="stylesheet" href="assets/css/admin.css">
 <style>
-/* ══════════════════════════════════════════════
-   BANNER MANAGEMENT — PROFESSIONAL CMS
-   LIVE DIMENSIONS FROM PRODUCTION WEBSITE:
-   Hero Main (desktop): ~380px height, 1-col
-   Hero Cards (desktop): ~180px height, 2-col
-   Promo Banner (large): 160px+ min-height, 2fr
-   Promo Banner (small): 160px+ min-height, 1fr
-   Mobile hero: 200px height
-   Mobile cards: 140px height
-   ══════════════════════════════════════════════ */
-
-/* Position tabs */
-.pos-tabs{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:14px;padding:2px 0;}
-.ptab{padding:6px 14px;border-radius:99px;font-size:12px;font-weight:600;cursor:pointer;border:1.5px solid var(--gray-150,#e0e0e0);background:#fff;color:var(--gray-500);transition:all .15s;white-space:nowrap;}
-.ptab:hover{border-color:var(--gray-300);color:var(--gray-700);}
+.pos-tabs{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:14px;}
+.ptab{padding:5px 13px;border-radius:99px;font-size:11px;font-weight:700;cursor:pointer;border:1.5px solid var(--gray-150,#e0e0e0);background:#fff;color:var(--gray-500);transition:all .15s;white-space:nowrap;}
 .ptab.on{border-color:var(--green-700);background:var(--green-700);color:#fff;}
-.ptab-cnt{font-size:10px;margin-left:3px;opacity:.7;}
-
-/* KPI strip */
+.ptab-cnt{font-size:10px;margin-left:3px;opacity:.75;}
 .b-kpi{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px;}
-@media(max-width:800px){.b-kpi{grid-template-columns:repeat(2,1fr);}}
+@media(max-width:700px){.b-kpi{grid-template-columns:repeat(2,1fr);}}
 .bk{background:#fff;border:1px solid var(--gray-100);border-radius:10px;padding:12px 16px;box-shadow:0 1px 2px rgba(0,0,0,.04);position:relative;overflow:hidden;}
 .bk::before{content:'';position:absolute;top:0;left:0;width:3px;height:100%;border-radius:10px 0 0 10px;}
 .bk.gn::before{background:#22c55e;}.bk.bl::before{background:#3b82f6;}.bk.am::before{background:#f59e0b;}.bk.rd::before{background:#ef4444;}
-.bk-val{font-family:var(--font-display);font-size:20px;font-weight:800;color:var(--gray-900);line-height:1;letter-spacing:-.3px;}
+.bk-val{font-size:22px;font-weight:800;color:var(--gray-900);font-family:var(--font-display);line-height:1;}
 .bk-lbl{font-size:11px;color:var(--gray-400);margin-top:3px;}
-
-/* Live dimension guide */
-.dim-guide{background:var(--gray-25);border:1px solid var(--gray-100);border-radius:10px;padding:12px 16px;margin-bottom:14px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;}
-.dim-item{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--gray-600);}
-.dim-device{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--gray-400);}
-.dim-val{font-family:monospace;font-weight:700;color:var(--gray-900);background:#fff;border:1px solid var(--gray-200);border-radius:4px;padding:1px 6px;font-size:11px;}
-.dim-sep{width:1px;height:24px;background:var(--gray-200);}
-
-/* Banner grid */
-.banner-mgr-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:14px;}
-
-/* Banner card */
+.bgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px;}
 .bcrd{background:#fff;border:1px solid var(--gray-100);border-radius:10px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.04);transition:box-shadow .2s;}
 .bcrd:hover{box-shadow:0 4px 16px rgba(0,0,0,.08);}
-.bcrd-preview{position:relative;overflow:hidden;background:var(--gray-50);}
-.bcrd-preview img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .4s ease;}
-.bcrd:hover .bcrd-preview img{transform:scale(1.04);}
-.bcrd-no-img{display:flex;align-items:center;justify-content:center;flex-direction:column;gap:6px;color:var(--gray-300);background:var(--gray-50);}
-.bcrd-no-img svg{width:28px;height:28px;}
-.bcrd-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.7) 0%,transparent 55%);pointer-events:none;}
-.bcrd-badges{position:absolute;top:8px;left:8px;right:8px;display:flex;align-items:flex-start;justify-content:space-between;}
-.bcrd-pos{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;background:rgba(0,0,0,.5);color:#fff;padding:2px 7px;border-radius:3px;backdrop-filter:blur(4px);}
-.bcrd-sched{font-size:9px;font-weight:700;background:#f59e0b;color:#fff;padding:2px 7px;border-radius:3px;}
-.bcrd-overlay-text{position:absolute;bottom:10px;left:12px;right:12px;}
-.bcrd-title{font-family:var(--font-display);font-size:14px;font-weight:800;color:#fff;line-height:1.3;text-shadow:0 1px 3px rgba(0,0,0,.4);}
-.bcrd-subtitle{font-size:11px;color:rgba(255,255,255,.7);margin-top:2px;text-shadow:0 1px 2px rgba(0,0,0,.3);}
-.bcrd-foot{padding:10px 14px;display:flex;align-items:center;justify-content:space-between;}
-.bcrd-info{flex:1;min-width:0;}
-.bcrd-name{font-weight:700;font-size:13px;color:var(--gray-900);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.bcrd-img{position:relative;overflow:hidden;background:var(--gray-50);}
+.bcrd-img img{width:100%;display:block;object-fit:cover;transition:transform .4s;}
+.bcrd:hover .bcrd-img img{transform:scale(1.04);}
+.bcrd-noimg{display:flex;align-items:center;justify-content:center;flex-direction:column;gap:6px;color:var(--gray-300);height:120px;}
+.bcrd-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.65) 0%,transparent 55%);pointer-events:none;}
+.bcrd-badge{position:absolute;top:8px;left:8px;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;background:rgba(0,0,0,.5);color:#fff;padding:2px 7px;border-radius:3px;backdrop-filter:blur(4px);}
+.bcrd-title{position:absolute;bottom:10px;left:12px;right:12px;font-size:13px;font-weight:800;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.5);}
+.bcrd-foot{padding:10px 14px;display:flex;align-items:center;justify-content:space-between;gap:8px;}
+.bcrd-name{font-weight:700;font-size:13px;color:var(--gray-900);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;}
 .bcrd-meta{font-size:10px;color:var(--gray-400);margin-top:2px;}
-.bcrd-actions{display:flex;align-items:center;gap:5px;flex-shrink:0;}
-.bcrd-ra{width:26px;height:26px;border-radius:5px;border:1px solid var(--gray-200);background:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;}
-.bcrd-ra:hover{background:var(--gray-50);}
-.bcrd-ra svg{width:12px;height:12px;stroke:var(--gray-500);fill:none;stroke-width:2;}
-.bcrd-ra.danger:hover{background:#fef2f2;border-color:#fecaca;}
-.bcrd-ra.danger:hover svg{stroke:#dc2626;}
-
-/* Add card */
-.bcrd-add{border:2px dashed var(--gray-200);background:var(--gray-25);cursor:pointer;display:flex;align-items:center;justify-content:center;min-height:200px;border-radius:10px;transition:all .2s;}
+.bcrd-acts{display:flex;align-items:center;gap:5px;flex-shrink:0;}
+.bact{width:26px;height:26px;border-radius:5px;border:1px solid var(--gray-200);background:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;}
+.bact:hover{background:var(--gray-50);}
+.bact svg{width:12px;height:12px;stroke:var(--gray-500);fill:none;stroke-width:2;}
+.bact.del:hover{background:#fef2f2;border-color:#fecaca;}
+.bact.del:hover svg{stroke:#dc2626;}
+.bcrd-add{border:2px dashed var(--gray-200);background:var(--gray-25);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:6px;min-height:160px;border-radius:10px;transition:all .2s;}
 .bcrd-add:hover{border-color:var(--green-400);background:var(--green-50);}
-.bcrd-add svg{width:24px;height:24px;color:var(--gray-300);}
-.bcrd-add span{font-size:12px;font-weight:600;color:var(--gray-400);margin-top:6px;}
-
-/* Preview device tabs */
-.dev-tabs{display:flex;background:var(--gray-50);border:1px solid var(--gray-150,#e0e0e0);border-radius:6px;padding:2px;gap:1px;margin-bottom:10px;}
-.dev-tab{flex:1;padding:5px 8px;border-radius:4px;font-size:11px;font-weight:600;color:var(--gray-500);cursor:pointer;text-align:center;border:none;background:none;transition:all .15s;}
-.dev-tab.on{background:#fff;color:var(--gray-900);box-shadow:0 1px 3px rgba(0,0,0,.1);}
-
-/* Live preview */
-.live-preview{border:1px solid var(--gray-100);border-radius:8px;overflow:hidden;background:var(--gray-50);position:relative;}
-.lp-desktop .lp-img-wrap{aspect-ratio:16/4.7;}
-.lp-desktop .lp-img-wrap.hero-main{aspect-ratio:16/9.4;}
-.lp-desktop .lp-img-wrap.promo-main{aspect-ratio:16/5;}
-.lp-tablet .lp-img-wrap{aspect-ratio:4/3;}
-.lp-mobile .lp-img-wrap{aspect-ratio:9/16;max-width:220px;margin:0 auto;}
-.lp-img-wrap{overflow:hidden;}
-.lp-img-wrap img{width:100%;height:100%;object-fit:cover;display:block;}
-.lp-overlay{position:absolute;inset:0;background:linear-gradient(to right,rgba(0,0,0,.65) 0%,transparent 60%);pointer-events:none;}
-.lp-text{position:absolute;bottom:16px;left:16px;right:50%;}
-.lp-tag{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:rgba(255,255,255,.6);margin-bottom:4px;}
-.lp-title{font-size:16px;font-weight:800;color:#fff;line-height:1.25;font-family:var(--font-display);}
-.lp-cta{display:inline-block;margin-top:6px;background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.35);color:#fff;font-size:11px;font-weight:700;padding:4px 10px;border-radius:4px;}
-.lp-device-label{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--gray-400);text-align:center;padding:5px;background:#fff;border-top:1px solid var(--gray-100);}
-
-/* Upload zone */
-.up-zone{border:2px dashed var(--gray-200);border-radius:8px;background:#fff;cursor:pointer;transition:all .2s;text-align:center;padding:20px;position:relative;}
-.up-zone:hover,.up-zone.over{border-color:var(--green-400);background:var(--green-50);}
-.up-zone input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;}
-.up-zone-preview{width:100%;border-radius:6px;max-height:120px;object-fit:cover;margin-bottom:8px;display:none;}
-.up-zone-preview.show{display:block;}
-.up-prog{margin-top:6px;display:none;}
-.up-prog-bar{height:3px;background:var(--gray-100);border-radius:99px;overflow:hidden;}
-.up-prog-fill{height:100%;background:var(--green-500);border-radius:99px;transition:width .2s;width:0%;}
-.up-prog-msg{font-size:10px;color:var(--gray-400);margin-top:3px;}
-
-/* Toggle */
 .tog{display:flex;align-items:center;cursor:pointer;}
 .tog input{display:none;}
 .tog-tr{width:28px;height:16px;background:var(--gray-200);border-radius:99px;position:relative;transition:background .2s;flex-shrink:0;}
 .tog input:checked+.tog-tr{background:var(--green-500);}
 .tog-tr::after{content:'';width:12px;height:12px;background:#fff;border-radius:50%;position:absolute;top:2px;left:2px;transition:transform .2s;box-shadow:0 1px 3px rgba(0,0,0,.2);}
 .tog input:checked+.tog-tr::after{transform:translateX(12px);}
-
-/* Drag sort */
-.bcrd.dragging{opacity:.4;border:2px dashed var(--green-400);}
-.bcrd.drag-over{border-color:var(--green-500);background:var(--green-50);}
-
-/* Skeleton */
-.sk{background:linear-gradient(90deg,var(--gray-100) 25%,var(--gray-50) 50%,var(--gray-100) 75%);background-size:200% 100%;animation:sk 1.4s infinite;border-radius:6px;}
-@keyframes sk{to{background-position:-200% 0;}}
-
-/* Empty */
-.empty-b{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:48px 24px;text-align:center;grid-column:1/-1;}
-.empty-b svg{width:40px;height:40px;opacity:.15;color:var(--gray-500);margin-bottom:12px;}
-.empty-b h3{font-family:var(--font-display);font-size:15px;font-weight:700;color:var(--gray-600);margin-bottom:4px;}
-.empty-b p{font-size:12px;color:var(--gray-400);}
-
-/* Form modal split */
-.b-modal-split{display:grid;grid-template-columns:1fr 320px;min-height:420px;}
-@media(max-width:800px){.b-modal-split{grid-template-columns:1fr;}}
-.b-modal-l{padding:18px;border-right:1px solid var(--gray-100);}
-.b-modal-r{padding:18px;background:var(--gray-25);}
-@media(max-width:800px){.b-modal-l{border-right:none;border-bottom:1px solid var(--gray-100);}.b-modal-r{background:#fff;}}
+.b-split{display:grid;grid-template-columns:1fr 300px;min-height:400px;}
+@media(max-width:800px){.b-split{grid-template-columns:1fr;}}
+.b-split-l{padding:16px;border-right:1px solid var(--gray-100);}
+.b-split-r{padding:16px;background:var(--gray-25);}
+@media(max-width:800px){.b-split-l{border-right:none;border-bottom:1px solid var(--gray-100);}.b-split-r{background:#fff;}}
 .sec-hd{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--gray-400);margin-bottom:8px;margin-top:16px;padding-bottom:5px;border-bottom:1px solid var(--gray-50);}
 .sec-hd:first-child{margin-top:0;}
-
-/* SEO preview */
-.seo-prev{background:#fff;border:1px solid var(--gray-100);border-radius:8px;padding:10px 12px;margin-top:8px;}
-.seo-url{font-size:11px;color:#1a0dab;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-.seo-title-p{font-size:13px;font-weight:600;color:#1a0dab;line-height:1.3;margin:2px 0;}
-.seo-desc-p{font-size:11px;color:#545454;line-height:1.4;}
-
-@media(max-width:768px){.b-modal-split{grid-template-columns:1fr;}}
+.up-zone{border:2px dashed var(--gray-200);border-radius:8px;background:#fff;cursor:pointer;transition:all .2s;text-align:center;padding:16px;position:relative;}
+.up-zone:hover,.up-zone.over{border-color:var(--green-400);background:var(--green-50);}
+.up-zone input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;}
+.up-preview{width:100%;border-radius:6px;max-height:110px;object-fit:cover;margin-bottom:6px;display:none;}
+.up-preview.show{display:block;}
+.lp-wrap{border:1px solid var(--gray-100);border-radius:8px;overflow:hidden;background:var(--gray-50);}
+.lp-img{width:100%;display:block;object-fit:cover;}
+.lp-lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--gray-400);text-align:center;padding:4px;background:#fff;border-top:1px solid var(--gray-100);}
+.sk{background:linear-gradient(90deg,var(--gray-100) 25%,var(--gray-50) 50%,var(--gray-100) 75%);background-size:200% 100%;animation:sk 1.4s infinite;border-radius:6px;}
+@keyframes sk{to{background-position:-200% 0;}}
+.empty-b{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:48px;text-align:center;grid-column:1/-1;color:var(--gray-400);}
+.empty-b svg{width:36px;height:36px;opacity:.2;margin-bottom:10px;}
 </style>
 </head>
 <body>
-<div class="admin-shell">
-<div id="adminShell"></div>
+<div class="admin-shell"><div id="adminShell"></div>
 <div class="main-wrap" id="mainWrap">
 <div class="page-content">
 
-<!-- HEADER -->
 <div class="pg-hd">
   <div>
     <h1>Banner Management</h1>
-    <p style="font-size:12px;color:var(--gray-400);margin-top:2px;" id="bannerSub">Loading…</p>
+    <p id="bSub" style="font-size:12px;color:var(--gray-400);margin-top:2px;">Loading…</p>
   </div>
   <div class="pg-hd__actions">
-    <button class="btn btn-outline" onclick="exportBanners()">Export</button>
-    <button class="btn btn-primary" onclick="openModal()">
-      <svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" width="12" height="12"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-      Add Banner
-    </button>
+    <button class="btn btn-outline" onclick="exportCSV()">Export</button>
+    <button class="btn btn-primary" onclick="openModal()">+ Add Banner</button>
   </div>
 </div>
 
-<!-- KPI -->
-<div class="b-kpi" id="bannerKpi">
-  <div class="bk gn"><div class="sk" style="height:46px;"></div></div>
-  <div class="bk bl"><div class="sk" style="height:46px;"></div></div>
-  <div class="bk am"><div class="sk" style="height:46px;"></div></div>
-  <div class="bk rd"><div class="sk" style="height:46px;"></div></div>
+<div class="b-kpi" id="bKpi">
+  <div class="bk gn"><div class="sk" style="height:44px;"></div></div>
+  <div class="bk bl"><div class="sk" style="height:44px;"></div></div>
+  <div class="bk am"><div class="sk" style="height:44px;"></div></div>
+  <div class="bk rd"><div class="sk" style="height:44px;"></div></div>
 </div>
 
-<!-- LIVE DIMENSION GUIDE -->
-<div class="dim-guide" id="dimGuide">
-  <div style="font-size:11px;font-weight:700;color:var(--gray-700);">Live Website Dimensions</div>
-  <div class="dim-sep"></div>
-  <div class="dim-item"><span class="dim-device">Desktop Main Hero</span><span class="dim-val">Full-width × 380px</span></div>
-  <div class="dim-item"><span class="dim-device">Desktop Cards</span><span class="dim-val">Full-width × 180px</span></div>
-  <div class="dim-item"><span class="dim-device">Promo Banner</span><span class="dim-val">2:1 ratio × 160px+</span></div>
-  <div class="dim-sep"></div>
-  <div class="dim-item"><span class="dim-device">Mobile Main</span><span class="dim-val">Full-width × 200px</span></div>
-  <div class="dim-item"><span class="dim-device">Mobile Cards</span><span class="dim-val">Full-width × 140px</span></div>
-  <div style="margin-left:auto;font-size:11px;color:var(--green-600);font-weight:600;">Auto-fit on upload</div>
-</div>
-
-<!-- POSITION TABS -->
 <div class="pos-tabs" id="posTabs"></div>
 
-<!-- MAIN GRID -->
-<div class="banner-mgr-grid" id="bannerGrid">
-  <div class="bcrd"><div class="sk" style="height:200px;border-radius:10px;"></div></div>
-  <div class="bcrd"><div class="sk" style="height:200px;border-radius:10px;"></div></div>
-  <div class="bcrd"><div class="sk" style="height:200px;border-radius:10px;"></div></div>
+<div class="bgrid" id="bGrid">
+  <div class="bcrd"><div class="sk" style="height:180px;border-radius:10px;"></div></div>
+  <div class="bcrd"><div class="sk" style="height:180px;border-radius:10px;"></div></div>
+  <div class="bcrd"><div class="sk" style="height:180px;border-radius:10px;"></div></div>
 </div>
 
-<!-- ═══════════════════════════════════════
-     BANNER MODAL — SPLIT LAYOUT
-═══════════════════════════════════════ -->
-<div class="modal-overlay" id="bannerOverlay" onclick="if(event.target===this)closeModal()" style="display:none;align-items:flex-start;justify-content:center;padding:20px 16px;overflow-y:auto;">
-<div class="modal" id="bannerModal" style="max-width:840px;width:100%;margin:auto;max-height:90vh;overflow-y:auto;">
-  <div class="modal-hd">
-    <h3 id="modalTitle">Add Banner</h3>
-    <button class="modal-close" onclick="closeModal()">✕</button>
-  </div>
-  <div class="b-modal-split">
-    <!-- LEFT: Form -->
-    <div class="b-modal-l">
-      <div class="sec-hd">Banner Content</div>
-      <div class="form-group" style="margin-bottom:10px;">
-        <label class="form-label">Banner Title *</label>
-        <input class="form-input" id="bTitle" placeholder="e.g. Premium Kitchen Appliances" oninput="updatePreview()">
-      </div>
-      <div class="form-group" style="margin-bottom:10px;">
-        <label class="form-label">Subtitle</label>
-        <input class="form-input" id="bSub" placeholder="e.g. Original brands. Unbeatable prices." oninput="updatePreview()">
-      </div>
+<!-- MODAL -->
+<div class="modal-overlay" id="mOvl" onclick="if(event.target===this)closeModal()" style="display:none;align-items:flex-start;justify-content:center;padding:20px;overflow-y:auto;">
+<div class="modal" style="max-width:760px;width:100%;margin:auto;max-height:92vh;overflow-y:auto;">
+  <div class="modal-hd"><h3 id="mTitle">Add Banner</h3><button class="modal-close" onclick="closeModal()">✕</button></div>
+  <div class="b-split">
+    <div class="b-split-l">
+      <div class="sec-hd">Content</div>
       <div class="form-grid form-2" style="margin-bottom:10px;">
-        <div class="form-group">
-          <label class="form-label">CTA Button Text</label>
-          <input class="form-input" id="bCTA" placeholder="Shop Now" oninput="updatePreview()">
-        </div>
-        <div class="form-group">
-          <label class="form-label">CTA Link</label>
-          <input class="form-input" id="bCTAUrl" placeholder="/pages/products.html">
-        </div>
+        <div class="form-group"><label class="form-label">Title *</label><input class="form-input" id="fTitle" oninput="updatePrev()"></div>
+        <div class="form-group"><label class="form-label">Badge Text</label><input class="form-input" id="fBadge" oninput="updatePrev()"></div>
       </div>
-      <div class="form-group" style="margin-bottom:10px;">
-        <label class="form-label">Badge / Label Text</label>
-        <input class="form-input" id="bBadge" placeholder="e.g. New Arrivals 2025" oninput="updatePreview()">
-      </div>
-
-      <div class="sec-hd">Placement & Settings</div>
+      <div class="form-group" style="margin-bottom:10px;"><label class="form-label">Subtitle</label><input class="form-input" id="fSub" oninput="updatePrev()"></div>
       <div class="form-grid form-2" style="margin-bottom:10px;">
-        <div class="form-group">
-          <label class="form-label">Position / Type</label>
-          <select class="form-input" id="bPosition" onchange="updateDimGuide()">
-            <option value="hero">Hero Main (Full-width)</option>
-            <option value="hero_card">Hero Card</option>
-            <option value="promo">Promo Banner (Large)</option>
-            <option value="promo_side">Promo Banner (Side)</option>
+        <div class="form-group"><label class="form-label">CTA Button</label><input class="form-input" id="fCTA" placeholder="Shop Now"></div>
+        <div class="form-group"><label class="form-label">CTA Link</label><input class="form-input" id="fURL" placeholder="/pages/products.html"></div>
+      </div>
+      <div class="sec-hd">Settings</div>
+      <div class="form-grid form-2" style="margin-bottom:10px;">
+        <div class="form-group"><label class="form-label">Position</label>
+          <select class="form-input" id="fPos" onchange="updatePrev()">
+            <option value="hero">Hero Main</option>
+            <option value="hero_card">Hero Card (square)</option>
+            <option value="promo">Promo Banner</option>
+            <option value="promo_side">Promo Side</option>
             <option value="category">Category Banner</option>
-            <option value="flash_sale">Flash Sale Banner</option>
+            <option value="flash_sale">Flash Sale</option>
             <option value="offer_strip">Offer Strip</option>
-            <option value="popup">Popup Banner</option>
+            <option value="popup">Popup</option>
           </select>
         </div>
-        <div class="form-group">
-          <label class="form-label">Sort Order</label>
-          <input class="form-input" type="number" id="bSort" value="0" min="0">
+        <div class="form-group"><label class="form-label">Status</label>
+          <select class="form-input" id="fStatus">
+            <option value="true">Active — live on website</option>
+            <option value="false">Inactive — hidden</option>
+          </select>
+        </div>
+        <div class="form-group"><label class="form-label">Sort Order</label><input class="form-input" type="number" id="fSort" value="0" min="0"></div>
+        <div class="form-group"><label class="form-label">Image Fit</label>
+          <select class="form-input" id="fFit" onchange="updatePrev()">
+            <option value="cover">Cover (fill)</option>
+            <option value="contain">Contain (full image)</option>
+          </select>
         </div>
       </div>
       <div class="form-grid form-2" style="margin-bottom:10px;">
-        <div class="form-group">
-          <label class="form-label">Linked Category</label>
-          <select class="form-input" id="bCategory"><option value="">None</option></select>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Status</label>
-          <select class="form-input" id="bStatus"><option value="true">Active — live on website</option><option value="false">Inactive — hidden</option></select>
-        </div>
+        <div class="form-group"><label class="form-label">Schedule Start</label><input class="form-input" type="datetime-local" id="fStart"></div>
+        <div class="form-group"><label class="form-label">Schedule End</label><input class="form-input" type="datetime-local" id="fEnd"></div>
       </div>
-      <div class="form-grid form-2" style="margin-bottom:10px;">
-        <div class="form-group">
-          <label class="form-label">Schedule Start</label>
-          <input class="form-input" type="datetime-local" id="bStart">
-        </div>
-        <div class="form-group">
-          <label class="form-label">Schedule Expiry</label>
-          <input class="form-input" type="datetime-local" id="bEnd">
-        </div>
-      </div>
-      <div class="form-grid form-2">
-        <div class="form-group">
-          <label class="form-label">Text Color Theme</label>
-          <select class="form-input" id="bTextTheme" onchange="updatePreview()">
-            <option value="light">Light Text (on dark image)</option>
-            <option value="dark">Dark Text (on light image)</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Overlay Opacity</label>
-          <select class="form-input" id="bOverlay" onchange="updatePreview()">
-            <option value="0.65">Standard (65%)</option>
-            <option value="0.45">Light (45%)</option>
-            <option value="0.80">Heavy (80%)</option>
-            <option value="0">None</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Image Fit</label>
-          <select class="form-input" id="bImageFit" onchange="updatePreview()">
-            <option value="cover">Cover (fill, crop edges)</option>
-            <option value="contain">Contain (show full image)</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Image Position / Focal Point</label>
-          <select class="form-input" id="bImagePos" onchange="updatePreview()">
-            <option value="center">Center</option>
-            <option value="top">Top</option>
-            <option value="bottom">Bottom</option>
-            <option value="left">Left</option>
-            <option value="right">Right</option>
-            <option value="top left">Top Left</option>
-            <option value="top right">Top Right</option>
-            <option value="bottom left">Bottom Left</option>
-            <option value="bottom right">Bottom Right</option>
-          </select>
-        </div>
-      </div>
-
-      <div class="sec-hd">SEO</div>
-      <div class="form-group" style="margin-bottom:8px;">
-        <label class="form-label">Alt Text</label>
-        <input class="form-input" id="bAlt" placeholder="Describe the banner image for screen readers" oninput="updateSEOPrev()">
-      </div>
-      <div class="form-group">
-        <label class="form-label">Meta Title (for banner page)</label>
-        <input class="form-input" id="bMetaTitle" placeholder="SEO title" oninput="updateSEOPrev()">
-      </div>
+      <div class="form-group"><label class="form-label">Alt Text (SEO)</label><input class="form-input" id="fAlt"></div>
     </div>
-
-    <!-- RIGHT: Upload + Preview -->
-    <div class="b-modal-r">
-      <div class="sec-hd">Banner Image</div>
-      <div id="dimNote" style="font-size:11px;color:var(--green-700);background:var(--green-50);border-radius:6px;padding:7px 10px;margin-bottom:10px;"></div>
-
-      <!-- Desktop Image -->
-      <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--gray-500);margin-bottom:5px;">Desktop Image <span style="font-weight:400;color:var(--gray-400);" id="deskSizeHint"></span></div>
-      <div class="up-zone" id="upZone"
-        ondragover="upOver(event)" ondragleave="upLeave(event)" ondrop="upDrop(event)">
-        <input type="file" accept="image/*" onchange="handleUpload(this,'desktop')">
-        <img id="upPreview" class="up-zone-preview">
-        <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" width="26" height="26" style="opacity:.2;margin-bottom:6px;" id="upIcon"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-        <div style="font-size:12px;font-weight:600;color:var(--gray-600);" id="upLbl">Drop image or click to upload</div>
-        <div style="font-size:10px;color:var(--gray-400);margin-top:2px;">Any size — auto WebP + smart fit</div>
-        <div class="up-prog" id="upProg"><div class="up-prog-bar"><div class="up-prog-fill" id="upFill"></div></div><div class="up-prog-msg" id="upMsg"></div></div>
+    <div class="b-split-r">
+      <div class="sec-hd">Image — <span id="dimHint" style="font-weight:400;color:var(--green-700);">Hero: full-width × 380px</span></div>
+      <div class="up-zone" id="upZ" ondragover="dzOver(event)" ondragleave="dzLeave()" ondrop="dzDrop(event)">
+        <input type="file" accept="image/*" onchange="onFile(this)">
+        <img id="upPrev" class="up-preview">
+        <svg id="upIco" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" width="24" height="24" style="opacity:.2;margin-bottom:5px;"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+        <div style="font-size:12px;font-weight:600;color:var(--gray-600);" id="upLbl">Drop or click to upload</div>
+        <div style="font-size:10px;color:var(--gray-400);margin-top:2px;">Auto-converted to WebP · Auto-fit</div>
+        <div id="upProg" style="display:none;margin-top:8px;">
+          <div style="height:3px;background:var(--gray-100);border-radius:99px;overflow:hidden;"><div id="upFill" style="height:100%;background:var(--green-500);border-radius:99px;width:0%;transition:width .2s;"></div></div>
+          <div id="upMsg" style="font-size:10px;color:var(--gray-400);margin-top:3px;"></div>
+        </div>
       </div>
-      <button id="upRemove" onclick="removeImg('desktop')" style="display:none;margin-top:5px;width:100%;height:26px;border:1px solid var(--red-200);background:var(--red-50);color:var(--red-600);border-radius:5px;font-size:10px;font-weight:600;cursor:pointer;">Remove Desktop Image</button>
-
-      <!-- Mobile Image -->
-      <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--gray-500);margin:10px 0 5px;display:flex;align-items:center;gap:8px;">
-        Mobile Image <span style="font-weight:400;color:var(--gray-400);" id="mobSizeHint"></span>
-        <span style="font-size:9px;background:var(--gray-100);color:var(--gray-500);padding:1px 5px;border-radius:3px;">Optional</span>
-      </div>
-      <div class="up-zone" id="upZoneMob"
-        ondragover="upOverMob(event)" ondragleave="upLeaveMob(event)" ondrop="upDropMob(event)">
-        <input type="file" accept="image/*" onchange="handleUpload(this,'mobile')">
-        <img id="upPreviewMob" class="up-zone-preview">
-        <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" width="22" height="22" style="opacity:.2;margin-bottom:4px;" id="upIconMob"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
-        <div style="font-size:11px;font-weight:600;color:var(--gray-600);">Mobile-specific image</div>
-        <div style="font-size:10px;color:var(--gray-400);margin-top:1px;">Portrait crop recommended</div>
-        <div class="up-prog" id="upProgMob"><div class="up-prog-bar"><div class="up-prog-fill" id="upFillMob"></div></div><div class="up-prog-msg" id="upMsgMob"></div></div>
-      </div>
-      <button id="upRemoveMob" onclick="removeImg('mobile')" style="display:none;margin-top:5px;width:100%;height:26px;border:1px solid var(--red-200);background:var(--red-50);color:var(--red-600);border-radius:5px;font-size:10px;font-weight:600;cursor:pointer;">Remove Mobile Image</button>
+      <button id="upRm" onclick="removeImg()" style="display:none;margin-top:5px;width:100%;height:24px;border:1px solid #fecaca;background:#fef2f2;color:#dc2626;border-radius:5px;font-size:10px;font-weight:600;cursor:pointer;">Remove Image</button>
 
       <div class="sec-hd">Live Preview</div>
-      <div class="dev-tabs">
-        <button class="dev-tab on" id="dsk-tab" onclick="setPrevDev('desktop',this)">Desktop</button>
-        <button class="dev-tab" id="mob-tab" onclick="setPrevDev('mobile',this)">Mobile</button>
+      <div style="display:flex;gap:4px;margin-bottom:8px;">
+        <button onclick="setPrevDev('desktop',this)" style="flex:1;height:26px;border:1px solid var(--gray-200);border-radius:4px;font-size:10px;font-weight:700;background:#fff;cursor:pointer;" class="pdev-btn on">Desktop</button>
+        <button onclick="setPrevDev('mobile',this)" style="flex:1;height:26px;border:1px solid var(--gray-200);border-radius:4px;font-size:10px;font-weight:700;background:#fff;cursor:pointer;" class="pdev-btn">Mobile</button>
       </div>
-      <div class="live-preview lp-desktop" id="livePreview">
-        <div class="lp-img-wrap" id="lpImgWrap">
-          <img id="lpImg" src="" alt="" style="display:none;width:100%;height:100%;object-fit:cover;object-position:center;">
-          <div id="lpPlaceholder" style="width:100%;aspect-ratio:16/4.7;background:var(--gray-100);display:flex;align-items:center;justify-content:center;"><span style="font-size:11px;color:var(--gray-300);">Preview will appear here</span></div>
+      <div class="lp-wrap">
+        <div id="lpBox" style="position:relative;overflow:hidden;background:var(--gray-100);">
+          <img id="lpImg" class="lp-img" src="" alt="" style="display:none;">
+          <div id="lpEmpty" style="display:flex;align-items:center;justify-content:center;height:100px;font-size:11px;color:var(--gray-300);">Upload image to preview</div>
+          <div id="lpOvl" style="position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.65) 0%,transparent 55%);pointer-events:none;display:none;"></div>
+          <div id="lpText" style="position:absolute;bottom:10px;left:12px;right:12px;"></div>
         </div>
-        <div class="lp-overlay" id="lpOverlay"></div>
-        <div class="lp-text" id="lpText"></div>
-        <div class="lp-device-label" id="lpLabel">Desktop</div>
+        <div class="lp-lbl" id="lpLbl">Desktop Preview</div>
       </div>
 
-      <div class="sec-hd">Search Preview</div>
-      <div class="seo-prev">
-        <div class="seo-url" id="seoUrl">wellfixappliances.github.io/wellfix-website/</div>
-        <div class="seo-title-p" id="seoTitle">Banner Title</div>
-        <div class="seo-desc-p" id="seoDesc">Banner description for search engines</div>
-      </div>
+      <div id="sizeNote" style="font-size:10px;color:var(--gray-500);background:var(--gray-50);border-radius:5px;padding:6px 8px;margin-top:8px;"></div>
     </div>
   </div>
   <div class="modal-ft">
     <button class="btn btn-outline" onclick="closeModal()">Cancel</button>
-    <button class="btn" id="dupBtn" style="background:var(--gray-100);color:var(--gray-600);display:none;" onclick="duplicateBanner()">Duplicate</button>
-    <button class="btn" id="delBtn" style="background:var(--red-100);color:var(--red-600);display:none;" onclick="deleteBanner()">Delete</button>
-    <button class="btn btn-primary" id="saveBtn" onclick="saveBanner()">
-      <svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" width="12" height="12"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/></svg>
-      Save Banner
-    </button>
+    <button id="delBtn" style="display:none;" class="btn" onclick="deleteBanner()" style="background:#fef2f2;color:#dc2626;">Delete</button>
+    <button id="dupBtn" style="display:none;" class="btn btn-outline" onclick="dupBanner()">Duplicate</button>
+    <button class="btn btn-primary" onclick="saveBanner()">Save Banner</button>
   </div>
 </div>
 </div>
@@ -402,539 +195,321 @@
 <script src="assets/js/shell.js"></script>
 <script>
 'use strict';
+let all=[], curPos='all', editId=null, imgUrl=null, prevDev='desktop';
 
-// LIVE WEBSITE DIMENSIONS (from production sections.css)
-const LIVE_DIMS = {
-  hero:       { w:'Full-width', h:'380px desktop / 200px mobile', ar:'varies', note:'Full-width hero. Auto-fit to container. Recommend: 1920×380px or wider.' },
-  hero_card:  { w:'~185px square', h:'185px (square cell in 2×2 grid)', ar:'1:1', note:'Square card in 2×2 quad grid. Upload square image (400×400px recommended). Auto-fitted.' },
-  promo:      { w:'~66% width', h:'160px+ min',                   ar:'2:1',    note:'Large promo banner (2fr grid). Recommend: 1000×300px.' },
-  promo_side: { w:'~33% width', h:'160px+ min',                   ar:'1:1',    note:'Side promo banner (1fr grid). Recommend: 500×300px.' },
-  category:   { w:'Full-width', h:'180px',                        ar:'5:1',    note:'Category section banner. Recommend: 1200×240px.' },
-  flash_sale: { w:'Full-width', h:'160px',                        ar:'6:1',    note:'Flash sale strip. Recommend: 1200×200px.' },
-  offer_strip:{ w:'Full-width', h:'~50px',                        ar:'auto',   note:'Offer strip bar. Text-based. Small banner.' },
-  popup:      { w:'480px center', h:'480px',                      ar:'1:1',    note:'Centered popup. Recommend: 480×480px.' },
+const LABELS={all:'All',hero:'Hero Main',hero_card:'Hero Card',promo:'Promo Large',promo_side:'Promo Side',category:'Category',flash_sale:'Flash Sale',offer_strip:'Offer Strip',popup:'Popup'};
+const DIMS={
+  hero:      {d:'1920×380px',m:'750×200px',ar:'aspect-ratio:16/4.2'},
+  hero_card: {d:'400×400px (square)',m:'130×130px',ar:'aspect-ratio:1;max-width:180px;margin:0 auto'},
+  promo:     {d:'1000×300px',m:'375×200px',ar:'aspect-ratio:16/5'},
+  promo_side:{d:'500×300px',m:'375×200px',ar:'aspect-ratio:5/3'},
+  category:  {d:'1200×240px',m:'750×200px',ar:'aspect-ratio:5/1'},
+  flash_sale:{d:'1200×200px',m:'750×160px',ar:'aspect-ratio:6/1'},
+  offer_strip:{d:'1200×80px',m:'750×80px',ar:'aspect-ratio:15/1'},
+  popup:     {d:'480×480px (square)',m:'320×320px',ar:'aspect-ratio:1;max-width:180px;margin:0 auto'},
 };
 
-const POS_LABELS = {
-  hero:'Hero Main',hero_card:'Hero Card',promo:'Promo Large',promo_side:'Promo Side',
-  category:'Category',flash_sale:'Flash Sale',offer_strip:'Offer Strip',popup:'Popup',
-  all:'All Banners'
-};
-
-let allBanners = [], currentPos = 'all', editId = null, currentImgUrl = null, currentImgUrlMob = null;
-let prevDevice = 'desktop';
-let dragSrc = null;
-
-(async () => {
-  await AdminShell.init('Banners', 'banners');
+(async()=>{
+  await AdminShell.init('Banners','banners');
   await loadAll();
 })();
 
-
-// Auto-seed current homepage banners if DB is empty
-async function autoSeedBanners() {
-  const defaults = [
-    {title:'Premium Kitchen Appliances',subtitle:null,cta_text:'Shop Now',cta_url:'#trending',badge_text:'New Arrivals 2025',position:'hero',sort_order:1,is_active:true,desktop_image_url:'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=900&q=80&auto=format&fit=crop'},
-    {title:'Mixer Grinders',subtitle:null,cta_text:'Shop Now',cta_url:'#',badge_text:'Top Sellers',position:'hero_card',sort_order:2,is_active:true,desktop_image_url:'https://images.unsplash.com/photo-1585771724684-38269d6639fd?w=600&q=80&auto=format&fit=crop'},
-    {title:'Gas Stoves',subtitle:null,cta_text:'Shop Now',cta_url:'#',badge_text:'Best Deals',position:'hero_card',sort_order:3,is_active:true,desktop_image_url:'https://images.unsplash.com/photo-1484154218962-a197022b5858?w=600&q=80&auto=format&fit=crop'},
-    {title:'Up to 30% Off on Top Brands',subtitle:null,cta_text:'Shop Now',cta_url:'#',badge_text:'Limited Time',position:'promo',sort_order:4,is_active:true,desktop_image_url:'https://images.unsplash.com/photo-1556909172-54557c7e4fb7?w=900&q=80&auto=format&fit=crop'},
-    {title:'Sujata Mixers',subtitle:null,cta_text:'Explore',cta_url:'#',badge_text:'Best Sellers',position:'promo_side',sort_order:5,is_active:true,desktop_image_url:'https://images.unsplash.com/photo-1585771724684-38269d6639fd?w=500&q=80&auto=format&fit=crop'},
-    {title:'Premium Fans',subtitle:null,cta_text:'View All',cta_url:'#',badge_text:'New Stock',position:'promo_side',sort_order:6,is_active:true,desktop_image_url:'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=500&q=80&auto=format&fit=crop'},
-  ];
-  for(const b of defaults) {
-    try { await db.from('banners').insert(b); } catch(e) {}
+async function loadAll(){
+  try{
+    let data;
+    // Try WF.banners first (exists in supabase.js), fall back to direct db call
+    try{ data = await WF.banners.getAll(); }
+    catch(e){ const r=await db.from('banners').select('*').order('sort_order'); data=r.data||[]; }
+    all=data||[];
+  }catch(e){
+    toast('Error: '+e.message,true);
+    all=[];
   }
-  toast('Homepage banners loaded into admin panel');
+  renderKPIs();renderTabs();renderGrid();
+  document.getElementById('bSub').textContent=`${all.length} banners · ${all.filter(b=>b.is_active).length} active`;
 }
 
-async function loadAll() {
-  let bRes, cRes;
-  try {
-    [bRes, cRes] = await Promise.all([
-      db.from('banners').select('*').order('sort_order'),
-      db.from('categories').select('id,name').eq('is_active', true).order('name'),
-    ]);
-  } catch(e) {
-    toast('Error loading banners: '+e.message, true);
+function renderKPIs(){
+  const t=all.length,a=all.filter(b=>b.is_active).length,s=all.filter(b=>b.starts_at||b.ends_at).length,n=all.filter(b=>!b.desktop_image_url).length;
+  document.getElementById('bKpi').innerHTML=[
+    {c:'gn',v:t,l:'Total Banners'},{c:'bl',v:a,l:'Active Now'},{c:'am',v:s,l:'Scheduled'},{c:'rd',v:n,l:'No Image'}
+  ].map(k=>`<div class="bk ${k.c}"><div class="bk-val">${k.v}</div><div class="bk-lbl">${k.l}</div></div>`).join('');
+}
+
+function renderTabs(){
+  const cnt={};all.forEach(b=>{cnt[b.position]=(cnt[b.position]||0)+1;});
+  document.getElementById('posTabs').innerHTML=['all','hero','hero_card','promo','promo_side','category','flash_sale','offer_strip','popup'].map(p=>`
+    <div class="ptab ${curPos===p?'on':''}" onclick="setPos('${p}')">${LABELS[p]}<span class="ptab-cnt">${p==='all'?all.length:(cnt[p]||0)}</span></div>`).join('');
+}
+
+function setPos(p){curPos=p;renderTabs();renderGrid();}
+
+function imgH(pos){
+  return pos==='offer_strip'?'50px':pos==='flash_sale'||pos==='category'?'80px':pos==='hero'?'130px':'100px';
+}
+
+function renderGrid(){
+  const el=document.getElementById('bGrid');
+  const list=curPos==='all'?all:all.filter(b=>b.position===curPos);
+  if(!list.length){
+    el.innerHTML=`<div class="empty-b" style="grid-column:1/-1"><svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg><b>No ${curPos==='all'?'':LABELS[curPos]+' '}banners</b><p style="font-size:11px;margin-top:4px;">Add your first banner</p><button class="btn btn-primary btn-sm" style="margin-top:10px;" onclick="openModal()">Add Banner</button></div>
+    <div class="bcrd-add" onclick="openModal()"><svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" width="24" height="24" style="color:var(--gray-300);"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg><span style="font-size:11px;font-weight:600;color:var(--gray-400);">Add Banner</span></div>`;
     return;
   }
-  if(bRes.error) {
-    toast('Banners error: '+bRes.error.message+' — run banners_columns_v2.sql in Supabase', true);
-    // Still try with basic columns
-    const fallback = await db.from('banners').select('id,title,subtitle,cta_text,cta_url,badge_text,position,sort_order,is_active,desktop_image_url,starts_at,ends_at').order('sort_order');
-    allBanners = fallback.data || [];
-  } else {
-    allBanners = bRes.data || [];
-  }
-  // If DB is empty, auto-seed from current homepage defaults
-  if(allBanners.length === 0) {
-    await autoSeedBanners();
-    const r2 = await db.from('banners').select('*').order('sort_order');
-    allBanners = r2.data || [];
-  }
-  const cats = cRes.data || [];
-
-  // Populate category select in modal
-  document.getElementById('bCategory').innerHTML = '<option value="">None</option>' +
-    cats.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
-
-  renderKPIs();
-  renderPosTabs();
-  renderGrid();
-}
-
-function renderKPIs() {
-  const total = allBanners.length;
-  const active = allBanners.filter(b => b.is_active).length;
-  const scheduled = allBanners.filter(b => b.starts_at || b.ends_at).length;
-  const noImg = allBanners.filter(b => !b.desktop_image_url).length;
-  document.getElementById('bannerSub').textContent = `${total} banners · ${active} active · ${scheduled} scheduled`;
-  document.getElementById('bannerKpi').innerHTML = [
-    { cls:'gn', val:total,     lbl:'Total Banners' },
-    { cls:'bl', val:active,    lbl:'Active Now' },
-    { cls:'am', val:scheduled, lbl:'Scheduled' },
-    { cls:'rd', val:noImg,     lbl:'No Image' },
-  ].map(k => `<div class="bk ${k.cls}"><div class="bk-val">${k.val}</div><div class="bk-lbl">${k.lbl}</div></div>`).join('');
-}
-
-function renderPosTabs() {
-  const counts = {};
-  allBanners.forEach(b => { counts[b.position] = (counts[b.position]||0)+1; });
-  const tabs = ['all','hero','hero_card','promo','promo_side','category','flash_sale','offer_strip','popup'];
-  document.getElementById('posTabs').innerHTML = tabs.map(p => {
-    const cnt = p === 'all' ? allBanners.length : (counts[p]||0);
-    return `<div class="ptab ${currentPos===p?'on':''}" onclick="setPos('${p}')">${POS_LABELS[p]}<span class="ptab-cnt">${cnt}</span></div>`;
-  }).join('');
-}
-
-function setPos(p) {
-  currentPos = p;
-  renderPosTabs();
-  renderGrid();
-  updateDimGuide();
-}
-
-function getPreviewHeight(pos) {
-  if (pos === 'hero') return '130px';
-  if (pos === 'popup') return '200px';
-  if (pos === 'offer_strip') return '60px';
-  return '100px';
-}
-
-function renderGrid() {
-  const el = document.getElementById('bannerGrid');
-  const list = currentPos === 'all' ? allBanners : allBanners.filter(b => b.position === currentPos);
-
-  const now = new Date();
-  const cards = list.map((b, i) => {
-    const isExpired = b.ends_at && new Date(b.ends_at) < now;
-    const isScheduled = b.starts_at && new Date(b.starts_at) > now;
-    const ph = getPreviewHeight(b.position || 'hero');
-    const opa = b.text_overlay_opacity ?? 0.65;
-    return `<div class="bcrd" draggable="true" id="bc-${b.id}"
-      ondragstart="dragStart('${b.id}')" ondragover="dragOver(event,'${b.id}')" ondrop="dragDrop(event,'${b.id}')" ondragend="dragEnd()">
-      <div class="bcrd-preview" style="height:${ph};">
+  el.innerHTML=list.map(b=>{
+    const h=imgH(b.position);
+    const fit=b.image_fit||'cover';
+    const pos=b.image_position||'center';
+    return`<div class="bcrd">
+      <div class="bcrd-img" style="height:${h};">
         ${b.desktop_image_url
-          ? `<img src="${b.desktop_image_url}" alt="${b.title||''}" loading="lazy" style="width:100%;height:${ph};object-fit:cover;">`
-          : `<div class="bcrd-no-img" style="height:${ph};"><svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg><span style="font-size:11px;">No image</span></div>`}
-        <div class="bcrd-overlay" style="background:linear-gradient(to top,rgba(0,0,0,${opa}) 0%,transparent 55%);"></div>
-        <div class="bcrd-badges">
-          <span class="bcrd-pos">${POS_LABELS[b.position]||b.position||'—'}</span>
-          ${isScheduled ? '<span class="bcrd-sched">Scheduled</span>' : ''}
-          ${isExpired ? '<span class="bcrd-sched" style="background:#ef4444;">Expired</span>' : ''}
-        </div>
-        ${b.title ? `<div class="bcrd-overlay-text"><div class="bcrd-title">${b.title}</div>${b.subtitle?`<div class="bcrd-subtitle">${b.subtitle}</div>`:''}</div>` : ''}
+          ?`<img src="${b.desktop_image_url}" alt="${b.title||''}" loading="lazy" style="width:100%;height:${h};object-fit:${fit};object-position:${pos};">`
+          :`<div class="bcrd-noimg"><svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" width="24" height="24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg><span style="font-size:10px;">No image</span></div>`}
+        <div class="bcrd-overlay"></div>
+        <span class="bcrd-badge">${LABELS[b.position]||b.position}</span>
+        ${b.title?`<div class="bcrd-title">${b.title}</div>`:''}
       </div>
       <div class="bcrd-foot">
-        <div class="bcrd-info">
+        <div style="flex:1;min-width:0;">
           <div class="bcrd-name">${b.title||'Untitled'}</div>
-          <div class="bcrd-meta">Sort: ${b.sort_order??0} · ${b.cta_text||'No CTA'} ${b.starts_at?'· Starts '+new Date(b.starts_at).toLocaleDateString():''}</div>
+          <div class="bcrd-meta">Sort: ${b.sort_order||0} · ${b.cta_text||'No CTA'}</div>
         </div>
-        <div class="bcrd-actions">
-          <label class="tog" onclick="event.stopPropagation()">
-            <input type="checkbox" ${b.is_active?'checked':''} onchange="toggleBanner('${b.id}',this.checked)">
-            <span class="tog-tr"></span>
-          </label>
-          <button class="bcrd-ra" title="Copy URL" onclick="event.stopPropagation();copyUrl('${b.desktop_image_url||''}')">
-            <svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
-          </button>
-          <button class="bcrd-ra" title="Edit" onclick="event.stopPropagation();editBanner('${b.id}')">
-            <svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4z"/></svg>
-          </button>
-          <button class="bcrd-ra danger" title="Delete" onclick="event.stopPropagation();deleteById('${b.id}')">
-            <svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg>
-          </button>
+        <div class="bcrd-acts">
+          <label class="tog" onclick="event.stopPropagation()"><input type="checkbox" ${b.is_active?'checked':''} onchange="toggleBanner('${b.id}',this.checked)"><span class="tog-tr"></span></label>
+          <button class="bact" title="Copy URL" onclick="event.stopPropagation();copyURL('${b.desktop_image_url||''}')"><svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg></button>
+          <button class="bact" title="Edit" onclick="event.stopPropagation();editBanner('${b.id}')"><svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4z"/></svg></button>
+          <button class="bact del" title="Delete" onclick="event.stopPropagation();deleteById('${b.id}')"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/></svg></button>
         </div>
       </div>
     </div>`;
-  }).join('');
-
-  const addCard = `<div class="bcrd-add" onclick="openModal()">
-    <div style="text-align:center;">
-      <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" style="margin:0 auto;display:block;"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-      <span>${currentPos==='all'?'Add Banner':`Add ${POS_LABELS[currentPos]} Banner`}</span>
-    </div>
-  </div>`;
-
-  el.innerHTML = list.length
-    ? cards + addCard
-    : `<div class="empty-b">
-        <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-        <h3>No ${currentPos==='all'?'':POS_LABELS[currentPos]+' '}banners yet</h3>
-        <p>Add your first banner — changes update website immediately</p>
-        <button class="btn btn-primary" style="margin-top:12px;" onclick="openModal()">Add Banner</button>
-      </div>` + addCard;
+  }).join('')+`<div class="bcrd-add" onclick="openModal()"><svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" width="22" height="22" style="color:var(--gray-300);"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg><span style="font-size:11px;font-weight:600;color:var(--gray-400);">Add Banner</span></div>`;
 }
-
-// DRAG SORT
-function dragStart(id) { dragSrc=id; setTimeout(()=>document.getElementById('bc-'+id)?.classList.add('dragging'),0); }
-function dragOver(e,id) { e.preventDefault(); document.querySelectorAll('.bcrd').forEach(c=>c.classList.toggle('drag-over',c.id==='bc-'+id&&id!==dragSrc)); }
-function dragDrop(e,id) {
-  e.preventDefault();
-  if(!dragSrc||dragSrc===id) return;
-  const srcIdx=allBanners.findIndex(b=>b.id===dragSrc);
-  const tgtIdx=allBanners.findIndex(b=>b.id===id);
-  const moved=allBanners.splice(srcIdx,1)[0];
-  allBanners.splice(tgtIdx,0,moved);
-  allBanners.forEach((b,i)=>{b.sort_order=i;db.from('banners').update({sort_order:i}).eq('id',b.id);});
-  dragSrc=null; renderGrid();
-  toast('Order saved');
-}
-function dragEnd() { document.querySelectorAll('.bcrd').forEach(c=>c.classList.remove('dragging','drag-over')); dragSrc=null; }
 
 // MODAL
-function openModal(id=null) {
-  editId=null; currentImgUrl=null;
-  clearForm();
-  if(currentPos!=='all') document.getElementById('bPosition').value=currentPos;
-  updateDimGuide();
-  document.getElementById('modalTitle').textContent='Add Banner';
+function openModal(){
+  editId=null;imgUrl=null;clearForm();
+  if(curPos!=='all')document.getElementById('fPos').value=curPos;
+  document.getElementById('mTitle').textContent='Add Banner';
   document.getElementById('delBtn').style.display='none';
   document.getElementById('dupBtn').style.display='none';
-  document.getElementById('bannerOverlay').style.display='flex';
-  updatePreview();
+  document.getElementById('mOvl').style.display='flex';
+  updatePrev();updateDimHint();
+}
+function editBanner(id){
+  const b=all.find(x=>x.id===id);if(!b)return;
+  editId=id;imgUrl=b.desktop_image_url||null;
+  document.getElementById('fTitle').value=b.title||'';
+  document.getElementById('fBadge').value=b.badge_text||'';
+  document.getElementById('fSub').value=b.subtitle||'';
+  document.getElementById('fCTA').value=b.cta_text||'';
+  document.getElementById('fURL').value=b.cta_url||'';
+  document.getElementById('fPos').value=b.position||'hero';
+  document.getElementById('fStatus').value=String(b.is_active!==false);
+  document.getElementById('fSort').value=b.sort_order||0;
+  document.getElementById('fFit').value=b.image_fit||'cover';
+  document.getElementById('fStart').value=b.starts_at?b.starts_at.slice(0,16):'';
+  document.getElementById('fEnd').value=b.ends_at?b.ends_at.slice(0,16):'';
+  document.getElementById('fAlt').value=b.alt_text||'';
+  if(imgUrl){showPreviewImg(imgUrl);}else{resetUpZone();}
+  document.getElementById('mTitle').textContent='Edit Banner';
+  document.getElementById('delBtn').style.display='inline-flex';
+  document.getElementById('dupBtn').style.display='inline-flex';
+  document.getElementById('mOvl').style.display='flex';
+  updatePrev();updateDimHint();
+}
+function closeModal(){document.getElementById('mOvl').style.display='none';}
+function clearForm(){
+  ['fTitle','fBadge','fSub','fCTA','fURL','fStart','fEnd','fAlt'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('fSort').value=0;
+  document.getElementById('fStatus').value='true';
+  document.getElementById('fFit').value='cover';
+  resetUpZone();updatePrev();
 }
 
-function editBanner(id) {
-  const b=allBanners.find(x=>x.id===id);if(!b)return;
-  editId=id; currentImgUrl=b.desktop_image_url||null;
-  document.getElementById('bTitle').value=b.title||'';
-  document.getElementById('bSub').value=b.subtitle||'';
-  document.getElementById('bCTA').value=b.cta_text||'';
-  document.getElementById('bCTAUrl').value=b.cta_url||'';
-  document.getElementById('bBadge').value=b.badge_text||'';
-  document.getElementById('bPosition').value=b.position||'hero';
-  document.getElementById('bSort').value=b.sort_order??0;
-  document.getElementById('bStatus').value=String(b.is_active!==false);
-  document.getElementById('bStart').value=b.starts_at?b.starts_at.slice(0,16):'';
-  document.getElementById('bEnd').value=b.ends_at?b.ends_at.slice(0,16):'';
-  document.getElementById('bAlt').value=b.alt_text||'';
-  document.getElementById('bMetaTitle').value=b.meta_title||'';
-  document.getElementById('bTextTheme').value=b.text_theme||'light';
-  document.getElementById('bImageFit').value=b.image_fit||'cover';
-  document.getElementById('bImagePos').value=b.image_position||'center';
-  // Load mobile image if exists
-  currentImgUrlMob=b.mobile_image_url||null;
-  if(b.mobile_image_url){
-    const pm=document.getElementById('upPreviewMob');
-    pm.src=b.mobile_image_url;pm.classList.add('show');
-    document.getElementById('upIconMob').style.display='none';
-    document.getElementById('upRemoveMob').style.display='block';
-  }
-  document.getElementById('bOverlay').value=String(b.text_overlay_opacity??0.65);
-  if(b.desktop_image_url){
-    const prev=document.getElementById('upPreview');
-    prev.src=b.desktop_image_url;prev.classList.add('show');
-    document.getElementById('upIcon').style.display='none';
-    document.getElementById('upLbl').textContent='Click to replace';
-    document.getElementById('upRemove').style.display='block';
-  }else resetUpZone();
-  updateDimGuide();updatePreview();updateSEOPrev();
-  document.getElementById('modalTitle').textContent='Edit Banner';
-  document.getElementById('delBtn').style.display='block';
-  document.getElementById('dupBtn').style.display='block';
-  document.getElementById('bannerOverlay').style.display='flex';
-}
-
-function closeModal() { document.getElementById('bannerOverlay').style.display='none'; }
-
-function clearFormMob() {
-  currentImgUrlMob=null;
-  const p=document.getElementById('upPreviewMob');if(p){p.src='';p.classList.remove('show');}
-  const ic=document.getElementById('upIconMob');if(ic)ic.style.display='block';
-  const rm=document.getElementById('upRemoveMob');if(rm)rm.style.display='none';
-}
-function clearForm() {
-  ['bTitle','bSub','bCTA','bCTAUrl','bBadge','bAlt','bMetaTitle'].forEach(id=>document.getElementById(id).value='');
-  document.getElementById('bSort').value=0;
-  document.getElementById('bStatus').value='true';
-  document.getElementById('bStart').value='';document.getElementById('bEnd').value='';
-  document.getElementById('bTextTheme').value='light';
-  document.getElementById('bOverlay').value='0.65';
-  resetUpZone();clearFormMob();updatePreview();updateSEOPrev();
-}
-
-function updateDimGuide() {
-  // Auto-set fit for known square positions
-  const pos=document.getElementById('bPosition').value;
-  const fitSel=document.getElementById('bImageFit');
-  if(fitSel&&(pos==='hero_card'||pos==='popup')){
-    fitSel.value='contain'; // show full image in square
-  } else if(fitSel&&!fitSel._manuallyChanged){
-    fitSel.value='cover';
-  }
-  const pos=document.getElementById('bPosition').value;
-  const dim=LIVE_DIMS[pos]||LIVE_DIMS.hero;
-  document.getElementById('dimNote').textContent=`Live dimensions: ${dim.note}`;
-  // Size hints
-  const deskHints={
-    hero:'1920 × 380px desktop',
-    hero_card:'400 × 400px (square, auto-fit)',
-    hero:'1920 × 380px',
-    promo:'~800 × 300px',
-    promo_side:'~400 × 300px',
-    popup:'480 × 480px (square)',
-    category:'1200 × 240px',
-    flash_sale:'1200 × 200px',
-    offer_strip:'1200 × 80px'
+// SAVE
+async function saveBanner(){
+  const title=document.getElementById('fTitle').value.trim();
+  if(!title){toast('Title required',true);return;}
+  const btn=document.querySelector('#mOvl .btn-primary');
+  btn.textContent='Saving…';btn.disabled=true;
+  const payload={
+    title,
+    subtitle:document.getElementById('fSub').value||null,
+    cta_text:document.getElementById('fCTA').value||null,
+    cta_url:document.getElementById('fURL').value||null,
+    badge_text:document.getElementById('fBadge').value||null,
+    position:document.getElementById('fPos').value,
+    sort_order:parseInt(document.getElementById('fSort').value)||0,
+    is_active:document.getElementById('fStatus').value==='true',
+    starts_at:document.getElementById('fStart').value||null,
+    ends_at:document.getElementById('fEnd').value||null,
+    desktop_image_url:imgUrl||null,
   };
-  const mobHints={
-    hero:'750 × 200px mobile',
-    hero_card:'~130 × 130px (square)',
-    promo:'375 × 180px',
-  };
-  const dh=document.getElementById('deskSizeHint');
-  const mh=document.getElementById('mobSizeHint');
-  if(dh) dh.textContent=deskHints[pos]?`(${deskHints[pos]})`:'';
-  if(mh) mh.textContent=mobHints[pos]?`(${mobHints[pos]})`:'(portrait preferred)';
+  // Add optional columns safely
+  const fit=document.getElementById('fFit').value;
+  const alt=document.getElementById('fAlt').value;
+  if(fit)payload.image_fit=fit;
+  if(alt)payload.alt_text=alt;
+
+  try{
+    if(editId){ await db.from('banners').update(payload).eq('id',editId); }
+    else { await db.from('banners').insert(payload); }
+    toast(editId?'Banner updated':'Banner added — live on website');
+    closeModal();loadAll();
+  }catch(e){
+    // If column error, retry without optional columns
+    delete payload.image_fit;delete payload.alt_text;
+    try{
+      if(editId){ await db.from('banners').update(payload).eq('id',editId); }
+      else { await db.from('banners').insert(payload); }
+      toast('Banner saved (run banners_columns_v2.sql for extra features)');
+      closeModal();loadAll();
+    }catch(e2){ toast('Error: '+e2.message,true); }
+  }
+  btn.textContent='Save Banner';btn.disabled=false;
+}
+
+async function toggleBanner(id,val){
+  await db.from('banners').update({is_active:val}).eq('id',id);
+  const b=all.find(x=>x.id===id);if(b)b.is_active=val;
+  renderKPIs();renderGrid();
+  document.getElementById('bSub').textContent=`${all.length} banners · ${all.filter(b=>b.is_active).length} active`;
+  toast(val?'Banner activated — showing on website':'Banner deactivated');
+}
+async function deleteBanner(){
+  if(!editId||!confirm('Delete this banner?'))return;
+  await db.from('banners').delete().eq('id',editId);
+  toast('Deleted');closeModal();loadAll();
+}
+async function deleteById(id){
+  if(!confirm('Delete this banner?'))return;
+  await db.from('banners').delete().eq('id',id);
+  all=all.filter(x=>x.id!==id);renderKPIs();renderTabs();renderGrid();
+  document.getElementById('bSub').textContent=`${all.length} banners · ${all.filter(b=>b.is_active).length} active`;
+  toast('Deleted');
+}
+async function dupBanner(){
+  if(!editId)return;
+  const b=all.find(x=>x.id===editId);if(!b)return;
+  await db.from('banners').insert({...b,id:undefined,title:b.title+' (Copy)',is_active:false,sort_order:(b.sort_order||0)+1,created_at:undefined,updated_at:undefined});
+  toast('Duplicated as inactive');closeModal();loadAll();
 }
 
 // UPLOAD
-function upOver(e){e.preventDefault();document.getElementById('upZone').classList.add('over');}
-function upLeave(e){document.getElementById('upZone').classList.remove('over');}
-function upDrop(e){e.preventDefault();upLeave();const f=e.dataTransfer.files[0];if(f)processAndUpload(f,'desktop');}
-function handleUpload(input,type='desktop'){const f=input.files[0];if(f)processAndUpload(f,type);}
+function dzOver(e){e.preventDefault();document.getElementById('upZ').classList.add('over');}
+function dzLeave(){document.getElementById('upZ').classList.remove('over');}
+function dzDrop(e){e.preventDefault();dzLeave();const f=e.dataTransfer.files[0];if(f)processImg(f);}
+function onFile(input){const f=input.files[0];if(f)processImg(f);}
 
-async function processAndUpload(file, uploadType='desktop') {
-  const pos=document.getElementById('bPosition').value;
-  const isMob=uploadType==='mobile';
-  const prog=document.getElementById(isMob?'upProgMob':'upProg');
-  const fill=document.getElementById(isMob?'upFillMob':'upFill');
-  const msg=document.getElementById(isMob?'upMsgMob':'upMsg');
-  prog.style.display='block'; fill.style.width='20%'; msg.textContent='Converting to WebP…';
-  try {
-    // Smart processing: preserve aspect ratio, use contain with position background
-    const processed = await new Promise(resolve => {
+async function processImg(file){
+  const pos=document.getElementById('fPos').value;
+  const prog=document.getElementById('upProg');
+  const fill=document.getElementById('upFill');
+  const msg=document.getElementById('upMsg');
+  prog.style.display='block';fill.style.width='15%';msg.textContent='Processing…';
+  try{
+    const blob=await new Promise(res=>{
       const reader=new FileReader();
       reader.onload=e=>{
         const img=new Image();
         img.onload=()=>{
-          // Target dimensions based on banner type
-          let W=1920,H=380;
-          if(pos==='hero_card'){W=400;H=400;} // square for 2x2 quad grid
-          else if(pos==='promo'){W=1000;H=300;}
-          else if(pos==='promo_side'){W=500;H=300;}
-          else if(pos==='popup'){W=480;H=480;}
-          else if(pos==='offer_strip'){W=1200;H=80;}
-          else if(pos==='category'){W=1200;H=240;}
-          else if(pos==='flash_sale'){W=1200;H=200;}
+          // Target size per position
+          const sizes={hero:[1920,380],hero_card:[400,400],promo:[1000,300],promo_side:[500,300],popup:[480,480],category:[1200,240],flash_sale:[1200,200],offer_strip:[1200,80]};
+          const [W,H]=sizes[pos]||[1200,400];
           const canvas=document.createElement('canvas');
           canvas.width=W;canvas.height=H;
           const ctx=canvas.getContext('2d');
           ctx.fillStyle='#f5f5f5';ctx.fillRect(0,0,W,H);
-          // hero_card and popup = contain (show full square image)
-          // others = cover (fill, center crop)
-          const useContain=pos==='hero_card'||pos==='popup';
-          let scale,sw,sh;
-          if(useContain){
-            scale=Math.min((W*0.92)/img.width,(H*0.92)/img.height);
-            sw=img.width*scale;sh=img.height*scale;
-          } else {
-            scale=Math.max(W/img.width,H/img.height);
-            sw=img.width*scale;sh=img.height*scale;
-          }
+          // Square positions: contain. Others: cover
+          const sq=pos==='hero_card'||pos==='popup';
+          const scale=sq?Math.min((W*.92)/img.width,(H*.92)/img.height):Math.max(W/img.width,H/img.height);
+          const sw=img.width*scale,sh=img.height*scale;
           ctx.drawImage(img,(W-sw)/2,(H-sh)/2,sw,sh);
-          canvas.toBlob(blob=>{
-            resolve(new File([blob],file.name.replace(/\.[^.]+$/,'')+'.webp',{type:'image/webp'}));
-          },'image/webp',0.88);
+          canvas.toBlob(b=>res(b),'image/webp',.88);
         };
         img.src=e.target.result;
       };
       reader.readAsDataURL(file);
     });
-    fill.style.width='60%'; msg.textContent='Uploading to storage…';
+    fill.style.width='60%';msg.textContent='Uploading…';
     const fname=`banners/${pos}-${Date.now()}-${Math.random().toString(36).slice(2)}.webp`;
-    let url;
-    for(const bucket of['media','products']){
-      const{error}=await db.storage.from(bucket).upload(fname,processed,{cacheControl:'3600',upsert:false});
+    let url=null;
+    for(const bucket of['media','products','public']){
+      const{error}=await db.storage.from(bucket).upload(fname,blob,{cacheControl:'3600',upsert:false,contentType:'image/webp'});
       if(!error){url=db.storage.from(bucket).getPublicUrl(fname).data.publicUrl;break;}
     }
-    if(!url)throw new Error('Upload failed');
-    fill.style.width='100%'; msg.textContent='Uploaded';
-    if(uploadType==='mobile'){
-      currentImgUrlMob=url;
-      const prev=document.getElementById('upPreviewMob');
-      prev.src=url;prev.classList.add('show');
-      document.getElementById('upIconMob').style.display='none';
-      document.getElementById('upRemoveMob').style.display='block';
-    } else {
-      currentImgUrl=url;
-      const prev=document.getElementById('upPreview');
-      prev.src=url;prev.classList.add('show');
-      document.getElementById('upIcon').style.display='none';
-      document.getElementById('upLbl').textContent='Click to replace';
-      document.getElementById('upRemove').style.display='block';
-    }
-    updatePreview();
+    if(!url)throw new Error('No storage bucket available');
+    imgUrl=url;fill.style.width='100%';msg.textContent='Done';
+    showPreviewImg(url);updatePrev();
     setTimeout(()=>{prog.style.display='none';fill.style.width='0%';},1500);
-  }catch(e){toast('Upload failed: '+e.message,true);prog.style.display='none';}
+  }catch(e){toast('Upload error: '+e.message,true);prog.style.display='none';}
 }
-
-function removeImg(){currentImgUrl=null;resetUpZone();updatePreview();}
+function showPreviewImg(url){
+  const p=document.getElementById('upPrev');
+  p.src=url;p.classList.add('show');
+  document.getElementById('upIco').style.display='none';
+  document.getElementById('upLbl').textContent='Click to replace';
+  document.getElementById('upRm').style.display='block';
+}
+function removeImg(){
+  imgUrl=null;resetUpZone();updatePrev();
+}
 function resetUpZone(){
-  const p=document.getElementById('upPreview');p.src='';p.classList.remove('show');
-  document.getElementById('upIcon').style.display='block';
-  document.getElementById('upLbl').textContent='Drop image or click to upload';
-  document.getElementById('upRemove').style.display='none';
+  const p=document.getElementById('upPrev');p.src='';p.classList.remove('show');
+  document.getElementById('upIco').style.display='block';
+  document.getElementById('upLbl').textContent='Drop or click to upload';
+  document.getElementById('upRm').style.display='none';
 }
 
 // PREVIEW
 function setPrevDev(dev,el){
-  prevDevice=dev;
-  document.querySelectorAll('.dev-tab').forEach(t=>t.classList.remove('on'));el.classList.add('on');
-  const lp=document.getElementById('livePreview');
-  const wrap=document.getElementById('lpImgWrap');
-  const lbl=document.getElementById('lpLabel');
-  const pos=document.getElementById('bPosition').value;
-  lp.className='live-preview '+(dev==='desktop'?'lp-desktop':'lp-mobile');
-  if(dev==='desktop'){
-    wrap.style.cssText=pos==='hero'?'aspect-ratio:16/4.2':pos==='hero_card'?'aspect-ratio:1;max-width:220px;margin:0 auto':pos==='popup'?'aspect-ratio:1':pos==='offer_strip'?'aspect-ratio:15/1':pos==='promo_side'?'aspect-ratio:4/3':'aspect-ratio:16/5';
-    lbl.textContent='Desktop Preview';
-  }else{
-    wrap.style.cssText=pos==='hero_card'||pos==='popup'?'aspect-ratio:1;max-width:160px;margin:0 auto':pos==='offer_strip'?'aspect-ratio:8/1':'aspect-ratio:9/16;max-width:180px;margin:0 auto';
-    lbl.textContent='Mobile Preview';
-  }
-  updatePreview();
+  prevDev=dev;
+  document.querySelectorAll('.pdev-btn').forEach(b=>{b.style.background=b===el?'var(--green-700)':'#fff';b.style.color=b===el?'#fff':'';b.style.borderColor=b===el?'var(--green-700)':'var(--gray-200)';});
+  document.getElementById('lpLbl').textContent=dev==='desktop'?'Desktop Preview':'Mobile Preview';
+  updatePrev();
 }
-
-function updatePreview(){
-  const title=document.getElementById('bTitle').value;
-  const sub=document.getElementById('bSub').value;
-  const cta=document.getElementById('bCTA').value;
-  const badge=document.getElementById('bBadge').value;
-  const opa=parseFloat(document.getElementById('bOverlay').value)||0.65;
+function updatePrev(){
+  const pos=document.getElementById('fPos').value;
+  const fit=document.getElementById('fFit').value;
+  const title=document.getElementById('fTitle').value;
+  const badge=document.getElementById('fBadge').value;
+  const dim=DIMS[pos]||DIMS.hero;
+  const box=document.getElementById('lpBox');
+  const ar=prevDev==='mobile'?'aspect-ratio:4/3':'';
+  box.style.cssText=ar||(prevDev==='desktop'?dim.ar:'aspect-ratio:4/3');
   const lpImg=document.getElementById('lpImg');
-  const lpPlaceholder=document.getElementById('lpPlaceholder');
-  const lpOverlay=document.getElementById('lpOverlay');
-  const lpText=document.getElementById('lpText');
-  const fit=document.getElementById('bImageFit')?.value||'cover';
-  const pos_v=document.getElementById('bImagePos')?.value||'center';
-  // Use mobile img in mobile preview if available
-  const imgUrl=prevDevice==='mobile'&&currentImgUrlMob?currentImgUrlMob:currentImgUrl;
+  const lpEmpty=document.getElementById('lpEmpty');
   if(imgUrl){
-    lpImg.src=imgUrl;lpImg.style.display='block';
-    lpImg.style.objectFit=fit;
-    lpImg.style.objectPosition=pos_v;
-    lpPlaceholder.style.display='none';
+    lpImg.src=imgUrl;lpImg.style.cssText=`display:block;width:100%;height:100%;object-fit:${fit};object-position:center;`;
+    lpEmpty.style.display='none';
+    document.getElementById('lpOvl').style.display='block';
   }else{
-    lpImg.style.display='none';lpPlaceholder.style.display='flex';
+    lpImg.style.display='none';lpEmpty.style.display='flex';
+    document.getElementById('lpOvl').style.display='none';
   }
-  lpOverlay.style.background=`linear-gradient(to right,rgba(0,0,0,${opa}) 0%,transparent 60%)`;
-  lpText.innerHTML=`${badge?`<div class="lp-tag">${badge}</div>`:''}${title?`<div class="lp-title">${title}</div>`:''}${sub?`<div style="font-size:11px;color:rgba(255,255,255,.7);margin-top:2px;">${sub}</div>`:''}${cta?`<div class="lp-cta">${cta}</div>`:''}`;
+  document.getElementById('lpText').innerHTML=`${badge?`<div style="font-size:9px;font-weight:700;text-transform:uppercase;color:rgba(255,255,255,.7);margin-bottom:3px;">${badge}</div>`:''}${title?`<div style="font-size:13px;font-weight:800;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.5);">${title}</div>`:''}`;
+  updateDimHint();
 }
-
-function updateSEOPrev(){
-  const title=document.getElementById('bMetaTitle').value||document.getElementById('bTitle').value||'Banner';
-  const desc=document.getElementById('bAlt').value||'WellFix Appliances banner';
-  document.getElementById('seoTitle').textContent=title+' — WellFix Appliances';
-  document.getElementById('seoDesc').textContent=desc;
-}
-
-// SAVE
-async function saveBanner(){
-  const title=document.getElementById('bTitle').value.trim();
-  if(!title){toast('Banner title is required',true);return;}
-  const btn=document.getElementById('saveBtn');btn.textContent='Saving…';btn.disabled=true;
-  try{
-    const payload={
-      title,
-      subtitle:document.getElementById('bSub').value||null,
-      cta_text:document.getElementById('bCTA').value||null,
-      cta_url:document.getElementById('bCTAUrl').value||null,
-      badge_text:document.getElementById('bBadge').value||null,
-      position:document.getElementById('bPosition').value,
-      sort_order:parseInt(document.getElementById('bSort').value)||0,
-      is_active:document.getElementById('bStatus').value==='true',
-      starts_at:document.getElementById('bStart').value||null,
-      ends_at:document.getElementById('bEnd').value||null,
-      desktop_image_url:currentImgUrl||null,
-      ...(currentImgUrlMob ? {mobile_image_url:currentImgUrlMob} : {}),
-      ...(document.getElementById('bImageFit') ? {image_fit:document.getElementById('bImageFit').value||'cover'} : {}),
-      ...(document.getElementById('bImagePos') ? {image_position:document.getElementById('bImagePos').value||'center'} : {}),
-    };
-    // Extended columns — only add if SQL migration has been run
-    try{
-      payload.alt_text=document.getElementById('bAlt').value||null;
-      payload.meta_title=document.getElementById('bMetaTitle').value||null;
-      payload.text_theme=document.getElementById('bTextTheme').value;
-      payload.text_overlay_opacity=parseFloat(document.getElementById('bOverlay').value)||0.65;
-    }catch(e){}
-    if(editId)await db.from('banners').update(payload).eq('id',editId);
-    else await db.from('banners').insert(payload);
-    toast(editId?'Banner updated — website refreshed':'Banner added — now live on website');
-    closeModal();loadAll();
-  }catch(e){toast('Error: '+e.message,true);}
-  finally{btn.textContent='Save Banner';btn.disabled=false;}
-}
-
-// TOGGLE
-async function toggleBanner(id,val){
-  await db.from('banners').update({is_active:val}).eq('id',id);
-  const b=allBanners.find(x=>x.id===id);if(b)b.is_active=val;
-  toast(val?'Banner activated — now showing on website':'Banner deactivated');
-  renderGrid();renderKPIs();
-}
-
-// DELETE
-async function deleteBanner(){
-  if(!editId||!confirm('Delete this banner?'))return;
-  await db.from('banners').delete().eq('id',editId);
-  toast('Banner deleted');closeModal();loadAll();
-}
-async function deleteById(id){
-  if(!confirm('Delete this banner?'))return;
-  await db.from('banners').delete().eq('id',id);
-  allBanners=allBanners.filter(x=>x.id!==id);
-  toast('Banner deleted');renderGrid();renderKPIs();renderPosTabs();
-}
-
-// DUPLICATE
-async function duplicateBanner(){
-  if(!editId)return;
-  const b=allBanners.find(x=>x.id===editId);if(!b)return;
-  await db.from('banners').insert({...b,id:undefined,title:b.title+' (Copy)',is_active:false,sort_order:(b.sort_order||0)+1,created_at:undefined});
-  toast('Banner duplicated as inactive');closeModal();loadAll();
+function updateDimHint(){
+  const pos=document.getElementById('fPos').value;
+  const dim=DIMS[pos]||DIMS.hero;
+  document.getElementById('dimHint').textContent=prevDev==='mobile'?`Mobile: ${dim.m}`:`Desktop: ${dim.d}`;
+  document.getElementById('sizeNote').textContent=`Upload recommended size: ${dim.d} (desktop) · ${dim.m} (mobile). Square positions auto-fit with contain mode.`;
+  // Auto-set fit for square
+  const fitSel=document.getElementById('fFit');
+  if(pos==='hero_card'||pos==='popup') fitSel.value='contain';
+  else if(!editId) fitSel.value='cover';
 }
 
 // COPY URL
-function copyUrl(url){
-  if(!url){toast('No image URL',true);return;}
-  navigator.clipboard.writeText(url).then(()=>toast('Image URL copied!'));
-}
+function copyURL(url){if(!url){toast('No image URL',true);return;}navigator.clipboard.writeText(url).then(()=>toast('URL copied'));}
 
 // EXPORT
-function exportBanners(){
-  const rows=[['Title','Position','Status','CTA','CTA URL','Sort','Starts','Ends','Image URL']];
-  allBanners.forEach(b=>rows.push([`"${b.title}"`,b.position||'',b.is_active?'Active':'Inactive',b.cta_text||'',b.cta_url||'',b.sort_order||0,b.starts_at||'',b.ends_at||'',b.desktop_image_url||'']));
-  const a=document.createElement('a');a.href='data:text/csv,'+encodeURIComponent(rows.map(r=>r.join(',')).join('\n'));a.download='wellfix-banners.csv';a.click();toast('Exported');
+function exportCSV(){
+  const rows=[['Title','Position','Status','CTA','URL','Sort','Image URL']];
+  all.forEach(b=>rows.push([`"${b.title||''}"`,b.position||'',b.is_active?'Active':'Inactive',b.cta_text||'',b.cta_url||'',b.sort_order||0,b.desktop_image_url||'']));
+  const a=document.createElement('a');a.href='data:text/csv,'+encodeURIComponent(rows.map(r=>r.join(',')).join('\n'));a.download='banners.csv';a.click();toast('Exported');
 }
 </script>
 </body>
 </html>
-<!-- SQL to run in Supabase for new banner columns:
-ALTER TABLE banners ADD COLUMN IF NOT EXISTS alt_text TEXT;
-ALTER TABLE banners ADD COLUMN IF NOT EXISTS meta_title TEXT;
-ALTER TABLE banners ADD COLUMN IF NOT EXISTS text_theme TEXT DEFAULT 'light';
-ALTER TABLE banners ADD COLUMN IF NOT EXISTS text_overlay_opacity NUMERIC DEFAULT 0.65;
-ALTER TABLE banners ADD COLUMN IF NOT EXISTS category_id UUID;
--->
