@@ -331,9 +331,9 @@
           <span>GST</span>
           <select class="gst-sel" id="gstRate" onchange="calc()">
             <option value="0">0%</option>
-            <option value="18" selected>18%</option>
+            <option value="5" selected>5%</option>
             <option value="12">12%</option>
-            <option value="5">5%</option>
+            <option value="18">18%</option>
             <option value="28">28%</option>
           </select>
         </div>
@@ -344,7 +344,7 @@
 
     <!-- Payment -->
     <div class="pr-pay">
-      <div class="pay-grid">
+      <div class="pay-grid" style="grid-template-columns:1fr 1fr 1fr 1fr 1fr;">
         <div class="pay-opt on" id="po-cash" onclick="setPay('cash',this)">
           <svg viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="2"/></svg>Cash
         </div>
@@ -357,6 +357,23 @@
         <div class="pay-opt" id="po-split" onclick="setPay('split',this)">
           <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Split
         </div>
+        <div class="pay-opt" id="po-emi" onclick="setPay('emi',this)">
+          <svg viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><polyline points="1 10 23 10"/><line x1="7" y1="15" x2="7" y2="15"/><line x1="12" y1="15" x2="12" y2="15"/></svg>EMI
+        </div>
+      </div>
+      <!-- EMI Partner box -->
+      <div id="emiBox" style="display:none;background:#eff6ff;border:1px solid #bfdbfe;border-radius:6px;padding:8px;margin-bottom:6px;">
+        <div style="font-size:10px;font-weight:700;color:#1d4ed8;margin-bottom:5px;">Finance Partner</div>
+        <select id="emiPartner" style="width:100%;height:26px;border:1px solid #bfdbfe;border-radius:4px;font-size:11px;margin-bottom:5px;background:#fff;">
+          <option value="bajaj">Bajaj Finserv</option>
+          <option value="hdb">HDB Finance</option>
+          <option value="idfc">IDFC First Bank</option>
+          <option value="tvs">TVS Credit</option>
+          <option value="homecredit">Home Credit</option>
+          <option value="other">Other</option>
+        </select>
+        <input id="emiRef" placeholder="Approval code / Reference" style="width:100%;height:26px;border:1px solid #bfdbfe;border-radius:4px;font-size:11px;padding:0 7px;background:#fff;box-sizing:border-box;">
+        <div style="font-size:9px;color:#3b82f6;margin-top:4px;">Finance co pays you full amount. Record approval code above.</div>
       </div>
       <div class="upi-qr" id="upiQR">
         <div id="upiQRImg"></div>
@@ -685,6 +702,7 @@ function setPay(m,el){
   document.getElementById('splitRow').classList.toggle('show',m==='split');
   document.getElementById('cashInp').style.display=m==='cash'?'block':'none';
   document.getElementById('refInp').classList.toggle('show',m==='upi'||m==='card'||m==='bank');
+  document.getElementById('emiBox').style.display=m==='emi'?'block':'none';
   if(m==='upi')calc();
 }
 
@@ -724,7 +742,9 @@ async function chargeBill(){
       paid_amount:mode==='quote'?0:tot,
       due_amount:mode==='quote'?tot:0,
       payment_method:payMethod,
-      payment_reference:document.getElementById('refInp').value||null,
+      payment_reference:payMethod==='emi'
+        ?(document.getElementById('emiPartner').value+':'+(document.getElementById('emiRef').value||''))
+        :(document.getElementById('refInp').value||null),
       payment_status:payStMap[mode]||'paid',
       cashier:AdminShell.user?.profile?.full_name||AdminShell.user?.email||'Admin',
       status:statusMap[mode]||'completed',
