@@ -293,6 +293,27 @@
             <option value="0">None</option>
           </select>
         </div>
+        <div class="form-group">
+          <label class="form-label">Image Fit</label>
+          <select class="form-input" id="bImageFit" onchange="updatePreview()">
+            <option value="cover">Cover (fill, crop edges)</option>
+            <option value="contain">Contain (show full image)</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Image Position / Focal Point</label>
+          <select class="form-input" id="bImagePos" onchange="updatePreview()">
+            <option value="center">Center</option>
+            <option value="top">Top</option>
+            <option value="bottom">Bottom</option>
+            <option value="left">Left</option>
+            <option value="right">Right</option>
+            <option value="top left">Top Left</option>
+            <option value="top right">Top Right</option>
+            <option value="bottom left">Bottom Left</option>
+            <option value="bottom right">Bottom Right</option>
+          </select>
+        </div>
       </div>
 
       <div class="sec-hd">SEO</div>
@@ -310,16 +331,35 @@
     <div class="b-modal-r">
       <div class="sec-hd">Banner Image</div>
       <div id="dimNote" style="font-size:11px;color:var(--green-700);background:var(--green-50);border-radius:6px;padding:7px 10px;margin-bottom:10px;"></div>
+
+      <!-- Desktop Image -->
+      <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--gray-500);margin-bottom:5px;">Desktop Image <span style="font-weight:400;color:var(--gray-400);" id="deskSizeHint"></span></div>
       <div class="up-zone" id="upZone"
         ondragover="upOver(event)" ondragleave="upLeave(event)" ondrop="upDrop(event)">
-        <input type="file" accept="image/*" onchange="handleUpload(this)">
+        <input type="file" accept="image/*" onchange="handleUpload(this,'desktop')">
         <img id="upPreview" class="up-zone-preview">
         <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" width="26" height="26" style="opacity:.2;margin-bottom:6px;" id="upIcon"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
         <div style="font-size:12px;font-weight:600;color:var(--gray-600);" id="upLbl">Drop image or click to upload</div>
-        <div style="font-size:10px;color:var(--gray-400);margin-top:2px;">PNG JPG WebP AVIF — Auto WebP conversion</div>
+        <div style="font-size:10px;color:var(--gray-400);margin-top:2px;">Any size — auto WebP + smart fit</div>
         <div class="up-prog" id="upProg"><div class="up-prog-bar"><div class="up-prog-fill" id="upFill"></div></div><div class="up-prog-msg" id="upMsg"></div></div>
       </div>
-      <button id="upRemove" onclick="removeImg()" style="display:none;margin-top:5px;width:100%;height:26px;border:1px solid var(--red-200);background:var(--red-50);color:var(--red-600);border-radius:5px;font-size:10px;font-weight:600;cursor:pointer;">Remove Image</button>
+      <button id="upRemove" onclick="removeImg('desktop')" style="display:none;margin-top:5px;width:100%;height:26px;border:1px solid var(--red-200);background:var(--red-50);color:var(--red-600);border-radius:5px;font-size:10px;font-weight:600;cursor:pointer;">Remove Desktop Image</button>
+
+      <!-- Mobile Image -->
+      <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--gray-500);margin:10px 0 5px;display:flex;align-items:center;gap:8px;">
+        Mobile Image <span style="font-weight:400;color:var(--gray-400);" id="mobSizeHint"></span>
+        <span style="font-size:9px;background:var(--gray-100);color:var(--gray-500);padding:1px 5px;border-radius:3px;">Optional</span>
+      </div>
+      <div class="up-zone" id="upZoneMob"
+        ondragover="upOverMob(event)" ondragleave="upLeaveMob(event)" ondrop="upDropMob(event)">
+        <input type="file" accept="image/*" onchange="handleUpload(this,'mobile')">
+        <img id="upPreviewMob" class="up-zone-preview">
+        <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" width="22" height="22" style="opacity:.2;margin-bottom:4px;" id="upIconMob"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
+        <div style="font-size:11px;font-weight:600;color:var(--gray-600);">Mobile-specific image</div>
+        <div style="font-size:10px;color:var(--gray-400);margin-top:1px;">Portrait crop recommended</div>
+        <div class="up-prog" id="upProgMob"><div class="up-prog-bar"><div class="up-prog-fill" id="upFillMob"></div></div><div class="up-prog-msg" id="upMsgMob"></div></div>
+      </div>
+      <button id="upRemoveMob" onclick="removeImg('mobile')" style="display:none;margin-top:5px;width:100%;height:26px;border:1px solid var(--red-200);background:var(--red-50);color:var(--red-600);border-radius:5px;font-size:10px;font-weight:600;cursor:pointer;">Remove Mobile Image</button>
 
       <div class="sec-hd">Live Preview</div>
       <div class="dev-tabs">
@@ -381,7 +421,7 @@ const POS_LABELS = {
   all:'All Banners'
 };
 
-let allBanners = [], currentPos = 'all', editId = null, currentImgUrl = null;
+let allBanners = [], currentPos = 'all', editId = null, currentImgUrl = null, currentImgUrlMob = null;
 let prevDevice = 'desktop';
 let dragSrc = null;
 
@@ -585,6 +625,16 @@ function editBanner(id) {
   document.getElementById('bAlt').value=b.alt_text||'';
   document.getElementById('bMetaTitle').value=b.meta_title||'';
   document.getElementById('bTextTheme').value=b.text_theme||'light';
+  document.getElementById('bImageFit').value=b.image_fit||'cover';
+  document.getElementById('bImagePos').value=b.image_position||'center';
+  // Load mobile image if exists
+  currentImgUrlMob=b.mobile_image_url||null;
+  if(b.mobile_image_url){
+    const pm=document.getElementById('upPreviewMob');
+    pm.src=b.mobile_image_url;pm.classList.add('show');
+    document.getElementById('upIconMob').style.display='none';
+    document.getElementById('upRemoveMob').style.display='block';
+  }
   document.getElementById('bOverlay').value=String(b.text_overlay_opacity??0.65);
   if(b.desktop_image_url){
     const prev=document.getElementById('upPreview');
@@ -602,6 +652,12 @@ function editBanner(id) {
 
 function closeModal() { document.getElementById('bannerOverlay').style.display='none'; }
 
+function clearFormMob() {
+  currentImgUrlMob=null;
+  const p=document.getElementById('upPreviewMob');if(p){p.src='';p.classList.remove('show');}
+  const ic=document.getElementById('upIconMob');if(ic)ic.style.display='block';
+  const rm=document.getElementById('upRemoveMob');if(rm)rm.style.display='none';
+}
 function clearForm() {
   ['bTitle','bSub','bCTA','bCTAUrl','bBadge','bAlt','bMetaTitle'].forEach(id=>document.getElementById(id).value='');
   document.getElementById('bSort').value=0;
@@ -609,26 +665,47 @@ function clearForm() {
   document.getElementById('bStart').value='';document.getElementById('bEnd').value='';
   document.getElementById('bTextTheme').value='light';
   document.getElementById('bOverlay').value='0.65';
-  resetUpZone();updatePreview();updateSEOPrev();
+  resetUpZone();clearFormMob();updatePreview();updateSEOPrev();
 }
 
 function updateDimGuide() {
   const pos=document.getElementById('bPosition').value;
   const dim=LIVE_DIMS[pos]||LIVE_DIMS.hero;
   document.getElementById('dimNote').textContent=`Live dimensions: ${dim.note}`;
+  // Size hints
+  const deskHints={
+    hero:'1920 × 380px desktop',
+    hero_card:'~185 × 185px (square)',
+    promo:'~800 × 300px',
+    promo_side:'~400 × 300px',
+    popup:'480 × 480px (square)',
+    category:'1200 × 240px',
+    flash_sale:'1200 × 200px',
+    offer_strip:'1200 × 80px'
+  };
+  const mobHints={
+    hero:'750 × 200px mobile',
+    hero_card:'~130 × 130px (square)',
+    promo:'375 × 180px',
+  };
+  const dh=document.getElementById('deskSizeHint');
+  const mh=document.getElementById('mobSizeHint');
+  if(dh) dh.textContent=deskHints[pos]?`(${deskHints[pos]})`:'';
+  if(mh) mh.textContent=mobHints[pos]?`(${mobHints[pos]})`:'(portrait preferred)';
 }
 
 // UPLOAD
 function upOver(e){e.preventDefault();document.getElementById('upZone').classList.add('over');}
 function upLeave(e){document.getElementById('upZone').classList.remove('over');}
-function upDrop(e){e.preventDefault();upLeave();const f=e.dataTransfer.files[0];if(f)processAndUpload(f);}
+function upDrop(e){e.preventDefault();upLeave();const f=e.dataTransfer.files[0];if(f)processAndUpload(f,'desktop');}
 function handleUpload(input){const f=input.files[0];if(f)processAndUpload(f);}
 
-async function processAndUpload(file) {
+async function processAndUpload(file, uploadType='desktop') {
   const pos=document.getElementById('bPosition').value;
-  const prog=document.getElementById('upProg');
-  const fill=document.getElementById('upFill');
-  const msg=document.getElementById('upMsg');
+  const isMob=uploadType==='mobile';
+  const prog=document.getElementById(isMob?'upProgMob':'upProg');
+  const fill=document.getElementById(isMob?'upFillMob':'upFill');
+  const msg=document.getElementById(isMob?'upMsgMob':'upMsg');
   prog.style.display='block'; fill.style.width='20%'; msg.textContent='Converting to WebP…';
   try {
     // Smart processing: preserve aspect ratio, use contain with position background
@@ -669,13 +746,21 @@ async function processAndUpload(file) {
       if(!error){url=db.storage.from(bucket).getPublicUrl(fname).data.publicUrl;break;}
     }
     if(!url)throw new Error('Upload failed');
-    currentImgUrl=url;
     fill.style.width='100%'; msg.textContent='Uploaded';
-    const prev=document.getElementById('upPreview');
-    prev.src=url;prev.classList.add('show');
-    document.getElementById('upIcon').style.display='none';
-    document.getElementById('upLbl').textContent='Click to replace';
-    document.getElementById('upRemove').style.display='block';
+    if(uploadType==='mobile'){
+      currentImgUrlMob=url;
+      const prev=document.getElementById('upPreviewMob');
+      prev.src=url;prev.classList.add('show');
+      document.getElementById('upIconMob').style.display='none';
+      document.getElementById('upRemoveMob').style.display='block';
+    } else {
+      currentImgUrl=url;
+      const prev=document.getElementById('upPreview');
+      prev.src=url;prev.classList.add('show');
+      document.getElementById('upIcon').style.display='none';
+      document.getElementById('upLbl').textContent='Click to replace';
+      document.getElementById('upRemove').style.display='block';
+    }
     updatePreview();
     setTimeout(()=>{prog.style.display='none';fill.style.width='0%';},1500);
   }catch(e){toast('Upload failed: '+e.message,true);prog.style.display='none';}
@@ -718,8 +803,14 @@ function updatePreview(){
   const lpPlaceholder=document.getElementById('lpPlaceholder');
   const lpOverlay=document.getElementById('lpOverlay');
   const lpText=document.getElementById('lpText');
-  if(currentImgUrl){
-    lpImg.src=currentImgUrl;lpImg.style.display='block';
+  const fit=document.getElementById('bImageFit')?.value||'cover';
+  const pos_v=document.getElementById('bImagePos')?.value||'center';
+  // Use mobile img in mobile preview if available
+  const imgUrl=prevDevice==='mobile'&&currentImgUrlMob?currentImgUrlMob:currentImgUrl;
+  if(imgUrl){
+    lpImg.src=imgUrl;lpImg.style.display='block';
+    lpImg.style.objectFit=fit;
+    lpImg.style.objectPosition=pos_v;
     lpPlaceholder.style.display='none';
   }else{
     lpImg.style.display='none';lpPlaceholder.style.display='flex';
@@ -753,6 +844,9 @@ async function saveBanner(){
       starts_at:document.getElementById('bStart').value||null,
       ends_at:document.getElementById('bEnd').value||null,
       desktop_image_url:currentImgUrl||null,
+      mobile_image_url:currentImgUrlMob||null,
+      image_fit:document.getElementById('bImageFit')?.value||'cover',
+      image_position:document.getElementById('bImagePos')?.value||'center',
     };
     // Extended columns — only add if SQL migration has been run
     try{
