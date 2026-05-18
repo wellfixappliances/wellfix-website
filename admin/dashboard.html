@@ -1,416 +1,361 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Dashboard — WellFix Admin</title>
-<link rel="icon" href="../assets/images/WELLFIX-FAVICON.png">
+<link rel="icon" href="../frontend/assets/images/WELLFIX-FAVICON.png">
 <link rel="stylesheet" href="assets/css/admin.css">
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
-<style>
-/* PREMIUM DASHBOARD */
-.dash-header{display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:20px;}
-.dash-title h1{font-family:var(--font-display);font-size:22px;font-weight:800;color:var(--gray-900);letter-spacing:-.4px;line-height:1;margin:0;}
-.dash-title p{font-size:11px;color:var(--gray-400);margin-top:3px;}
-.filter-area{display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
-.pseg-wrap{display:flex;background:var(--gray-50);border:1px solid var(--gray-150);border-radius:var(--r-sm);padding:2px;gap:1px;}
-.ps{padding:5px 11px;border-radius:5px;font-size:11px;font-weight:600;color:var(--gray-500);cursor:pointer;transition:all .15s;white-space:nowrap;}
-.ps.on{background:#fff;color:var(--gray-900);box-shadow:0 1px 3px rgba(0,0,0,.1);}
-.dr-row{display:none;align-items:center;gap:5px;}
-.dr-row.show{display:flex;}
-.dr-inp{height:30px;padding:0 8px;border:1px solid var(--gray-200);border-radius:5px;font-size:11px;background:#fff;}
-.btn-apply{height:30px;padding:0 12px;background:var(--green-700);color:#fff;border-radius:5px;font-size:11px;font-weight:700;border:none;cursor:pointer;}
-
-/* KPI */
-.kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:12px;}
-@media(max-width:1000px){.kpi-row{grid-template-columns:repeat(2,1fr);}}
-@media(max-width:480px){.kpi-row{grid-template-columns:1fr 1fr;gap:8px;}}
-.kpi{background:#fff;border-radius:10px;padding:16px 18px;border:1px solid var(--gray-100);box-shadow:0 1px 2px rgba(0,0,0,.04);position:relative;overflow:hidden;transition:box-shadow .2s;}
-.kpi:hover{box-shadow:0 4px 14px rgba(0,0,0,.07);}
-.kpi::before{content:"";position:absolute;top:0;left:0;width:3px;height:100%;border-radius:10px 0 0 10px;}
-.kpi.gn::before{background:#22c55e;}.kpi.bl::before{background:#3b82f6;}.kpi.am::before{background:#f59e0b;}.kpi.rd::before{background:#ef4444;}
-.kpi-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px;}
-.kpi-ico{width:34px;height:34px;border-radius:8px;display:flex;align-items:center;justify-content:center;}
-.kpi-ico svg{width:16px;height:16px;}
-.kpi-ico.i-gn{background:#f0fdf4;color:#16a34a;}.kpi-ico.i-bl{background:#eff6ff;color:#2563eb;}.kpi-ico.i-am{background:#fffbeb;color:#d97706;}.kpi-ico.i-rd{background:#fef2f2;color:#dc2626;}
-.kpi-tag{display:inline-flex;align-items:center;gap:3px;font-size:10px;font-weight:700;padding:2px 6px;border-radius:99px;}
-.kpi-tag.up{background:#f0fdf4;color:#16a34a;}.kpi-tag.dn{background:#fef2f2;color:#dc2626;}.kpi-tag.nt{background:var(--gray-50);color:var(--gray-400);}
-.kpi-v{font-family:var(--font-display);font-size:24px;font-weight:800;color:var(--gray-900);line-height:1;letter-spacing:-.5px;}
-.kpi-l{font-size:11px;color:var(--gray-400);margin-top:3px;font-weight:500;}
-.kpi-s{font-size:10px;color:var(--gray-400);margin-top:2px;}
-
-/* STATUS STRIP */
-.ss{background:#fff;border:1px solid var(--gray-100);border-radius:10px;padding:10px 14px;margin-bottom:12px;display:flex;gap:5px;flex-wrap:wrap;box-shadow:0 1px 2px rgba(0,0,0,.04);}
-.ss-p{display:flex;align-items:center;gap:5px;padding:4px 9px;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;border:1px solid transparent;transition:opacity .15s;}
-.ss-p:hover{opacity:.8;}
-.ss-d{width:6px;height:6px;border-radius:50%;}
-
-/* GRID */
-.g-75{display:grid;grid-template-columns:7fr 5fr;gap:12px;margin-bottom:12px;}
-.g-3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:12px;}
-.g-2{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:12px;}
-@media(max-width:1100px){.g-75{grid-template-columns:1fr;}}
-@media(max-width:900px){.g-3{grid-template-columns:1fr 1fr;}}
-@media(max-width:620px){.g-3,.g-2{grid-template-columns:1fr;}}
-
-/* PANEL */
-.pn{background:#fff;border:1px solid var(--gray-100);border-radius:10px;overflow:hidden;box-shadow:0 1px 2px rgba(0,0,0,.04);}
-.pn-hd{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid var(--gray-50);}
-.pn-title{font-family:var(--font-display);font-size:13px;font-weight:700;color:var(--gray-800);letter-spacing:-.2px;}
-.pn-link{font-size:11px;font-weight:600;color:var(--green-600);cursor:pointer;text-decoration:none;}
-.pn-link:hover{text-decoration:underline;}
-
-/* CHART */
-.chart-box{padding:14px 16px;position:relative;}
-
-/* TABLE */
-.mt{width:100%;border-collapse:collapse;font-size:12px;}
-.mt th{padding:7px 14px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--gray-400);border-bottom:1px solid var(--gray-100);text-align:left;white-space:nowrap;}
-.mt td{padding:8px 14px;border-bottom:1px solid var(--gray-50);color:var(--gray-700);vertical-align:middle;}
-.mt tr:last-child td{border-bottom:none;}
-.mt tbody tr:hover td{background:var(--gray-25);cursor:pointer;}
-
-/* PROGRESS ROWS */
-.pr{display:flex;align-items:center;gap:10px;padding:8px 14px;border-bottom:1px solid var(--gray-50);}
-.pr:last-child{border-bottom:none;}
-.pr-n{font-size:12px;color:var(--gray-600);min-width:80px;max-width:110px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-.pr-b{flex:1;height:4px;background:var(--gray-100);border-radius:99px;overflow:hidden;}
-.pr-f{height:100%;border-radius:99px;transition:width .6s cubic-bezier(.4,0,.2,1);}
-.pr-v{font-size:11px;font-weight:700;color:var(--gray-700);min-width:44px;text-align:right;}
-
-/* ACTIVITY */
-.act-feed{max-height:300px;overflow-y:auto;scrollbar-width:thin;}
-.act-i{display:flex;gap:10px;padding:9px 14px;border-bottom:1px solid var(--gray-50);cursor:pointer;}
-.act-i:last-child{border-bottom:none;}
-.act-i:hover{background:var(--gray-25);}
-.act-av{width:30px;height:30px;border-radius:99px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0;}
-.act-tx{font-size:12px;color:var(--gray-700);line-height:1.45;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-.act-mt{display:flex;align-items:center;gap:6px;margin-top:2px;}
-.act-tm{font-size:10px;color:var(--gray-400);}
-
-/* ALERT ROWS */
-.al-r{display:flex;align-items:center;justify-content:space-between;padding:8px 14px;border-bottom:1px solid var(--gray-50);cursor:pointer;}
-.al-r:last-child{border-bottom:none;}
-.al-r:hover{background:var(--gray-25);}
-.al-n{font-size:12px;color:var(--gray-700);}
-.al-b{font-size:10px;font-weight:700;padding:2px 8px;border-radius:99px;}
-
-/* DONUT */
-.dn-wrap{display:grid;grid-template-columns:130px 1fr;gap:14px;align-items:center;padding:14px 16px;}
-.dn-legend{display:flex;flex-direction:column;gap:8px;}
-.dl-i{display:flex;align-items:center;gap:7px;font-size:12px;color:var(--gray-600);}
-.dl-d{width:8px;height:8px;border-radius:2px;flex-shrink:0;}
-.dl-v{font-weight:700;color:var(--gray-900);margin-left:auto;}
-
-/* EMPTY */
-.empty{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;text-align:center;color:var(--gray-400);}
-.empty svg{width:28px;height:28px;opacity:.2;margin-bottom:8px;}
-.empty p{font-size:12px;}
-
-/* SKELETON */
-.sk{background:linear-gradient(90deg,var(--gray-100) 25%,var(--gray-50) 50%,var(--gray-100) 75%);background-size:200% 100%;animation:sk 1.4s infinite;border-radius:6px;}
-@keyframes sk{to{background-position:-200% 0;}}
-</style>
 </head>
 <body>
+
 <div class="admin-shell">
-<div id="adminShell"></div>
-<div class="main-wrap" id="mainWrap">
-<div class="page-content">
+  <!-- Shell injected here by AdminShell.init() -->
+  <div id="adminShell"></div>
 
-<!-- HEADER -->
-<div class="dash-header">
-  <div class="dash-title">
-    <h1>Dashboard</h1>
-    <p id="dashSub">Loading live data…</p>
-  </div>
-  <div class="filter-area">
-    <div class="pseg-wrap">
-      <div class="ps on" onclick="setP('today',this)">Today</div>
-      <div class="ps" onclick="setP('yesterday',this)">Yesterday</div>
-      <div class="ps" onclick="setP('week',this)">This Week</div>
-      <div class="ps" onclick="setP('month',this)">This Month</div>
-      <div class="ps" onclick="setP('year',this)">This Year</div>
-      <div class="ps" onclick="setP('custom',this)">Custom</div>
-    </div>
-    <div class="dr-row" id="drRow">
-      <input type="date" class="dr-inp" id="drFrom">
-      <span style="font-size:11px;color:var(--gray-400);">to</span>
-      <input type="date" class="dr-inp" id="drTo">
-      <button class="btn-apply" onclick="loadDash()">Apply</button>
-    </div>
-    <button class="btn btn-sm btn-outline" onclick="loadDash()" style="height:30px;font-size:11px;">
-      <svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" width="11" height="11"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/></svg>
-      Refresh
-    </button>
-  </div>
-</div>
+  <!-- Main content -->
+  <div class="main-wrap" id="mainWrap">
+    <div class="page-content">
 
-<!-- KPI -->
-<div class="kpi-row" id="kpiRow">
-  <div class="kpi gn"><div class="sk" style="height:80px;"></div></div>
-  <div class="kpi bl"><div class="sk" style="height:80px;"></div></div>
-  <div class="kpi am"><div class="sk" style="height:80px;"></div></div>
-  <div class="kpi rd"><div class="sk" style="height:80px;"></div></div>
-</div>
-
-<!-- STATUS STRIP -->
-<div class="ss" id="statusStrip">
-  <div class="sk" style="height:28px;width:100%;border-radius:6px;"></div>
-</div>
-
-<!-- CHART + ACTIVITY -->
-<div class="g-75">
-  <div class="pn">
-    <div class="pn-hd">
-      <span class="pn-title">Revenue Overview</span>
-      <div style="display:flex;align-items:center;gap:8px;">
-        <div class="pseg-wrap" style="padding:1px;">
-          <div class="ps on" id="ct-rev" onclick="setCT('revenue',this)" style="font-size:10px;padding:3px 8px;">Revenue</div>
-          <div class="ps" id="ct-ord" onclick="setCT('orders',this)" style="font-size:10px;padding:3px 8px;">Orders</div>
+      <div class="pg-hd">
+        <div>
+          <h1>Dashboard</h1>
+          <p>Welcome back — here's your store overview</p>
         </div>
-        <button class="pn-link" onclick="exportChart()">Export PNG</button>
+        <div class="pg-hd__actions">
+          <button class="btn btn-secondary" onclick="exportReport()">
+            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Export
+          </button>
+          <a href="products.html" class="btn btn-primary">
+            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Add Product
+          </a>
+        </div>
       </div>
-    </div>
-    <div class="chart-box" style="height:210px;">
-      <canvas id="revChart"></canvas>
-    </div>
-  </div>
-  <div class="pn">
-    <div class="pn-hd"><span class="pn-title">Live Activity</span><a class="pn-link" href="orders.html">All orders</a></div>
-    <div class="act-feed" id="actFeed">
-      <div class="sk" style="height:220px;margin:12px;border-radius:8px;"></div>
+
+      <!-- Stats -->
+      <div class="stats-grid" id="statsGrid">
+        <!-- Skeleton -->
+        <div class="stat-card"><div class="skeleton" style="height:90px;border-radius:8px;"></div></div>
+        <div class="stat-card"><div class="skeleton" style="height:90px;border-radius:8px;"></div></div>
+        <div class="stat-card"><div class="skeleton" style="height:90px;border-radius:8px;"></div></div>
+        <div class="stat-card"><div class="skeleton" style="height:90px;border-radius:8px;"></div></div>
+      </div>
+
+      <!-- Charts + Panels -->
+      <div style="display:grid;grid-template-columns:1fr 340px;gap:20px;" id="dashGrid">
+
+        <!-- Left column -->
+        <div style="display:flex;flex-direction:column;gap:20px;">
+
+          <!-- Revenue chart -->
+          <div class="card">
+            <div class="card-hd">
+              <span class="card-title">Revenue Overview</span>
+              <select class="filter-select" style="width:auto;" onchange="loadRevenueChart(this.value)">
+                <option value="30">Last 30 days</option>
+                <option value="7">Last 7 days</option>
+                <option value="90">Last 3 months</option>
+              </select>
+            </div>
+            <div class="card-body">
+              <div style="display:flex;gap:24px;margin-bottom:16px;" id="revenueNums">
+                <div><div style="font-family:var(--font-display);font-size:22px;font-weight:800;color:var(--gray-900);" id="revMonth">—</div><div style="font-size:11px;color:var(--gray-400);">This Month</div></div>
+                <div><div style="font-family:var(--font-display);font-size:22px;font-weight:800;color:var(--gray-200);" id="revLast">—</div><div style="font-size:11px;color:var(--gray-400);">Last Month</div></div>
+              </div>
+              <div style="display:flex;align-items:flex-end;gap:4px;height:100px;padding-bottom:20px;position:relative;" id="revChart">
+                <div class="skeleton" style="flex:1;height:100%;border-radius:4px;"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Recent orders -->
+          <div class="card">
+            <div class="card-hd">
+              <span class="card-title">Recent Orders</span>
+              <a href="orders.html" class="btn btn-secondary btn-sm">View All</a>
+            </div>
+            <div class="card-body-0">
+              <div class="tbl-wrap">
+                <table>
+                  <thead><tr><th>Order</th><th>Customer</th><th>Amount</th><th>Status</th><th>Date</th></tr></thead>
+                  <tbody id="recentOrdersTbody">
+                    <tr><td colspan="5" style="text-align:center;padding:20px;color:var(--gray-300);">Loading…</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right column -->
+        <div style="display:flex;flex-direction:column;gap:20px;">
+
+          <!-- Live activity -->
+          <div class="card">
+            <div class="card-hd"><span class="card-title">Live Activity</span></div>
+            <div class="card-body" id="activityFeed" style="max-height:240px;overflow-y:auto;">
+              <div class="skeleton" style="height:60px;border-radius:8px;margin-bottom:8px;"></div>
+              <div class="skeleton" style="height:60px;border-radius:8px;margin-bottom:8px;"></div>
+              <div class="skeleton" style="height:60px;border-radius:8px;"></div>
+            </div>
+          </div>
+
+          <!-- Low stock alert -->
+          <div class="card" id="lowStockCard" style="display:none;">
+            <div class="card-hd">
+              <span class="card-title" style="color:var(--orange-500);">⚠ Low Stock Alerts</span>
+              <a href="inventory.html" class="btn btn-secondary btn-sm">Manage</a>
+            </div>
+            <div class="card-body-0">
+              <div class="tbl-wrap">
+                <table>
+                  <thead><tr><th>Product</th><th>Stock</th></tr></thead>
+                  <tbody id="lowStockTbody"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- Top categories -->
+          <div class="card">
+            <div class="card-hd"><span class="card-title">Sales by Category</span></div>
+            <div class="card-body" id="catProgress"></div>
+          </div>
+
+          <!-- Quick actions -->
+          <div class="card">
+            <div class="card-hd"><span class="card-title">Quick Actions</span></div>
+            <div class="card-body" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+              <a href="products.html?action=add" class="btn btn-primary btn-sm" style="justify-content:flex-start;">
+                <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                Add Product
+              </a>
+              <a href="orders.html" class="btn btn-secondary btn-sm" style="justify-content:flex-start;">
+                <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/></svg>
+                Orders
+              </a>
+              <a href="services.html" class="btn btn-secondary btn-sm" style="justify-content:flex-start;">
+                <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg>
+                Bookings
+              </a>
+              <a href="banners.html" class="btn btn-secondary btn-sm" style="justify-content:flex-start;">
+                <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>
+                Banners
+              </a>
+            </div>
+          </div>
+        </div>
+      </div><!-- /dashGrid -->
+
     </div>
   </div>
 </div>
 
-<!-- 3 COLS -->
-<div class="g-3">
-  <div class="pn">
-    <div class="pn-hd"><span class="pn-title">Payment Methods</span></div>
-    <div class="dn-wrap" id="donutWrap"><div class="sk" style="height:130px;border-radius:99px;"></div></div>
-  </div>
-  <div class="pn">
-    <div class="pn-hd"><span class="pn-title">Top Products</span><a class="pn-link" href="products.html">View all</a></div>
-    <div id="topProdList"><div class="sk" style="height:140px;margin:12px;border-radius:8px;"></div></div>
-  </div>
-  <div class="pn">
-    <div class="pn-hd">
-      <span class="pn-title">Alerts</span>
-      <span id="alertCount" style="display:none;font-size:10px;background:var(--red-100);color:var(--red-600);padding:2px 7px;border-radius:99px;font-weight:700;"></span>
-    </div>
-    <div id="alertsList"><div class="sk" style="height:140px;margin:12px;border-radius:8px;"></div></div>
-  </div>
-</div>
-
-<!-- BOTTOM -->
-<div class="g-2">
-  <div class="pn">
-    <div class="pn-hd"><span class="pn-title">Recent Orders</span><a class="pn-link" href="orders.html">View all</a></div>
-    <div style="overflow-x:auto;">
-      <table class="mt"><thead><tr><th>Order</th><th>Customer</th><th>Amount</th><th>Method</th><th>Status</th><th>Date</th></tr></thead>
-      <tbody id="ordTbody"></tbody></table>
-    </div>
-  </div>
-  <div class="pn">
-    <div class="pn-hd"><span class="pn-title">Low Stock</span><a class="pn-link" href="inventory.html">Manage</a></div>
-    <div id="lowStockList"><div class="sk" style="height:200px;margin:12px;border-radius:8px;"></div></div>
-  </div>
-</div>
-
-</div></div></div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="../backend/config/supabase.js"></script>
 <script src="assets/js/shell.js"></script>
 <script>
-'use strict';
-Chart.defaults.font.family="'Outfit',sans-serif";Chart.defaults.font.size=11;Chart.defaults.color='#767676';Chart.defaults.plugins.legend.display=false;Chart.defaults.plugins.tooltip.backgroundColor='#111';Chart.defaults.plugins.tooltip.titleFont={family:"'Plus Jakarta Sans',sans-serif",weight:'700',size:11};Chart.defaults.plugins.tooltip.bodyFont={size:11};Chart.defaults.plugins.tooltip.padding=10;Chart.defaults.plugins.tooltip.cornerRadius=8;Chart.defaults.plugins.tooltip.displayColors=false;
+(async () => {
+  await AdminShell.init('Dashboard');
+  await loadDashboard();
+  // Auto-refresh every 2 min
+  setInterval(loadDashboard, 2 * 60 * 1000);
+})();
 
-let period='today',chartType='revenue',revChart=null,donutChart=null,allOrders=[],allProds=[],allItems=[];
-
-function getRange(){
-  const n=new Date(),y=n.getFullYear(),m=n.getMonth(),d=n.getDate();
-  const end=dt=>{const x=new Date(dt);x.setHours(23,59,59,999);return x;};
-  if(period==='today')return{from:new Date(y,m,d).toISOString(),to:end(new Date(y,m,d)).toISOString()};
-  if(period==='yesterday')return{from:new Date(y,m,d-1).toISOString(),to:end(new Date(y,m,d-1)).toISOString()};
-  if(period==='week'){const dow=n.getDay()||7;return{from:new Date(y,m,d-dow+1).toISOString(),to:end(n).toISOString()};}
-  if(period==='month')return{from:new Date(y,m,1).toISOString(),to:end(n).toISOString()};
-  if(period==='year')return{from:new Date(y,0,1).toISOString(),to:end(n).toISOString()};
-  if(period==='custom'){
-    const f=document.getElementById('drFrom').value,t=document.getElementById('drTo').value;
-    if(!f||!t){toast('Select both dates',true);return null;}
-    return{from:new Date(f).toISOString(),to:end(new Date(t)).toISOString()};
-  }
-  return{from:new Date(y,m,1).toISOString(),to:end(n).toISOString()};
-}
-
-function setP(p,el){period=p;document.querySelectorAll('.pseg-wrap .ps').forEach(x=>x.classList.remove('on'));el.classList.add('on');document.getElementById('drRow').classList.toggle('show',p==='custom');if(p!=='custom')loadDash();}
-function setCT(t,el){chartType=t;['ct-rev','ct-ord'].forEach(id=>document.getElementById(id).classList.remove('on'));el.classList.add('on');buildChart();}
-
-async function loadDash(){
-  const range=getRange();if(!range)return;
-  const labels={today:'Today',yesterday:'Yesterday',week:'This Week',month:'This Month',year:'This Year',custom:'Custom Range'};
-  document.getElementById('dashSub').textContent=`${labels[period]} — Live from database`;
-  try{
-    const[oR,pR,iR,cR]=await Promise.all([
-      db.from('orders').select('id,order_number,customer_name,total,status,payment_method,payment_status,created_at').gte('created_at',range.from).lte('created_at',range.to).order('created_at',{ascending:false}),
-      db.from('products').select('id,name,price,stock_qty,low_stock_threshold,is_active'),
-      db.from('order_items').select('product_name,quantity,total_price,created_at').gte('created_at',range.from).lte('created_at',range.to),
-      db.from('customers').select('id,created_at',{count:'exact'}),
+async function loadDashboard() {
+  try {
+    const stats = await getDashboardStats();
+    renderStats(stats);
+    await Promise.all([
+      loadRecentOrders(),
+      loadActivity(),
+      loadLowStock(),
+      loadCategoryProgress(),
+      loadRevenueChart()
     ]);
-    allOrders=oR.data||[];allProds=pR.data||[];allItems=iR.data||[];
-    const totalC=cR.count||0;
-    const newC=(cR.data||[]).filter(c=>c.created_at>=range.from).length;
-    renderKPIs(totalC,newC);renderStrip();buildChart();renderActivity();renderDonut();renderTopProds();renderAlerts();renderOrders();renderLowStock();
-  }catch(e){toast('Error: '+e.message,true);}
-}
-
-function renderKPIs(totalC,newC){
-  const PAID=['confirmed','processing','shipped','delivered'];
-  const rev=allOrders.filter(o=>PAID.includes(o.status)).reduce((s,o)=>s+(parseFloat(o.total)||0),0);
-  const paidCnt=allOrders.filter(o=>PAID.includes(o.status)).length;
-  const avg=paidCnt?rev/paidCnt:0;
-  const pendPay=allOrders.filter(o=>o.payment_status==='pending_verification').length;
-  const cancelled=allOrders.filter(o=>o.status==='cancelled').length;
-  const SVG_REV=`<svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>`;
-  const SVG_ORD=`<svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>`;
-  const SVG_USR=`<svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>`;
-  const SVG_ALT=`<svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>`;
-  const K=(cls,ico,icoCls,v,l,s,tag,tagCls)=>`<div class="kpi ${cls}"><div class="kpi-top"><div class="kpi-ico ${icoCls}">${ico}</div><span class="kpi-tag ${tagCls}">${tag}</span></div><div class="kpi-v">${v}</div><div class="kpi-l">${l}</div><div class="kpi-s">${s}</div></div>`;
-  document.getElementById('kpiRow').innerHTML=
-    K('gn',SVG_REV,'i-gn',formatCurrency(rev),'Revenue',`Avg ${formatCurrency(avg)} / order`,`${paidCnt} confirmed`,'nt')+
-    K('bl',SVG_ORD,'i-bl',allOrders.length,'Total Orders',`${allOrders.filter(o=>o.status==='delivered').length} delivered`,`${allOrders.filter(o=>o.status==='pending').length} pending`,allOrders.filter(o=>o.status==='pending').length>0?'dn':'nt')+
-    K('am',SVG_USR,'i-am',Number(totalC).toLocaleString('en-IN'),'Total Customers',`+${newC} new this period`,'+'+newC,newC>0?'up':'nt')+
-    K('rd',SVG_ALT,'i-rd',pendPay,'Pending Payments',`${cancelled} cancelled`,cancelled>0?cancelled+' cancelled':'All clear',cancelled>0?'dn':'up');
-}
-
-function renderStrip(){
-  const defs=[
-    {key:'pending',l:'Pending',bg:'#fef3c7',c:'#92400e',d:'#f59e0b'},
-    {key:'confirmed',l:'Confirmed',bg:'#dbeafe',c:'#1e40af',d:'#3b82f6'},
-    {key:'processing',l:'Processing',bg:'#ede9fe',c:'#5b21b6',d:'#8b5cf6'},
-    {key:'shipped',l:'Shipped',bg:'#ecfeff',c:'#0e7490',d:'#06b6d4'},
-    {key:'delivered',l:'Delivered',bg:'#f0fdf4',c:'#166534',d:'#22c55e'},
-    {key:'cancelled',l:'Cancelled',bg:'#fef2f2',c:'#991b1b',d:'#ef4444'},
-    {key:'pending_verification',l:'Verify Pay',bg:'#fff7ed',c:'#9a3412',d:'#f97316'},
-  ];
-  const counts={};allOrders.forEach(o=>{counts[o.status]=(counts[o.status]||0)+1;});
-  document.getElementById('statusStrip').innerHTML=defs.map(d=>`<div class="ss-p" style="background:${d.bg};color:${d.c};" onclick="location.href='orders.html'"><div class="ss-d" style="background:${d.d};"></div>${d.l} <strong>${counts[d.key]||0}</strong></div>`).join('');
-}
-
-function buildChart(){
-  const range=getRange();if(!range)return;
-  const PAID=['confirmed','processing','shipped','delivered'];
-  const start=new Date(range.from);
-  const isYear=period==='year';
-  let labels=[],data=[];
-  if(isYear){
-    for(let i=0;i<12;i++){
-      const d=new Date(start.getFullYear(),i,1);
-      labels.push(d.toLocaleDateString('en-IN',{month:'short'}));
-      const mo=allOrders.filter(o=>{const od=new Date(o.created_at);return od.getMonth()===i&&od.getFullYear()===start.getFullYear();});
-      data.push(chartType==='revenue'?mo.filter(o=>PAID.includes(o.status)).reduce((s,o)=>s+(parseFloat(o.total)||0),0):mo.length);
-    }
-  }else{
-    const days=Math.min(Math.ceil((new Date(range.to)-start)/86400000)+1,31);
-    for(let i=0;i<days;i++){
-      const d=new Date(start);d.setDate(d.getDate()+i);
-      const ds=d.toDateString();
-      labels.push(d.toLocaleDateString('en-IN',{day:'numeric',month:'short'}));
-      const dOrd=allOrders.filter(o=>new Date(o.created_at).toDateString()===ds);
-      data.push(chartType==='revenue'?dOrd.filter(o=>PAID.includes(o.status)).reduce((s,o)=>s+(parseFloat(o.total)||0),0):dOrd.length);
-    }
+  } catch (e) {
+    toast('Error loading dashboard: ' + e.message, true);
   }
-  const ctx=document.getElementById('revChart').getContext('2d');
-  const g=ctx.createLinearGradient(0,0,0,180);g.addColorStop(0,'rgba(5,107,75,.15)');g.addColorStop(1,'rgba(5,107,75,0)');
-  if(revChart)revChart.destroy();
-  revChart=new Chart(ctx,{
-    type:'line',
-    data:{labels,datasets:[{data,borderColor:'#056b4b',backgroundColor:g,borderWidth:2,pointRadius:data.length<=14?3:0,pointHoverRadius:5,pointBackgroundColor:'#056b4b',fill:true,tension:.4}]},
-    options:{
-      responsive:true,maintainAspectRatio:false,
-      plugins:{tooltip:{callbacks:{label:c=>chartType==='revenue'?formatCurrency(c.parsed.y):`${c.parsed.y} orders`}}},
-      scales:{
-        x:{grid:{display:false},border:{display:false},ticks:{maxTicksLimit:8,font:{size:10}}},
-        y:{grid:{color:'rgba(0,0,0,.04)'},border:{display:false},ticks:{callback:v=>chartType==='revenue'?'₹'+Number(v).toLocaleString('en-IN'):v,maxTicksLimit:5,font:{size:10}}}
-      }
-    }
-  });
 }
 
-function renderActivity(){
-  const el=document.getElementById('actFeed');
-  const list=allOrders.filter(o=>o.status!=='cancelled').slice(0,10);
-  if(!list.length){el.innerHTML='<div class="empty"><svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M13 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V9z"/></svg><p>No activity</p></div>';return;}
-  const cols={confirmed:'#3b82f6',pending:'#f59e0b',delivered:'#22c55e',cancelled:'#ef4444',processing:'#8b5cf6',shipped:'#06b6d4',returned:'#ec4899'};
-  el.innerHTML=list.map(o=>{
-    const col=cols[o.status]||'#9ca3af';
-    const ini=(o.customer_name||'?').split(' ').map(w=>w[0]).slice(0,2).join('').toUpperCase();
-    return`<div class="act-i" onclick="location.href='orders.html'"><div class="act-av" style="background:${col}22;color:${col};">${ini}</div><div style="flex:1;min-width:0;"><div class="act-tx"><strong style="color:var(--gray-900);">${o.order_number}</strong> · ${o.customer_name||'—'} · <strong>${formatCurrency(o.total)}</strong></div><div class="act-mt">${renderBadge(o.status)}<span class="act-tm">${formatDate(o.created_at)}</span></div></div></div>`;
+// Build stats from real DB — no WF.analytics dependency
+async function getDashboardStats() {
+  const [ordersRes, prodsRes, custsRes] = await Promise.all([
+    db.from('orders').select('total,status,created_at').order('created_at',{ascending:false}),
+    db.from('products').select('id,stock_qty,low_stock_threshold').eq('is_active',true),
+    db.from('customers').select('id',{count:'exact',head:true}),
+  ]);
+  const orders = ordersRes.data || [];
+  const prods  = prodsRes.data  || [];
+  const now = new Date(); const mStart = new Date(now.getFullYear(),now.getMonth(),1);
+  const PAID = ['confirmed','processing','packed','shipped','out_for_delivery','delivered'];
+  const monthOrders = orders.filter(o=>new Date(o.created_at)>=mStart);
+  const revenue = monthOrders.filter(o=>PAID.includes(o.status)).reduce((s,o)=>s+(parseFloat(o.total)||0),0);
+  const todayStart = new Date(); todayStart.setHours(0,0,0,0);
+  const todayRev = orders.filter(o=>new Date(o.created_at)>=todayStart&&PAID.includes(o.status)).reduce((s,o)=>s+(parseFloat(o.total)||0),0);
+  return {
+    revenue, todayRev,
+    total_orders: orders.length,
+    month_orders: monthOrders.length,
+    customers_count: custsRes.count || 0,
+    low_stock_count: prods.filter(p=>(p.stock_qty||0)<=(p.low_stock_threshold||5)).length,
+    out_of_stock: prods.filter(p=>(p.stock_qty||0)===0).length,
+    pending_orders: orders.filter(o=>o.status==='pending').length,
+    pending_pay: orders.filter(o=>o.payment_status==='pending_verification').length,
+    cancelled: orders.filter(o=>o.status==='cancelled').length,
+  };
+}
+
+function renderStats(s) {
+  document.getElementById('statsGrid').innerHTML = `
+    <div class="stat-card">
+      <div class="stat-card__top">
+        <div class="stat-card__icon green">
+          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+        </div>
+        <span class="stat-card__badge up">This Month</span>
+      </div>
+      <div class="stat-card__val">${formatCurrency(s.revenue)}</div>
+      <div class="stat-card__label">Monthly Revenue</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-card__top">
+        <div class="stat-card__icon blue">
+          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+        </div>
+        ${s.pending_orders > 0 ? `<span class="stat-card__badge down">${s.pending_orders} pending</span>` : `<span class="stat-card__badge up">All clear</span>`}
+      </div>
+      <div class="stat-card__val">${s.total_orders}</div>
+      <div class="stat-card__label">Total Orders</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-card__top">
+        <div class="stat-card__icon gold">
+          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+        </div>
+      </div>
+      <div class="stat-card__val">${Number(s.customers_count).toLocaleString('en-IN')}</div>
+      <div class="stat-card__label">Total Customers</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-card__top">
+        <div class="stat-card__icon purple">
+          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg>
+        </div>
+        ${s.low_stock_count > 0 ? `<span class="stat-card__badge down">${s.low_stock_count} low stock</span>` : ''}
+      </div>
+      <div class="stat-card__val">${s.bookings_count}</div>
+      <div class="stat-card__label">Service Bookings</div>
+    </div>`;
+
+  document.getElementById('revMonth').textContent = formatCurrency(s.revenue);
+}
+
+async function loadRecentOrders() {
+  const {data} = await db.from('orders').select('order_number,customer_name,total,status,payment_method,created_at').order('created_at',{ascending:false}).limit(8);
+  const orders = data || [];
+  const tbody = document.getElementById('recentOrdersTbody');
+  if (!orders.length) {
+    tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;padding:20px;color:var(--gray-300);">No orders yet</td></tr>`;
+    return;
+  }
+  tbody.innerHTML = orders.map(o => `<tr>
+    <td class="td-bold">${o.order_number}</td>
+    <td>${o.customer_name}</td>
+    <td style="font-weight:700;">${formatCurrency(o.total)}</td>
+    <td>${renderBadge(o.status)}</td>
+    <td>${formatDate(o.created_at)}</td>
+  </tr>`).join('');
+}
+
+async function loadActivity() {
+  const feed = document.getElementById('activityFeed');
+  const {data:ordData} = await db.from('orders').select('order_number,customer_name,total,status,created_at').order('created_at',{ascending:false}).limit(6);
+  const orders = ordData || [];
+  const items = orders.map(o => ({
+    dot: o.status==='delivered'?'green':o.status==='cancelled'?'red':'blue',
+    text: `<strong>Order ${o.order_number}</strong> · ${o.customer_name} · ${formatCurrency(o.total)}`,
+    time: formatDate(o.created_at)
+  }));
+  if (!items.length) { feed.innerHTML = '<div style="font-size:12px;color:var(--gray-300);text-align:center;padding:10px;">No recent activity</div>'; return; }
+  feed.innerHTML = items.map(a => `
+    <div style="display:flex;gap:10px;padding:10px 0;border-bottom:1px solid var(--gray-50);">
+      <div style="width:7px;height:7px;border-radius:99px;background:var(--${a.dot === 'green' ? 'green-500' : 'blue-500'});margin-top:5px;flex-shrink:0;"></div>
+      <div><div style="font-size:12px;color:var(--gray-600);line-height:1.5;">${a.text}</div><div style="font-size:11px;color:var(--gray-300);margin-top:2px;">${a.time}</div></div>
+    </div>`).join('');
+}
+
+async function loadLowStock() {
+  const {data} = await db.from('products')
+    .select('name,stock_qty,low_stock_threshold').eq('is_active',true).order('stock_qty',{ascending:true}).limit(10);
+  const low = (data||[]).filter(p=>(p.stock_qty||0)<=(p.low_stock_threshold||5));
+  if (!low.length) return;
+  document.getElementById('lowStockCard').style.display = 'block';
+  document.getElementById('lowStockTbody').innerHTML = low.map(p => `
+    <tr>
+      <td class="td-bold">${p.name.substring(0, 28)}…</td>
+      <td><span class="badge ${p.stock_qty === 0 ? 'badge-danger' : 'badge-pending'}">${p.stock_qty} left</span></td>
+    </tr>`).join('');
+}
+
+async function loadCategoryProgress() {
+  const {data} = await db.from('products')
+    .select('category:categories(name),stock_qty').eq('is_active',true);
+  const map={};
+  (data||[]).forEach(p=>{
+    const n=p.category?.name||'Other';
+    map[n]=(map[n]||0)+1;
+  });
+  const total=Object.values(map).reduce((s,v)=>s+v,0)||1;
+  const sorted=Object.entries(map).sort((a,b)=>b[1]-a[1]).slice(0,5);
+  const el=document.getElementById('catProgress');
+  if(!sorted.length){el.innerHTML='<div style="font-size:12px;color:var(--gray-300);text-align:center;padding:10px;">No products yet</div>';return;}
+  el.innerHTML=sorted.map(([name,cnt])=>{
+    const pct=Math.round(cnt/total*100);
+    return`<div class="progress-row">
+      <div class="progress-label">${name.length>20?name.slice(0,20)+'…':name}</div>
+      <div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div>
+      <div class="progress-val">${pct}%</div>
+    </div>`;
   }).join('');
 }
 
-function renderDonut(){
-  const counts={},tot={};
-  allOrders.forEach(o=>{const m=o.payment_method||'cod';counts[m]=(counts[m]||0)+1;tot[m]=(tot[m]||0)+(parseFloat(o.total)||0);});
-  const entries=Object.entries(counts).sort((a,b)=>b[1]-a[1]);
-  const total=allOrders.length||1;
-  const palette=['#056b4b','#3b82f6','#f59e0b','#8b5cf6','#ec4899','#06b6d4'];
-  const cmap={};entries.forEach(([m],i)=>{cmap[m]=palette[i%palette.length];});
-  const el=document.getElementById('donutWrap');
-  if(!entries.length){el.innerHTML='<div class="empty" style="grid-column:1/-1"><p>No payment data</p></div>';return;}
-  el.innerHTML=`<canvas id="donutC" style="max-width:130px;max-height:130px;"></canvas><div class="dn-legend">${entries.map(([m,c])=>`<div class="dl-i"><div class="dl-d" style="background:${cmap[m]};"></div><span style="text-transform:uppercase;font-size:11px;font-weight:600;">${m}</span><span class="dl-v">${Math.round(c/total*100)}%</span></div>`).join('')}</div>`;
-  const ctx=document.getElementById('donutC').getContext('2d');
-  if(donutChart)donutChart.destroy();
-  donutChart=new Chart(ctx,{type:'doughnut',data:{labels:entries.map(([m])=>m.toUpperCase()),datasets:[{data:entries.map(([,c])=>c),backgroundColor:entries.map(([m])=>cmap[m]),borderWidth:0,hoverOffset:4}]},options:{responsive:true,maintainAspectRatio:true,cutout:'68%',plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`${c.label}: ${c.parsed} (${Math.round(c.parsed/total*100)}%)`}}}}});
+async function loadRevenueChart() {
+  const PAID=['confirmed','processing','packed','shipped','out_for_delivery','delivered'];
+  const {data} = await db.from('orders').select('total,status,created_at').order('created_at',{ascending:true});
+  const orders=data||[];
+  // Last 6 months
+  const now=new Date();
+  const months=[];
+  for(let i=5;i>=0;i--){
+    const d=new Date(now.getFullYear(),now.getMonth()-i,1);
+    months.push({label:d.toLocaleDateString('en-IN',{month:'short'}),year:d.getFullYear(),month:d.getMonth(),rev:0});
+  }
+  orders.filter(o=>PAID.includes(o.status)).forEach(o=>{
+    const d=new Date(o.created_at);
+    const m=months.find(m=>m.year===d.getFullYear()&&m.month===d.getMonth());
+    if(m)m.rev+=parseFloat(o.total)||0;
+  });
+  const maxRev=Math.max(...months.map(m=>m.rev),1);
+  const el=document.getElementById('revChart');
+  if(!el)return;
+  el.innerHTML=months.map(m=>{
+    const h=Math.max(Math.round((m.rev/maxRev)*100),m.rev>0?4:1);
+    return`<div style="flex:1;border-radius:3px 3px 0 0;background:${m.rev===maxRev&&m.rev>0?'var(--green-600)':'var(--green-100)'};height:${h}%;min-width:6px;transition:background .2s;position:relative;cursor:pointer;" title="${m.label}: ${formatCurrency(m.rev)}">
+      <span style="position:absolute;bottom:-18px;left:50%;transform:translateX(-50%);font-size:9px;color:var(--gray-300);white-space:nowrap;">${m.label}</span>
+    </div>`;
+  }).join('');
 }
 
-function renderTopProds(){
-  const el=document.getElementById('topProdList');
-  if(!allItems.length){el.innerHTML='<div class="empty"><svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/></svg><p>No sales data yet</p></div>';return;}
-  const map={};allItems.forEach(i=>{const k=i.product_name||'Unknown';if(!map[k])map[k]={qty:0,rev:0};map[k].qty+=i.quantity||1;map[k].rev+=parseFloat(i.total_price)||0;});
-  const sorted=Object.entries(map).sort((a,b)=>b[1].qty-a[1].qty).slice(0,6);
-  const maxQ=sorted[0]?.[1]?.qty||1;
-  el.innerHTML=sorted.map(([n,d])=>`<div class="pr"><div class="pr-n" title="${n}">${n.length>18?n.slice(0,18)+'…':n}</div><div class="pr-b"><div class="pr-f" style="width:${Math.round(d.qty/maxQ*100)}%;background:var(--green-500);"></div></div><div class="pr-v">${d.qty} sold</div></div>`).join('');
+function setupRealtime() {
+  // WF.realtime removed — auto-refresh handles updates
 }
 
-function renderAlerts(){
-  const alerts=[];
-  const outS=allProds.filter(p=>p.is_active&&(p.stock_qty||0)===0);
-  const lowS=allProds.filter(p=>p.is_active&&(p.stock_qty||0)>0&&(p.stock_qty||0)<=(p.low_stock_threshold||5));
-  const pendP=allOrders.filter(o=>o.payment_status==='pending_verification');
-  const pendO=allOrders.filter(o=>o.status==='pending');
-  if(outS.length)alerts.push({l:'Out of Stock',v:outS.length,bg:'#fef2f2',c:'#dc2626',href:'inventory.html'});
-  if(lowS.length)alerts.push({l:'Low Stock',v:lowS.length,bg:'#fff7ed',c:'#c2410c',href:'inventory.html'});
-  if(pendP.length)alerts.push({l:'Verify Payment',v:pendP.length,bg:'#fef3c7',c:'#92400e',href:'orders.html'});
-  if(pendO.length)alerts.push({l:'New Orders',v:pendO.length,bg:'#eff6ff',c:'#1d4ed8',href:'orders.html'});
-  const badge=document.getElementById('alertCount');
-  if(alerts.length){badge.style.display='inline';badge.textContent=alerts.length+' alerts';}else badge.style.display='none';
-  const el=document.getElementById('alertsList');
-  if(!alerts.length){el.innerHTML='<div class="empty"><svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg><p style="color:var(--green-600);font-weight:600;">All clear</p></div>';return;}
-  el.innerHTML=alerts.map(a=>`<div class="al-r" onclick="location.href='${a.href}'"><span class="al-n">${a.l}</span><span class="al-b" style="background:${a.bg};color:${a.c};">${a.v}</span></div>`).join('');
+function exportReport() {
+  toast('Generating export… check your downloads');
 }
-
-function renderOrders(){
-  const tbody=document.getElementById('ordTbody');
-  if(!allOrders.length){tbody.innerHTML='<tr><td colspan="6" style="text-align:center;padding:20px;color:var(--gray-400);font-size:12px;">No orders in this period</td></tr>';return;}
-  const pc={cod:'#f59e0b',upi:'#3b82f6',whatsapp:'#22c55e'};
-  tbody.innerHTML=allOrders.slice(0,10).map(o=>`<tr onclick="location.href='orders.html'"><td><span style="font-family:var(--font-display);font-weight:700;color:var(--green-700);font-size:11px;">${o.order_number}</span></td><td>${o.customer_name||'—'}</td><td><span style="font-weight:700;">${formatCurrency(o.total)}</span></td><td><span style="font-size:10px;font-weight:700;text-transform:uppercase;background:${(pc[o.payment_method]||'#9ca3af')}22;color:${pc[o.payment_method]||'#6b7280'};padding:2px 7px;border-radius:99px;">${o.payment_method||'cod'}</span></td><td>${renderBadge(o.status)}</td><td style="color:var(--gray-400);font-size:11px;">${formatDate(o.created_at)}</td></tr>`).join('');
-}
-
-function renderLowStock(){
-  const el=document.getElementById('lowStockList');
-  const low=allProds.filter(p=>p.is_active&&(p.stock_qty||0)<=(p.low_stock_threshold||5)).sort((a,b)=>(a.stock_qty||0)-(b.stock_qty||0)).slice(0,8);
-  if(!low.length){el.innerHTML='<div class="empty"><svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/></svg><p style="color:var(--green-600);font-weight:600;">All stocked</p></div>';return;}
-  el.innerHTML=low.map(p=>{const q=p.stock_qty||0;const out=q===0;return`<div class="al-r" onclick="location.href='products.html'"><div><div style="font-size:12px;font-weight:600;color:var(--gray-800);">${p.name.length>28?p.name.slice(0,28)+'…':p.name}</div><div style="font-size:10px;color:var(--gray-400);">Threshold: ${p.low_stock_threshold||5}</div></div><span class="al-b" style="background:${out?'#fef2f2':'#fff7ed'};color:${out?'#dc2626':'#c2410c'};">${out?'Out of stock':q+' left'}</span></div>`;}).join('');
-}
-
-function exportChart(){const a=document.createElement('a');a.href=document.getElementById('revChart').toDataURL('image/png');a.download='wellfix-revenue.png';a.click();}
-
-(async()=>{
-  await AdminShell.init('Dashboard','dashboard');
-  await loadDash();
-  setInterval(loadDash,120000);
-})();
 </script>
 </body>
 </html>
