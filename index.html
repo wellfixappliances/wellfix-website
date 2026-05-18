@@ -234,50 +234,61 @@
      HERO BANNERS (compact 3-col)
      ══════════════════════════════════════════ -->
 <section class="hero-compact">
-
   <div class="container">
+    <div class="hero-new-grid" id="heroGrid">
 
-    <div class="hero-compact__grid" id="heroGrid">
-
-      <!-- Loaded from DB by loadHeroBanners() -->
-
-      <div class="hero-card hero-card--main" style="grid-column:span 1;">
-
+      <!-- Main hero — left column, full height -->
+      <div class="hero-card hero-card--main">
         <img class="hero-card__img" src="https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=900&q=80&auto=format&fit=crop" alt="Premium Kitchen Appliances" loading="eager">
-
         <div class="hero-card__overlay">
-
-          <div class="hero-card__tag"><svg width="10" height="10" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>New Arrivals 2025</div>
-
+          <div class="hero-card__tag">
+            <svg width="10" height="10" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            New Arrivals 2025
+          </div>
           <div class="hero-card__title">Premium<br>Kitchen<br>Appliances</div>
-
-          <a href="#trending" class="hero-card__cta hero-card__cta--gold">Shop Now <svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></a>
-
+          <a href="#trending" class="hero-card__cta hero-card__cta--gold">
+            Shop Now
+            <svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          </a>
         </div>
-
       </div>
 
-      <div class="hero-card">
-
-        <img class="hero-card__img" src="https://images.unsplash.com/photo-1585771724684-38269d6639fd?w=600&q=80&auto=format&fit=crop" alt="Mixer Grinders" loading="eager">
-
-        <div class="hero-card__overlay"><div class="hero-card__label">Top Sellers</div><div class="hero-card__title">Mixer<br>Grinders</div><a href="#" class="hero-card__cta">Shop Now <svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></a></div>
-
-      </div>
-
-      <div class="hero-card">
-
-        <img class="hero-card__img" src="https://images.unsplash.com/photo-1484154218962-a197022b5858?w=600&q=80&auto=format&fit=crop" alt="Gas Stoves" loading="eager">
-
-        <div class="hero-card__overlay"><div class="hero-card__label">Best Deals</div><div class="hero-card__title">Gas<br>Stoves</div><a href="#" class="hero-card__cta">Shop Now <svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></a></div>
-
+      <!-- Right side — 2×2 square grid -->
+      <div class="hero-quad-grid">
+        <div class="hero-card hero-card--quad">
+          <img class="hero-card__img" src="https://images.unsplash.com/photo-1585771724684-38269d6639fd?w=500&q=80&auto=format&fit=crop" alt="Mixer Grinders" loading="eager">
+          <div class="hero-card__overlay">
+            <div class="hero-card__label">Top Sellers</div>
+            <div class="hero-card__title">Mixer<br>Grinders</div>
+          </div>
+        </div>
+        <div class="hero-card hero-card--quad">
+          <img class="hero-card__img" src="https://images.unsplash.com/photo-1484154218962-a197022b5858?w=500&q=80&auto=format&fit=crop" alt="Gas Stoves" loading="eager">
+          <div class="hero-card__overlay">
+            <div class="hero-card__label">Best Deals</div>
+            <div class="hero-card__title">Gas<br>Stoves</div>
+          </div>
+        </div>
+        <div class="hero-card hero-card--quad">
+          <img class="hero-card__img" src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=500&q=80&auto=format&fit=crop" alt="Ceiling Fans" loading="eager">
+          <div class="hero-card__overlay">
+            <div class="hero-card__label">New Stock</div>
+            <div class="hero-card__title">Ceiling<br>Fans</div>
+          </div>
+        </div>
+        <div class="hero-card hero-card--quad">
+          <img class="hero-card__img" src="https://images.unsplash.com/photo-1556909172-54557c7e4fb7?w=500&q=80&auto=format&fit=crop" alt="Pressure Cookers" loading="eager">
+          <div class="hero-card__overlay">
+            <div class="hero-card__label">Best Value</div>
+            <div class="hero-card__title">Pressure<br>Cookers</div>
+          </div>
+        </div>
       </div>
 
     </div>
-
   </div>
-
 </section>
+
 
 <!-- ══════════════════════════════════════════
      CATEGORY PILLS
@@ -724,17 +735,15 @@ async function loadLiveBanners() {
     const heroGrid  = document.getElementById('heroGrid');
 
     if (heroGrid) {
-      // Only rebuild if we have DB banners
       if (heroMain.length || heroCards.length) {
         const SVG_ARROW = `<svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>`;
+        let mainHTML = '';
+        let quadHTML = '';
 
-        let heroHTML = '';
-
-        // Main hero (span 1 col, tall 380px)
         if (heroMain.length) {
           const b = heroMain[0];
-          heroHTML += `<div class="hero-card hero-card--main" style="grid-column:span 1;">
-            <img class="hero-card__img" src="${b.desktop_image_url||''}" alt="${b.title||''}" loading="eager" style="width:100%;height:380px;object-fit:cover;">
+          mainHTML = `<div class="hero-card hero-card--main">
+            <img class="hero-card__img" src="${b.desktop_image_url||''}" alt="${b.title||''}" loading="eager">
             <div class="hero-card__overlay">
               ${b.badge_text ? `<div class="hero-card__tag">${b.badge_text}</div>` : ''}
               <div class="hero-card__title">${b.title||''}</div>
@@ -744,21 +753,21 @@ async function loadLiveBanners() {
           </div>`;
         }
 
-        // Side hero cards (smaller, 180px)
-        heroCards.forEach(b => {
-          heroHTML += `<div class="hero-card">
-            <img class="hero-card__img" src="${b.desktop_image_url||''}" alt="${b.title||''}" loading="eager" style="width:100%;height:180px;object-fit:cover;">
-            <div class="hero-card__overlay">
-              ${b.badge_text ? `<div class="hero-card__label">${b.badge_text}</div>` : ''}
-              <div class="hero-card__title">${b.title||''}</div>
-              ${b.cta_text ? `<a href="${b.cta_url||'#'}" class="hero-card__cta">${b.cta_text} ${SVG_ARROW}</a>` : ''}
-            </div>
+        if (heroCards.length) {
+          quadHTML = `<div class="hero-quad-grid">${heroCards.map(b => `
+            <div class="hero-card hero-card--quad">
+              <img class="hero-card__img" src="${b.desktop_image_url||''}" alt="${b.title||''}" loading="eager">
+              <div class="hero-card__overlay">
+                ${b.badge_text ? `<div class="hero-card__label">${b.badge_text}</div>` : ''}
+                <div class="hero-card__title">${b.title||''}</div>
+                ${b.cta_text ? `<a href="${b.cta_url||'#'}" class="hero-card__cta">${b.cta_text} ${SVG_ARROW}</a>` : ''}
+              </div>
+            </div>`).join('')}
           </div>`;
-        });
+        }
 
-        heroGrid.innerHTML = heroHTML;
+        heroGrid.innerHTML = mainHTML + quadHTML;
       }
-      // If all hero banners deactivated → hide section gracefully
       else if (data.some(b => ['hero','hero_card'].includes(b.position))) {
         heroGrid.closest('section').style.display = 'none';
       }
