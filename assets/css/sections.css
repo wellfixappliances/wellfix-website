@@ -581,43 +581,51 @@
 .review-card__loc  { font-size: var(--text-xs); color: var(--color-text-3); }
 
 /* ══════════════════════════════════════════════
-   NEW HERO LAYOUT — 1 main + 2×2 quad grid
-   No scroll needed on first screen
+   HERO LAYOUT v2 — 1 main + 2×2 quad
+   Desktop: side by side, 380px total height
+   Mobile:  main top, 2×2 quad below (same as desktop)
    ══════════════════════════════════════════════ */
 
-/* Outer grid: big main left, quad right */
+/* Outer wrapper — side by side on ALL screens except small mobile */
 .hero-new-grid {
   display: grid;
-  grid-template-columns: 2fr 1fr;
-  gap: var(--sp-3);
+  grid-template-columns: 3fr 2fr;
+  gap: 10px;
   align-items: stretch;
 }
 
-/* Main hero — exactly 380px, same as before */
+/* Main hero — left column */
 .hero-new-grid .hero-card--main {
   display: block;
+  border-radius: var(--r-lg);
+  overflow: hidden;
+  position: relative;
 }
 .hero-new-grid .hero-card--main .hero-card__img {
-  height: 380px;
   width: 100%;
+  height: 380px;
   object-fit: cover;
   display: block;
+  transition: transform var(--t-slow) var(--ease);
+}
+.hero-new-grid .hero-card--main:hover .hero-card__img {
+  transform: scale(1.02);
 }
 
-/* Right: 2×2 square grid, same total height as main (380px) */
+/* Right 2×2 quad — total height = 380px */
 .hero-quad-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
   grid-template-rows: 1fr 1fr;
-  gap: var(--sp-3);
+  gap: 10px;
   height: 380px;
 }
 
-/* Each quad card fills its cell exactly */
+/* Each quad card */
 .hero-card--quad {
   display: block;
+  border-radius: var(--r-md, 8px);
   overflow: hidden;
-  border-radius: var(--r-lg);
   position: relative;
   cursor: pointer;
 }
@@ -625,6 +633,7 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
+  object-position: center;
   display: block;
   transition: transform var(--t-slow) var(--ease);
 }
@@ -632,37 +641,37 @@
   transform: scale(1.04);
 }
 
-/* ── TABLET: main on left 60%, quad stacked on right 40% ── */
-@media (max-width: 900px) {
+/* ── TABLET 768–900px: slightly smaller heights ── */
+@media (max-width: 900px) and (min-width: 601px) {
   .hero-new-grid {
     grid-template-columns: 3fr 2fr;
-    gap: var(--sp-2);
+    gap: 8px;
   }
   .hero-new-grid .hero-card--main .hero-card__img {
-    height: 320px;
+    height: 300px;
   }
   .hero-quad-grid {
-    height: 320px;
-    gap: var(--sp-2);
+    height: 300px;
+    gap: 8px;
   }
 }
 
-/* ── MOBILE: main top full width, quad 2×2 below ── */
+/* ── MOBILE ≤600px: main on top, 2x2 below ── */
 @media (max-width: 600px) {
   .hero-new-grid {
     grid-template-columns: 1fr;
-    gap: var(--sp-2);
+    gap: 8px;
   }
   .hero-new-grid .hero-card--main .hero-card__img {
     height: 200px;
   }
   .hero-quad-grid {
-    height: auto;
     grid-template-columns: 1fr 1fr;
-    grid-template-rows: auto auto;
-    gap: var(--sp-2);
+    grid-template-rows: 1fr 1fr;
+    height: auto;
+    gap: 8px;
   }
   .hero-card--quad .hero-card__img {
-    height: 120px;
+    height: 130px;
   }
 }
