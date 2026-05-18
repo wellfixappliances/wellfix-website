@@ -83,7 +83,7 @@
 .hero-card__img {
   width: 100%;
   height: 180px;
-  object-fit: contain;
+  object-fit: cover;
   transition: transform var(--t-slow) var(--ease);
   display: block;
 }
@@ -604,7 +604,7 @@
 .hero-new-grid .hero-card--main .hero-card__img {
   width: 100%;
   height: 380px;
-  object-fit: contain;
+  object-fit: cover;
   display: block;
   transition: transform var(--t-slow) var(--ease);
 }
@@ -632,7 +632,7 @@
 .hero-card--quad .hero-card__img {
   width: 100%;
   height: 100%;
-  object-fit: contain;
+  object-fit: cover;
   object-position: center;
   display: block;
   transition: transform var(--t-slow) var(--ease);
