@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Invoice Manager — WellFix Admin</title>
+<link rel="icon" href="../frontend/assets/images/WELLFIX-FAVICON.png">
+<link rel="stylesheet" href="assets/css/admin.css">
+<style>
+/* ── TYPE TABS ── */
+.type-tabs{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:14px;}
+.ttab{padding:5px 14px;border-radius:99px;font-size:11px;font-weight:700;cursor:pointer;border:1.5px solid var(--gray-150,#dedede);background:#fff;color:var(--gray-500);transition:all .15s;white-space:nowrap;}
+.ttab.on{border-color:var(--green-700);background:var(--green-700);color:#fff;}
+.ttab-cnt{font-size:10px;margin-left:3px;opacity:.75;}
+/* ── TABLE ── */
+.im-tbl{width:100%;border-collapse:collapse;font-size:12px;}
+.im-tbl thead th{position:sticky;top:0;z-index:2;background:#fff;padding:8px 12px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--gray-400);border-bottom:1px solid var(--gray-100);text-align:left;white-space:nowrap;box-shadow:0 1px 0 var(--gray-100);}
+.im-tbl td{padding:8px 12px;border-bottom:1px solid var(--gray-50);vertical-align:middle;}
+.im-tbl tbody tr:hover td{background:var(--gray-25);}
+.im-tbl tr:last-child td{border-bottom:none;}
+/* ── BADGES ── */
+.ibadge{font-size:10px;font-weight:700;padding:2px 7px;border-radius:99px;}
+.ibadge.sale{background:#f0fdf4;color:#15803d;}
+.ibadge.quotation{background:#eff6ff;color:#1d4ed8;}
+.ibadge.return{background:#fff7ed;color:#c2410c;}
+.ibadge.refund{background:#fdf4ff;color:#9333ea;}
+.ibadge.completed{background:#f0fdf4;color:#15803d;}
+.ibadge.draft{background:#f1f5f9;color:#475569;}
+.ibadge.returned{background:#fff7ed;color:#c2410c;}
+.ibadge.cancelled{background:#fef2f2;color:#dc2626;}
+/* ── EDIT MODAL ── */
+.em-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+@media(max-width:600px){.em-grid{grid-template-columns:1fr;}}
+/* ── SK ── */
+.sk{background:linear-gradient(90deg,var(--gray-100) 25%,var(--gray-50) 50%,var(--gray-100) 75%);background-size:200% 100%;animation:sk 1.4s infinite;border-radius:5px;}
+@keyframes sk{to{background-position:-200% 0;}}
+/* ── DANGER ZONE ── */
+.danger-zone{background:#fef2f2;border:1px solid #fecaca;border-radius:8px;padding:14px;margin-top:16px;}
+.dz-title{font-size:12px;font-weight:700;color:#dc2626;margin-bottom:8px;}
+</style>
+</head>
+<body>
+<div class="admin-shell"><div id="adminShell"></div>
+<div class="main-wrap" id="mainWrap">
+<div class="page-content">
+
+<!-- HEADER -->
+<div class="pg-hd">
+  <div>
+    <h1>Invoice Manager</h1>
+    <p style="font-size:12px;color:var(--gray-400);margin-top:2px;" id="imSub">Loading…</p>
+  </div>
+  <div class="pg-hd__actions">
+    <button class="btn btn-outline" onclick="exportAll()">Export CSV</button>
+    <button class="btn btn-outline" id="deleteSelectedBtn" style="background:#fef2f2;color:#dc2626;display:none;" onclick="deleteSelected()">Delete Selected</button>
+    <button class="btn btn-outline" style="background:#fef2f2;color:#dc2626;" onclick="confirmDeleteAll()">Delete All</button>
+    <button class="btn btn-primary" onclick="openCreate()">+ New Invoice</button>
+  </div>
+</div>
+
+<!-- TYPE TABS -->
+<div class="type-tabs" id="typeTabs"></div>
+
+<!-- MAIN CARD -->
+<div class="card" style="padding:0;">
+  <!-- Toolbar -->
+  <div style="display:flex;align-items:center;gap:8px;padding:10px 14px;border-bottom:1px solid var(--gray-100);flex-wrap:wrap;">
+    <div class="filter-search" style="margin:0;">
+      <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input type="search" id="imSearch" placeholder="Invoice, customer, phone…" oninput="filterInvoices()" style="width:200px;">
+    </div>
+    <select class="filter-select" id="fStatus" onchange="filterInvoices()" style="height:34px;font-size:12px;">
+      <option value="">All Status</option>
+      <option value="completed">Completed</option>
+      <option value="draft">Draft</option>
+      <option value="returned">Returned</option>
+      <option value="cancelled">Cancelled</option>
+    </select>
+    <select class="filter-select" id="fPay" onchange="filterInvoices()" style="height:34px;font-size:12px;">
+      <option value="">All Payment</option>
+      <option value="cash">Cash</option>
+      <option value="upi">UPI</option>
+      <option value="card">Card</option>
+      <option value="emi">EMI/Finance</option>
+      <option value="split">Split</option>
+    </select>
+    <select class="filter-select" id="fSort" onchange="filterInvoices()" style="height:34px;font-size:12px;">
+      <option value="newest">Newest First</option>
+      <option value="oldest">Oldest First</option>
+      <option value="highest">Highest Amount</option>
+      <option value="lowest">Lowest Amount</option>
+    </select>
+    <span id="imCount" style="font-size:11px;color:var(--gray-400);margin-left:auto;"></span>
+  </div>
+
+  <!-- Bulk bar -->
+  <div id="bulkBar" style="display:none;align-items:center;gap:8px;padding:8px 14px;background:var(--green-50);border-bottom:1px solid var(--green-100);">
+    <span id="bulkCnt" style="font-size:12px;font-weight:700;color:var(--green-700);"></span>
+    <button class="btn btn-sm btn-outline" onclick="bulkExport()">Export Selected</button>
+    <button class="btn btn-sm" style="background:#fef2f2;color:#dc2626;" onclick="deleteSelected()">Delete Selected</button>
+    <button class="btn btn-sm btn-outline" onclick="clearSel()" style="margin-left:auto;">Clear</button>
+  </div>
+
+  <!-- Table -->
+  <div style="overflow-x:auto;">
+    <table class="im-tbl">
+      <thead><tr>
+        <th style="width:36px;padding:8px;"><input type="checkbox" id="chkAll" onchange="toggleAll(this)"></th>
+        <th>Invoice</th>
+        <th>Type</th>
+        <th>Customer</th>
+        <th>Total</th>
+        <th>GST</th>
+        <th>Payment</th>
+        <th>Status</th>
+        <th>Cashier</th>
+        <th>Date</th>
+        <th style="text-align:right;">Actions</th>
+      </tr></thead>
+      <tbody id="imTbody"></tbody>
+    </table>
+  </div>
+
+  <!-- Pager -->
+  <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-top:1px solid var(--gray-100);">
+    <span id="pagerInfo" style="font-size:11px;color:var(--gray-400);"></span>
+    <div style="display:flex;gap:4px;" id="pagerBtns"></div>
+  </div>
+</div>
+
+<!-- EDIT/CREATE MODAL -->
+<div class="modal-overlay" id="editOvl" onclick="if(event.target===this)closeEdit()" style="display:none;align-items:flex-start;justify-content:center;padding:20px;overflow-y:auto;">
+<div class="modal" style="max-width:600px;width:100%;margin:auto;max-height:90vh;overflow-y:auto;">
+  <div class="modal-hd"><h3 id="editTitle">Edit Invoice</h3><button class="modal-close" onclick="closeEdit()">✕</button></div>
+  <div class="modal-body">
+    <div class="em-grid">
+      <div class="form-group"><label class="form-label">Invoice Number</label><input class="form-input" id="eInvNum" placeholder="WF-2505-001ABC"></div>
+      <div class="form-group"><label class="form-label">Invoice Type</label>
+        <select class="form-input" id="eType">
+          <option value="sale">Sale</option>
+          <option value="quotation">Quotation</option>
+          <option value="return">Return</option>
+          <option value="refund">Refund</option>
+        </select>
+      </div>
+      <div class="form-group"><label class="form-label">Customer Name</label><input class="form-input" id="eCustName"></div>
+      <div class="form-group"><label class="form-label">Customer Phone</label><input class="form-input" id="eCustPhone"></div>
+      <div class="form-group"><label class="form-label">Total Amount (₹)</label><input class="form-input" type="number" id="eTotal"></div>
+      <div class="form-group"><label class="form-label">Tax Amount (₹)</label><input class="form-input" type="number" id="eTax"></div>
+      <div class="form-group"><label class="form-label">Payment Method</label>
+        <select class="form-input" id="ePayMethod">
+          <option value="cash">Cash</option>
+          <option value="upi">UPI</option>
+          <option value="card">Card</option>
+          <option value="emi">EMI/Finance</option>
+          <option value="split">Split</option>
+        </select>
+      </div>
+      <div class="form-group"><label class="form-label">Payment Status</label>
+        <select class="form-input" id="ePayStatus">
+          <option value="paid">Paid</option>
+          <option value="pending">Pending</option>
+          <option value="refunded">Refunded</option>
+        </select>
+      </div>
+      <div class="form-group"><label class="form-label">Invoice Status</label>
+        <select class="form-input" id="eStatus">
+          <option value="completed">Completed</option>
+          <option value="draft">Draft</option>
+          <option value="returned">Returned</option>
+          <option value="cancelled">Cancelled</option>
+        </select>
+      </div>
+      <div class="form-group"><label class="form-label">Payment Reference</label><input class="form-input" id="eRef"></div>
+      <div class="form-group" style="grid-column:1/-1;"><label class="form-label">Notes</label><input class="form-input" id="eNotes"></div>
+    </div>
+
+    <!-- Invoice Items -->
+    <div style="margin-top:16px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+        <span style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--gray-400);">Invoice Items</span>
+        <button class="btn btn-sm btn-outline" onclick="addItemRow()">+ Add Item</button>
+      </div>
+      <div id="itemRows"></div>
+    </div>
+
+    <!-- Danger zone for edit mode -->
+    <div class="danger-zone" id="dangerZone" style="display:none;">
+      <div class="dz-title">Danger Zone</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <button class="btn btn-sm" style="background:#fef2f2;color:#dc2626;" onclick="cancelInvoice()">Cancel Invoice</button>
+        <button class="btn btn-sm" style="background:#fef2f2;color:#dc2626;" onclick="deleteInvoice()">Delete Invoice</button>
+      </div>
+      <div style="font-size:11px;color:#dc2626;margin-top:8px;">These actions cannot be undone. Stock changes will NOT be auto-reversed.</div>
+    </div>
+  </div>
+  <div class="modal-ft">
+    <button class="btn btn-outline" onclick="closeEdit()">Cancel</button>
+    <button class="btn btn-primary" onclick="saveInvoice()">Save Changes</button>
+  </div>
+</div>
+</div>
+
+</div></div></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../backend/config/supabase.js"></script>
+<script src="assets/js/shell.js"></script>
+<script>
+'use strict';
+let allInvoices=[],filteredInvoices=[],selectedIds=new Set();
+let currentType='',editingId=null,editItems=[];
+let page=0; const PER=25;
+
+(async()=>{
+  await AdminShell.init('Invoice Manager','pos');
+  await loadInvoices();
+})();
+
+async function loadInvoices(){
+  document.getElementById('imTbody').innerHTML=`<tr><td colspan="11" style="text-align:center;padding:24px;"><div class="sk" style="height:14px;width:60%;margin:0 auto;"></div></td></tr>`;
+  const{data}=await db.from('pos_invoices').select('*').order('created_at',{ascending:false});
+  allInvoices=data||[];
+  renderTypeTabs();
+  filterInvoices();
+  document.getElementById('imSub').textContent=`${allInvoices.length} total invoices`;
+}
+
+function renderTypeTabs(){
+  const counts={};allInvoices.forEach(i=>{counts[i.invoice_type]=(counts[i.invoice_type]||0)+1;});
+  const tabs=[
+    {key:'',label:'All',cnt:allInvoices.length},
+    {key:'sale',label:'Sales',cnt:counts.sale||0},
+    {key:'quotation',label:'Quotations',cnt:counts.quotation||0},
+    {key:'return',label:'Returns',cnt:counts.return||0},
+    {key:'refund',label:'Refunds',cnt:counts.refund||0},
+  ];
+  document.getElementById('typeTabs').innerHTML=tabs.map(t=>`
+    <div class="ttab ${currentType===t.key?'on':''}" onclick="setType('${t.key}')">
+      ${t.label}<span class="ttab-cnt">${t.cnt}</span>
+    </div>`).join('');
+}
+
+function setType(t){currentType=t;page=0;renderTypeTabs();filterInvoices();}
+
+function filterInvoices(){
+  const q=document.getElementById('imSearch').value.toLowerCase();
+  const st=document.getElementById('fStatus').value;
+  const pay=document.getElementById('fPay').value;
+  const sort=document.getElementById('fSort').value;
+  let list=allInvoices.filter(i=>{
+    if(currentType&&i.invoice_type!==currentType)return false;
+    if(st&&i.status!==st)return false;
+    if(pay&&i.payment_method!==pay)return false;
+    if(q&&!i.invoice_number?.toLowerCase().includes(q)&&!(i.customer_name||'').toLowerCase().includes(q)&&!(i.customer_phone||'').includes(q))return false;
+    return true;
+  });
+  if(sort==='oldest')list=[...list].reverse();
+  else if(sort==='highest')list=[...list].sort((a,b)=>b.total-a.total);
+  else if(sort==='lowest')list=[...list].sort((a,b)=>a.total-b.total);
+  filteredInvoices=list;page=0;
+  document.getElementById('imCount').textContent=`${list.length} invoices`;
+  renderTable();renderPager();
+}
+
+function renderTable(){
+  const tbody=document.getElementById('imTbody');
+  const slice=filteredInvoices.slice(page*PER,(page+1)*PER);
+  if(!slice.length){
+    tbody.innerHTML='<tr><td colspan="11" style="text-align:center;padding:30px;color:var(--gray-400);font-size:12px;">No invoices found</td></tr>';
+    return;
+  }
+  tbody.innerHTML=slice.map(i=>{
+    const chk=selectedIds.has(i.id)?'checked':'';
+    return`<tr>
+      <td style="padding:8px;"><input type="checkbox" ${chk} onchange="toggleSel('${i.id}',this)"></td>
+      <td style="font-weight:700;color:var(--green-700);white-space:nowrap;">${i.invoice_number}</td>
+      <td><span class="ibadge ${i.invoice_type||'sale'}">${i.invoice_type||'sale'}</span></td>
+      <td>
+        <div style="font-weight:600;font-size:12px;">${i.customer_name||'Walk-in'}</div>
+        <div style="font-size:10px;color:var(--gray-400);">${i.customer_phone||''}</div>
+      </td>
+      <td style="font-weight:700;">₹${Number(i.total).toLocaleString('en-IN')}</td>
+      <td style="color:var(--gray-500);">${i.tax_amount>0?'₹'+Number(i.tax_amount).toFixed(2):'—'}</td>
+      <td>
+        <span style="font-size:10px;font-weight:700;text-transform:uppercase;background:var(--gray-100);padding:2px 6px;border-radius:3px;">${i.payment_method||'—'}</span>
+        ${i.payment_reference?`<div style="font-size:9px;color:var(--gray-400);">${i.payment_reference}</div>`:''}
+      </td>
+      <td><span class="ibadge ${i.status||'completed'}">${i.status||'—'}</span></td>
+      <td style="font-size:11px;color:var(--gray-500);">${i.cashier||'—'}</td>
+      <td style="font-size:11px;color:var(--gray-400);white-space:nowrap;">${new Date(i.created_at).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'})}<div style="font-size:9px;">${new Date(i.created_at).toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'})}</div></td>
+      <td style="text-align:right;white-space:nowrap;">
+        <button class="btn btn-sm btn-outline" style="font-size:10px;height:24px;margin-right:3px;" onclick="editInvoice('${i.id}')">Edit</button>
+        <button class="btn btn-sm" style="background:#fef2f2;color:#dc2626;font-size:10px;height:24px;" onclick="deleteSingle('${i.id}')">Delete</button>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+function renderPager(){
+  const total=filteredInvoices.length,pages=Math.ceil(total/PER);
+  document.getElementById('pagerInfo').textContent=total?`${page*PER+1}–${Math.min((page+1)*PER,total)} of ${total}`:'';
+  const el=document.getElementById('pagerBtns');
+  if(pages<=1){el.innerHTML='';return;}
+  let h=`<button class="btn btn-sm btn-outline" onclick="goPage(${Math.max(0,page-1)})" ${page===0?'disabled':''}>←</button>`;
+  for(let i=0;i<Math.min(pages,7);i++)h+=`<button class="btn btn-sm ${i===page?'btn-primary':'btn-outline'}" onclick="goPage(${i})">${i+1}</button>`;
+  h+=`<button class="btn btn-sm btn-outline" onclick="goPage(${Math.min(pages-1,page+1)})" ${page>=pages-1?'disabled':''}>→</button>`;
+  el.innerHTML=h;
+}
+function goPage(n){page=n;renderTable();renderPager();}
+
+// ── SELECTION ──────────────────────────────────────────────
+function toggleSel(id,cb){if(cb.checked)selectedIds.add(id);else selectedIds.delete(id);updateBulk();}
+function toggleAll(cb){filteredInvoices.slice(page*PER,(page+1)*PER).forEach(i=>{if(cb.checked)selectedIds.add(i.id);else selectedIds.delete(i.id);});renderTable();updateBulk();}
+function clearSel(){selectedIds.clear();renderTable();updateBulk();}
+function updateBulk(){
+  const n=selectedIds.size;
+  const bar=document.getElementById('bulkBar');
+  bar.style.display=n>0?'flex':'none';
+  document.getElementById('bulkCnt').textContent=`${n} selected`;
+  document.getElementById('deleteSelectedBtn').style.display=n>0?'block':'none';
+}
+
+// ── EDIT INVOICE ───────────────────────────────────────────
+async function editInvoice(id){
+  const inv=allInvoices.find(x=>x.id===id);if(!inv)return;
+  editingId=id;
+  document.getElementById('editTitle').textContent='Edit Invoice — '+inv.invoice_number;
+  document.getElementById('eInvNum').value=inv.invoice_number||'';
+  document.getElementById('eType').value=inv.invoice_type||'sale';
+  document.getElementById('eCustName').value=inv.customer_name||'';
+  document.getElementById('eCustPhone').value=inv.customer_phone||'';
+  document.getElementById('eTotal').value=inv.total||0;
+  document.getElementById('eTax').value=inv.tax_amount||0;
+  document.getElementById('ePayMethod').value=inv.payment_method||'cash';
+  document.getElementById('ePayStatus').value=inv.payment_status||'paid';
+  document.getElementById('eStatus').value=inv.status||'completed';
+  document.getElementById('eRef').value=inv.payment_reference||'';
+  document.getElementById('eNotes').value=inv.notes||'';
+  document.getElementById('dangerZone').style.display='block';
+  // Load items
+  const{data:items}=await db.from('pos_invoice_items').select('*').eq('invoice_id',id);
+  editItems=(items||[]).map(i=>({...i}));
+  renderItemRows();
+  document.getElementById('editOvl').style.display='flex';
+}
+
+function openCreate(){
+  editingId=null;editItems=[];
+  document.getElementById('editTitle').textContent='New Invoice';
+  document.getElementById('dangerZone').style.display='none';
+  ['eInvNum','eCustName','eCustPhone','eRef','eNotes'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('eTotal').value=0;document.getElementById('eTax').value=0;
+  document.getElementById('eType').value='sale';document.getElementById('ePayMethod').value='cash';
+  document.getElementById('ePayStatus').value='paid';document.getElementById('eStatus').value='completed';
+  renderItemRows();
+  document.getElementById('editOvl').style.display='flex';
+}
+function closeEdit(){document.getElementById('editOvl').style.display='none';}
+
+function renderItemRows(){
+  document.getElementById('itemRows').innerHTML=editItems.length?
+    editItems.map((item,i)=>`
+      <div style="display:grid;grid-template-columns:3fr 1fr 1fr 1fr auto;gap:5px;margin-bottom:5px;align-items:center;">
+        <input class="form-input" value="${item.product_name||''}" oninput="editItems[${i}].product_name=this.value" placeholder="Product name" style="height:28px;font-size:11px;">
+        <input class="form-input" type="number" value="${item.quantity||1}" oninput="editItems[${i}].quantity=+this.value" placeholder="Qty" style="height:28px;font-size:11px;">
+        <input class="form-input" type="number" value="${item.unit_price||0}" oninput="editItems[${i}].unit_price=+this.value" placeholder="Price" style="height:28px;font-size:11px;">
+        <input class="form-input" type="number" value="${item.total_price||0}" oninput="editItems[${i}].total_price=+this.value" placeholder="Total" style="height:28px;font-size:11px;">
+        <button onclick="editItems.splice(${i},1);renderItemRows();" style="background:#fef2f2;color:#dc2626;border:1px solid #fecaca;border-radius:4px;width:26px;height:26px;cursor:pointer;font-size:14px;">×</button>
+      </div>`).join('')+
+    '<div style="font-size:9px;color:var(--gray-400);padding:2px 0;">Name · Qty · Unit Price · Total</div>'
+    :'<div style="font-size:11px;color:var(--gray-400);padding:8px 0;">No items. Click + Add Item.</div>';
+}
+function addItemRow(){editItems.push({product_name:'',quantity:1,unit_price:0,total_price:0});renderItemRows();}
+
+async function saveInvoice(){
+  const payload={
+    invoice_number:document.getElementById('eInvNum').value.trim(),
+    invoice_type:document.getElementById('eType').value,
+    customer_name:document.getElementById('eCustName').value||'Walk-in',
+    customer_phone:document.getElementById('eCustPhone').value||null,
+    total:parseFloat(document.getElementById('eTotal').value)||0,
+    tax_amount:parseFloat(document.getElementById('eTax').value)||0,
+    payment_method:document.getElementById('ePayMethod').value,
+    payment_status:document.getElementById('ePayStatus').value,
+    status:document.getElementById('eStatus').value,
+    payment_reference:document.getElementById('eRef').value||null,
+    notes:document.getElementById('eNotes').value||null,
+  };
+  if(!payload.invoice_number){toast('Invoice number required',true);return;}
+  let invId=editingId;
+  if(editingId){
+    const{error}=await db.from('pos_invoices').update(payload).eq('id',editingId);
+    if(error){toast('Error: '+error.message,true);return;}
+  }else{
+    const{data,error}=await db.from('pos_invoices').insert(payload).select().single();
+    if(error){toast('Error: '+error.message,true);return;}
+    invId=data.id;
+  }
+  // Save items
+  if(editingId)await db.from('pos_invoice_items').delete().eq('invoice_id',editingId);
+  if(editItems.length&&invId){
+    await db.from('pos_invoice_items').insert(editItems.map(i=>({invoice_id:invId,product_name:i.product_name,quantity:i.quantity,unit_price:i.unit_price,total_price:i.total_price})));
+  }
+  toast(editingId?'Invoice updated':'Invoice created');
+  closeEdit();loadInvoices();
+}
+
+async function cancelInvoice(){
+  if(!editingId||!confirm('Cancel this invoice? This marks it cancelled but does NOT restore stock.'))return;
+  await db.from('pos_invoices').update({status:'cancelled'}).eq('id',editingId);
+  toast('Invoice cancelled');closeEdit();loadInvoices();
+}
+async function deleteInvoice(){
+  if(!editingId||!confirm('Permanently delete this invoice and all its items?'))return;
+  await db.from('pos_invoice_items').delete().eq('invoice_id',editingId);
+  await db.from('pos_invoices').delete().eq('id',editingId);
+  toast('Invoice deleted');closeEdit();loadInvoices();
+}
+async function deleteSingle(id){
+  if(!confirm('Delete this invoice permanently?'))return;
+  await db.from('pos_invoice_items').delete().eq('invoice_id',id);
+  await db.from('pos_invoices').delete().eq('id',id);
+  allInvoices=allInvoices.filter(i=>i.id!==id);
+  toast('Deleted');filterInvoices();
+}
+async function deleteSelected(){
+  if(!selectedIds.size||!confirm(`Delete ${selectedIds.size} invoices permanently?`))return;
+  for(const id of selectedIds){
+    await db.from('pos_invoice_items').delete().eq('invoice_id',id);
+    await db.from('pos_invoices').delete().eq('id',id);
+  }
+  toast(`${selectedIds.size} invoices deleted`);clearSel();loadInvoices();
+}
+async function confirmDeleteAll(){
+  const type=currentType?`all ${currentType} invoices`:'ALL invoices';
+  if(!confirm(`WARNING: Delete ${type}? This cannot be undone.`))return;
+  if(!confirm('Are you absolutely sure? This deletes permanently.'))return;
+  const ids=(currentType?allInvoices.filter(i=>i.invoice_type===currentType):allInvoices).map(i=>i.id);
+  for(const id of ids){
+    await db.from('pos_invoice_items').delete().eq('invoice_id',id);
+    await db.from('pos_invoices').delete().eq('id',id);
+  }
+  toast(`Deleted ${ids.length} invoices`);loadInvoices();
+}
+
+function exportAll(){
+  const rows=[['Invoice','Type','Customer','Phone','Total','GST','Payment','Status','Cashier','Date']];
+  (filteredInvoices.length?filteredInvoices:allInvoices).forEach(i=>rows.push([i.invoice_number,i.invoice_type,i.customer_name||'Walk-in',i.customer_phone||'',i.total,i.tax_amount||0,i.payment_method,i.status,i.cashier||'',new Date(i.created_at).toLocaleDateString()]));
+  const a=document.createElement('a');a.href='data:text/csv,'+encodeURIComponent(rows.map(r=>r.join(',')).join('\n'));a.download='invoices.csv';a.click();
+  toast('Exported');
+}
+function bulkExport(){const sel=allInvoices.filter(i=>selectedIds.has(i.id));filteredInvoices=sel;exportAll();filteredInvoices=allInvoices;}
+</script>
+</body>
+</html>
