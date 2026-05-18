@@ -580,7 +580,12 @@
 .review-card__name { font-size: var(--text-sm); font-weight: var(--weight-semi); }
 .review-card__loc  { font-size: var(--text-xs); color: var(--color-text-3); }
 
-/* ── NEW HERO LAYOUT: 1 main + 2×2 quad grid ── */
+/* ══════════════════════════════════════════════
+   NEW HERO LAYOUT — 1 main + 2×2 quad grid
+   No scroll needed on first screen
+   ══════════════════════════════════════════════ */
+
+/* Outer grid: big main left, quad right */
 .hero-new-grid {
   display: grid;
   grid-template-columns: 2fr 1fr;
@@ -588,55 +593,76 @@
   align-items: stretch;
 }
 
-/* Main hero — fills full height of quad grid */
-.hero-new-grid .hero-card--main .hero-card__img {
-  height: 100%;
-  min-height: 380px;
-  object-fit: cover;
-}
+/* Main hero — exactly 380px, same as before */
 .hero-new-grid .hero-card--main {
-  height: 100%;
+  display: block;
+}
+.hero-new-grid .hero-card--main .hero-card__img {
+  height: 380px;
+  width: 100%;
+  object-fit: cover;
+  display: block;
 }
 
-/* 2×2 quad grid — right side */
+/* Right: 2×2 square grid, same total height as main (380px) */
 .hero-quad-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
   grid-template-rows: 1fr 1fr;
   gap: var(--sp-3);
+  height: 380px;
 }
 
-/* Each quad card — square, equal height */
+/* Each quad card fills its cell exactly */
+.hero-card--quad {
+  display: block;
+  overflow: hidden;
+  border-radius: var(--r-lg);
+  position: relative;
+  cursor: pointer;
+}
 .hero-card--quad .hero-card__img {
   width: 100%;
-  height: 185px;
+  height: 100%;
   object-fit: cover;
   display: block;
+  transition: transform var(--t-slow) var(--ease);
+}
+.hero-card--quad:hover .hero-card__img {
+  transform: scale(1.04);
 }
 
-/* Tablet: stack main on top, quad 2×2 below */
+/* ── TABLET: main on left 60%, quad stacked on right 40% ── */
 @media (max-width: 900px) {
   .hero-new-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: 3fr 2fr;
+    gap: var(--sp-2);
   }
   .hero-new-grid .hero-card--main .hero-card__img {
-    min-height: 220px;
-    height: 220px;
+    height: 320px;
   }
   .hero-quad-grid {
-    grid-template-columns: 1fr 1fr;
-  }
-  .hero-card--quad .hero-card__img {
-    height: 140px;
+    height: 320px;
+    gap: var(--sp-2);
   }
 }
 
-/* Mobile: main full width, quad 2×2 */
-@media (max-width: 479px) {
-  .hero-card--quad .hero-card__img {
-    height: 120px;
+/* ── MOBILE: main top full width, quad 2×2 below ── */
+@media (max-width: 600px) {
+  .hero-new-grid {
+    grid-template-columns: 1fr;
+    gap: var(--sp-2);
+  }
+  .hero-new-grid .hero-card--main .hero-card__img {
+    height: 200px;
   }
   .hero-quad-grid {
+    height: auto;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto auto;
     gap: var(--sp-2);
+  }
+  .hero-card--quad .hero-card__img {
+    height: 120px;
   }
 }
