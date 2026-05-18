@@ -451,19 +451,25 @@ async function loadAll() {
   let bRes, cRes;
   try {
     [bRes, cRes] = await Promise.all([
-      db.from('banners').select('id,title,subtitle,cta_text,cta_url,badge_text,position,sort_order,is_active,desktop_image_url,mobile_image_url,starts_at,ends_at').order('sort_order'),
+      db.from('banners').select('*').order('sort_order'),
       db.from('categories').select('id,name').eq('is_active', true).order('name'),
     ]);
   } catch(e) {
     toast('Error loading banners: '+e.message, true);
     return;
   }
-  if(bRes.error) { toast('Banners DB error: '+bRes.error.message, true); }
-  allBanners = bRes.data || [];
+  if(bRes.error) {
+    toast('Banners error: '+bRes.error.message+' — run banners_columns_v2.sql in Supabase', true);
+    // Still try with basic columns
+    const fallback = await db.from('banners').select('id,title,subtitle,cta_text,cta_url,badge_text,position,sort_order,is_active,desktop_image_url,starts_at,ends_at').order('sort_order');
+    allBanners = fallback.data || [];
+  } else {
+    allBanners = bRes.data || [];
+  }
   // If DB is empty, auto-seed from current homepage defaults
   if(allBanners.length === 0) {
     await autoSeedBanners();
-    const r2 = await db.from('banners').select('id,title,subtitle,cta_text,cta_url,badge_text,position,sort_order,is_active,desktop_image_url,mobile_image_url,starts_at,ends_at').order('sort_order');
+    const r2 = await db.from('banners').select('*').order('sort_order');
     allBanners = r2.data || [];
   }
   const cats = cRes.data || [];
@@ -862,9 +868,9 @@ async function saveBanner(){
       starts_at:document.getElementById('bStart').value||null,
       ends_at:document.getElementById('bEnd').value||null,
       desktop_image_url:currentImgUrl||null,
-      mobile_image_url:currentImgUrlMob||null,
-      image_fit:document.getElementById('bImageFit')?.value||'cover',
-      image_position:document.getElementById('bImagePos')?.value||'center',
+      ...(currentImgUrlMob ? {mobile_image_url:currentImgUrlMob} : {}),
+      ...(document.getElementById('bImageFit') ? {image_fit:document.getElementById('bImageFit').value||'cover'} : {}),
+      ...(document.getElementById('bImagePos') ? {image_position:document.getElementById('bImagePos').value||'center'} : {}),
     };
     // Extended columns — only add if SQL migration has been run
     try{
