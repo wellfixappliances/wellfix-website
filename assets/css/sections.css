@@ -95,16 +95,17 @@
 .hero-card__overlay {
   position: absolute;
   inset: 0;
-  /* Direction changed to 'to top' to keep text readable at the bottom of the quad cards */
+  /* 135deg angles the gradient from top-left to bottom-right */
   background: linear-gradient(
-    to top, 
-    rgba(2, 48, 32, 0.95) 0%,   /* Deep forest green at the bottom behind the text */
-    rgba(3, 71, 50, 0.6) 50%,   /* Transition zone mid-card */
-    rgba(3, 71, 50, 0.1) 100%   /* Very light green tint at the top to tint the white product backgrounds */
+    135deg, 
+    rgba(2, 48, 32, 0.95) 0%,   /* Deepest forest green anchored in top-left */
+    rgba(3, 71, 50, 0.75) 35%,  /* Carries the color through the text zone */
+    rgba(3, 71, 50, 0.3) 65%,   /* Sharp fade out toward the center */
+    rgba(0, 0, 0, 0) 100%       /* Completely transparent on the bottom-right */
   );
   display: flex;
   flex-direction: column;
-  justify-content: flex-end;
+  justify-content: flex-end;   /* Keeps text layout intact at the bottom */
   padding: 14px 16px;
 }
 .hero-card--main .hero-card__img { height: 380px; }
