@@ -3,193 +3,214 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
-<title>Point of Sale — WellFix</title>
+<title>POS — WellFix</title>
 <link rel="icon" href="../frontend/assets/images/WELLFIX-FAVICON.png">
 <link rel="stylesheet" href="assets/css/admin.css">
 <style>
-/* ═══════════════════════════════════════════════════════
-   WELLFIX POS — NEXT-GEN BILLING SYSTEM
-   Scoped entirely — zero impact on other admin pages
-   ═══════════════════════════════════════════════════════ */
-/* POS full-screen overrides */
+/* ═══ POS FULL-SCREEN ISOLATION ═══ */
 #mainWrap{padding:0!important;margin-left:0!important;width:100vw!important;}
-.topbar{display:none!important;}
-.sidebar{display:none!important;}
-.mobile-bottom-nav{display:none!important;}
-.sidebar-overlay{display:none!important;}
-#posRoot{
-  display:flex;
-  flex-direction:column;
-  height:100vh;
-  overflow:hidden;
-  min-height:0;
-  width:100%;
-}
+.topbar,.sidebar,.mobile-bottom-nav,.sidebar-overlay{display:none!important;}
 
-/* ── TOP BAR ── */
-.pos-bar{display:flex;align-items:center;gap:8px;padding:8px 14px;background:#fff;border-bottom:1px solid var(--gray-100);flex-shrink:0;flex-wrap:wrap;}
-.pos-bar-l{display:flex;align-items:center;gap:8px;flex:1;flex-wrap:wrap;}
-.pos-bar-r{display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
-.pos-seg{display:flex;background:var(--gray-50);border:1px solid var(--gray-150,#dedede);border-radius:6px;padding:2px;}
-.pos-seg-btn{padding:5px 14px;border-radius:4px;font-size:11px;font-weight:700;color:var(--gray-500);cursor:pointer;border:none;background:none;transition:all .15s;white-space:nowrap;}
-.pos-seg-btn.on{background:#fff;color:var(--gray-900);box-shadow:0 1px 3px rgba(0,0,0,.1);}
-.pos-invoice-num{font-family:monospace;font-size:11px;font-weight:700;color:var(--green-700);background:var(--green-50);border:1px solid var(--green-100);border-radius:4px;padding:3px 8px;}
-.pos-back-btn{display:flex;align-items:center;gap:5px;font-size:11px;font-weight:600;color:var(--gray-500);background:var(--gray-50);border:1px solid var(--gray-200);border-radius:5px;padding:5px 10px;cursor:pointer;transition:all .15s;text-decoration:none;}
-.pos-back-btn:hover{color:var(--gray-900);border-color:var(--gray-300);}
-.pos-back-btn svg{width:12px;height:12px;}
+/* ═══ ROOT ═══ */
+#posRoot{display:flex;flex-direction:column;height:100vh;overflow:hidden;background:#f8f9fa;}
 
-/* ── LAYOUT ── */
-.pos-layout{display:grid;grid-template-columns:1fr 380px;flex:1;overflow:hidden;min-height:0;height:0;}
-@media(max-width:960px){.pos-layout{grid-template-columns:1fr;}}
+/* ═══ HEADER ═══ */
+.ph{display:flex;align-items:center;gap:0;background:#fff;border-bottom:1.5px solid var(--gray-100);flex-shrink:0;height:48px;padding:0;}
+.ph-back{display:flex;align-items:center;gap:5px;height:100%;padding:0 14px;font-size:12px;font-weight:700;color:var(--gray-600);text-decoration:none;border-right:1px solid var(--gray-100);transition:background .12s;white-space:nowrap;}
+.ph-back:hover{background:var(--gray-25);}
+.ph-back svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2.5;}
+.ph-modes{display:flex;height:100%;border-right:1px solid var(--gray-100);}
+.ph-mode{height:100%;padding:0 14px;font-size:11px;font-weight:700;color:var(--gray-400);cursor:pointer;border:none;background:none;border-bottom:2.5px solid transparent;transition:all .12s;white-space:nowrap;}
+.ph-mode:hover{color:var(--gray-700);}
+.ph-mode.on{color:var(--green-700);border-bottom-color:var(--green-700);background:var(--green-50);}
+.ph-inv{font-family:monospace;font-size:10px;font-weight:700;color:var(--green-700);background:var(--green-50);border:1px solid var(--green-200);border-radius:4px;padding:2px 8px;margin:0 10px;white-space:nowrap;}
+.ph-right{display:flex;align-items:center;gap:4px;padding:0 10px;margin-left:auto;}
+.ph-btn{height:28px;padding:0 10px;border:1px solid var(--gray-200);border-radius:5px;background:#fff;font-size:11px;font-weight:600;color:var(--gray-600);cursor:pointer;transition:all .12s;white-space:nowrap;}
+.ph-btn:hover{background:var(--gray-50);border-color:var(--gray-300);}
+.ph-btn.primary{background:var(--green-700);color:#fff;border-color:var(--green-700);}
+.ph-btn.primary:hover{background:var(--green-600);}
 
-/* ── LEFT PANEL ── */
-.pos-left{display:flex;flex-direction:column;overflow:hidden;border-right:1px solid var(--gray-100);}
+/* ═══ LAYOUT ═══ */
+.pl{display:grid;grid-template-columns:1fr 360px;flex:1;min-height:0;overflow:hidden;}
+@media(max-width:900px){.pl{grid-template-columns:1fr;}.pl.show-bill .pl-left{display:none;}.pl.show-bill .pl-right{display:flex;}.pl-right{display:none;}}
+
+/* ═══ LEFT ═══ */
+.pl-left{display:flex;flex-direction:column;overflow:hidden;background:#f8f9fa;}
 
 /* Search */
-.pos-search-strip{padding:10px 12px;background:#fff;border-bottom:1px solid var(--gray-100);display:flex;gap:6px;align-items:center;flex-shrink:0;}
-.pos-srch-wrap{position:relative;flex:1;}
-.pos-srch-wrap svg{position:absolute;left:10px;top:50%;transform:translateY(-50%);width:14px;height:14px;stroke:var(--gray-400);fill:none;stroke-width:2;pointer-events:none;}
-.pos-srch{width:100%;height:36px;border:1.5px solid var(--gray-200);border-radius:7px;padding:0 10px 0 32px;font-size:12px;font-family:var(--font-body);background:var(--gray-25);transition:border .15s;}
-.pos-srch:focus{outline:none;border-color:var(--green-500);background:#fff;}
-.pos-scan-badge{display:flex;align-items:center;gap:4px;font-size:10px;font-weight:700;color:var(--green-700);background:var(--green-50);border:1px solid var(--green-200);border-radius:4px;padding:3px 7px;flex-shrink:0;}
-.pos-scan-badge svg{width:12px;height:12px;}
+.ps-row{display:flex;gap:6px;align-items:center;padding:8px 10px;background:#fff;border-bottom:1px solid var(--gray-100);flex-shrink:0;}
+.ps-wrap{position:relative;flex:1;}
+.ps-wrap svg{position:absolute;left:9px;top:50%;transform:translateY(-50%);width:13px;height:13px;stroke:var(--gray-400);fill:none;stroke-width:2;pointer-events:none;}
+.ps-inp{width:100%;height:34px;border:1.5px solid var(--gray-200);border-radius:6px;padding:0 10px 0 30px;font-size:12px;font-family:var(--font-body);background:var(--gray-25);}
+.ps-inp:focus{outline:none;border-color:var(--green-500);background:#fff;}
+.ps-scan{display:flex;align-items:center;gap:3px;font-size:10px;font-weight:700;color:var(--green-700);background:var(--green-50);border:1px solid var(--green-200);border-radius:4px;padding:3px 7px;flex-shrink:0;white-space:nowrap;}
+.ps-scan svg{width:11px;height:11px;stroke:currentColor;fill:none;stroke-width:2;}
 
-/* Category pills */
-.pos-cat-strip{display:flex;gap:5px;padding:8px 12px;overflow-x:auto;scrollbar-width:none;flex-shrink:0;border-bottom:1px solid var(--gray-50);}
-.pos-cat-strip::-webkit-scrollbar{display:none;}
-.pos-pill{padding:4px 12px;border-radius:99px;font-size:11px;font-weight:600;cursor:pointer;border:1.5px solid var(--gray-150,#dedede);background:#fff;color:var(--gray-500);transition:all .12s;white-space:nowrap;flex-shrink:0;}
-.pos-pill.on{border-color:var(--green-700);background:var(--green-700);color:#fff;}
+/* Category tabs */
+.pc-tabs{display:flex;gap:4px;padding:6px 10px;overflow-x:auto;scrollbar-width:none;flex-shrink:0;background:#fff;border-bottom:1px solid var(--gray-50);}
+.pc-tabs::-webkit-scrollbar{display:none;}
+.pc-tab{padding:4px 11px;border-radius:99px;font-size:11px;font-weight:600;cursor:pointer;border:1.5px solid var(--gray-150,#dedede);background:#fff;color:var(--gray-500);transition:all .12s;white-space:nowrap;flex-shrink:0;}
+.pc-tab.on{border-color:var(--green-700);background:var(--green-700);color:#fff;}
 
-/* Products */
-.pos-prods{flex:1;overflow-y:auto;padding:10px 12px;display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:8px;align-content:start;overscroll-behavior:contain;}
-.pos-prods::-webkit-scrollbar{width:4px;}
-.pos-prods::-webkit-scrollbar-thumb{background:var(--gray-200);border-radius:99px;}
+/* Recent row */
+.recent-row{display:flex;gap:5px;padding:6px 10px;overflow-x:auto;scrollbar-width:none;flex-shrink:0;background:#fafafa;border-bottom:1px solid var(--gray-50);}
+.recent-row::-webkit-scrollbar{display:none;}
+.ritem{display:flex;align-items:center;gap:6px;background:#fff;border:1px solid var(--gray-100);border-radius:6px;padding:4px 9px;cursor:pointer;font-size:11px;font-weight:600;color:var(--gray-700);white-space:nowrap;flex-shrink:0;transition:all .12s;}
+.ritem:hover{border-color:var(--green-300);color:var(--green-700);}
+.ritem-img{width:20px;height:20px;border-radius:3px;object-fit:contain;background:var(--gray-50);}
+.recent-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--gray-400);padding:6px 10px 2px;flex-shrink:0;white-space:nowrap;}
 
-.pc{background:#fff;border:1.5px solid var(--gray-100);border-radius:9px;overflow:hidden;cursor:pointer;transition:all .12s;user-select:none;position:relative;}
-.pc:hover{border-color:var(--green-400);box-shadow:0 2px 10px rgba(5,107,75,.1);}
-.pc:active{transform:scale(.96);}
-.pc.out{opacity:.4;cursor:not-allowed;pointer-events:none;}
-.pc-img{width:100%;aspect-ratio:1;background:var(--gray-25);display:flex;align-items:center;justify-content:center;overflow:hidden;}
-.pc-img img{width:100%;height:100%;object-fit:contain;padding:5px;}
-.pc-img-ico{width:24px;height:24px;color:var(--gray-200);}
-.pc-body{padding:6px 8px 7px;}
-.pc-name{font-size:10px;font-weight:700;color:var(--gray-900);line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
-.pc-price{font-family:var(--font-display);font-size:12px;font-weight:800;color:var(--green-700);margin-top:3px;}
-.pc-stock{font-size:9px;font-weight:700;padding:1px 5px;border-radius:99px;display:inline-block;margin-top:2px;}
-.pc-stock.ok{background:#f0fdf4;color:#15803d;}
-.pc-stock.low{background:#fff7ed;color:#c2410c;}
-.pc-stock.out{background:#fef2f2;color:#dc2626;}
-.pc-add{position:absolute;bottom:0;left:0;right:0;height:24px;background:var(--green-700);color:#fff;border:none;font-size:10px;font-weight:700;cursor:pointer;opacity:0;transition:opacity .12s;}
-.pc:hover .pc-add{opacity:1;}
+/* Product grid — compact 5 cols */
+.pp-grid{flex:1;overflow-y:auto;padding:8px;display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:6px;align-content:start;overscroll-behavior:contain;}
+.pp-grid::-webkit-scrollbar{width:3px;}
+.pp-grid::-webkit-scrollbar-thumb{background:var(--gray-200);border-radius:99px;}
+@media(min-width:1200px){.pp-grid{grid-template-columns:repeat(auto-fill,minmax(110px,1fr));}}
+@media(max-width:600px){.pp-grid{grid-template-columns:repeat(auto-fill,minmax(90px,1fr));}}
 
-/* ── RIGHT PANEL ── */
-.pos-right{display:flex;flex-direction:column;background:#fff;overflow:hidden;}
+/* Product card — compact */
+.pcard{background:#fff;border:1.5px solid var(--gray-100);border-radius:8px;overflow:hidden;cursor:pointer;transition:all .12s;user-select:none;position:relative;display:flex;flex-direction:column;}
+.pcard:hover{border-color:var(--green-400);box-shadow:0 2px 8px rgba(5,107,75,.1);}
+.pcard:active{transform:scale(.96);}
+.pcard.out{opacity:.45;cursor:not-allowed;pointer-events:none;}
+.pcard-img{width:100%;aspect-ratio:1;background:#f5f5f5;display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0;}
+.pcard-img img{width:100%;height:100%;object-fit:contain;padding:4px;}
+.pcard-img-ico{width:20px;height:20px;color:var(--gray-200);}
+.pcard-body{padding:5px 6px 6px;flex:1;}
+.pcard-name{font-size:10px;font-weight:700;color:var(--gray-900);line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:26px;}
+.pcard-price{font-size:11px;font-weight:800;color:var(--green-700);margin-top:2px;font-family:var(--font-display);}
+.pcard-mrp{font-size:9px;text-decoration:line-through;color:var(--gray-400);}
+.pcard-badges{display:flex;flex-wrap:wrap;gap:2px;margin-top:2px;}
+.pb{font-size:8px;font-weight:700;padding:1px 4px;border-radius:2px;}
+.pb.ok{background:#f0fdf4;color:#15803d;}
+.pb.low{background:#fff7ed;color:#c2410c;}
+.pb.out{background:#fef2f2;color:#dc2626;}
+.pb.emi{background:#eff6ff;color:#2563eb;}
+.pcard-add{width:100%;height:22px;background:var(--green-700);color:#fff;border:none;font-size:10px;font-weight:700;cursor:pointer;transition:background .12s;margin-top:auto;}
+.pcard-add:hover{background:var(--green-600);}
 
-/* Customer row */
-.pos-cust{padding:8px 12px;border-bottom:1px solid var(--gray-100);flex-shrink:0;}
-.pos-cust-inner{display:flex;gap:6px;align-items:center;}
-.pos-cust-inp{flex:1;height:32px;border:1.5px solid var(--gray-200);border-radius:6px;padding:0 10px;font-size:11px;background:var(--gray-25);}
-.pos-cust-inp:focus{outline:none;border-color:var(--green-400);}
-.pos-cust-tag{font-size:10px;font-weight:700;color:var(--green-700);background:var(--green-50);border:1px solid var(--green-100);border-radius:4px;padding:2px 6px;margin-top:4px;display:none;}
+/* Empty */
+.pg-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px;color:var(--gray-300);grid-column:1/-1;text-align:center;}
+.pg-empty svg{width:28px;height:28px;margin-bottom:8px;}
+.pg-empty p{font-size:11px;}
+
+/* ═══ RIGHT ═══ */
+.pl-right{display:flex;flex-direction:column;background:#fff;border-left:1px solid var(--gray-100);overflow:hidden;}
+
+/* Customer */
+.pr-cust{padding:7px 10px;border-bottom:1px solid var(--gray-100);flex-shrink:0;}
+.cust-row{display:flex;gap:5px;align-items:center;}
+.cust-inp{flex:1;height:30px;border:1.5px solid var(--gray-200);border-radius:5px;padding:0 9px;font-size:11px;background:var(--gray-25);}
+.cust-inp:focus{outline:none;border-color:var(--green-400);}
+.cust-found{font-size:10px;font-weight:600;color:var(--green-700);background:var(--green-50);border:1px solid var(--green-100);border-radius:4px;padding:3px 7px;margin-top:4px;display:none;}
 
 /* Cart */
-.pos-cart{flex:1;overflow-y:auto;overscroll-behavior:contain;}
-.pos-cart::-webkit-scrollbar{width:3px;}
-.pos-cart::-webkit-scrollbar-thumb{background:var(--gray-100);}
-.ci{display:flex;align-items:center;gap:8px;padding:8px 12px;border-bottom:1px solid var(--gray-50);transition:background .1s;}
+.pr-cart{flex:1;overflow-y:auto;overscroll-behavior:contain;}
+.pr-cart::-webkit-scrollbar{width:3px;}
+.pr-cart::-webkit-scrollbar-thumb{background:var(--gray-100);}
+.ci{display:flex;align-items:center;gap:6px;padding:6px 10px;border-bottom:1px solid var(--gray-50);transition:background .1s;}
 .ci:hover{background:var(--gray-25);}
 .ci-info{flex:1;min-width:0;}
 .ci-name{font-size:11px;font-weight:700;color:var(--gray-900);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.ci-sub{font-size:10px;color:var(--gray-400);margin-top:1px;}
-.ci-qty{display:flex;align-items:center;gap:3px;flex-shrink:0;}
-.ciq-btn{width:20px;height:20px;border-radius:4px;border:1px solid var(--gray-200);background:#fff;cursor:pointer;font-size:12px;font-weight:700;color:var(--gray-600);display:flex;align-items:center;justify-content:center;transition:all .12s;line-height:1;}
-.ciq-btn:hover{background:var(--gray-100);}
-.ciq-val{width:24px;text-align:center;font-size:11px;font-weight:800;}
-.ci-amt{font-family:var(--font-display);font-size:12px;font-weight:800;width:48px;text-align:right;flex-shrink:0;}
-.ci-x{width:14px;height:14px;color:var(--gray-300);cursor:pointer;flex-shrink:0;}
+.ci-sub{font-size:9px;color:var(--gray-400);margin-top:1px;}
+.ci-qty{display:flex;align-items:center;gap:2px;flex-shrink:0;}
+.cqb{width:18px;height:18px;border-radius:3px;border:1px solid var(--gray-200);background:#fff;cursor:pointer;font-size:12px;font-weight:700;color:var(--gray-600);display:flex;align-items:center;justify-content:center;transition:all .12s;line-height:1;flex-shrink:0;}
+.cqb:hover{background:var(--gray-100);}
+.cqv{width:22px;text-align:center;font-size:11px;font-weight:800;}
+.ci-amt{font-size:11px;font-weight:800;width:44px;text-align:right;flex-shrink:0;font-family:var(--font-display);}
+.ci-x{width:12px;height:12px;color:var(--gray-300);cursor:pointer;flex-shrink:0;}
 .ci-x:hover{color:#ef4444;}
-.cart-empty-state{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 20px;color:var(--gray-300);text-align:center;}
-.cart-empty-state svg{width:32px;height:32px;margin-bottom:8px;}
-.cart-empty-state p{font-size:11px;line-height:1.6;}
+.cart-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:30px 16px;color:var(--gray-300);text-align:center;}
+.cart-empty svg{width:28px;height:28px;margin-bottom:6px;}
+.cart-empty p{font-size:10px;line-height:1.6;}
 
 /* Summary */
-.pos-sum{padding:10px 12px;border-top:1px solid var(--gray-100);background:var(--gray-25);flex-shrink:0;}
+.pr-sum{padding:8px 10px;border-top:1px solid var(--gray-100);background:#fafafa;flex-shrink:0;}
 .sr{display:flex;justify-content:space-between;align-items:center;font-size:11px;color:var(--gray-600);padding:2px 0;}
-.sr.grand{font-family:var(--font-display);font-size:15px;font-weight:800;color:var(--gray-900);padding-top:6px;border-top:1px solid var(--gray-200);margin-top:4px;}
-.disc-ctrl{display:flex;align-items:center;gap:5px;}
-.disc-num{width:52px;height:22px;border:1px solid var(--gray-200);border-radius:4px;text-align:center;font-size:11px;padding:0 3px;}
-.disc-num:focus{outline:none;border-color:var(--green-400);}
-.disc-sel{height:22px;border:1px solid var(--gray-200);border-radius:4px;font-size:10px;padding:0 3px;}
+.sr.grand{font-family:var(--font-display);font-size:14px;font-weight:800;color:var(--gray-900);padding-top:5px;border-top:1px solid var(--gray-200);margin-top:3px;}
+.disc-ctrl{display:flex;align-items:center;gap:4px;}
+.disc-n{width:48px;height:20px;border:1px solid var(--gray-200);border-radius:3px;text-align:center;font-size:10px;padding:0 2px;}
+.disc-n:focus{outline:none;border-color:var(--green-400);}
+.disc-t{height:20px;border:1px solid var(--gray-200);border-radius:3px;font-size:10px;padding:0 2px;}
+.gst-row{display:flex;align-items:center;gap:4px;}
+.gst-sel{height:20px;border:1px solid var(--gray-200);border-radius:3px;font-size:10px;padding:0 2px;}
+.tog-sm input{display:none;}
+.tog-sm .tt{width:24px;height:13px;background:var(--gray-200);border-radius:99px;position:relative;cursor:pointer;transition:background .15s;flex-shrink:0;}
+.tog-sm input:checked+.tt{background:var(--green-500);}
+.tog-sm .tt::after{content:'';width:9px;height:9px;background:#fff;border-radius:50%;position:absolute;top:2px;left:2px;transition:transform .15s;}
+.tog-sm input:checked+.tt::after{transform:translateX(11px);}
 
 /* Payment */
-.pos-pay{padding:8px 12px;border-top:1px solid var(--gray-100);flex-shrink:0;}
-.pay-grid{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:5px;margin-bottom:8px;}
-.pay-opt{padding:6px 4px;border:1.5px solid var(--gray-150,#dedede);border-radius:7px;font-size:10px;font-weight:700;color:var(--gray-500);cursor:pointer;text-align:center;background:#fff;transition:all .12s;}
-.pay-opt:hover{border-color:var(--gray-300);}
+.pr-pay{padding:6px 10px;border-top:1px solid var(--gray-100);flex-shrink:0;}
+.pay-grid{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:4px;margin-bottom:6px;}
+.pay-opt{padding:5px 3px;border:1.5px solid var(--gray-150,#dedede);border-radius:5px;font-size:10px;font-weight:700;color:var(--gray-500);cursor:pointer;text-align:center;background:#fff;transition:all .12s;}
 .pay-opt.on{border-color:var(--green-700);background:var(--green-700);color:#fff;}
-.pay-opt svg{width:13px;height:13px;display:block;margin:0 auto 2px;stroke:currentColor;fill:none;stroke-width:2;}
+.pay-opt svg{width:12px;height:12px;display:block;margin:0 auto 2px;stroke:currentColor;fill:none;stroke-width:2;}
+.pay-inp{width:100%;height:28px;border:1.5px solid var(--gray-200);border-radius:5px;padding:0 8px;font-size:11px;font-family:var(--font-body);margin-bottom:4px;display:none;}
+.pay-inp.show{display:block;}
+.pay-inp:focus{outline:none;border-color:var(--green-400);}
+.upi-qr{display:none;text-align:center;background:var(--gray-25);border:1px solid var(--gray-100);border-radius:6px;padding:8px;margin-bottom:6px;}
+.upi-qr.show{display:block;}
+.upi-id{font-family:monospace;font-size:10px;font-weight:700;color:var(--green-700);}
+.change-tag{font-size:10px;font-weight:700;color:var(--green-700);display:none;}
+.split-row{display:none;gap:4px;margin-bottom:4px;}
+.split-row.show{display:flex;}
+.split-inp{flex:1;height:26px;border:1px solid var(--gray-200);border-radius:4px;padding:0 6px;font-size:10px;}
 
-/* UPI box */
-.upi-box{display:none;background:var(--gray-25);border:1px solid var(--gray-100);border-radius:7px;padding:10px 12px;text-align:center;margin-bottom:8px;}
-.upi-box.show{display:block;}
-.upi-qr-img{width:90px;height:90px;margin:4px auto;}
-.upi-id{font-family:monospace;font-size:11px;font-weight:700;color:var(--green-700);margin-top:3px;}
-
-/* Cash row */
-.cash-row{display:flex;align-items:center;gap:6px;margin-bottom:8px;}
-.cash-inp{flex:1;height:30px;border:1.5px solid var(--gray-200);border-radius:5px;padding:0 8px;font-size:12px;font-family:var(--font-body);}
-.cash-inp:focus{outline:none;border-color:var(--green-400);}
-.change-tag{font-size:11px;font-weight:700;color:var(--green-700);min-width:70px;text-align:right;white-space:nowrap;}
-
-/* Ref input */
-.ref-inp{width:100%;height:28px;border:1px solid var(--gray-200);border-radius:5px;padding:0 8px;font-size:11px;margin-bottom:8px;font-family:var(--font-body);display:none;}
-.ref-inp.show{display:block;}
-.ref-inp:focus{outline:none;border-color:var(--green-400);}
-
-/* Action strip */
-.pos-actions{display:grid;grid-template-columns:1fr 1fr 2fr;gap:6px;padding:8px 12px;flex-shrink:0;border-top:1px solid var(--gray-50);}
-.pa{height:40px;border-radius:7px;border:none;font-size:11px;font-weight:700;cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:center;gap:4px;font-family:var(--font-body);}
-.pa svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2;}
+/* Actions */
+.pr-actions{display:grid;grid-template-columns:1fr 1fr 2fr;gap:5px;padding:6px 10px;flex-shrink:0;background:#fff;border-top:1px solid var(--gray-100);}
+.pa{height:36px;border-radius:6px;border:none;font-size:11px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:3px;font-family:var(--font-body);transition:all .12s;}
+.pa svg{width:12px;height:12px;stroke:currentColor;fill:none;stroke-width:2;}
 .pa.hold{background:var(--gray-100);color:var(--gray-700);}
 .pa.hold:hover{background:var(--gray-200);}
 .pa.clr{background:#fef2f2;color:#dc2626;}
-.pa.clr:hover{background:#fecaca;}
-.pa.charge{background:var(--green-700);color:#fff;font-size:13px;font-family:var(--font-display);}
+.pa.clr:hover{background:#fee2e2;}
+.pa.charge{background:var(--green-700);color:#fff;font-size:13px;font-family:var(--font-display);font-weight:800;}
 .pa.charge:hover{background:var(--green-600);}
-.pa.charge:disabled{opacity:.45;cursor:not-allowed;}
+.pa.charge:disabled{opacity:.4;cursor:not-allowed;}
 
-/* ── HELD BILLS DRAWER ── */
-.hold-drw{position:fixed;top:var(--topbar-h,56px);right:0;bottom:0;width:300px;background:#fff;border-left:1px solid var(--gray-100);z-index:90;transform:translateX(100%);transition:transform .22s cubic-bezier(.4,0,.2,1);box-shadow:-6px 0 24px rgba(0,0,0,.08);}
+/* ═══ HOLD DRAWER ═══ */
+.hold-drw{position:fixed;top:0;right:0;bottom:0;width:280px;background:#fff;border-left:1px solid var(--gray-100);z-index:200;transform:translateX(100%);transition:transform .2s cubic-bezier(.4,0,.2,1);box-shadow:-4px 0 20px rgba(0,0,0,.08);}
 .hold-drw.open{transform:translateX(0);}
-.hold-drw-hd{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;border-bottom:1px solid var(--gray-100);}
-.hold-drw-title{font-family:var(--font-display);font-size:13px;font-weight:700;}
-.hold-item{padding:10px 14px;border-bottom:1px solid var(--gray-50);cursor:pointer;transition:background .1s;}
-.hold-item:hover{background:var(--gray-25);}
-.hold-item-name{font-size:12px;font-weight:700;color:var(--gray-900);}
-.hold-item-meta{font-size:10px;color:var(--gray-400);margin-top:2px;}
+.hold-drw-hd{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;border-bottom:1px solid var(--gray-100);font-weight:700;font-size:13px;}
+.held-item{padding:10px 14px;border-bottom:1px solid var(--gray-50);cursor:pointer;transition:background .1s;}
+.held-item:hover{background:var(--gray-25);}
 
-/* ── INVOICE LIST ── */
-.inv-tbl-sm{width:100%;border-collapse:collapse;font-size:12px;}
-.inv-tbl-sm th{padding:7px 12px;font-size:10px;font-weight:700;text-transform:uppercase;color:var(--gray-400);border-bottom:1px solid var(--gray-100);text-align:left;}
-.inv-tbl-sm td{padding:7px 12px;border-bottom:1px solid var(--gray-50);}
+/* ═══ MOBILE FAB ═══ */
+.mob-fab{display:none;position:fixed;bottom:14px;right:14px;width:50px;height:50px;border-radius:99px;background:var(--green-700);color:#fff;border:none;cursor:pointer;box-shadow:0 4px 14px rgba(3,71,50,.35);flex-direction:column;align-items:center;justify-content:center;z-index:40;font-family:var(--font-display);}
+.mob-fab-n{font-size:15px;font-weight:800;line-height:1;}
+.mob-fab-l{font-size:8px;opacity:.8;}
+@media(max-width:900px){.mob-fab{display:flex;}}
 
-/* ── MOBILE ── */
-.mob-cart-fab{display:none;position:fixed;bottom:16px;right:16px;width:54px;height:54px;border-radius:99px;background:var(--green-700);color:#fff;border:none;cursor:pointer;box-shadow:0 4px 16px rgba(3,71,50,.35);flex-direction:column;align-items:center;justify-content:center;gap:0;z-index:40;font-family:var(--font-display);}
-.mob-cart-fab-n{font-size:17px;font-weight:800;line-height:1;}
-.mob-cart-fab-l{font-size:9px;font-weight:600;opacity:.8;}
-@media(max-width:960px){.mob-cart-fab{display:flex;}.pos-right{display:none;}.pos-layout.bill-view .pos-left{display:none;}.pos-layout.bill-view .pos-right{display:flex;}}
+/* ═══ MODALS ═══ */
+.sm-modal{max-width:360px;width:100%;margin:auto;}
 
-/* ── QUICK CUSTOMER MODAL ── */
-.qmod{max-width:340px;width:100%;margin:auto;}
+/* ═══ INVOICE LIST TABLE ═══ */
+.inv-tbl{width:100%;border-collapse:collapse;font-size:11px;}
+.inv-tbl th{padding:6px 12px;font-size:10px;font-weight:700;text-transform:uppercase;color:var(--gray-400);border-bottom:1px solid var(--gray-100);text-align:left;white-space:nowrap;}
+.inv-tbl td{padding:6px 12px;border-bottom:1px solid var(--gray-50);vertical-align:middle;}
+.inv-tbl tr:hover td{background:var(--gray-25);}
+.inv-tbl tr:last-child td{border-bottom:none;}
+.inv-badge{font-size:9px;font-weight:700;padding:1px 6px;border-radius:99px;}
+.inv-badge.sale{background:#f0fdf4;color:#15803d;}
+.inv-badge.quotation{background:#eff6ff;color:#2563eb;}
+.inv-badge.return{background:#fff7ed;color:#c2410c;}
+.inv-badge.refund{background:#fdf4ff;color:#9333ea;}
 
-/* ── SHIFT ── */
-.sstat{display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--gray-50);font-size:12px;}
-.sstat:last-child{border-bottom:none;}
-.sstat-v{font-weight:800;font-family:var(--font-display);}
+/* ═══ SHIFT ═══ */
+.sh-box{background:var(--gray-25);border-radius:8px;padding:12px;margin-bottom:10px;}
+.sh-row{display:flex;justify-content:space-between;font-size:12px;padding:4px 0;border-bottom:1px solid var(--gray-100);}
+.sh-row:last-child{border-bottom:none;}
+.sh-val{font-weight:800;font-family:var(--font-display);}
 
-/* ── SKELETON ── */
-.sk{background:linear-gradient(90deg,var(--gray-100) 25%,var(--gray-50) 50%,var(--gray-100) 75%);background-size:200% 100%;animation:sk 1.4s infinite;border-radius:5px;}
+/* ═══ SKELETON ═══ */
+.sk{background:linear-gradient(90deg,var(--gray-100) 25%,var(--gray-50) 50%,var(--gray-100) 75%);background-size:200% 100%;animation:sk 1.4s infinite;border-radius:4px;}
 @keyframes sk{to{background-position:-200% 0;}}
+
+/* ═══ QUOTATION PANEL ═══ */
+.quote-info{padding:8px 10px;background:#fffbeb;border-bottom:1px solid #fde68a;flex-shrink:0;display:none;font-size:11px;color:#92400e;}
+.quote-info.show{display:flex;align-items:center;gap:8px;}
+.return-info{padding:8px 10px;background:#fef2f2;border-bottom:1px solid #fecaca;flex-shrink:0;display:none;font-size:11px;color:#dc2626;}
+.return-info.show{display:flex;align-items:center;gap:8px;}
 </style>
 </head>
 <body>
@@ -197,94 +218,118 @@
 <div class="main-wrap" id="mainWrap">
 <div id="posRoot">
 
-<!-- TOP BAR — minimal, nothing clips -->
-<div style="display:flex;align-items:center;gap:8px;padding:7px 12px;background:#fff;border-bottom:1px solid var(--gray-100);flex-shrink:0;flex-wrap:wrap;">
-  <!-- Back button -->
-  <a href="dashboard.html" style="display:flex;align-items:center;gap:4px;font-size:11px;font-weight:600;color:var(--gray-500);background:var(--gray-50);border:1px solid var(--gray-200);border-radius:5px;padding:4px 9px;text-decoration:none;flex-shrink:0;">
-    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="11" height="11"><polyline points="15 18 9 12 15 6"/></svg>
-    Back
+<!-- HEADER -->
+<div class="ph">
+  <a href="dashboard.html" class="ph-back">
+    <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+    Dashboard
   </a>
-  <!-- Mode selector -->
-  <div style="display:flex;background:var(--gray-50);border:1px solid var(--gray-150,#dedede);border-radius:6px;padding:2px;gap:1px;flex-shrink:0;">
-    <button class="pos-seg-btn on" id="mb-sale" onclick="setMode('sale',this)">Sale</button>
-    <button class="pos-seg-btn" id="mb-quote" onclick="setMode('quote',this)">Quotation</button>
-    <button class="pos-seg-btn" id="mb-return" onclick="setMode('return',this)">Return</button>
-    <button class="pos-seg-btn" id="mb-refund" onclick="setMode('refund',this)">Refund</button>
+  <div class="ph-modes">
+    <button class="ph-mode on" id="m-sale" onclick="setMode('sale',this)">Sale</button>
+    <button class="ph-mode" id="m-quote" onclick="setMode('quote',this)">Quotation</button>
+    <button class="ph-mode" id="m-return" onclick="setMode('return',this)">Return</button>
+    <button class="ph-mode" id="m-refund" onclick="setMode('refund',this)">Refund</button>
   </div>
-  <!-- Invoice number -->
-  <span id="invNumDisplay" style="font-family:monospace;font-size:11px;font-weight:700;color:var(--green-700);background:var(--green-50);border:1px solid var(--green-100);border-radius:4px;padding:3px 8px;flex-shrink:0;">…</span>
-  <!-- Right actions -->
-  <div style="display:flex;align-items:center;gap:6px;margin-left:auto;flex-wrap:wrap;">
-    <button class="btn btn-sm btn-outline" onclick="toggleHoldDrawer()">Held <span id="holdCnt" style="font-size:10px;font-weight:800;color:var(--green-700);">0</span></button>
-    <button class="btn btn-sm btn-outline" onclick="openShift()">Shift</button>
-    <button class="btn btn-sm btn-outline" onclick="openInvList()">Invoices</button>
+  <span class="ph-inv" id="invDisp">…</span>
+  <div class="ph-right">
+    <button class="ph-btn" onclick="openHeld()">Held <span id="heldCnt">0</span></button>
+    <button class="ph-btn" onclick="openShift()">Shift</button>
+    <button class="ph-btn" onclick="openInvList()">Invoices</button>
+    <button class="ph-btn primary" onclick="openInvList('quotation')">Quotes</button>
   </div>
 </div>
 
 <!-- LAYOUT -->
-<div class="pos-layout" id="posLayout">
+<div class="pl" id="posLayout">
 
   <!-- LEFT -->
-  <div class="pos-left">
-    <div class="pos-search-strip">
-      <div class="pos-srch-wrap">
+  <div class="pl-left">
+
+    <!-- Search -->
+    <div class="ps-row">
+      <div class="ps-wrap">
         <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-        <input class="pos-srch" id="posSearch" type="search" placeholder="Search product, SKU or scan barcode…" oninput="onSearch()" autocomplete="off">
+        <input class="ps-inp" id="posSearch" type="search" placeholder="Search name, SKU, barcode…" oninput="onSearch()" autocomplete="off">
       </div>
-      <div class="pos-scan-badge">
-        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M3 9V4a1 1 0 011-1h4M3 15v5a1 1 0 001 1h4m10-1h4a1 1 0 001-1v-4M21 9V4a1 1 0 00-1-1h-4M8 4v16M12 4v16M16 4v16"/></svg>
-        Scanner Active
+      <div class="ps-scan">
+        <svg viewBox="0 0 24 24"><path d="M3 9V4a1 1 0 011-1h4M3 15v5a1 1 0 001 1h4m10-1h4a1 1 0 001-1v-4M21 9V4a1 1 0 00-1-1h-4M8 4v16M12 4v16M16 4v16"/></svg>
+        Scan
       </div>
-      <button class="btn btn-sm btn-outline" style="height:36px;font-size:11px;white-space:nowrap;" onclick="openManual()">+ Manual</button>
+      <button class="ph-btn" onclick="openManual()" style="height:34px;font-size:10px;">+ Item</button>
     </div>
-    <div class="pos-cat-strip" id="posCats"><div class="pos-pill on" onclick="filterCat('',this)">All</div></div>
-    <div class="pos-prods" id="posProds">
-      <div class="pc"><div class="sk" style="height:170px;border-radius:8px;"></div></div>
-      <div class="pc"><div class="sk" style="height:170px;border-radius:8px;"></div></div>
-      <div class="pc"><div class="sk" style="height:170px;border-radius:8px;"></div></div>
-      <div class="pc"><div class="sk" style="height:170px;border-radius:8px;"></div></div>
-      <div class="pc"><div class="sk" style="height:170px;border-radius:8px;"></div></div>
-      <div class="pc"><div class="sk" style="height:170px;border-radius:8px;"></div></div>
+
+    <!-- Category tabs -->
+    <div class="pc-tabs" id="posCats">
+      <div class="pc-tab on" onclick="filterCat('',this)">All</div>
+    </div>
+
+    <!-- Recent -->
+    <div id="recentWrap" style="display:none;">
+      <div style="display:flex;align-items:center;padding:4px 10px 0;"><span class="recent-label">Recent</span></div>
+      <div class="recent-row" id="recentRow"></div>
+    </div>
+
+    <!-- Mode info -->
+    <div class="quote-info" id="quoteInfo">
+      <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="13" height="13"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      Quotation mode — no stock deducted, saved as draft
+    </div>
+    <div class="return-info" id="returnInfo">
+      <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="13" height="13"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 102.13-9.36L1 10"/></svg>
+      Return mode — stock will be restored to inventory
+    </div>
+
+    <!-- Products -->
+    <div class="pp-grid" id="posProds">
+      <div class="pcard"><div class="sk" style="height:150px;border-radius:7px;"></div></div>
+      <div class="pcard"><div class="sk" style="height:150px;border-radius:7px;"></div></div>
+      <div class="pcard"><div class="sk" style="height:150px;border-radius:7px;"></div></div>
+      <div class="pcard"><div class="sk" style="height:150px;border-radius:7px;"></div></div>
+      <div class="pcard"><div class="sk" style="height:150px;border-radius:7px;"></div></div>
+      <div class="pcard"><div class="sk" style="height:150px;border-radius:7px;"></div></div>
+      <div class="pcard"><div class="sk" style="height:150px;border-radius:7px;"></div></div>
+      <div class="pcard"><div class="sk" style="height:150px;border-radius:7px;"></div></div>
     </div>
   </div>
 
-  <!-- RIGHT: BILL -->
-  <div class="pos-right" id="posBillPanel">
-    <div class="pos-cust">
-      <div class="pos-cust-inner">
+  <!-- RIGHT — BILL -->
+  <div class="pl-right">
+
+    <!-- Customer -->
+    <div class="pr-cust">
+      <div class="cust-row">
         <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="13" height="13" style="color:var(--gray-400);flex-shrink:0;"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-        <input class="pos-cust-inp" id="custInp" placeholder="Customer name or phone…" oninput="onCustSearch()" autocomplete="off">
-        <button class="btn btn-sm btn-outline" style="height:30px;padding:0 8px;font-size:10px;flex-shrink:0;" onclick="openQC()">+ New</button>
+        <input class="cust-inp" id="custInp" placeholder="Customer name or phone…" oninput="onCustSearch()" autocomplete="off">
+        <button class="ph-btn" style="height:28px;font-size:10px;" onclick="openQC()">+ New</button>
       </div>
-      <div class="pos-cust-tag" id="custTag"></div>
+      <div class="cust-found" id="custFound"></div>
     </div>
 
-    <div class="pos-cart" id="posCart">
-      <div class="cart-empty-state">
+    <!-- Cart -->
+    <div class="pr-cart" id="posCart">
+      <div class="cart-empty">
         <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
-        <p>Cart is empty<br>Tap any product to add</p>
+        <p>Cart empty<br>Tap product to add</p>
       </div>
     </div>
 
-    <div class="pos-sum">
+    <!-- Summary -->
+    <div class="pr-sum">
       <div class="sr"><span>Items</span><span id="sItems">0</span></div>
       <div class="sr"><span>Subtotal</span><span id="sSub">₹0</span></div>
       <div class="sr">
         <div class="disc-ctrl">
           <span>Discount</span>
-          <input class="disc-num" id="discN" type="number" value="0" min="0" oninput="calc()">
-          <select class="disc-sel" id="discT" onchange="calc()"><option value="pct">%</option><option value="flat">₹</option></select>
+          <input class="disc-n" id="discN" type="number" value="0" min="0" oninput="calc()">
+          <select class="disc-t" id="discT" onchange="calc()"><option value="pct">%</option><option value="flat">₹</option></select>
         </div>
         <span id="sDisc" style="color:#ef4444;">-₹0</span>
       </div>
       <div class="sr" id="gstRow">
-        <div style="display:flex;align-items:center;gap:5px;">
-          <label class="tog" style="cursor:pointer;" title="Toggle GST">
-            <input type="checkbox" id="gstToggle" checked onchange="calc()" style="display:none;">
-            <span class="tog-tr"></span>
-          </label>
+        <div class="gst-row">
+          <label class="tog-sm"><input type="checkbox" id="gstOn" checked onchange="calc()"><span class="tt"></span></label>
           <span>GST</span>
-          <select id="gstRate" onchange="calc()" style="height:20px;border:1px solid var(--gray-200);border-radius:3px;font-size:10px;padding:0 3px;">
+          <select class="gst-sel" id="gstRate" onchange="calc()">
             <option value="0">0%</option>
             <option value="18" selected>18%</option>
             <option value="12">12%</option>
@@ -297,7 +342,8 @@
       <div class="sr grand"><span>TOTAL</span><span id="sTotal">₹0.00</span></div>
     </div>
 
-    <div class="pos-pay">
+    <!-- Payment -->
+    <div class="pr-pay">
       <div class="pay-grid">
         <div class="pay-opt on" id="po-cash" onclick="setPay('cash',this)">
           <svg viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="2"/></svg>Cash
@@ -312,19 +358,21 @@
           <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Split
         </div>
       </div>
-      <div class="upi-box" id="upiBox">
-        <div style="font-size:11px;font-weight:700;color:var(--gray-700);margin-bottom:5px;">Scan to Pay</div>
-        <div class="upi-qr-img" id="upiQRimg"></div>
-        <div class="upi-id">UPI ID : 8301879406</div>
+      <div class="upi-qr" id="upiQR">
+        <div id="upiQRImg"></div>
+        <div class="upi-id">8301879406@ybl</div>
       </div>
-      <input class="ref-inp" id="refInp" placeholder="UTR / Reference number after payment">
-      <div class="cash-row" id="cashRow">
-        <input class="cash-inp" id="cashGiven" type="number" placeholder="Amount tendered by customer" oninput="calcChange()">
-        <span class="change-tag" id="changeTxt"></span>
+      <div class="split-row" id="splitRow">
+        <input class="split-inp" id="splitCash" type="number" placeholder="Cash ₹" oninput="calcSplit()">
+        <input class="split-inp" id="splitUPI" type="number" placeholder="UPI ₹" oninput="calcSplit()">
       </div>
+      <input class="pay-inp" id="cashInp" type="number" placeholder="Amount tendered" oninput="calcChange()" style="display:block;">
+      <div style="display:flex;justify-content:flex-end;margin-bottom:2px;"><span class="change-tag" id="changeTxt"></span></div>
+      <input class="pay-inp" id="refInp" placeholder="UTR / Reference number">
     </div>
 
-    <div class="pos-actions">
+    <!-- Charge -->
+    <div class="pr-actions">
       <button class="pa hold" onclick="holdBill()">
         <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Hold
       </button>
@@ -337,25 +385,22 @@
 </div>
 
 <!-- Mobile FAB -->
-<button class="mob-cart-fab" id="mobFAB" onclick="toggleMobileView()">
-  <span class="mob-cart-fab-n" id="mobN">0</span>
-  <span class="mob-cart-fab-l">Cart</span>
+<button class="mob-fab" onclick="toggleMob()">
+  <span class="mob-fab-n" id="mobN">0</span>
+  <span class="mob-fab-l">Cart</span>
 </button>
 
 <!-- Hold Drawer -->
 <div class="hold-drw" id="holdDrw">
-  <div class="hold-drw-hd">
-    <span class="hold-drw-title">Held Bills</span>
-    <button onclick="toggleHoldDrawer()" style="background:none;border:none;cursor:pointer;font-size:20px;color:var(--gray-400);">✕</button>
-  </div>
-  <div id="holdDrwList"><div style="padding:20px;text-align:center;font-size:12px;color:var(--gray-400);">No held bills</div></div>
+  <div class="hold-drw-hd">Held Bills<button onclick="closeHeld()" style="background:none;border:none;cursor:pointer;font-size:18px;color:var(--gray-400);">✕</button></div>
+  <div id="heldList"><div style="padding:20px;text-align:center;font-size:11px;color:var(--gray-400);">No held bills</div></div>
 </div>
 
 <!-- ── MODALS ── -->
 
 <!-- Quick Customer -->
 <div class="modal-overlay" id="qcOvl" onclick="if(event.target===this)closeQC()" style="display:none;align-items:center;justify-content:center;padding:20px;">
-<div class="modal qmod">
+<div class="modal sm-modal">
   <div class="modal-hd"><h3>New Customer</h3><button class="modal-close" onclick="closeQC()">✕</button></div>
   <div class="modal-body">
     <div class="form-group" style="margin-bottom:10px;"><label class="form-label">Name *</label><input class="form-input" id="qcN"></div>
@@ -367,7 +412,7 @@
 
 <!-- Manual Item -->
 <div class="modal-overlay" id="manOvl" onclick="if(event.target===this)closeManual()" style="display:none;align-items:center;justify-content:center;padding:20px;">
-<div class="modal" style="max-width:340px;width:100%;margin:auto;">
+<div class="modal sm-modal">
   <div class="modal-hd"><h3>Manual Item</h3><button class="modal-close" onclick="closeManual()">✕</button></div>
   <div class="modal-body">
     <div class="form-group" style="margin-bottom:10px;"><label class="form-label">Item Name *</label><input class="form-input" id="manN"></div>
@@ -376,12 +421,12 @@
       <div class="form-group"><label class="form-label">Qty</label><input class="form-input" type="number" id="manQ" value="1"></div>
     </div>
   </div>
-  <div class="modal-ft"><button class="btn btn-outline" onclick="closeManual()">Cancel</button><button class="btn btn-primary" onclick="addManual()">Add to Bill</button></div>
+  <div class="modal-ft"><button class="btn btn-outline" onclick="closeManual()">Cancel</button><button class="btn btn-primary" onclick="addManual()">Add</button></div>
 </div></div>
 
 <!-- Shift -->
 <div class="modal-overlay" id="shiftOvl" onclick="if(event.target===this)closeShift()" style="display:none;align-items:center;justify-content:center;padding:20px;">
-<div class="modal" style="max-width:360px;width:100%;margin:auto;">
+<div class="modal sm-modal">
   <div class="modal-hd"><h3>Shift Report</h3><button class="modal-close" onclick="closeShift()">✕</button></div>
   <div class="modal-body" id="shiftBody"></div>
   <div class="modal-ft"><button class="btn btn-outline" onclick="closeShift()">Close</button><button class="btn btn-primary" onclick="window.print()">Print</button></div>
@@ -389,52 +434,59 @@
 
 <!-- Invoice List -->
 <div class="modal-overlay" id="invOvl" onclick="if(event.target===this)closeInvList()" style="display:none;align-items:flex-start;justify-content:center;padding:20px;overflow-y:auto;">
-<div class="modal" style="max-width:720px;width:100%;margin:auto;">
+<div class="modal" style="max-width:800px;width:100%;margin:auto;max-height:90vh;overflow-y:auto;">
   <div class="modal-hd">
-    <h3>POS Invoices</h3>
+    <h3 id="invListTitle">Invoices</h3>
     <div style="display:flex;gap:6px;">
-      <button class="btn btn-sm btn-outline" onclick="exportInvoicesCSV()">Export CSV</button>
+      <input type="search" id="invSearch" placeholder="Search…" style="height:28px;border:1px solid var(--gray-200);border-radius:5px;padding:0 8px;font-size:11px;width:140px;" oninput="filterInvList()">
+      <button class="ph-btn" onclick="exportInvCSV()">CSV</button>
       <button class="modal-close" onclick="closeInvList()">✕</button>
     </div>
   </div>
-  <div class="modal-body" id="invListBody" style="padding:0;max-height:65vh;overflow-y:auto;"></div>
+  <div style="overflow-x:auto;">
+    <table class="inv-tbl">
+      <thead><tr>
+        <th>Invoice</th><th>Type</th><th>Customer</th><th>Total</th><th>Tax</th><th>Method</th><th>Status</th><th>Date</th><th>Action</th>
+      </tr></thead>
+      <tbody id="invTbody"></tbody>
+    </table>
+  </div>
+</div></div>
+
+<!-- Receipt Print -->
+<div class="modal-overlay" id="rcptOvl" onclick="if(event.target===this)closeRcpt()" style="display:none;align-items:center;justify-content:center;padding:20px;">
+<div class="modal" style="max-width:380px;width:100%;margin:auto;">
+  <div class="modal-hd">
+    <h3 id="rcptTitle">Receipt</h3>
+    <div style="display:flex;gap:6px;">
+      <button class="ph-btn" onclick="printRcpt()">Print</button>
+      <button class="ph-btn" onclick="waRcpt()">WhatsApp</button>
+      <button class="modal-close" onclick="closeRcpt()">✕</button>
+    </div>
+  </div>
+  <div class="modal-body" id="rcptBody" style="font-family:monospace;font-size:12px;"></div>
 </div></div>
 
 </div></div></div>
-
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="../backend/config/supabase.js"></script>
 <script src="assets/js/shell.js"></script>
 <script>
 'use strict';
-
-// ── STATE ──────────────────────────────────────────────────
-let allProds=[], allCats=[], allCusts=[];
-let cart=[], cust=null, payMethod='cash', mode='sale';
-let held=[], filtProds=[], catId='';
-let bbuf='', btimer=null;
 const UPI='8301879406@ybl';
+let allProds=[],allCats=[],allCusts=[];
+let cart=[],cust=null,payMethod='cash',mode='sale';
+let held=[],catId='',recentIds=[],allInvoices=[];
+let bbuf='',btimer=null,lastInv=null;
 
 // ── BOOT ──────────────────────────────────────────────────
 (async()=>{
   await AdminShell.init('Point of Sale','pos');
-
-  // POS needs full screen — collapse sidebar automatically
-  const sidebar = document.getElementById('sidebar');
-  const topbar  = document.getElementById('topbar');
-  const mainWrap = document.getElementById('mainWrap');
-  if(sidebar && window.innerWidth > 900) {
-    sidebar.classList.add('is-collapsed');
-    if(topbar) topbar.classList.add('is-expanded');
-    if(mainWrap) mainWrap.classList.add('is-expanded');
-  }
-  if(sidebar && window.innerWidth <= 900) {
-    sidebar.classList.remove('is-mobile-open');
-  }
-
-  genInvNum();
+  // Full screen — hide shell chrome
+  ['sidebar','topbar','mobile-bottom-nav'].forEach(c=>{document.querySelector('.'+c)?.style.setProperty('display','none','important');});
+  genInv();
   await Promise.all([loadProds(),loadCats(),loadCusts()]);
-  setupScanner();
+  setupScan();
   restoreHeld();
 })();
 
@@ -442,81 +494,84 @@ async function loadProds(){
   const{data}=await db.from('products')
     .select('id,name,sku,price,mrp,stock_qty,low_stock_threshold,category_id,images:product_images(url,is_primary)')
     .eq('is_active',true).order('name');
-  allProds=data||[];filtProds=allProds;
+  allProds=data||[];
   renderProds(allProds);
 }
 async function loadCats(){
   const{data}=await db.from('categories').select('id,name').eq('is_active',true).order('sort_order');
   allCats=data||[];
   const el=document.getElementById('posCats');
-  el.innerHTML='<div class="pos-pill on" onclick="filterCat(\'\',this)">All</div>'+
-    allCats.map(c=>`<div class="pos-pill" onclick="filterCat('${c.id}',this)">${c.name}</div>`).join('');
+  el.innerHTML='<div class="pc-tab on" onclick="filterCat(\'\',this)">All</div>'+
+    allCats.map(c=>`<div class="pc-tab" onclick="filterCat('${c.id}',this)">${c.name}</div>`).join('');
 }
 async function loadCusts(){
   const{data}=await db.from('customers').select('id,name,phone,loyalty_points,loyalty_tier').order('name');
   allCusts=data||[];
 }
-async function genInvNum(){
-  // Use timestamp + random to guarantee uniqueness
+function genInv(){
   const d=new Date();
-  const ts=d.getTime().toString().slice(-6);
-  const rand=Math.random().toString(36).slice(2,5).toUpperCase();
-  const code=`WF-${d.getFullYear().toString().slice(-2)}${String(d.getMonth()+1).padStart(2,'0')}-${ts}${rand}`;
-  document.getElementById('invNumDisplay').textContent=code;
+  const code=`WF-${d.getFullYear().toString().slice(-2)}${String(d.getMonth()+1).padStart(2,'0')}-${d.getTime().toString().slice(-6)}${Math.random().toString(36).slice(2,5).toUpperCase()}`;
+  document.getElementById('invDisp').textContent=code;
   return code;
 }
 
-// ── PRODUCTS ──────────────────────────────────────────────
+// ── RENDER PRODUCTS ───────────────────────────────────────
 function renderProds(list){
   const el=document.getElementById('posProds');
   if(!list.length){
-    el.innerHTML='<div style="grid-column:1/-1;padding:40px;text-align:center;color:var(--gray-300);font-size:12px;">No products found</div>';
+    el.innerHTML='<div class="pg-empty"><svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><p>No products found</p></div>';
     return;
   }
   el.innerHTML=list.map(p=>{
     const img=p.images?.find(i=>i.is_primary)?.url||p.images?.[0]?.url||'';
-    const qty=p.stock_qty||0, thr=p.low_stock_threshold||5;
+    const qty=p.stock_qty||0,thr=p.low_stock_threshold||5;
     const sc=qty===0?'out':qty<=thr?'low':'ok';
-    const sl=qty===0?'Out':qty<=thr?qty+' left':qty+'';
-    return`<div class="pc${qty===0?' out':''}" onclick="${qty>0?`addItem('${p.id}')`:''}" id="pc-${p.id}">
-      <div class="pc-img">
-        ${img?`<img src="${img}" loading="lazy" alt="">`:`<svg class="pc-img-ico" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/></svg>`}
+    const sl=qty===0?'Out of stock':qty<=thr?`${qty} left`:`${qty}`;
+    const disc=p.mrp&&p.mrp>p.price?Math.round((p.mrp-p.price)/p.mrp*100):0;
+    return`<div class="pcard${qty===0?' out':''}" onclick="${qty>0?`addItem('${p.id}')`:''}" id="pc-${p.id}">
+      <div class="pcard-img">${img?`<img src="${img}" loading="lazy" alt="">`:`<svg class="pcard-img-ico" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>`}</div>
+      <div class="pcard-body">
+        <div class="pcard-name">${p.name}</div>
+        <div class="pcard-price">₹${Number(p.price).toLocaleString('en-IN')}</div>
+        ${disc>0?`<div class="pcard-mrp">₹${Number(p.mrp).toLocaleString('en-IN')}</div>`:''}
+        <div class="pcard-badges">
+          <span class="pb ${sc}">${sl}</span>
+          ${disc>0?`<span class="pb" style="background:#fef2f2;color:#dc2626;">${disc}% off</span>`:''}
+        </div>
       </div>
-      <div class="pc-body">
-        <div class="pc-name">${p.name}</div>
-        <div class="pc-price">₹${Number(p.price).toLocaleString('en-IN')}</div>
-        <span class="pc-stock ${sc}">${sl}</span>
-      </div>
-      ${qty>0?`<button class="pc-add" onclick="event.stopPropagation();addItem('${p.id}')">+ Add</button>`:''}
+      ${qty>0?`<button class="pcard-add" onclick="event.stopPropagation();addItem('${p.id}')">+ Add</button>`:''}
     </div>`;
   }).join('');
 }
 
 function filterCat(id,el){
   catId=id;
-  document.querySelectorAll('.pos-pill').forEach(p=>p.classList.remove('on'));el.classList.add('on');
+  document.querySelectorAll('.pc-tab').forEach(t=>t.classList.remove('on'));el.classList.add('on');
   applyFilter();
 }
 function onSearch(){applyFilter();}
 function applyFilter(){
-  const q=document.getElementById('posSearch').value.toLowerCase();
-  // Barcode exact match
-  if(q.length>=3){const m=allProds.find(p=>p.sku?.toLowerCase()===q);if(m){addItem(m.id);document.getElementById('posSearch').value='';return;}}
+  const q=document.getElementById('posSearch').value.toLowerCase().trim();
+  // Exact SKU/barcode match → add directly
+  if(q.length>=3){
+    const ex=allProds.find(p=>p.sku?.toLowerCase()===q);
+    if(ex){addItem(ex.id);document.getElementById('posSearch').value='';return;}
+  }
   let l=allProds;
   if(catId)l=l.filter(p=>p.category_id===catId);
-  if(q)l=l.filter(p=>p.name.toLowerCase().includes(q)||p.sku?.toLowerCase().includes(q));
+  if(q)l=l.filter(p=>p.name.toLowerCase().includes(q)||(p.sku||'').toLowerCase().includes(q));
   renderProds(l);
 }
 
-// ── BARCODE SCANNER ───────────────────────────────────────
-function setupScanner(){
+// ── BARCODE ───────────────────────────────────────────────
+function setupScan(){
   document.addEventListener('keydown',e=>{
-    if(e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA'||e.target.tagName==='SELECT')return;
+    const tag=e.target.tagName;
+    if(tag==='INPUT'||tag==='TEXTAREA'||tag==='SELECT')return;
     if(e.key==='Enter'){
       if(bbuf.length>=3){
         const m=allProds.find(p=>p.sku===bbuf);
-        if(m){addItem(m.id);toast('Scanned: '+m.name);}
-        else toast('Not found: '+bbuf,true);
+        if(m)addItem(m.id);else toast('Not found: '+bbuf,true);
         bbuf='';
       }return;
     }
@@ -528,25 +583,26 @@ function setupScanner(){
 function addItem(id){
   const p=allProds.find(x=>x.id===id);if(!p)return;
   const ex=cart.find(i=>i.id===id);
-  if(ex){if(ex.qty>=p.stock_qty){toast('Max stock',true);return;}ex.qty++;ex.total=ex.qty*ex.price;}
+  if(ex){if(ex.qty>=(p.stock_qty||0)&&mode==='sale'){toast('Max stock',true);return;}ex.qty++;ex.total=ex.qty*ex.price;}
   else cart.push({id:p.id,name:p.name,sku:p.sku||'',price:+p.price,qty:1,total:+p.price,stock:p.stock_qty||0});
-  renderCart();calc();
+  // Track recent
+  if(!recentIds.includes(id)){recentIds.unshift(id);if(recentIds.length>6)recentIds.pop();}
+  renderRecent();renderCart();calc();
 }
 function removeItem(i){cart.splice(i,1);renderCart();calc();}
-function qtyChange(i,d){
+function qtyChg(i,d){
   const item=cart[i];if(!item)return;
   const nq=item.qty+d;
   if(nq<=0){removeItem(i);return;}
-  if(nq>item.stock){toast('Max stock',true);return;}
+  if(nq>item.stock&&mode==='sale'){toast('Max stock',true);return;}
   item.qty=nq;item.total=nq*item.price;
   renderCart();calc();
 }
-
 function renderCart(){
   const el=document.getElementById('posCart');
   document.getElementById('mobN').textContent=cart.length;
   if(!cart.length){
-    el.innerHTML='<div class="cart-empty-state"><svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg><p>Cart is empty<br>Tap any product to add</p></div>';
+    el.innerHTML='<div class="cart-empty"><svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg><p>Cart empty<br>Tap product to add</p></div>';
     document.getElementById('chargeBtn').disabled=true;
     document.getElementById('chargeBtn').textContent='Charge ₹0';
     return;
@@ -558,12 +614,24 @@ function renderCart(){
         <div class="ci-sub">₹${item.price.toLocaleString('en-IN')} × ${item.qty}${item.sku?' · '+item.sku:''}</div>
       </div>
       <div class="ci-qty">
-        <button class="ciq-btn" onclick="qtyChange(${i},-1)">−</button>
-        <span class="ciq-val">${item.qty}</span>
-        <button class="ciq-btn" onclick="qtyChange(${i},1)">+</button>
+        <button class="cqb" onclick="qtyChg(${i},-1)">−</button>
+        <span class="cqv">${item.qty}</span>
+        <button class="cqb" onclick="qtyChg(${i},1)">+</button>
       </div>
       <div class="ci-amt">₹${item.total.toLocaleString('en-IN')}</div>
       <svg class="ci-x" onclick="removeItem(${i})" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </div>`).join('');
+}
+function renderRecent(){
+  const wrap=document.getElementById('recentWrap');
+  const row=document.getElementById('recentRow');
+  if(!recentIds.length){wrap.style.display='none';return;}
+  wrap.style.display='block';
+  const items=recentIds.map(id=>allProds.find(p=>p.id===id)).filter(Boolean);
+  row.innerHTML=items.map(p=>`
+    <div class="ritem" onclick="addItem('${p.id}')">
+      ${p.images?.[0]?.url?`<img class="ritem-img" src="${p.images[0].url}" alt="">`:''}
+      ${p.name.length>16?p.name.slice(0,16)+'…':p.name}
     </div>`).join('');
 }
 
@@ -574,71 +642,82 @@ function calc(){
   const dt=document.getElementById('discT').value;
   const da=dt==='pct'?sub*(dn/100):Math.min(dn,sub);
   const afterD=sub-da;
-  const gstRate=parseFloat(document.getElementById('gstRate')?.value||'5')/100;
-  const applyGST=document.getElementById('gstToggle')?.checked!==false;
-  const tax=applyGST?afterD*gstRate:0;
+  const gstOn=document.getElementById('gstOn').checked;
+  const gstPct=parseFloat(document.getElementById('gstRate').value)||0;
+  const tax=gstOn&&mode!=='return'?afterD*(gstPct/100):0;
   const tot=afterD+tax;
   document.getElementById('sItems').textContent=cart.reduce((s,i)=>s+i.qty,0);
   document.getElementById('sSub').textContent='₹'+sub.toLocaleString('en-IN');
   document.getElementById('sDisc').textContent='-₹'+da.toFixed(2);
-  const gstPct=parseFloat(document.getElementById('gstRate')?.value||'5');
-  const gstOn=document.getElementById('gstToggle')?.checked!==false;
-  document.getElementById('sTax').textContent=gstOn?'₹'+tax.toFixed(2):'Off';
-  document.getElementById('gstRow').style.opacity=gstOn?'1':'0.5';
+  document.getElementById('sTax').textContent=gstOn&&gstPct>0?'₹'+tax.toFixed(2):'Off';
   document.getElementById('sTotal').textContent='₹'+tot.toFixed(2);
+  if(payMethod==='upi'&&tot>0){
+    document.getElementById('upiQRImg').innerHTML=`<img src="https://api.qrserver.com/v1/create-qr-code/?size=90x90&data=${encodeURIComponent('upi://pay?pa='+UPI+'&pn=WellFix&am='+tot.toFixed(2)+'&cu=INR')}" style="width:90px;height:90px;" alt="UPI QR">`;
+  }
   if(cart.length){
     document.getElementById('chargeBtn').disabled=false;
-    document.getElementById('chargeBtn').textContent='Charge ₹'+tot.toFixed(2);
-  }
-  if(payMethod==='upi'){
-    document.getElementById('upiQRimg').innerHTML=`<img src="https://api.qrserver.com/v1/create-qr-code/?size=90x90&data=${encodeURIComponent('upi://pay?pa='+UPI+'&pn=WellFix+Appliances&am='+tot.toFixed(2)+'&cu=INR')}" style="width:90px;height:90px;" alt="UPI QR">`;
+    const lbl={sale:'Charge',quote:'Save Quote',return:'Process Return',refund:'Refund'};
+    document.getElementById('chargeBtn').textContent=(lbl[mode]||'Charge')+' ₹'+tot.toFixed(2);
   }
   calcChange();
-  return{sub,da,tax,tot,dn,dt};
+  return{sub,da,tax,tot,gstPct,gstOn};
 }
 function calcChange(){
-  const tot=parseFloat((document.getElementById('sTotal').textContent||'₹0').replace('₹','').replace(/,/g,''))||0;
-  const given=parseFloat(document.getElementById('cashGiven').value)||0;
-  document.getElementById('changeTxt').textContent=given>=tot&&given>0?'Change: ₹'+(given-tot).toFixed(2):'';
+  const tot=parseFloat(document.getElementById('sTotal').textContent.replace('₹','').replace(/,/g,''))||0;
+  const given=parseFloat(document.getElementById('cashInp').value)||0;
+  const el=document.getElementById('changeTxt');
+  if(given>=tot&&given>0){el.textContent='Change: ₹'+(given-tot).toFixed(2);el.style.display='block';}
+  else el.style.display='none';
+}
+function calcSplit(){
+  const tot=parseFloat(document.getElementById('sTotal').textContent.replace('₹','').replace(/,/g,''))||0;
+  const c=parseFloat(document.getElementById('splitCash').value)||0;
+  const u=parseFloat(document.getElementById('splitUPI').value)||0;
+  const due=tot-c-u;
+  if(due>0.01)toast('Split short by ₹'+due.toFixed(2),true);
 }
 
 // ── PAYMENT ───────────────────────────────────────────────
 function setPay(m,el){
   payMethod=m;
   document.querySelectorAll('.pay-opt').forEach(b=>b.classList.remove('on'));el.classList.add('on');
-  document.getElementById('upiBox').classList.toggle('show',m==='upi');
-  document.getElementById('cashRow').style.display=m==='cash'?'flex':'none';
-  document.getElementById('refInp').classList.toggle('show',m==='upi'||m==='card');
+  document.getElementById('upiQR').classList.toggle('show',m==='upi');
+  document.getElementById('splitRow').classList.toggle('show',m==='split');
+  document.getElementById('cashInp').style.display=m==='cash'?'block':'none';
+  document.getElementById('refInp').classList.toggle('show',m==='upi'||m==='card'||m==='bank');
   if(m==='upi')calc();
+}
+
+// ── MODE ──────────────────────────────────────────────────
+function setMode(m,el){
+  mode=m;
+  document.querySelectorAll('.ph-mode').forEach(b=>b.classList.remove('on'));el.classList.add('on');
+  document.getElementById('quoteInfo').classList.toggle('show',m==='quote');
+  document.getElementById('returnInfo').classList.toggle('show',m==='return');
+  document.getElementById('gstRow').style.display=m==='return'?'none':'flex';
+  clearBill();
 }
 
 // ── CHARGE ────────────────────────────────────────────────
 async function chargeBill(){
-  if(!cart.length){toast('Cart is empty',true);return;}
-  const{sub,da,tax,tot}=calc();
-  const invCode=await genInvNum();
+  if(!cart.length){toast('Cart empty',true);return;}
+  const{sub,da,tax,tot,gstPct,gstOn}=calc();
+  const invCode=genInv();
   const btn=document.getElementById('chargeBtn');
-  const origText=btn.textContent;
+  const orig=btn.textContent;
   btn.textContent='Processing…';btn.disabled=true;
-
   try{
-    const custName=cust?.name||document.getElementById('custInp').value||'Walk-in Customer';
-    const gstPct=parseFloat(document.getElementById('gstRate')?.value||'5');
-    const gstOn=document.getElementById('gstToggle')?.checked!==false;
-
-    // Mode-specific invoice type + payment status
+    const custName=cust?.name||document.getElementById('custInp').value||'Walk-in';
     const typeMap={sale:'sale',quote:'quotation',return:'return',refund:'refund'};
     const statusMap={sale:'completed',quote:'draft',return:'returned',refund:'completed'};
-    const payStatusMap={sale:'paid',quote:'pending',return:'refunded',refund:'refunded'};
-
+    const payStMap={sale:'paid',quote:'pending',return:'refunded',refund:'refunded'};
     const payload={
       invoice_number:invCode,
       invoice_type:typeMap[mode]||'sale',
       customer_id:cust?.id||null,
       customer_name:custName,
       customer_phone:cust?.phone||null,
-      subtotal:sub,
-      discount_amount:da,
+      subtotal:sub,discount_amount:da,
       tax_amount:gstOn?tax:0,
       tax_pct:gstOn?gstPct:0,
       total:tot,
@@ -646,21 +725,17 @@ async function chargeBill(){
       due_amount:mode==='quote'?tot:0,
       payment_method:payMethod,
       payment_reference:document.getElementById('refInp').value||null,
-      payment_status:payStatusMap[mode]||'paid',
+      payment_status:payStMap[mode]||'paid',
       cashier:AdminShell.user?.profile?.full_name||AdminShell.user?.email||'Admin',
       status:statusMap[mode]||'completed',
     };
-
     const{data:inv,error}=await db.from('pos_invoices').insert(payload).select().single();
     if(error)throw new Error(error.message);
-
-    // Save items
-    const{error:itemErr}=await db.from('pos_invoice_items').insert(
-      cart.map(i=>({invoice_id:inv.id,product_id:i.id||null,product_name:i.name,sku:i.sku||null,quantity:i.qty,unit_price:i.price,total_price:i.total}))
+    const{error:ie}=await db.from('pos_invoice_items').insert(
+      cart.map(i=>({invoice_id:inv.id,product_id:i.id.startsWith('m')?null:i.id,product_name:i.name,sku:i.sku||null,quantity:i.qty,unit_price:i.price,total_price:i.total}))
     );
-    if(itemErr)throw new Error(itemErr.message);
-
-    // Stock: deduct on sale, restore on return
+    if(ie)throw new Error(ie.message);
+    // Stock sync
     if(mode==='sale'){
       for(const i of cart){
         if(!i.id||i.id.startsWith('m'))continue;
@@ -674,133 +749,116 @@ async function chargeBill(){
         if(p)await db.from('products').update({stock_qty:(p.stock_qty||0)+i.qty}).eq('id',i.id);
       }
     }
-
-    // Loyalty points — only on sale
+    // Customer loyalty
     if(mode==='sale'&&cust?.id){
       const pts=Math.floor(tot/100);
-      await db.from('customers').update({
-        loyalty_points:(cust.loyalty_points||0)+pts,
-        last_order_at:new Date().toISOString()
-      }).eq('id',cust.id);
+      await db.from('customers').update({loyalty_points:(cust.loyalty_points||0)+pts,last_order_at:new Date().toISOString()}).eq('id',cust.id);
     }
-
-    // Create order record only for sales
+    // Orders sync
     if(mode==='sale'){
-      await db.from('orders').insert({
-        order_number:invCode,
-        customer_name:custName,
-        customer_phone:cust?.phone||null,
-        total:tot,subtotal:sub,
-        payment_method:payMethod,
-        payment_status:'paid',
-        status:'delivered',
-        notes:'POS Invoice: '+invCode
-      });
+      await db.from('orders').insert({order_number:invCode,customer_name:custName,customer_phone:cust?.phone||null,total:tot,subtotal:sub,payment_method:payMethod,payment_status:'paid',status:'delivered',notes:'POS '+invCode});
     }
-
-    // Open receipt/print
-    openReceipt(inv,cart,payload,mode);
-    const msgs={sale:'Invoice '+invCode+' — ₹'+tot.toFixed(2),quote:'Quotation '+invCode+' saved',return:'Return '+invCode+' processed',refund:'Refund '+invCode+' processed'};
-    toast(msgs[mode]||'Done');
+    lastInv={inv,cart:[...cart],payload,mode};
+    showReceipt(inv,cart,payload,mode);
+    toast({sale:'Billed '+invCode,quote:'Quote '+invCode+' saved',return:'Return '+invCode,refund:'Refund '+invCode}[mode]||'Done');
     clearBill();
-    genInvNum();
-
+    genInv();
   }catch(e){
     toast('Error: '+e.message,true);
-    btn.disabled=false;
-    btn.textContent=origText;
-  }
-  finally{
-    if(!btn.disabled){btn.disabled=false;btn.textContent=origText;}
+    btn.textContent=orig;btn.disabled=false;
     calc();
   }
 }
 
 // ── RECEIPT ───────────────────────────────────────────────
-function openReceipt(inv,items,meta,billMode='sale'){
-  const w=window.open('','_blank','width=380,height=620');
-  w.document.write(`<!DOCTYPE html><html><head><title>${inv.invoice_number}</title><style>
-    *{margin:0;padding:0;box-sizing:border-box;}
-    body{font-family:'Courier New',monospace;font-size:12px;padding:16px;max-width:300px;}
-    h2{font-size:16px;text-align:center;font-weight:900;margin-bottom:2px;}
-    .c{text-align:center;font-size:10px;color:#666;line-height:1.6;margin-bottom:10px;}
-    .d{border-top:1px dashed #bbb;margin:8px 0;}
-    .r{display:flex;justify-content:space-between;margin:2px 0;font-size:11px;}
-    .g{font-size:14px;font-weight:900;}
-    .it{margin:4px 0;}
-    .it-n{font-weight:700;font-size:11px;}
-    .it-d{display:flex;justify-content:space-between;color:#555;font-size:10px;}
-    .ft{text-align:center;font-size:10px;color:#888;margin-top:12px;line-height:1.7;}
-    @media print{button{display:none;}}
-  </style></head><body>
-    <h2>${billMode==='quote'?'QUOTATION':billMode==='return'?'RETURN NOTE':billMode==='refund'?'REFUND RECEIPT':'TAX INVOICE'}</h2>
-    <div style="text-align:center;font-size:10px;color:#888;margin-bottom:6px;">WellFix Appliances</div>
-    <div class="c">Kerala, India · 8590004349<br>${UPI}</div>
-    <div class="d"></div>
-    <div class="r"><span>Invoice</span><b>${inv.invoice_number}</b></div>
-    <div class="r"><span>Date</span><span>${new Date().toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'})}</span></div>
-    <div class="r"><span>Customer</span><span>${meta.customer_name}</span></div>
-    <div class="r"><span>Payment</span><span>${meta.payment_method.toUpperCase()}</span></div>
-    <div class="d"></div>
-    ${items.map(i=>`<div class="it"><div class="it-n">${i.name}</div><div class="it-d"><span>${i.qty} × ₹${i.price.toLocaleString('en-IN')}</span><span>₹${i.total.toLocaleString('en-IN')}</span></div></div>`).join('')}
-    <div class="d"></div>
-    <div class="r"><span>Subtotal</span><span>₹${meta.subtotal.toLocaleString('en-IN')}</span></div>
-    ${meta.discount_amount>0?`<div class="r"><span>Discount</span><span>-₹${meta.discount_amount.toFixed(2)}</span></div>`:''}
-    <div class="r"><span>GST (5%)</span><span>₹${meta.tax_amount.toFixed(2)}</span></div>
-    <div class="d"></div>
-    <div class="r g"><span>TOTAL</span><span>₹${meta.total.toFixed(2)}</span></div>
-    <div class="ft">Thank you for shopping at WellFix!<br>Returns accepted within 7 days<br>warranty@wellfixappliances.com</div>
-    <div style="margin-top:14px;"><button onclick="window.print()" style="width:100%;padding:9px;background:#034732;color:#fff;border:none;border-radius:4px;cursor:pointer;font-weight:700;font-size:13px;">Print Receipt</button></div>
-  </body></html>`);w.document.close();
+function showReceipt(inv,items,meta,bMode){
+  const titles={sale:'TAX INVOICE',quote:'QUOTATION',return:'RETURN NOTE',refund:'REFUND RECEIPT'};
+  const lines=items.map(i=>`${i.name}\n  ${i.qty} × ₹${i.price.toLocaleString('en-IN')} = ₹${i.total.toLocaleString('en-IN')}`).join('\n');
+  document.getElementById('rcptTitle').textContent=titles[bMode]||'Invoice';
+  document.getElementById('rcptBody').innerHTML=`
+    <div style="text-align:center;font-weight:900;font-size:14px;margin-bottom:2px;">${titles[bMode]||'Invoice'}</div>
+    <div style="text-align:center;font-size:10px;color:#666;margin-bottom:10px;line-height:1.5;">WellFix Appliances<br>Kerala · 8590004349<br>${UPI}</div>
+    <div style="border-top:1px dashed #bbb;margin:6px 0;"></div>
+    <div style="display:flex;justify-content:space-between;margin:2px 0;font-size:11px;"><span>Invoice</span><b>${inv.invoice_number}</b></div>
+    <div style="display:flex;justify-content:space-between;margin:2px 0;font-size:11px;"><span>Customer</span><span>${meta.customer_name}</span></div>
+    <div style="display:flex;justify-content:space-between;margin:2px 0;font-size:11px;"><span>Payment</span><span>${meta.payment_method.toUpperCase()}</span></div>
+    <div style="display:flex;justify-content:space-between;margin:2px 0;font-size:11px;"><span>Date</span><span>${new Date().toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'})}</span></div>
+    <div style="border-top:1px dashed #bbb;margin:6px 0;"></div>
+    ${items.map(i=>`<div style="font-size:11px;margin:3px 0;"><b>${i.name}</b><div style="display:flex;justify-content:space-between;color:#555;font-size:10px;"><span>${i.qty} × ₹${i.price.toLocaleString('en-IN')}</span><span>₹${i.total.toLocaleString('en-IN')}</span></div></div>`).join('')}
+    <div style="border-top:1px dashed #bbb;margin:6px 0;"></div>
+    <div style="display:flex;justify-content:space-between;font-size:11px;"><span>Subtotal</span><span>₹${meta.subtotal.toLocaleString('en-IN')}</span></div>
+    ${meta.discount_amount>0?`<div style="display:flex;justify-content:space-between;font-size:11px;"><span>Discount</span><span>-₹${meta.discount_amount.toFixed(2)}</span></div>`:''}
+    ${meta.tax_amount>0?`<div style="display:flex;justify-content:space-between;font-size:11px;"><span>GST ${meta.tax_pct}%</span><span>₹${meta.tax_amount.toFixed(2)}</span></div>`:''}
+    <div style="border-top:1px dashed #bbb;margin:6px 0;"></div>
+    <div style="display:flex;justify-content:space-between;font-size:14px;font-weight:900;"><span>TOTAL</span><span>₹${meta.total.toFixed(2)}</span></div>
+    <div style="text-align:center;margin-top:10px;font-size:10px;color:#888;">Thank you · Returns within 7 days</div>`;
+  document.getElementById('rcptOvl').style.display='flex';
+}
+function closeRcpt(){document.getElementById('rcptOvl').style.display='none';}
+function printRcpt(){
+  const body=document.getElementById('rcptBody').innerHTML;
+  const w=window.open('','_blank','width=380,height=600');
+  w.document.write(`<html><head><title>Receipt</title><style>body{font-family:'Courier New',monospace;padding:16px;max-width:300px;}</style></head><body>${body}<br><button onclick="window.print()" style="width:100%;margin-top:10px;padding:8px;background:#034732;color:#fff;border:none;border-radius:4px;cursor:pointer;font-weight:700;">Print</button></body></html>`);
+  w.document.close();
+}
+function waRcpt(){
+  if(!lastInv)return;
+  const{payload}=lastInv;
+  const msg=`*WellFix Appliances*\nInvoice: ${payload.invoice_number}\nTotal: ₹${payload.total.toFixed(2)}\nPayment: ${payload.payment_method.toUpperCase()}\nThank you for shopping with us!`;
+  const phone=(cust?.phone||'').replace(/\D/g,'');
+  window.open(`https://wa.me/${phone?phone:''}?text=${encodeURIComponent(msg)}`,'_blank');
 }
 
 // ── HOLD ──────────────────────────────────────────────────
 function holdBill(){
-  if(!cart.length){toast('Cart is empty',true);return;}
+  if(!cart.length){toast('Cart empty',true);return;}
   held.push({id:Date.now(),items:[...cart],cust,time:new Date().toLocaleTimeString()});
-  saveHeld();clearBill();renderHeld();
-  toast('Bill held');
+  saveHeld();clearBill();renderHeld();toast('Bill held');
 }
 function resumeHeld(id){
   const idx=held.findIndex(b=>b.id===id);if(idx<0)return;
   const b=held.splice(idx,1)[0];
   cart=b.items;cust=b.cust;
-  if(cust){document.getElementById('custInp').value=cust.name;showCustTag();}
-  renderCart();calc();saveHeld();renderHeld();toggleHoldDrawer();
+  if(cust){document.getElementById('custInp').value=cust.name;showCustFound();}
+  renderCart();calc();saveHeld();renderHeld();closeHeld();
 }
 function renderHeld(){
-  document.getElementById('holdCnt').textContent=held.length;
-  const el=document.getElementById('holdDrwList');
+  document.getElementById('heldCnt').textContent=held.length;
+  const el=document.getElementById('heldList');
   el.innerHTML=held.length?held.map(b=>`
-    <div class="hold-item" onclick="resumeHeld(${b.id})">
-      <div class="hold-item-name">${b.cust?.name||'Walk-in'} · ${b.items.length} items</div>
-      <div class="hold-item-meta">₹${b.items.reduce((s,i)=>s+i.total,0).toLocaleString('en-IN')} · ${b.time}</div>
-    </div>`).join(''):'<div style="padding:20px;text-align:center;font-size:12px;color:var(--gray-400);">No held bills</div>';
+    <div class="held-item" onclick="resumeHeld(${b.id})">
+      <div style="font-size:12px;font-weight:700;">${b.cust?.name||'Walk-in'} · ${b.items.length} items</div>
+      <div style="font-size:10px;color:var(--gray-400);">₹${b.items.reduce((s,i)=>s+i.total,0).toLocaleString('en-IN')} · ${b.time}</div>
+    </div>`).join(''):'<div style="padding:20px;text-align:center;font-size:11px;color:var(--gray-400);">No held bills</div>';
 }
 function saveHeld(){localStorage.setItem('wf_held',JSON.stringify(held));}
 function restoreHeld(){try{const s=localStorage.getItem('wf_held');if(s){held=JSON.parse(s);renderHeld();}}catch(e){}}
+function openHeld(){document.getElementById('holdDrw').classList.add('open');}
+function closeHeld(){document.getElementById('holdDrw').classList.remove('open');}
 
 // ── CLEAR ─────────────────────────────────────────────────
 function clearBill(){
   cart=[];cust=null;
   document.getElementById('custInp').value='';
-  document.getElementById('custTag').style.display='none';
+  document.getElementById('custFound').style.display='none';
   document.getElementById('discN').value=0;
-  document.getElementById('cashGiven').value='';
+  document.getElementById('cashInp').value='';
   document.getElementById('refInp').value='';
+  document.getElementById('splitCash').value='';
+  document.getElementById('splitUPI').value='';
   renderCart();calc();
 }
 
 // ── CUSTOMER ──────────────────────────────────────────────
 function onCustSearch(){
   const q=document.getElementById('custInp').value.toLowerCase();
-  if(q.length<2){cust=null;document.getElementById('custTag').style.display='none';return;}
+  if(q.length<2){cust=null;document.getElementById('custFound').style.display='none';return;}
   const f=allCusts.find(c=>c.name.toLowerCase().includes(q)||(c.phone||'').includes(q));
-  if(f){cust=f;showCustTag();}
-  else{cust=null;document.getElementById('custTag').style.display='none';}
+  if(f){cust=f;showCustFound();}
+  else{cust=null;document.getElementById('custFound').style.display='none';}
 }
-function showCustTag(){
-  const el=document.getElementById('custTag');
+function showCustFound(){
+  const el=document.getElementById('custFound');
   el.textContent=`${cust.name} · ${cust.phone||''} · ${cust.loyalty_points||0} pts · ${cust.loyalty_tier||'bronze'}`;
   el.style.display='block';
 }
@@ -808,120 +866,101 @@ function openQC(){document.getElementById('qcOvl').style.display='flex';}
 function closeQC(){document.getElementById('qcOvl').style.display='none';}
 async function saveQC(){
   const n=document.getElementById('qcN').value.trim(),p=document.getElementById('qcP').value.trim();
-  if(!n||!p){toast('Name and phone required',true);return;}
+  if(!n||!p){toast('Name + phone required',true);return;}
   const{data,error}=await db.from('customers').insert({name:n,phone:p,email:document.getElementById('qcE').value||null,source:'pos'}).select().single();
   if(error){toast('Error: '+error.message,true);return;}
   allCusts.push(data);cust=data;
-  document.getElementById('custInp').value=n;showCustTag();
+  document.getElementById('custInp').value=n;showCustFound();
   closeQC();toast('Customer saved');
 }
 
-// ── MANUAL ────────────────────────────────────────────────
+// ── MANUAL ITEM ───────────────────────────────────────────
 function openManual(){document.getElementById('manOvl').style.display='flex';}
 function closeManual(){document.getElementById('manOvl').style.display='none';}
 function addManual(){
   const n=document.getElementById('manN').value.trim();
   const p=parseFloat(document.getElementById('manP').value)||0;
   const q=parseInt(document.getElementById('manQ').value)||1;
-  if(!n||!p){toast('Name and price required',true);return;}
-  cart.push({id:'m'+Date.now(),name:n,sku:'MNL',price:p,qty:q,total:p*q,stock:99999});
+  if(!n||!p){toast('Name + price required',true);return;}
+  cart.push({id:'m'+Date.now(),name:n,sku:'MNL',price:p,qty:q,total:p*q,stock:9999});
   renderCart();calc();closeManual();
   document.getElementById('manN').value='';document.getElementById('manP').value='';document.getElementById('manQ').value=1;
-}
-
-// ── MODE ──────────────────────────────────────────────────
-function setMode(m,el){
-  mode=m;
-  document.querySelectorAll('.pos-seg-btn').forEach(b=>b.classList.remove('on'));
-  el.classList.add('on');
-  clearBill();
-  // Update charge button label per mode
-  const chargeBtn=document.getElementById('chargeBtn');
-  const modeLabels={sale:'Charge',quote:'Save Quote',return:'Process Return',refund:'Process Refund'};
-  chargeBtn.textContent=modeLabels[m]||'Charge';
-  // Show/hide GST for returns
-  document.getElementById('gstRow').style.display=m==='return'?'none':'flex';
-  toast({sale:'Sale mode',quote:'Quotation mode — no stock deducted',return:'Return mode — stock will be restored',refund:'Refund mode — mark payment refunded'}[m]||'');
 }
 
 // ── SHIFT ─────────────────────────────────────────────────
 async function openShift(){
   const t=new Date();t.setHours(0,0,0,0);
-  const{data:invs}=await db.from('pos_invoices').select('total,payment_method').gte('created_at',t.toISOString()).eq('status','completed');
-  const list=invs||[];
+  const{data}=await db.from('pos_invoices').select('total,payment_method,invoice_type,tax_amount').gte('created_at',t.toISOString()).eq('status','completed');
+  const list=data||[];
   const rev=list.reduce((s,i)=>s+(+i.total||0),0);
-  const cash=list.filter(i=>i.payment_method==='cash').reduce((s,i)=>s+(+i.total||0),0);
-  const upi=list.filter(i=>i.payment_method==='upi').reduce((s,i)=>s+(+i.total||0),0);
-  const cardRev=list.filter(i=>i.payment_method==='card').reduce((s,i)=>s+(+i.total||0),0);
-  const splitRev=list.filter(i=>i.payment_method==='split').reduce((s,i)=>s+(+i.total||0),0);
+  const taxes=list.reduce((s,i)=>s+(+i.tax_amount||0),0);
+  const byPay={};list.forEach(i=>{byPay[i.payment_method]=(byPay[i.payment_method]||0)+(+i.total||0);});
   document.getElementById('shiftBody').innerHTML=`
-    <div style="background:var(--gray-25);border-radius:8px;padding:14px;margin-bottom:12px;">
-      <div class="sstat"><span>Total Invoices</span><span class="sstat-v">${list.length}</span></div>
-      <div class="sstat"><span>Total Revenue</span><span class="sstat-v" style="color:var(--green-700);font-size:18px;">₹${rev.toLocaleString('en-IN')}</span></div>
-      <div class="sstat"><span>Cash</span><span class="sstat-v">₹${cash.toLocaleString('en-IN')}</span></div>
-      <div class="sstat"><span>UPI</span><span class="sstat-v">₹${upi.toLocaleString('en-IN')}</span></div>
-      <div class="sstat"><span>Card</span><span class="sstat-v">₹${cardRev.toLocaleString('en-IN')}</span></div>
-      ${splitRev?`<div class="sstat"><span>Split</span><span class="sstat-v">₹${splitRev.toLocaleString('en-IN')}</span></div>`:''}
+    <div class="sh-box">
+      <div class="sh-row"><span>Total Bills</span><span class="sh-val">${list.length}</span></div>
+      <div class="sh-row"><span>Revenue</span><span class="sh-val" style="color:var(--green-700);font-size:16px;">₹${rev.toLocaleString('en-IN')}</span></div>
+      <div class="sh-row"><span>Total GST</span><span class="sh-val">₹${taxes.toFixed(2)}</span></div>
+      ${Object.entries(byPay).map(([m,v])=>`<div class="sh-row"><span>${m.toUpperCase()}</span><span class="sh-val">₹${v.toLocaleString('en-IN')}</span></div>`).join('')}
     </div>
-    <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--gray-400);margin-bottom:8px;">Recent Bills</div>
-    ${list.slice(0,5).map(i=>`
-      <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--gray-50);font-size:12px;">
-        <div>
-          <div style="font-weight:700;color:var(--green-700);">${i.invoice_number}</div>
-          <div style="font-size:10px;color:var(--gray-400);">${i.customer_name||'Walk-in'} · ${(i.payment_method||'').toUpperCase()}</div>
-        </div>
-        <div style="font-weight:800;font-family:var(--font-display);">₹${Number(i.total).toLocaleString('en-IN')}</div>
-      </div>`).join('')}
-    ${!list.length?'<div style="text-align:center;color:var(--gray-400);font-size:12px;padding:12px;">No bills yet today</div>':''}`;
+    <div style="font-size:10px;font-weight:700;text-transform:uppercase;color:var(--gray-400);margin-bottom:6px;">Recent Bills</div>
+    ${list.slice(-5).reverse().map(i=>`<div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--gray-50);font-size:11px;"><span style="color:var(--gray-600);">${i.invoice_type||'sale'}</span><span style="font-weight:700;">₹${Number(i.total).toLocaleString('en-IN')}</span></div>`).join('')}
+    ${!list.length?'<div style="text-align:center;color:var(--gray-400);font-size:11px;padding:10px;">No bills today</div>':''}`;
   document.getElementById('shiftOvl').style.display='flex';
 }
 function closeShift(){document.getElementById('shiftOvl').style.display='none';}
 
 // ── INVOICE LIST ──────────────────────────────────────────
-async function openInvList(){
+let allInvCache=[];
+async function openInvList(typeFilter){
   document.getElementById('invOvl').style.display='flex';
-  const{data}=await db.from('pos_invoices').select('*').order('created_at',{ascending:false}).limit(60);
-  const list=data||[];
-  document.getElementById('invListBody').innerHTML=list.length?`
-    <table class="inv-tbl-sm">
-      <thead><tr><th>Invoice</th><th>Customer</th><th>Total</th><th>Method</th><th>Date</th></tr></thead>
-      <tbody>${list.map(i=>`<tr>
-        <td style="font-weight:700;color:var(--green-700);">${i.invoice_number}</td>
-        <td>${i.customer_name||'Walk-in'}</td>
-        <td style="font-weight:700;">₹${Number(i.total).toLocaleString('en-IN')}</td>
-        <td style="text-transform:uppercase;font-size:10px;font-weight:700;">${i.payment_method}</td>
-        <td style="font-size:11px;color:var(--gray-400);">${new Date(i.created_at).toLocaleDateString('en-IN',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})}</td>
-      </tr>`).join('')}</tbody>
-    </table>`:`<div style="padding:30px;text-align:center;color:var(--gray-400);font-size:12px;">No invoices yet</div>`;
+  document.getElementById('invListTitle').textContent=typeFilter==='quotation'?'Quotations':'All Invoices';
+  const query=db.from('pos_invoices').select('*').order('created_at',{ascending:false}).limit(100);
+  if(typeFilter)query.eq('invoice_type',typeFilter);
+  const{data}=await query;
+  allInvCache=data||[];
+  renderInvTable(allInvCache);
+}
+function filterInvList(){
+  const q=document.getElementById('invSearch').value.toLowerCase();
+  renderInvTable(q?allInvCache.filter(i=>i.invoice_number.toLowerCase().includes(q)||(i.customer_name||'').toLowerCase().includes(q)):allInvCache);
+}
+function renderInvTable(list){
+  document.getElementById('invTbody').innerHTML=list.length?list.map(i=>`
+    <tr>
+      <td style="font-weight:700;color:var(--green-700);">${i.invoice_number}</td>
+      <td><span class="inv-badge ${i.invoice_type||'sale'}">${i.invoice_type||'sale'}</span></td>
+      <td>${i.customer_name||'Walk-in'}<div style="font-size:9px;color:var(--gray-400);">${i.customer_phone||''}</div></td>
+      <td style="font-weight:700;">₹${Number(i.total).toLocaleString('en-IN')}</td>
+      <td style="color:var(--gray-500);">${i.tax_amount>0?'₹'+Number(i.tax_amount).toFixed(2):'—'}</td>
+      <td style="text-transform:uppercase;font-size:10px;font-weight:700;">${i.payment_method||'—'}</td>
+      <td><span class="inv-badge ${i.status||'completed'}" style="background:${i.status==='completed'?'#f0fdf4':i.status==='draft'?'#eff6ff':i.status==='returned'?'#fff7ed':'#fef2f2'};color:${i.status==='completed'?'#15803d':i.status==='draft'?'#1d4ed8':i.status==='returned'?'#c2410c':'#dc2626'};">${i.status||'—'}</span></td>
+      <td style="font-size:10px;color:var(--gray-400);white-space:nowrap;">${new Date(i.created_at).toLocaleDateString('en-IN',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})}</td>
+      <td><button class="ph-btn" onclick="reprintInv('${i.id}')" style="height:24px;font-size:9px;">Reprint</button></td>
+    </tr>`).join(''):`<tr><td colspan="9" style="padding:24px;text-align:center;color:var(--gray-400);">No invoices yet</td></tr>`;
+}
+async function reprintInv(id){
+  const{data:inv}=await db.from('pos_invoices').select('*').eq('id',id).single();
+  const{data:items}=await db.from('pos_invoice_items').select('*').eq('invoice_id',id);
+  if(!inv)return;
+  const cartItems=(items||[]).map(i=>({name:i.product_name,sku:i.sku||'',price:i.unit_price,qty:i.quantity,total:i.total_price}));
+  showReceipt(inv,cartItems,inv,inv.invoice_type||'sale');
 }
 function closeInvList(){document.getElementById('invOvl').style.display='none';}
-
-function exportInvoicesCSV(){
-  const rows=[['Invoice','Customer','Phone','Total','Method','Status','Date']];
-  // Export from current list
-  document.querySelectorAll('#invListBody tbody tr').forEach(tr=>{
-    const cells=[...tr.querySelectorAll('td')].map(td=>td.textContent.trim());
-    rows.push(cells);
-  });
+function exportInvCSV(){
+  const rows=[['Invoice','Type','Customer','Total','Tax','Method','Status','Date']];
+  allInvCache.forEach(i=>rows.push([i.invoice_number,i.invoice_type,i.customer_name||'Walk-in',i.total,i.tax_amount||0,i.payment_method,i.status,new Date(i.created_at).toLocaleDateString()]));
   const a=document.createElement('a');a.href='data:text/csv,'+encodeURIComponent(rows.map(r=>r.join(',')).join('\n'));a.download='pos-invoices.csv';a.click();
 }
 
-// ── HOLD DRAWER ───────────────────────────────────────────
-function toggleHoldDrawer(){document.getElementById('holdDrw').classList.toggle('open');}
-
 // ── MOBILE ────────────────────────────────────────────────
-function toggleMobileView(){
-  const lay=document.getElementById('posLayout');
-  lay.classList.toggle('bill-view');
-}
+function toggleMob(){document.getElementById('posLayout').classList.toggle('show-bill');}
 
-// ── KEYBOARD ─────────────────────────────────────────────
+// ── KEYBOARD ──────────────────────────────────────────────
 document.addEventListener('keydown',e=>{
-  if((e.ctrlKey||e.metaKey)&&!e.shiftKey){
+  if((e.ctrlKey||e.metaKey)){
     if(e.key==='Enter'){e.preventDefault();chargeBill();}
     if(e.key==='h'){e.preventDefault();holdBill();}
     if(e.key==='k'){e.preventDefault();document.getElementById('posSearch').focus();}
-    if(e.key==='Escape'){clearBill();}
   }
 });
 </script>
