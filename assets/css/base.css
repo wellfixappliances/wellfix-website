@@ -227,3 +227,36 @@ ul, ol { list-style: none; }
   background: var(--color-border);
   margin: var(--sp-4) 0;
 }
+
+/* ── LAZY LOAD OBSERVER HELPER ── */
+.lazy-img { opacity: 0; transition: opacity .35s ease; }
+.lazy-img.loaded { opacity: 1; }
+
+/* ── SKELETON LOADING ── */
+.skeleton {
+  background: linear-gradient(90deg,var(--gray-100) 25%,var(--gray-50) 50%,var(--gray-100) 75%);
+  background-size: 200% 100%;
+  animation: skeleton-pulse 1.4s infinite;
+  border-radius: var(--r-sm);
+}
+@keyframes skeleton-pulse { to { background-position: -200% 0; } }
+
+/* ── TOUCH FEEDBACK ── */
+@media (hover: none) {
+  .product-card:active { transform: scale(.98); box-shadow: var(--shadow-sm); }
+  .btn:active { transform: scale(.97); }
+  .hero-card:active .hero-card__img { transform: scale(1.02); }
+}
+
+/* ── NO HORIZONTAL OVERFLOW ── */
+section, .container, main { max-width: 100%; overflow-x: hidden; }
+
+/* ── SMOOTH SCROLL ── */
+html { scroll-behavior: smooth; }
+
+/* ── IMAGE PERFORMANCE ── */
+img {
+  object-fit: cover;
+  max-width: 100%;
+  height: auto;
+}
