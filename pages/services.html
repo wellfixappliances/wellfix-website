@@ -1,366 +1,171 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Appliance Repair Services in Thrissur — WellFix</title>
-<meta name="description" content="Professional home appliance repair in Thrissur. Mixer grinder, washing machine, gas stove, fan, AC repair. Doorstep service. Genuine spare parts. Warranty on all repairs.">
-<meta property="og:title" content="Appliance Repair Services Thrissur — WellFix">
-<meta property="og:description" content="Doorstep appliance repair in Thrissur, Kerala. Same-day service. Genuine parts. Full warranty.">
-<link rel="icon" href="../assets/images/WELLFIX-FAVICON.png">
-<link rel="stylesheet" href="../assets/css/main.css">
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "Service",
-  "name": "Home Appliance Repair Services",
-  "provider": {
-    "@type": "LocalBusiness",
-    "name": "WellFix Appliances",
-    "telephone": "+918590004349",
-    "address": { "@type": "PostalAddress", "addressLocality": "Thrissur", "addressRegion": "Kerala", "addressCountry": "IN" }
-  },
-  "areaServed": ["Thrissur","Venkitangu","Mullassery","Padoor","Puvathur","Thoyakkav","Kannoth","Karuvanthala"],
-  "offers": [
-    { "@type": "Offer", "name": "Mixer Grinder Repair", "price": "150", "priceCurrency": "INR" },
-    { "@type": "Offer", "name": "Washing Machine Service", "price": "350", "priceCurrency": "INR" },
-    { "@type": "Offer", "name": "Gas Stove Repair", "price": "100", "priceCurrency": "INR" },
-    { "@type": "Offer", "name": "Fan Repair", "price": "120", "priceCurrency": "INR" }
-  ]
-}
-</script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Repair Services – WellFix Appliances Kerala</title>
+  <link rel="icon" href="../assets/images/WELLFIX-FAVICON.png" type="image/png">
+  <link rel="stylesheet" href="../assets/css/main.css">
+  <style>
+    /* Page-specific: Services */
+    .services-page-hero {
+      background: var(--gray-900);
+      padding: var(--sp-8) 0 var(--sp-10);
+      text-align: center;
+    }
+    .services-page-hero h1 {
+      font-size: var(--text-4xl);
+      color: #fff;
+      margin-bottom: var(--sp-3);
+    }
+    .services-page-hero p {
+      font-size: var(--text-md);
+      color: rgba(255,255,255,.5);
+      max-width: 500px;
+      margin: 0 auto var(--sp-6);
+    }
+    .service-full-card {
+      background: var(--color-surface);
+      border: 1.5px solid var(--color-border);
+      border-radius: var(--r-xl);
+      padding: var(--sp-6);
+      display: flex;
+      gap: var(--sp-5);
+      transition: all var(--t-base) var(--ease);
+    }
+    .service-full-card:hover {
+      border-color: var(--color-primary);
+      box-shadow: var(--shadow-md);
+    }
+    .service-full-card__icon {
+      width: 56px; height: 56px;
+      background: var(--green-50);
+      border-radius: var(--r-lg);
+      display: flex; align-items: center; justify-content: center;
+      color: var(--color-primary);
+      flex-shrink: 0;
+    }
+    .service-full-card__icon svg { width: 26px; height: 26px; }
+    .service-full-card__body h4 { font-size: var(--text-xl); margin-bottom: var(--sp-2); }
+    .service-full-card__body p { font-size: var(--text-sm); color: var(--color-text-2); line-height: var(--leading-relaxed); margin-bottom: var(--sp-3); }
+    .service-full-card__meta { display: flex; align-items: center; gap: var(--sp-4); flex-wrap: wrap; }
+    .service-price-tag { font-size: var(--text-sm); font-weight: var(--weight-semi); color: var(--color-primary); }
+    .service-book-btn {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: #25D366; color: #fff;
+      padding: 9px 18px; border-radius: var(--r-sm);
+      font-size: var(--text-sm); font-weight: var(--weight-semi);
+      transition: background var(--t-fast);
+    }
+    .service-book-btn:hover { background: #1ebe5d; }
+    .service-book-btn svg { width: 16px; height: 16px; }
+    @media (max-width: 479px) {
+      .service-full-card { flex-direction: column; }
+    }
+  </style>
+<meta name="description" content="Professional home appliance repair in Thrissur. Mixer grinder, washing machine, gas stove, fan repair. Doorstep service. Genuine spare parts. 6-month warranty.">
 <style>
-/* ── Page-specific additions ── */
-.srv-hero {
-  background: var(--green-900);
-  padding: var(--sp-10) 0 var(--sp-8);
-  position: relative;
-  overflow: hidden;
-}
-.srv-hero::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: url('https://images.unsplash.com/photo-1581578731548-c64695cc6952?w=1200&q=60&auto=format&fit=crop') center/cover no-repeat;
-  opacity: .18;
-}
-.srv-hero__inner { position: relative; z-index: 1; }
-.srv-hero__tag {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  background: rgba(232,180,41,.15);
-  border: 1px solid rgba(232,180,41,.3);
-  color: var(--gold-300);
-  font-size: var(--text-xs);
-  font-weight: var(--weight-semi);
-  padding: 4px 12px;
-  border-radius: var(--r-full);
-  text-transform: uppercase;
-  letter-spacing: .06em;
-  margin-bottom: var(--sp-4);
-}
-.srv-hero__title {
-  font-family: var(--font-display);
-  font-size: var(--text-5xl);
-  font-weight: var(--weight-black);
-  color: #fff;
-  line-height: var(--leading-tight);
-  margin-bottom: var(--sp-4);
-  max-width: 600px;
-}
-@media (max-width: 767px) { .srv-hero__title { font-size: var(--text-3xl); } }
-.srv-hero__desc {
-  font-size: var(--text-md);
-  color: rgba(255,255,255,.65);
-  max-width: 480px;
-  line-height: var(--leading-relaxed);
-  margin-bottom: var(--sp-6);
-}
-.srv-hero__actions { display: flex; gap: var(--sp-3); flex-wrap: wrap; }
-.srv-hero__stats {
-  display: flex;
-  gap: var(--sp-6);
-  margin-top: var(--sp-8);
-  padding-top: var(--sp-6);
-  border-top: 1px solid rgba(255,255,255,.1);
-  flex-wrap: wrap;
-}
-.srv-stat__num {
-  font-family: var(--font-display);
-  font-size: var(--text-3xl);
-  font-weight: var(--weight-black);
-  color: #fff;
-  line-height: 1;
-}
-.srv-stat__lbl {
-  font-size: var(--text-xs);
-  color: rgba(255,255,255,.45);
-  margin-top: 3px;
-  text-transform: uppercase;
-  letter-spacing: .06em;
-}
+/* ── Services Page Styles ── */
+.srv-hero{background:var(--green-900);padding:var(--sp-10) 0 var(--sp-8);position:relative;overflow:hidden;}
+.srv-hero::before{content:'';position:absolute;inset:0;background:url('https://images.unsplash.com/photo-1581578731548-c64695cc6952?w=1200&q=60&auto=format&fit=crop') center/cover no-repeat;opacity:.15;}
+.srv-hero__inner{position:relative;z-index:1;}
+.srv-hero__tag{display:inline-flex;align-items:center;gap:5px;background:rgba(232,180,41,.15);border:1px solid rgba(232,180,41,.3);color:var(--gold-300);font-size:var(--text-xs);font-weight:var(--weight-semi);padding:4px 12px;border-radius:var(--r-full);text-transform:uppercase;letter-spacing:.06em;margin-bottom:var(--sp-4);}
+.srv-hero__title{font-family:var(--font-display);font-size:var(--text-5xl);font-weight:var(--weight-black);color:#fff;line-height:var(--leading-tight);margin-bottom:var(--sp-4);max-width:600px;}
+.srv-hero__desc{font-size:var(--text-md);color:rgba(255,255,255,.65);max-width:480px;line-height:var(--leading-relaxed);margin-bottom:var(--sp-6);}
+.srv-hero__actions{display:flex;gap:var(--sp-3);flex-wrap:wrap;}
+.srv-hero__stats{display:flex;gap:var(--sp-6);margin-top:var(--sp-8);padding-top:var(--sp-6);border-top:1px solid rgba(255,255,255,.1);flex-wrap:wrap;}
+.srv-stat__num{font-family:var(--font-display);font-size:var(--text-3xl);font-weight:var(--weight-black);color:#fff;line-height:1;}
+.srv-stat__lbl{font-size:var(--text-xs);color:rgba(255,255,255,.45);margin-top:3px;text-transform:uppercase;letter-spacing:.06em;}
+@media(max-width:767px){.srv-hero__title{font-size:var(--text-3xl);}  .srv-hero{padding:var(--sp-8) 0 var(--sp-6);}}
 
-/* ── Service Cards Full ── */
-.srv-card {
-  background: var(--color-surface);
-  border: 1.5px solid var(--color-border);
-  border-radius: var(--r-xl);
-  overflow: hidden;
-  transition: all var(--t-base) var(--ease);
-  display: flex;
-  flex-direction: column;
-}
-.srv-card:hover {
-  border-color: rgba(3,71,50,.2);
-  box-shadow: var(--shadow-lg);
-  transform: translateY(-3px);
-}
-.srv-card__img-wrap {
-  position: relative;
-  height: 180px;
-  overflow: hidden;
-  flex-shrink: 0;
-}
-.srv-card__img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: center;
-  display: block;
-  transition: transform var(--t-slow) var(--ease);
-}
-.srv-card:hover .srv-card__img { transform: scale(1.05); }
-.srv-card__badge {
-  position: absolute;
-  top: 10px;
-  left: 10px;
-  background: var(--color-primary);
-  color: #fff;
-  font-size: var(--text-xs);
-  font-weight: var(--weight-bold);
-  padding: 3px 9px;
-  border-radius: var(--r-full);
-}
-.srv-card__body {
-  padding: var(--sp-4) var(--sp-4) var(--sp-5);
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-}
-.srv-card__name {
-  font-family: var(--font-display);
-  font-size: var(--text-lg);
-  font-weight: var(--weight-bold);
-  color: var(--color-text);
-  margin-bottom: var(--sp-2);
-}
-.srv-card__desc {
-  font-size: var(--text-sm);
-  color: var(--color-text-2);
-  line-height: var(--leading-relaxed);
-  margin-bottom: var(--sp-3);
-  flex: 1;
-}
-.srv-card__price-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding-top: var(--sp-3);
-  border-top: 1px solid var(--color-border);
-}
-.srv-card__price {
-  font-family: var(--font-display);
-  font-size: var(--text-xl);
-  font-weight: var(--weight-bold);
-  color: var(--color-primary);
-}
-.srv-card__price span {
-  font-size: var(--text-sm);
-  font-weight: var(--weight-regular);
-  color: var(--color-text-3);
-}
-.srv-card__cta {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  font-size: var(--text-sm);
-  font-weight: var(--weight-semi);
-  color: var(--color-primary);
-  padding: 6px 14px;
-  border: 1.5px solid var(--color-primary);
-  border-radius: var(--r-sm);
-  transition: all var(--t-fast);
-}
-.srv-card__cta:hover { background: var(--color-primary); color: #fff; }
+.srv-card{background:var(--color-surface);border:1.5px solid var(--color-border);border-radius:var(--r-xl);overflow:hidden;transition:all var(--t-base) var(--ease);display:flex;flex-direction:column;}
+.srv-card:hover{border-color:rgba(3,71,50,.2);box-shadow:var(--shadow-lg);transform:translateY(-3px);}
+.srv-card__img-wrap{position:relative;height:180px;overflow:hidden;flex-shrink:0;}
+.srv-card__img{width:100%;height:100%;object-fit:cover;object-position:center;display:block;transition:transform var(--t-slow) var(--ease);}
+.srv-card:hover .srv-card__img{transform:scale(1.05);}
+.srv-card__badge{position:absolute;top:10px;left:10px;background:var(--color-primary);color:#fff;font-size:var(--text-xs);font-weight:var(--weight-bold);padding:3px 9px;border-radius:var(--r-full);}
+.srv-card__body{padding:var(--sp-4);flex:1;display:flex;flex-direction:column;}
+.srv-card__name{font-family:var(--font-display);font-size:var(--text-lg);font-weight:var(--weight-bold);color:var(--color-text);margin-bottom:var(--sp-2);}
+.srv-card__desc{font-size:var(--text-sm);color:var(--color-text-2);line-height:var(--leading-relaxed);margin-bottom:var(--sp-3);flex:1;}
+.srv-card__price-row{display:flex;align-items:center;justify-content:space-between;padding-top:var(--sp-3);border-top:1px solid var(--color-border);}
+.srv-card__price{font-family:var(--font-display);font-size:var(--text-xl);font-weight:var(--weight-bold);color:var(--color-primary);}
+.srv-card__price span{font-size:var(--text-sm);font-weight:var(--weight-regular);color:var(--color-text-3);}
+.srv-card__cta{display:inline-flex;align-items:center;gap:5px;font-size:var(--text-sm);font-weight:var(--weight-semi);color:var(--color-primary);padding:6px 14px;border:1.5px solid var(--color-primary);border-radius:var(--r-sm);transition:all var(--t-fast);}
+.srv-card__cta:hover{background:var(--color-primary);color:#fff;}
 
-/* ── Process Steps ── */
-.process-step {
-  display: flex;
-  gap: var(--sp-4);
-  align-items: flex-start;
-  padding: var(--sp-4) 0;
-  border-bottom: 1px solid var(--color-border);
-}
-.process-step:last-child { border-bottom: none; }
-.process-step__num {
-  width: 36px;
-  height: 36px;
-  background: var(--color-primary);
-  color: #fff;
-  border-radius: var(--r-full);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-family: var(--font-display);
-  font-size: var(--text-sm);
-  font-weight: var(--weight-bold);
-  flex-shrink: 0;
-}
-.process-step__title {
-  font-size: var(--text-md);
-  font-weight: var(--weight-semi);
-  color: var(--color-text);
-  margin-bottom: 3px;
-}
-.process-step__desc {
-  font-size: var(--text-sm);
-  color: var(--color-text-2);
-  line-height: var(--leading-relaxed);
-}
+.process-step{display:flex;gap:var(--sp-4);align-items:flex-start;padding:var(--sp-4) 0;border-bottom:1px solid var(--color-border);}
+.process-step:last-child{border-bottom:none;}
+.process-step__num{width:36px;height:36px;background:var(--color-primary);color:#fff;border-radius:var(--r-full);display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-size:var(--text-sm);font-weight:var(--weight-bold);flex-shrink:0;}
+.process-step__title{font-size:var(--text-md);font-weight:var(--weight-semi);color:var(--color-text);margin-bottom:3px;}
+.process-step__desc{font-size:var(--text-sm);color:var(--color-text-2);line-height:var(--leading-relaxed);}
 
-/* ── Why Us grid ── */
-.why-card {
-  background: var(--color-surface);
-  border: 1.5px solid var(--color-border);
-  border-radius: var(--r-lg);
-  padding: var(--sp-5);
-  display: flex;
-  flex-direction: column;
-  gap: var(--sp-3);
-  transition: all var(--t-base) var(--ease);
-}
-.why-card:hover { border-color: var(--color-primary); box-shadow: var(--shadow-md); }
-.why-card__icon {
-  width: 44px; height: 44px;
-  background: var(--green-50);
-  border-radius: var(--r-md);
-  display: flex; align-items: center; justify-content: center;
-  color: var(--color-primary);
-}
-.why-card__icon svg { width: 22px; height: 22px; }
-.why-card__title { font-size: var(--text-md); font-weight: var(--weight-semi); }
-.why-card__desc { font-size: var(--text-sm); color: var(--color-text-2); line-height: var(--leading-relaxed); }
+.why-card{background:var(--color-surface);border:1.5px solid var(--color-border);border-radius:var(--r-lg);padding:var(--sp-5);display:flex;flex-direction:column;gap:var(--sp-3);transition:all var(--t-base) var(--ease);}
+.why-card:hover{border-color:var(--color-primary);box-shadow:var(--shadow-md);}
+.why-card__icon{width:44px;height:44px;background:var(--green-50);border-radius:var(--r-md);display:flex;align-items:center;justify-content:center;color:var(--color-primary);}
+.why-card__icon svg{width:22px;height:22px;}
+.why-card__title{font-size:var(--text-md);font-weight:var(--weight-semi);}
+.why-card__desc{font-size:var(--text-sm);color:var(--color-text-2);line-height:var(--leading-relaxed);}
 
-/* ── FAQ ── */
-.faq-item { border-bottom: 1px solid var(--color-border); }
-.faq-item:last-child { border-bottom: none; }
-.faq-q {
-  width: 100%;
-  text-align: left;
-  padding: var(--sp-4) 0;
-  font-size: var(--text-md);
-  font-weight: var(--weight-semi);
-  color: var(--color-text);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: var(--sp-3);
-  cursor: pointer;
-  background: none;
-  border: none;
-}
-.faq-q svg { width: 16px; height: 16px; flex-shrink: 0; transition: transform var(--t-base); stroke: var(--color-text-3); fill: none; stroke-width: 2; }
-.faq-item.open .faq-q svg { transform: rotate(180deg); }
-.faq-a {
-  font-size: var(--text-sm);
-  color: var(--color-text-2);
-  line-height: var(--leading-relaxed);
-  max-height: 0;
-  overflow: hidden;
-  transition: max-height .3s ease, padding .3s ease;
-  padding: 0;
-}
-.faq-item.open .faq-a { max-height: 200px; padding-bottom: var(--sp-4); }
+.faq-item{border-bottom:1px solid var(--color-border);}
+.faq-item:last-child{border-bottom:none;}
+.faq-q{width:100%;text-align:left;padding:var(--sp-4) 0;font-size:var(--text-md);font-weight:var(--weight-semi);color:var(--color-text);display:flex;justify-content:space-between;align-items:center;gap:var(--sp-3);cursor:pointer;background:none;border:none;font-family:var(--font-display);}
+.faq-q svg{width:16px;height:16px;flex-shrink:0;transition:transform var(--t-base);stroke:var(--color-text-3);fill:none;stroke-width:2;}
+.faq-item.open .faq-q svg{transform:rotate(180deg);}
+.faq-a{font-size:var(--text-sm);color:var(--color-text-2);line-height:var(--leading-relaxed);max-height:0;overflow:hidden;transition:max-height .3s ease,padding .3s ease;padding:0;}
+.faq-item.open .faq-a{max-height:200px;padding-bottom:var(--sp-4);}
 
-/* ── CTA Banner ── */
-.cta-banner {
-  background: var(--color-primary);
-  border-radius: var(--r-xl);
-  padding: var(--sp-8) var(--sp-8);
-  display: grid;
-  grid-template-columns: 1fr auto;
-  align-items: center;
-  gap: var(--sp-6);
-  overflow: hidden;
-  position: relative;
-}
-.cta-banner::before {
-  content: '';
-  position: absolute;
-  right: -40px; top: -40px;
-  width: 200px; height: 200px;
-  background: rgba(255,255,255,.04);
-  border-radius: 50%;
-}
-.cta-banner__title {
-  font-family: var(--font-display);
-  font-size: var(--text-2xl);
-  font-weight: var(--weight-bold);
-  color: #fff;
-  margin-bottom: var(--sp-2);
-}
-.cta-banner__sub { font-size: var(--text-sm); color: rgba(255,255,255,.65); }
-@media (max-width: 600px) {
-  .cta-banner { grid-template-columns: 1fr; padding: var(--sp-5); }
-  .cta-banner__title { font-size: var(--text-xl); }
-}
-
-/* ── Mobile sticky CTA ── */
-.mob-sticky-cta {
-  display: none;
-  position: fixed;
-  bottom: var(--mobile-nav-h);
-  left: 0; right: 0;
-  padding: var(--sp-2) var(--sp-3);
-  background: #fff;
-  border-top: 1px solid var(--color-border);
-  gap: var(--sp-2);
-  z-index: var(--z-sticky);
-  box-shadow: 0 -4px 16px rgba(0,0,0,.08);
-}
-@media (max-width: 767px) { .mob-sticky-cta { display: flex; } }
+.cta-banner{background:var(--color-primary);border-radius:var(--r-xl);padding:var(--sp-8);display:grid;grid-template-columns:1fr auto;align-items:center;gap:var(--sp-6);overflow:hidden;position:relative;}
+.cta-banner::before{content:'';position:absolute;right:-40px;top:-40px;width:200px;height:200px;background:rgba(255,255,255,.04);border-radius:50%;}
+.cta-banner__title{font-family:var(--font-display);font-size:var(--text-2xl);font-weight:var(--weight-bold);color:#fff;margin-bottom:var(--sp-2);}
+.cta-banner__sub{font-size:var(--text-sm);color:rgba(255,255,255,.65);}
+@media(max-width:600px){.cta-banner{grid-template-columns:1fr;padding:var(--sp-5);}.cta-banner__title{font-size:var(--text-xl);}}
 </style>
 </head>
 <body>
 
-<!-- HEADER injected by components -->
-<div id="headerMount"></div>
-
-<!-- BREADCRUMB -->
-<div style="background:var(--gray-25);border-bottom:1px solid var(--color-border);padding:8px 0;">
-  <div class="container">
-    <nav style="font-size:var(--text-xs);color:var(--color-text-3);display:flex;align-items:center;gap:6px;">
-      <a href="../index.html" style="color:var(--color-text-3);">Home</a>
-      <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="10" height="10"><polyline points="9 18 15 12 9 6"/></svg>
-      <span style="color:var(--color-text);">Services</span>
-    </nav>
+<!-- Topbar -->
+<div class="topbar">
+  <div class="container topbar__inner">
+    <div class="topbar__links">
+      <a href="../index.html">← Back to Shop</a>
+      <a href="#">Help</a>
+    </div>
+    <div class="topbar__center">
+      Free delivery across Kerala &nbsp;·&nbsp; <strong>+91 85900 04349</strong>
+    </div>
+    <div class="topbar__links">
+      <a href="#">100% Genuine</a>
+      <a href="#">Best Price Guarantee</a>
+    </div>
   </div>
 </div>
+
+<header class="site-header">
+  <div class="container site-header__inner">
+    <a href="../index.html" class="logo">
+      <img src="../assets/images/WELLFIX-MAIN-LOGO.png" alt="WellFix" class="logo__img"
+           onerror="this.style.display='none'">
+      <div style="font-family:var(--font-display);font-size:18px;font-weight:800;color:var(--color-text);">Well<span style="color:var(--color-primary)">Fix</span></div>
+    </a>
+    <div style="flex:1;"></div>
+    <a href="https://wa.me/918590004349?text=Hi%20WellFix!%20I%20want%20to%20book%20a%20repair%20service"
+       class="btn btn-primary">
+      <svg fill="currentColor" viewBox="0 0 24 24" width="16" height="16"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347zM12 2C6.477 2 2 6.477 2 12c0 1.89.525 3.66 1.438 5.168L2 22l4.978-1.413A9.955 9.955 0 0012 22c5.523 0 10-4.477 10-10S17.523 2 12 2z"/></svg>
+      Book Service
+    </a>
+  </div>
+</header>
+
 
 <!-- HERO -->
 <section class="srv-hero">
   <div class="container srv-hero__inner">
-    <div class="srv-hero__tag">
-      <svg fill="currentColor" viewBox="0 0 24 24" width="10" height="10"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-      Trusted by 10,000+ Customers in Thrissur
-    </div>
-    <h1 class="srv-hero__title">Doorstep Appliance Repair<br>You Can Trust</h1>
-    <p class="srv-hero__desc">Fast, reliable repair service for all home appliances. Genuine spare parts. Full service warranty on every job. Serving Thrissur, Venkitangu, Mullassery and surrounding areas.</p>
+    <div class="srv-hero__tag"><svg fill="currentColor" viewBox="0 0 24 24" width="10" height="10"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>Trusted by 10,000+ Customers in Thrissur</div>
+    <h1 class="srv-hero__title">Doorstep Appliance Repair You Can Trust</h1>
+    <p class="srv-hero__desc">Fast, reliable repair for all home appliances. Genuine spare parts. Full warranty. Serving Thrissur, Venkitangu, Mullassery, Padoor and surrounding areas.</p>
     <div class="srv-hero__actions">
-      <a href="https://wa.me/918590004349?text=Hi%20WellFix!%20I%20need%20appliance%20repair%20service"
-         class="btn btn-gold btn-lg" target="_blank" rel="noopener">
-        <svg fill="currentColor" viewBox="0 0 24 24" width="18" height="18"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/></svg>
+      <a href="https://wa.me/918590004349?text=Hi%20WellFix!%20I%20need%20appliance%20repair" class="btn btn-gold btn-lg" target="_blank" rel="noopener">
+        <svg fill="currentColor" viewBox="0 0 24 24" width="18" height="18"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347zM12 2C6.477 2 2 6.477 2 12c0 1.89.525 3.66 1.438 5.168L2 22l4.978-1.413A9.955 9.955 0 0012 22c5.523 0 10-4.477 10-10S17.523 2 12 2z"/></svg>
         Book on WhatsApp
       </a>
       <a href="tel:+918590004349" class="btn btn-ghost btn-lg">Call 8590004349</a>
@@ -368,135 +173,46 @@
     <div class="srv-hero__stats">
       <div><div class="srv-stat__num">10K+</div><div class="srv-stat__lbl">Repairs Done</div></div>
       <div><div class="srv-stat__num">4.9★</div><div class="srv-stat__lbl">Customer Rating</div></div>
-      <div><div class="srv-stat__num">Same Day</div><div class="srv-stat__lbl">Service Available</div></div>
+      <div><div class="srv-stat__num">Same Day</div><div class="srv-stat__lbl">Service</div></div>
       <div><div class="srv-stat__num">6 Month</div><div class="srv-stat__lbl">Warranty</div></div>
     </div>
   </div>
 </section>
 
-<!-- ALL SERVICES -->
+<!-- SERVICES GRID -->
 <section style="padding:var(--sp-8) 0;background:var(--color-bg);">
   <div class="container">
-    <div class="sec-hd">
-      <div>
-        <div class="sec-hd__title">All Repair <span>Services</span></div>
-        <div class="sec-hd__sub">Professional technicians · Genuine parts · Full warranty</div>
-      </div>
-    </div>
-    <div class="products-grid--4" id="servicesGrid">
+    <div class="sec-hd"><div><div class="sec-hd__title">All Repair <span>Services</span></div><div class="sec-hd__sub">Genuine parts · Certified technicians · Full warranty</div></div></div>
+    <div class="products-grid--4">
       <a class="srv-card" href="#book">
-        <div class="srv-card__img-wrap">
-          <img class="srv-card__img" src="https://images.unsplash.com/photo-1585771724684-38269d6639fd?w=500&q=75&auto=format&fit=crop" alt="Mixer Grinder Repair Thrissur" loading="lazy" decoding="async">
-          <span class="srv-card__badge">Most Popular</span>
-        </div>
-        <div class="srv-card__body">
-          <div class="srv-card__name">Mixer &amp; Grinder Repair</div>
-          <div class="srv-card__desc">Motor replacement, blade sharpening, jar repair, switch issues. All brands serviced.</div>
-          <div class="srv-card__price-row">
-            <div class="srv-card__price">₹150 <span>onwards</span></div>
-            <span class="srv-card__cta">Book Now<svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" width="12" height="12"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></span>
-          </div>
-        </div>
+        <div class="srv-card__img-wrap"><img class="srv-card__img" src="https://images.unsplash.com/photo-1585771724684-38269d6639fd?w=500&q=75&auto=format&fit=crop" alt="Mixer Grinder Repair Thrissur" loading="lazy"><span class="srv-card__badge">Most Popular</span></div>
+        <div class="srv-card__body"><div class="srv-card__name">Mixer &amp; Grinder Repair</div><div class="srv-card__desc">Motor replacement, blade sharpening, jar repair, switch issues. All brands — Sujata, Preethi, Butterfly.</div><div class="srv-card__price-row"><div class="srv-card__price">₹150 <span>onwards</span></div><span class="srv-card__cta">Book Now <svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" width="12" height="12"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></span></div></div>
       </a>
       <a class="srv-card" href="#book">
-        <div class="srv-card__img-wrap">
-          <img class="srv-card__img" src="https://images.unsplash.com/photo-1558618047-f4e43b30b0cd?w=500&q=75&auto=format&fit=crop" alt="Washing Machine Repair Thrissur" loading="lazy" decoding="async">
-        </div>
-        <div class="srv-card__body">
-          <div class="srv-card__name">Washing Machine Service</div>
-          <div class="srv-card__desc">Drum replacement, motor issues, water leaks, spin problems. Semi and fully automatic.</div>
-          <div class="srv-card__price-row">
-            <div class="srv-card__price">₹350 <span>onwards</span></div>
-            <span class="srv-card__cta">Book Now<svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" width="12" height="12"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></span>
-          </div>
-        </div>
+        <div class="srv-card__img-wrap"><img class="srv-card__img" src="https://images.unsplash.com/photo-1558618047-f4e43b30b0cd?w=500&q=75&auto=format&fit=crop" alt="Washing Machine Repair Thrissur" loading="lazy"></div>
+        <div class="srv-card__body"><div class="srv-card__name">Washing Machine Service</div><div class="srv-card__desc">Drum, motor, pump, valve repair. Semi and fully automatic. All brands covered.</div><div class="srv-card__price-row"><div class="srv-card__price">₹350 <span>onwards</span></div><span class="srv-card__cta">Book Now <svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" width="12" height="12"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></span></div></div>
       </a>
       <a class="srv-card" href="#book">
-        <div class="srv-card__img-wrap">
-          <img class="srv-card__img" src="https://images.unsplash.com/photo-1484154218962-a197022b5858?w=500&q=75&auto=format&fit=crop" alt="Gas Stove Repair Thrissur" loading="lazy" decoding="async">
-        </div>
-        <div class="srv-card__body">
-          <div class="srv-card__name">Gas Stove Repair</div>
-          <div class="srv-card__desc">Burner cleaning, igniter replacement, valve repair. 2-burner to 4-burner stoves.</div>
-          <div class="srv-card__price-row">
-            <div class="srv-card__price">₹100 <span>onwards</span></div>
-            <span class="srv-card__cta">Book Now<svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" width="12" height="12"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></span>
-          </div>
-        </div>
+        <div class="srv-card__img-wrap"><img class="srv-card__img" src="https://images.unsplash.com/photo-1484154218962-a197022b5858?w=500&q=75&auto=format&fit=crop" alt="Gas Stove Repair Thrissur" loading="lazy"></div>
+        <div class="srv-card__body"><div class="srv-card__name">Gas Stove Repair</div><div class="srv-card__desc">Burner cleaning, igniter, valve repair. 2 to 4 burner stoves. Same-day service available.</div><div class="srv-card__price-row"><div class="srv-card__price">₹100 <span>onwards</span></div><span class="srv-card__cta">Book Now <svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" width="12" height="12"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></span></div></div>
       </a>
       <a class="srv-card" href="#book">
-        <div class="srv-card__img-wrap">
-          <img class="srv-card__img" src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=500&q=75&auto=format&fit=crop" alt="Fan Repair Thrissur" loading="lazy" decoding="async">
-        </div>
-        <div class="srv-card__body">
-          <div class="srv-card__name">Fan Repair &amp; Service</div>
-          <div class="srv-card__desc">Capacitor replacement, bearing repair, speed control issues. Ceiling, table, exhaust fans.</div>
-          <div class="srv-card__price-row">
-            <div class="srv-card__price">₹120 <span>onwards</span></div>
-            <span class="srv-card__cta">Book Now<svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" width="12" height="12"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></span>
-          </div>
-        </div>
-      </a>
-      <a class="srv-card" href="#book">
-        <div class="srv-card__img-wrap">
-          <img class="srv-card__img" src="https://images.unsplash.com/photo-1556909172-54557c7e4fb7?w=500&q=75&auto=format&fit=crop" alt="Pressure Cooker Repair" loading="lazy" decoding="async">
-        </div>
-        <div class="srv-card__body">
-          <div class="srv-card__name">Pressure Cooker Repair</div>
-          <div class="srv-card__desc">Gasket replacement, valve repair, handle fixing. All sizes and brands.</div>
-          <div class="srv-card__price-row">
-            <div class="srv-card__price">₹80 <span>onwards</span></div>
-            <span class="srv-card__cta">Book Now<svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" width="12" height="12"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></span>
-          </div>
-        </div>
-      </a>
-      <a class="srv-card" href="#book">
-        <div class="srv-card__img-wrap">
-          <img class="srv-card__img" src="https://images.unsplash.com/photo-1600180758890-6b94519a8ba6?w=500&q=75&auto=format&fit=crop" alt="Water Pump Repair" loading="lazy" decoding="async">
-        </div>
-        <div class="srv-card__body">
-          <div class="srv-card__name">Water Pump Service</div>
-          <div class="srv-card__desc">Pump motor repair, pressure issues, installation and maintenance.</div>
-          <div class="srv-card__price-row">
-            <div class="srv-card__price">₹200 <span>onwards</span></div>
-            <span class="srv-card__cta">Book Now<svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" width="12" height="12"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></span>
-          </div>
-        </div>
+        <div class="srv-card__img-wrap"><img class="srv-card__img" src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=500&q=75&auto=format&fit=crop" alt="Fan Repair Thrissur" loading="lazy"></div>
+        <div class="srv-card__body"><div class="srv-card__name">Fan Repair &amp; Service</div><div class="srv-card__desc">Capacitor, bearing, speed control. Ceiling, table, exhaust fans all serviced.</div><div class="srv-card__price-row"><div class="srv-card__price">₹120 <span>onwards</span></div><span class="srv-card__cta">Book Now <svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" width="12" height="12"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></span></div></div>
       </a>
     </div>
   </div>
 </section>
 
-<!-- WHY CHOOSE US -->
+<!-- WHY US -->
 <section style="padding:var(--sp-8) 0;background:var(--color-surface);">
   <div class="container">
-    <div class="sec-hd">
-      <div>
-        <div class="sec-hd__title">Why Choose <span>WellFix</span></div>
-        <div class="sec-hd__sub">Thrissur's most trusted appliance repair service</div>
-      </div>
-    </div>
+    <div class="sec-hd"><div><div class="sec-hd__title">Why Choose <span>WellFix</span></div><div class="sec-hd__sub">Thrissur's most trusted appliance repair</div></div></div>
     <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:var(--sp-3);">
-      <div class="why-card">
-        <div class="why-card__icon"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
-        <div class="why-card__title">6 Month Warranty</div>
-        <div class="why-card__desc">Full warranty on all repairs and spare parts. No hidden charges.</div>
-      </div>
-      <div class="why-card">
-        <div class="why-card__icon"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
-        <div class="why-card__title">Same Day Service</div>
-        <div class="why-card__desc">Book before 12PM and get same-day doorstep service in Thrissur.</div>
-      </div>
-      <div class="why-card">
-        <div class="why-card__icon"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
-        <div class="why-card__title">Genuine Spare Parts</div>
-        <div class="why-card__desc">Only original manufacturer parts used. No duplicate or cheap replacements.</div>
-      </div>
-      <div class="why-card">
-        <div class="why-card__icon"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg></div>
-        <div class="why-card__title">Certified Technicians</div>
-        <div class="why-card__desc">All our technicians are trained and certified with 5+ years experience.</div>
-      </div>
+      <div class="why-card"><div class="why-card__icon"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div><div class="why-card__title">6 Month Warranty</div><div class="why-card__desc">Full warranty on all repairs and spare parts. No hidden charges.</div></div>
+      <div class="why-card"><div class="why-card__icon"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div><div class="why-card__title">Same Day Service</div><div class="why-card__desc">Book before 12PM and get same-day doorstep service in Thrissur.</div></div>
+      <div class="why-card"><div class="why-card__icon"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/></svg></div><div class="why-card__title">Genuine Spare Parts</div><div class="why-card__desc">Only original manufacturer parts. No duplicate or cheap replacements.</div></div>
+      <div class="why-card"><div class="why-card__icon"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></div><div class="why-card__title">Certified Technicians</div><div class="why-card__desc">Trained and certified technicians with 5+ years experience.</div></div>
     </div>
   </div>
 </section>
@@ -507,112 +223,58 @@
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--sp-8);align-items:center;">
       <div>
         <div class="sec-hd__title" style="margin-bottom:var(--sp-5);">How It <span style="color:var(--color-primary);">Works</span></div>
-        <div class="process-step">
-          <div class="process-step__num">1</div>
-          <div><div class="process-step__title">Book on WhatsApp</div><div class="process-step__desc">Send us a message with your appliance issue. We respond within 15 minutes.</div></div>
-        </div>
-        <div class="process-step">
-          <div class="process-step__num">2</div>
-          <div><div class="process-step__title">Technician Visits</div><div class="process-step__desc">Our certified technician arrives at your home at the scheduled time.</div></div>
-        </div>
-        <div class="process-step">
-          <div class="process-step__num">3</div>
-          <div><div class="process-step__title">Diagnosis &amp; Quote</div><div class="process-step__desc">Free diagnosis. We give you a transparent quote before starting any repair.</div></div>
-        </div>
-        <div class="process-step">
-          <div class="process-step__num">4</div>
-          <div><div class="process-step__title">Repair &amp; Warranty</div><div class="process-step__desc">Repair done with genuine parts. 6-month warranty certificate provided.</div></div>
-        </div>
+        <div class="process-step"><div class="process-step__num">1</div><div><div class="process-step__title">Book on WhatsApp</div><div class="process-step__desc">Send us a message with your appliance issue. We respond within 15 minutes.</div></div></div>
+        <div class="process-step"><div class="process-step__num">2</div><div><div class="process-step__title">Technician Visits</div><div class="process-step__desc">Our certified technician arrives at your home at the scheduled time.</div></div></div>
+        <div class="process-step"><div class="process-step__num">3</div><div><div class="process-step__title">Free Diagnosis &amp; Quote</div><div class="process-step__desc">Transparent quote before starting any repair. No hidden charges.</div></div></div>
+        <div class="process-step"><div class="process-step__num">4</div><div><div class="process-step__title">Repair &amp; Warranty</div><div class="process-step__desc">Genuine parts. 6-month warranty certificate provided on completion.</div></div></div>
       </div>
       <div style="border-radius:var(--r-xl);overflow:hidden;height:400px;">
-        <img src="https://images.unsplash.com/photo-1581578731548-c64695cc6952?w=600&q=80&auto=format&fit=crop" alt="WellFix technician repairing appliance" style="width:100%;height:100%;object-fit:cover;display:block;" loading="lazy" decoding="async">
+        <img src="https://images.unsplash.com/photo-1581578731548-c64695cc6952?w=600&q=80&auto=format&fit=crop" alt="WellFix technician" style="width:100%;height:100%;object-fit:cover;display:block;" loading="lazy">
       </div>
     </div>
   </div>
-  @media (max-width: 767px) { .how-grid { grid-template-columns: 1fr; } }
 </section>
 
 <!-- FAQ -->
-<section style="padding:var(--sp-8) 0;background:var(--color-surface);" id="faq">
-  <div class="container">
-    <div style="max-width:680px;margin:0 auto;">
-      <div class="sec-hd__title" style="margin-bottom:var(--sp-2);text-align:center;">Frequently Asked <span style="color:var(--color-primary);">Questions</span></div>
-      <div style="font-size:var(--text-sm);color:var(--color-text-3);text-align:center;margin-bottom:var(--sp-6);">Everything you need to know about our repair service</div>
-      <div class="faq-item">
-        <button class="faq-q" onclick="toggleFAQ(this)">Do you offer doorstep service in Thrissur?<svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></button>
-        <div class="faq-a">Yes, we offer doorstep repair service across Thrissur, Venkitangu, Mullassery, Padoor, Puvathur, Thoyakkav, Kannoth, and Karuvanthala. Book on WhatsApp for same-day service.</div>
-      </div>
-      <div class="faq-item">
-        <button class="faq-q" onclick="toggleFAQ(this)">What is the warranty on repairs?<svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></button>
-        <div class="faq-a">We provide a 6-month warranty on all repairs and spare parts. If the same issue occurs within 6 months, we fix it for free.</div>
-      </div>
-      <div class="faq-item">
-        <button class="faq-q" onclick="toggleFAQ(this)">Is there a service visit charge?<svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></button>
-        <div class="faq-a">We charge a minimal ₹100 visit charge which is adjusted against the repair cost. Diagnosis is free of charge.</div>
-      </div>
-      <div class="faq-item">
-        <button class="faq-q" onclick="toggleFAQ(this)">Which appliance brands do you service?<svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></button>
-        <div class="faq-a">We service all major brands including Sujata, Butterfly, Prestige, LG, Samsung, Whirlpool, Bajaj, Usha, Orient, Crompton, and more. All local and national brands covered.</div>
-      </div>
-      <div class="faq-item">
-        <button class="faq-q" onclick="toggleFAQ(this)">How do I book a service?<svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></button>
-        <div class="faq-a">Simply click the "Book on WhatsApp" button and send us a message describing your appliance issue. Our team responds within 15 minutes to schedule a visit.</div>
-      </div>
-    </div>
-  </div>
+<section style="padding:var(--sp-8) 0;background:var(--color-surface);">
+  <div class="container"><div style="max-width:680px;margin:0 auto;">
+    <div class="sec-hd__title" style="margin-bottom:var(--sp-2);text-align:center;">Frequently Asked <span style="color:var(--color-primary);">Questions</span></div>
+    <div style="font-size:var(--text-sm);color:var(--color-text-3);text-align:center;margin-bottom:var(--sp-6);">Everything about our repair service</div>
+    <div class="faq-item"><button class="faq-q" onclick="toggleFAQ(this)">Do you offer doorstep service in Thrissur?<svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></button><div class="faq-a">Yes, we serve Thrissur, Venkitangu, Mullassery, Padoor, Puvathur, Thoyakkav, Kannoth and Karuvanthala. Book on WhatsApp for same-day service.</div></div>
+    <div class="faq-item"><button class="faq-q" onclick="toggleFAQ(this)">What is the warranty on repairs?<svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></button><div class="faq-a">We provide 6-month warranty on all repairs and spare parts. Same issue within 6 months — fixed for free.</div></div>
+    <div class="faq-item"><button class="faq-q" onclick="toggleFAQ(this)">Is there a service visit charge?<svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></button><div class="faq-a">Minimal ₹100 visit charge adjusted against repair cost. Diagnosis is free.</div></div>
+    <div class="faq-item"><button class="faq-q" onclick="toggleFAQ(this)">Which brands do you service?<svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></button><div class="faq-a">All major brands — Sujata, Butterfly, Prestige, LG, Samsung, Whirlpool, Bajaj, Usha, Orient, Crompton and more.</div></div>
+  </div></div>
 </section>
 
-<!-- CTA BANNER -->
-<section style="padding:var(--sp-6) 0;background:var(--color-bg);" id="book">
-  <div class="container">
-    <div class="cta-banner">
-      <div>
-        <div class="cta-banner__title">Ready to Get Your Appliance Fixed?</div>
-        <div class="cta-banner__sub">Book now. Same-day service available. Genuine parts. 6-month warranty.</div>
-      </div>
-      <div style="display:flex;gap:var(--sp-3);flex-wrap:wrap;flex-shrink:0;">
-        <a href="https://wa.me/918590004349?text=Hi%20WellFix!%20I%20need%20appliance%20repair%20service"
-           class="btn btn-gold btn-lg" target="_blank" rel="noopener">
-          <svg fill="currentColor" viewBox="0 0 24 24" width="18" height="18"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/></svg>
-          Book on WhatsApp
-        </a>
-        <a href="tel:+918590004349" class="btn btn-ghost btn-lg">Call Now</a>
-      </div>
+<!-- CTA -->
+<section style="padding:var(--sp-6) 0 var(--sp-8);background:var(--color-bg);" id="book">
+  <div class="container"><div class="cta-banner">
+    <div><div class="cta-banner__title">Ready to Get Your Appliance Fixed?</div><div class="cta-banner__sub">Same-day service · Genuine parts · 6-month warranty</div></div>
+    <div style="display:flex;gap:var(--sp-3);flex-wrap:wrap;flex-shrink:0;">
+      <a href="https://wa.me/918590004349?text=Hi%20WellFix!%20I%20need%20appliance%20repair" class="btn btn-gold btn-lg" target="_blank" rel="noopener">Book on WhatsApp</a>
+      <a href="tel:+918590004349" class="btn btn-ghost btn-lg">Call Now</a>
     </div>
-  </div>
+  </div></div>
 </section>
 
-<!-- FOOTER -->
-<div id="footerMount"></div>
+<!-- Mobile Nav -->
+<nav class="mobile-nav">
+  <a href="../index.html" class="mobile-nav__item"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Home</a>
+  <button class="mobile-nav__item"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>Categories</button>
+  <button class="mobile-nav__item is-active"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg>Services</button>
+  <a href="https://wa.me/918590004349?text=Hi%20WellFix!%20I%20want%20to%20book%20a%20repair" class="mobile-nav__item" style="background:#25D366;color:#fff;">
+    <svg fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347zM12 2C6.477 2 2 6.477 2 12c0 1.89.525 3.66 1.438 5.168L2 22l4.978-1.413A9.955 9.955 0 0012 22c5.523 0 10-4.477 10-10S17.523 2 12 2z"/></svg>
+    Book
+  </a>
+  <button class="mobile-nav__item"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Account</button>
+</nav>
 
-<!-- MOBILE STICKY CTA -->
-<div class="mob-sticky-cta">
-  <a href="tel:+918590004349" class="btn btn-secondary" style="flex:1;height:40px;font-size:var(--text-sm);">
-    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="16" height="16"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 8.63 19.79 19.79 0 01.22 2 2 2 0 012.2 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.91 7.09a16 16 0 006 6l.56-.56a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
-    Call
-  </a>
-  <a href="https://wa.me/918590004349?text=Hi%20WellFix!%20I%20need%20appliance%20repair%20service"
-     class="btn btn-primary" style="flex:2;height:40px;font-size:var(--text-sm);" target="_blank" rel="noopener">
-    <svg fill="currentColor" viewBox="0 0 24 24" width="16" height="16"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/></svg>
-    Book on WhatsApp
-  </a>
-</div>
+<script src="../assets/js/app.js"></script>
 
 <script src="../assets/js/app.js"></script>
 <script>
-// FAQ toggle
-function toggleFAQ(btn) {
-  const item = btn.closest('.faq-item');
-  const isOpen = item.classList.contains('open');
-  document.querySelectorAll('.faq-item.open').forEach(i => i.classList.remove('open'));
-  if (!isOpen) item.classList.add('open');
-}
-// Lazy fade-in
-document.querySelectorAll('img[loading="lazy"]').forEach(img => {
-  img.classList.add('lazy-img');
-  if(img.complete) { img.classList.add('loaded'); return; }
-  img.addEventListener('load', () => img.classList.add('loaded'));
-});
+function toggleFAQ(btn){const item=btn.closest('.faq-item');const open=item.classList.contains('open');document.querySelectorAll('.faq-item.open').forEach(i=>i.classList.remove('open'));if(!open)item.classList.add('open');}
 </script>
 </body>
 </html>
