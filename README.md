@@ -1,174 +1,768 @@
-# WellFix Appliances — Frontend Developer Guide
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="description" content="WellFix Appliances — Kerala's most trusted home and kitchen appliance shop. 100% genuine products, best prices, free delivery.">
+  <title>WellFix Appliances – Home &amp; Kitchen Appliances Kerala</title>
+  <link rel="icon" href="assets/images/WELLFIX-FAVICON.png" type="image/png">
+  <link rel="stylesheet" href="assets/css/main.css">
+</head>
+<body>
 
-## Project Structure
+<!-- ══════════════════════════════════════════
+     HEADER (from component)
+     ══════════════════════════════════════════ -->
 
-```
-wellfix-website/
-│
-├── index.html                  ← Homepage (entry point)
-│
-├── assets/
-│   ├── css/
-│   │   ├── main.css            ← IMPORT ONLY — loads all CSS modules
-│   │   ├── tokens.css          ← Design system: colors, spacing, fonts, shadows
-│   │   ├── base.css            ← Reset + global utilities + buttons
-│   │   ├── header.css          ← Topbar, site header, search, category navbar
-│   │   ├── product-card.css    ← Product card component + grid layouts
-│   │   ├── sections.css        ← All homepage sections (hero, flash, services, etc)
-│   │   └── footer.css          ← Footer + mobile nav + WhatsApp FAB
-│   │
-│   ├── js/
-│   │   └── app.js              ← All JavaScript: data, rendering, cart, timer
-│   │
-│   └── images/
-│       ├── WELLFIX-MAIN-LOGO.png   ← Main header logo
-│       ├── WELLFIX-FAVICON.png     ← Browser tab icon
-│       └── (add product images here)
-│
-├── components/
-│   ├── header.html             ← Reusable header snippet
-│   ├── footer.html             ← Reusable footer snippet
-│   └── product-card.html       ← Product card HTML reference
-│
-└── pages/
-    ├── products.html           ← Full products listing page
-    ├── services.html           ← Services & repair booking page
-    ├── about.html              ← About page
-    └── contact.html            ← Contact page
-```
-
----
-
-## How to Edit Products
-
-Open `assets/js/app.js` and find the `PRODUCTS` array at the top.
-
-Each product has these fields:
-```js
-{
-  id: 1,                      // Unique number
-  name: 'Product Name Here',  // Full product name
-  brand: 'Brand Name',        // Brand (appears in uppercase)
-  price: 3499,                // Selling price (in ₹, numbers only)
-  old: 4500,                  // MRP / original price
-  disc: 22,                   // Discount % (calculated from above)
-  rating: 4.8,                // Star rating (0–5, allows .5)
-  reviews: 245,               // Number of reviews
-  warranty: '2 Year',         // Warranty text
-  badge: 'hot',               // 'hot', 'sale', 'new', or '' (empty = no badge)
-  img: 'URL or path'          // Image URL or 'assets/images/product.jpg'
-}
-```
-
-**To add a product:** copy any existing object, paste it at the end of the array, update all fields, give it a unique `id`.
-
-**To remove a product:** delete the whole `{ ... }` block.
-
-**To change price:** update `price` and `old` fields. Update `disc` manually.
-
----
-
-## How to Add Images
-
-1. Upload images to `assets/images/` folder.
-2. Use relative paths in the product data: `img: 'assets/images/your-product.jpg'`
-3. Recommended image size: 600×600px, square, white/light background.
-4. Format: JPG or WebP (smaller file size).
-
-For pages inside `/pages/`, use `../assets/images/your-image.jpg` (one level up).
-
----
-
-## How to Edit Banners
-
-Banners are in `index.html` inside the `<!-- HERO BANNERS -->` and `<!-- PROMO BANNERS -->` sections.
-
-Each banner card looks like:
-```html
-<div class="hero-card">
-  <img class="hero-card__img" src="YOUR_IMAGE_URL" alt="Description">
-  <div class="hero-card__overlay">
-    <div class="hero-card__label">Top Sellers</div>
-    <div class="hero-card__title">Your Title</div>
-    <a href="#" class="hero-card__cta">Shop Now ...</a>
+<!-- Topbar -->
+<div class="topbar">
+  <div class="container topbar__inner">
+    <div class="topbar__links">
+      <a href="pages/track-order.html">Track Order</a>
+      <a href="pages/store-locator.html">Store Locator</a>
+      <a href="pages/contact.html">Help</a>
+    </div>
+    <div class="topbar__center">
+      Free delivery across Kerala &nbsp;·&nbsp;
+      <strong>+91 85900 04349</strong>
+    </div>
+    <div class="topbar__links">
+      <a href="#">100% Genuine</a>
+      <a href="#">Best Price Guarantee</a>
+    </div>
   </div>
 </div>
-```
 
-Replace the `src`, label, title, and `href` link to update a banner.
+<header class="site-header">
+  <div class="container site-header__inner">
 
----
+    <!-- Logo -->
+    <a href="index.html" class="logo" aria-label="WellFix Home">
+      <img
+        src="assets/images/WELLFIX-MAIN-LOGO.png"
+        alt="WellFix Appliances"
+        class="logo__img"
+        onerror="this.style.display='none'">
+    </a>
 
-## How to Update Categories
+    <!-- Desktop search (hidden on mobile) -->
+    <div class="header-search">
+      <select class="header-search__cat" aria-label="Category filter">
+        <option>All</option>
+        <option>Mixers</option>
+        <option>Stoves</option>
+        <option>Fans</option>
+        <option>Cookers</option>
+        <option>Motors</option>
+        <option>Spare Parts</option>
+      </select>
+      <input class="header-search__input" type="search"
+        placeholder="Search products, brands, spare parts…" aria-label="Search">
+      <button class="header-search__btn" aria-label="Search">
+        <svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+          <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+      </button>
+    </div>
 
-Category pills are in `index.html` inside `<!-- CATEGORY PILLS -->`.
+    <!-- Mobile search icon (hidden on desktop) -->
+    <button class="mob-search-btn" id="mobSearchOpen" aria-label="Open search">
+      <svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+        <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+      </svg>
+    </button>
 
-Each pill looks like:
-```html
-<div class="cat-pill">
-  <img class="cat-pill__img" src="IMAGE_URL" alt="Category Name">
-  <span class="cat-pill__name">Category Name</span>
+    <!-- Spacer pushes actions to right on mobile -->
+    <div style="flex:1;" class="mob-spacer"></div>
+
+    <!-- Actions -->
+    <div class="header-actions">
+      <button class="hdr-action hdr-action--account">
+        <svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+          <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/>
+          <circle cx="12" cy="7" r="4"/>
+        </svg>
+        <span>Account</span>
+      </button>
+
+      <button class="hdr-action">
+        <svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+          <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/>
+        </svg>
+        <span>Wishlist</span>
+        <span class="hdr-action__badge" data-wish-count style="display:none"></span>
+      </button>
+
+      <a href="pages/cart.html" class="hdr-cart">
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/>
+          <line x1="3" y1="6" x2="21" y2="6"/>
+          <path d="M16 10a4 4 0 01-8 0"/>
+        </svg>
+        <span class="label">Cart</span>
+        <span class="hdr-cart__count" data-cart-count></span>
+      </a>
+    </div>
+
+  </div>
+</header>
+
+<!-- Mobile Search Overlay -->
+<div class="mob-search-overlay" id="mobSearchOverlay">
+  <div class="mob-search-overlay__backdrop" id="mobSearchBackdrop"></div>
+  <div class="mob-search-overlay__panel">
+    <div class="mob-search-overlay__top">
+      <button class="mob-search-back" id="mobSearchClose" aria-label="Close search">
+        <svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+          <line x1="19" y1="12" x2="5" y2="12"/>
+          <polyline points="12 19 5 12 12 5"/>
+        </svg>
+      </button>
+      <span class="mob-search-overlay__label">Search WellFix</span>
+    </div>
+    <div class="mob-search-overlay__input-row">
+      <input
+        class="mob-search-overlay__input"
+        id="mobSearchInput"
+        type="search"
+        placeholder="Mixers, stoves, fans, spare parts…"
+        autocomplete="off"
+        autofocus>
+      <button class="mob-search-overlay__go" aria-label="Go">
+        <svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+          <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+      </button>
+    </div>
+    <div class="mob-search-overlay__hints">
+      <button class="mob-search-hint">Sujata Mixer</button>
+      <button class="mob-search-hint">Gas Stove</button>
+      <button class="mob-search-hint">Ceiling Fan</button>
+      <button class="mob-search-hint">Pressure Cooker</button>
+      <button class="mob-search-hint">Spare Parts</button>
+      <button class="mob-search-hint">Water Motor</button>
+    </div>
+  </div>
 </div>
-```
 
-Add/remove/reorder these `cat-pill` divs to change the category strip.
+<!-- Category Navbar -->
+<nav class="cat-navbar">
+  <div class="container cat-navbar__inner">
+    <button class="cat-navbar__all">
+      <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="15" height="15">
+        <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+      </svg>
+      All Categories
+    </button>
+    <div class="cat-navbar__links">
+      <a class="cat-nav-link active" href="pages/products.html?cat=mixers-grinders">Mixers &amp; Grinders</a>
+      <a class="cat-nav-link" href="pages/products.html?cat=gas-stoves">Gas Stoves</a>
+      <a class="cat-nav-link" href="pages/products.html?cat=fans">Fans</a>
+      <a class="cat-nav-link" href="pages/products.html?cat=pressure-cookers">Pressure Cookers</a>
+      <a class="cat-nav-link" href="pages/products.html?cat=water-motors">Water Motors</a>
+      <a class="cat-nav-link" href="pages/products.html?cat=cookware-pans">Cookware</a>
+      <a class="cat-nav-link" href="pages/products.html?cat=spare-parts">Spare Parts</a>
+      <a class="cat-nav-link" href="pages/services.html">Services <span class="dot-new">New</span></a>
+      <a class="cat-nav-link" href="pages/brands.html">Brands</a>
+    </div>
+    <div class="cat-navbar__spacer"></div>
+    <div class="cat-navbar__location">
+      <svg fill="currentColor" viewBox="0 0 24 24">
+        <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+      </svg>
+      Kerala, India
+    </div>
+  </div>
+</nav>
 
----
 
-## How to Update Contact / Phone Number
+<!-- ══════════════════════════════════════════
+     OFFER STRIP
+     ══════════════════════════════════════════ -->
+<div class="offer-strip">
+  <div class="container offer-strip__inner">
+    <div class="offer-strip__item">
+      <div class="offer-strip__icon">
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/>
+          <circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/>
+        </svg>
+      </div>
+      <div class="offer-strip__text">
+        <h5>Free Delivery</h5>
+        <p>Across all Kerala</p>
+      </div>
+    </div>
+    <div class="offer-strip__item">
+      <div class="offer-strip__icon">
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+        </svg>
+      </div>
+      <div class="offer-strip__text">
+        <h5>Shop + Company Warranty</h5>
+        <p>Double protection</p>
+      </div>
+    </div>
+    <div class="offer-strip__item">
+      <div class="offer-strip__icon">
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/>
+        </svg>
+      </div>
+      <div class="offer-strip__text">
+        <h5>Best Price Guarantee</h5>
+        <p>No one beats us</p>
+      </div>
+    </div>
+    <div class="offer-strip__item">
+      <div class="offer-strip__icon">
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/>
+        </svg>
+      </div>
+      <div class="offer-strip__text">
+        <h5>Doorstep Repair</h5>
+        <p>Expert technicians</p>
+      </div>
+    </div>
+  </div>
+</div>
 
-Search for `85900 04349` in any file and replace with the new number.
 
-WhatsApp links follow the format: `https://wa.me/91XXXXXXXXXX?text=Your+message`
+<!-- ══════════════════════════════════════════
+     HERO BANNERS (compact 3-col)
+     ══════════════════════════════════════════ -->
+<section class="hero-compact">
+  <div class="container">
+    <div class="wf-hero-grid" id="heroGrid">
 
----
+      <!-- Main hero — left, 380px tall -->
+      <div class="hero-card hero-card--main" id="heroMain">
+        <img class="hero-card__img" id="heroMainImg"
+          src="https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=1200&q=80&auto=format&fit=crop"
+          alt="Premium Kitchen Appliances" loading="eager">
+        <div class="hero-card__overlay">
+          <div class="hero-card__tag">
+            <svg width="10" height="10" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            <span id="heroMainTag">New Arrivals 2025</span>
+          </div>
+          <div class="hero-card__title" id="heroMainTitle">Premium<br>Kitchen<br>Appliances</div>
+          <a href="#trending" class="hero-card__cta hero-card__cta--gold" id="heroMainCta">
+            Shop Now
+            <svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          </a>
+        </div>
+      </div>
 
-## Design System Customization
+      <!-- Right 2×2 quad — 4 cards same total height as main -->
+      <div class="wf-quad-grid" id="heroQuad">
+        <div class="hero-card wf-quad-card" id="quad0">
+          <img src="https://images.unsplash.com/photo-1585771724684-38269d6639fd?w=600&q=80&auto=format&fit=crop" alt="Mixer Grinders" loading="eager">
+          <div class="hero-card__overlay"><div class="hero-card__label">Top Sellers</div><div class="hero-card__title" style="font-size:14px;">Mixer Grinders</div></div>
+        </div>
+        <div class="hero-card wf-quad-card" id="quad1">
+          <img src="https://images.unsplash.com/photo-1484154218962-a197022b5858?w=600&q=80&auto=format&fit=crop" alt="Gas Stoves" loading="eager">
+          <div class="hero-card__overlay"><div class="hero-card__label">Best Deals</div><div class="hero-card__title" style="font-size:14px;">Gas Stoves</div></div>
+        </div>
+        <div class="hero-card wf-quad-card" id="quad2">
+          <img src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&q=80&auto=format&fit=crop" alt="Ceiling Fans" loading="eager">
+          <div class="hero-card__overlay"><div class="hero-card__label">New Stock</div><div class="hero-card__title" style="font-size:14px;">Ceiling Fans</div></div>
+        </div>
+        <div class="hero-card wf-quad-card" id="quad3">
+          <img src="https://images.unsplash.com/photo-1556909172-54557c7e4fb7?w=600&q=80&auto=format&fit=crop" alt="Pressure Cookers" loading="eager">
+          <div class="hero-card__overlay"><div class="hero-card__label">Best Value</div><div class="hero-card__title" style="font-size:14px;">Pressure Cookers</div></div>
+        </div>
+      </div>
 
-All colors, fonts, spacing are in `assets/css/tokens.css`.
+    </div>
+  </div>
+</section>
 
-Key variables to change brand color:
-```css
---color-primary:       #034732;   /* Main green */
---color-primary-dark:  #023d29;   /* Darker green for hover */
---color-accent:        #e8b429;   /* Gold accent */
-```
 
----
+<!-- ══════════════════════════════════════════
+     CATEGORY PILLS
+     ══════════════════════════════════════════ -->
+<section class="cat-section">
+  <div class="container">
+    <div class="sec-hd">
+      <div>
+        <div class="sec-hd__title">Browse <span>Categories</span></div>
+      </div>
+      <a href="#" class="sec-hd__link">
+        View All
+        <svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+          <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
+        </svg>
+      </a>
+    </div>
+    <div class="cat-strip scrollbar-hide">
+      <div class="cat-pill is-active">
+        <img class="cat-pill__img" src="https://m.media-amazon.com/images/I/71xWjt8zkFL._AC_SX679_.jpg" alt="Mixers" loading="lazy">
+        <span class="cat-pill__name">Mixers</span>
+      </div>
+      <div class="cat-pill">
+        <img class="cat-pill__img" src="https://m.media-amazon.com/images/I/7115Tw3ysWL.jpg" alt="Stoves" loading="lazy">
+        <span class="cat-pill__name">Stoves</span>
+      </div>
+      <div class="cat-pill">
+        <img class="cat-pill__img" src="https://www.greencircletrading.ae/wp-content/uploads/2024/04/orientelectric_ce0130_01__56339.jpg" alt="Fans" loading="lazy">
+        <span class="cat-pill__name">Fans</span>
+      </div>
+      <div class="cat-pill">
+        <img class="cat-pill__img" src="https://www.ikea.com/global/assets/range-categorisation/images/product/pressure-cookers-22669.jpeg" alt="Cookers" loading="lazy">
+        <span class="cat-pill__name">Cookers</span>
+      </div>
+      <div class="cat-pill">
+        <img class="cat-pill__img" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTkFbfhggznijE94fFTFevOuk1-JuNzwto4YQ&s" alt="Water Motors" loading="lazy">
+        <span class="cat-pill__name">Motors</span>
+      </div>
+      <div class="cat-pill">
+        <img class="cat-pill__img" src="https://m.media-amazon.com/images/I/61386y+fKxL.jpg" alt="Washing" loading="lazy">
+        <span class="cat-pill__name">Washing</span>
+      </div>
+      <div class="cat-pill">
+        <img class="cat-pill__img" src="https://images-na.ssl-images-amazon.com/images/I/71V7IgXRNaL._UL500_.jpg" alt="Cookware" loading="lazy">
+        <span class="cat-pill__name">Cookware</span>
+      </div>
+      <div class="cat-pill">
+        <img class="cat-pill__img" src="https://image.made-in-china.com/202f0j00NjGcuwUynYqR/Gas-Burner-Stove-Burner-Gas-Cooker-Parts-Oven-Parts-Gas-Spare-Parts.webp" alt="Spare Parts" loading="lazy">
+        <span class="cat-pill__name">Spare Parts</span>
+      </div>
+    </div>
+  </div>
+</section>
 
-## Scaling to Admin Panel (Future)
 
-This project is structured to support backend integration:
+<!-- ══════════════════════════════════════════
+     FLASH SALE
+     ══════════════════════════════════════════ -->
+<section class="flash-section">
+  <div class="container">
+    <div class="flash-section__head">
+      <div class="flash-section__left">
+        <div class="flash-section__icon">
+          <svg fill="currentColor" viewBox="0 0 24 24">
+            <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+          </svg>
+        </div>
+        <div>
+          <div class="flash-section__title">Flash Sale</div>
+          <div class="flash-section__sub">Limited stock — grab it fast</div>
+        </div>
+      </div>
+      <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
+        <div class="flash-timer">
+          <div class="timer-unit">
+            <div class="timer-num" id="t-h">02</div>
+            <div class="timer-label">Hrs</div>
+          </div>
+          <span class="timer-sep">:</span>
+          <div class="timer-unit">
+            <div class="timer-num" id="t-m">45</div>
+            <div class="timer-label">Min</div>
+          </div>
+          <span class="timer-sep">:</span>
+          <div class="timer-unit">
+            <div class="timer-num" id="t-s">30</div>
+            <div class="timer-label">Sec</div>
+          </div>
+        </div>
+        <button class="flash-view-all">View All</button>
+      </div>
+    </div>
+    <div class="flash-products scrollbar-hide" id="flash-products">
+      <!-- Rendered by JS -->
+    </div>
+  </div>
+</section>
 
-1. **Products**: The `PRODUCTS` array in `app.js` can be replaced with a `fetch()` call to an API endpoint.
-   ```js
-   const res = await fetch('/api/products');
-   const PRODUCTS = await res.json();
-   ```
 
-2. **Images**: Currently stored in `assets/images/`. Later move to a CDN (Cloudinary, S3).
+<!-- ══════════════════════════════════════════
+     TRENDING PRODUCTS
+     ══════════════════════════════════════════ -->
+<section style="padding: var(--sp-5) 0;" id="trending">
+  <div class="container">
+    <div class="sec-hd">
+      <div>
+        <div class="sec-hd__title">Trending <span>Products</span></div>
+        <div class="sec-hd__sub">Bestsellers trusted by thousands of Kerala homes</div>
+      </div>
+      <a href="pages/products.html" class="sec-hd__link">
+        All Products
+        <svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+          <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
+        </svg>
+      </a>
+    </div>
+    <div class="products-grid" id="trending-products">
+      <!-- Rendered by JS -->
+    </div>
+  </div>
+</section>
 
-3. **Orders/Cart**: Currently client-side state. Add a cart API when backend is ready.
 
-4. **Admin panel suggestion**: 
-   - Strapi (headless CMS) or Firebase for product management
-   - Admin UI can use the same design tokens from `tokens.css`
-   - Keep CSS modules structure — each new page imports `main.css`
+<!-- ══════════════════════════════════════════
+     BRAND BAR
+     ══════════════════════════════════════════ -->
+<div class="brands-bar">
+  <div class="container">
+    <div class="brands-bar__inner scrollbar-hide">
+      <div class="brand-pill"><div class="brand-pill__name">Sujata</div><div class="brand-pill__count">24 Products</div></div>
+      <div class="brand-pill"><div class="brand-pill__name">Preethi</div><div class="brand-pill__count">18 Products</div></div>
+      <div class="brand-pill"><div class="brand-pill__name">Butterfly</div><div class="brand-pill__count">31 Products</div></div>
+      <div class="brand-pill"><div class="brand-pill__name">Prestige</div><div class="brand-pill__count">42 Products</div></div>
+      <div class="brand-pill"><div class="brand-pill__name">Pigeon</div><div class="brand-pill__count">17 Products</div></div>
+      <div class="brand-pill"><div class="brand-pill__name">Havells</div><div class="brand-pill__count">12 Products</div></div>
+      <div class="brand-pill"><div class="brand-pill__name">Kirloskar</div><div class="brand-pill__count">8 Products</div></div>
+    </div>
+  </div>
+</div>
 
----
 
-## File Naming Convention
+<!-- ══════════════════════════════════════════
+     PROMO BANNERS
+     ══════════════════════════════════════════ -->
+<section class="banners-section">
+  <div class="container">
+    <div class="banners-grid">
+      <div class="banner-card">
+        <img src="https://images.unsplash.com/photo-1556909172-54557c7e4fb7?w=900&q=80&auto=format&fit=crop" alt="Up to 30% off">
+        <div class="banner-card__overlay">
+          <div class="banner-card__label">Limited Time</div>
+          <div class="banner-card__title">Up to 30% Off<br>on Top Brands</div>
+          <div class="banner-card__cta">
+            Shop Now
+            <svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+              <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:var(--sp-3);">
+        <div class="banner-card">
+          <img src="https://images.unsplash.com/photo-1585771724684-38269d6639fd?w=500&q=80&auto=format&fit=crop" alt="Sujata Mixers">
+          <div class="banner-card__overlay">
+            <div class="banner-card__label">Best Sellers</div>
+            <div class="banner-card__title">Sujata<br>Mixers</div>
+            <div class="banner-card__cta">Explore
+              <svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
+              </svg>
+            </div>
+          </div>
+        </div>
+        <div class="banner-card">
+          <img src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=500&q=80&auto=format&fit=crop" alt="Premium Fans">
+          <div class="banner-card__overlay">
+            <div class="banner-card__label">New Stock</div>
+            <div class="banner-card__title">Premium<br>Fans</div>
+            <div class="banner-card__cta">View All
+              <svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
+              </svg>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
 
-- HTML: lowercase, hyphens (`product-detail.html`)
-- CSS: lowercase, hyphens (`product-card.css`)
-- Images: UPPERCASE for logo/favicon (`WELLFIX-LOGO.png`), lowercase for products (`sujata-mixer.jpg`)
-- JS: camelCase functions, UPPER_SNAKE for constants
 
----
+<!-- ══════════════════════════════════════════
+     SERVICES
+     ══════════════════════════════════════════ -->
+<section class="services-section" id="services">
+  <div class="container">
+    <div class="sec-hd">
+      <div>
+        <div class="sec-hd__title">Expert <span>Repair Services</span></div>
+        <div class="sec-hd__sub">Doorstep service across Kerala</div>
+      </div>
+      <a href="pages/services.html" class="sec-hd__link">
+        Book Service
+        <svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+          <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
+        </svg>
+      </a>
+    </div>
 
-## Browser Support
+    <div class="services-hero">
+      <div class="services-hero__text">
+        <h3>Doorstep Repair<br>at Your Convenience</h3>
+        <p>Fast, reliable service. Genuine spare parts. Full service warranty on every job.</p>
+        <a href="https://wa.me/918590004349?text=Hi%20WellFix!%20I%20want%20to%20book%20a%20repair%20service"
+           class="btn btn-gold btn-lg" style="width:fit-content;">
+          <svg fill="currentColor" viewBox="0 0 24 24" width="18" height="18">
+            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347zM12 2C6.477 2 2 6.477 2 12c0 1.89.525 3.66 1.438 5.168L2 22l4.978-1.413A9.955 9.955 0 0012 22c5.523 0 10-4.477 10-10S17.523 2 12 2z"/>
+          </svg>
+          Book on WhatsApp
+        </a>
+      </div>
+      <div class="services-hero__img">
+        <img src="https://images.unsplash.com/photo-1581578731548-c64695cc6952?w=400&q=80&auto=format&fit=crop" alt="Service technician">
+      </div>
+    </div>
 
-- Chrome, Safari, Firefox, Edge (last 2 versions)
-- iOS Safari 14+
-- Android Chrome 90+
-- Uses CSS variables, Grid, Flexbox — no polyfills needed for target audience
+    <div class="services-grid">
+      <div class="service-card">
+        <div class="service-card__icon">
+          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path d="M6 13l6 6 6-6M6 5l6 6 6-6"/>
+          </svg>
+        </div>
+        <div class="service-card__name">Mixer &amp; Grinder Repair</div>
+        <div class="service-card__price">From <strong>₹150</strong></div>
+      </div>
+      <div class="service-card">
+        <div class="service-card__icon">
+          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path d="M3 3h18v7a9 9 0 01-18 0V3z"/><line x1="12" y1="17" x2="12" y2="21"/><line x1="8" y1="21" x2="16" y2="21"/>
+          </svg>
+        </div>
+        <div class="service-card__name">Washing Machine Service</div>
+        <div class="service-card__price">From <strong>₹350</strong></div>
+      </div>
+      <div class="service-card">
+        <div class="service-card__icon">
+          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path d="M12 2c-4.97 0-9 4.03-9 9 0 2.38.94 4.55 2.47 6.17M12 2v5M12 22v-5M22 12h-5M2 12h5"/>
+          </svg>
+        </div>
+        <div class="service-card__name">Gas Stove Repair</div>
+        <div class="service-card__price">From <strong>₹100</strong></div>
+      </div>
+      <div class="service-card">
+        <div class="service-card__icon">
+          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
+          </svg>
+        </div>
+        <div class="service-card__name">Fan Repair &amp; Service</div>
+        <div class="service-card__price">From <strong>₹120</strong></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ══════════════════════════════════════════
+     REVIEWS
+     ══════════════════════════════════════════ -->
+<section class="reviews-section" style="background:var(--color-surface);border-top:1px solid var(--color-border);">
+  <div class="container">
+    <div class="sec-hd">
+      <div>
+        <div class="sec-hd__title">What Our <span>Customers Say</span></div>
+        <div class="sec-hd__sub">Trusted by 5,000+ families across Kerala</div>
+      </div>
+    </div>
+    <div class="reviews-grid">
+      <div class="review-card">
+        <div class="review-card__stars">
+          <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+        </div>
+        <p class="review-card__text">"Got a Sujata mixer here at a price nobody else in Kerala was offering. The product is 100% genuine with full company warranty. WellFix is my go-to shop."</p>
+        <div class="review-card__author">
+          <div class="review-card__avatar">RM</div>
+          <div>
+            <div class="review-card__name">Rahul Menon</div>
+            <div class="review-card__loc">Thrissur, Kerala</div>
+          </div>
+        </div>
+      </div>
+      <div class="review-card">
+        <div class="review-card__stars">
+          <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+        </div>
+        <p class="review-card__text">"Called for washing machine repair, the technician arrived same day, used original parts, gave me a service warranty too. Very professional and affordable."</p>
+        <div class="review-card__author">
+          <div class="review-card__avatar">PK</div>
+          <div>
+            <div class="review-card__name">Priya Krishnan</div>
+            <div class="review-card__loc">Ernakulam, Kerala</div>
+          </div>
+        </div>
+      </div>
+      <div class="review-card">
+        <div class="review-card__stars">
+          <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+        </div>
+        <p class="review-card__text">"Best price on Prestige pressure cooker — checked every shop in Kochi before finding WellFix. Got shop warranty on top of company warranty. Highly recommended."</p>
+        <div class="review-card__author">
+          <div class="review-card__avatar">AJ</div>
+          <div>
+            <div class="review-card__name">Anil Jose</div>
+            <div class="review-card__loc">Kochi, Kerala</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ══════════════════════════════════════════
+     FOOTER (from component)
+     ══════════════════════════════════════════ -->
+<footer class="site-footer">
+  <div class="container">
+    <div class="site-footer__grid">
+      <div class="footer-brand">
+        <div class="footer-brand__logo">
+          <img src="assets/images/WELLFIX-MAIN-LOGO.png" alt="WellFix"
+               style="height:28px;filter:brightness(0) invert(1);opacity:.8;"
+               onerror="this.outerHTML='<span style=\'font-family:var(--font-display);font-size:18px;font-weight:800;color:#fff;\'>WellFix</span>'">
+        </div>
+        <p class="footer-brand__desc">Kerala's most trusted home and kitchen appliance sales &amp; service shop. Original products, best prices, genuine warranties — since day one.</p>
+        <div class="footer-social">
+          <a href="#" class="footer-social__btn" aria-label="Facebook">
+            <svg fill="currentColor" viewBox="0 0 24 24"><path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"/></svg>
+          </a>
+          <a href="#" class="footer-social__btn" aria-label="Instagram">
+            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r=".5" fill="currentColor"/>
+            </svg>
+          </a>
+          <a href="https://wa.me/918590004349" class="footer-social__btn" aria-label="WhatsApp">
+            <svg fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347zM12 2C6.477 2 2 6.477 2 12c0 1.89.525 3.66 1.438 5.168L2 22l4.978-1.413A9.955 9.955 0 0012 22c5.523 0 10-4.477 10-10S17.523 2 12 2z"/></svg>
+          </a>
+          <a href="#" class="footer-social__btn" aria-label="YouTube">
+            <svg fill="currentColor" viewBox="0 0 24 24"><path d="M22.54 6.42a2.78 2.78 0 00-1.95-1.96C18.88 4 12 4 12 4s-6.88 0-8.59.46a2.78 2.78 0 00-1.95 1.96A29 29 0 001 12a29 29 0 00.46 5.58A2.78 2.78 0 003.41 19.6C5.12 20 12 20 12 20s6.88 0 8.59-.4a2.78 2.78 0 001.95-1.95A29 29 0 0023 12a29 29 0 00-.46-5.58z"/><polygon fill="#fff" points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02"/></svg>
+          </a>
+        </div>
+      </div>
+      <div class="footer-col">
+        <h5 class="footer-col__title">Shop</h5>
+        <div class="footer-links">
+          <a href="pages/products.html?cat=mixers-grinders">Mixers &amp; Grinders</a>
+          <a href="pages/products.html?cat=gas-stoves">Gas Stoves</a>
+          <a href="pages/products.html?cat=fans">Fans</a>
+          <a href="pages/products.html?cat=pressure-cookers">Pressure Cookers</a>
+          <a href="pages/products.html?cat=water-motors">Water Motors</a>
+          <a href="#">Cookware &amp; Pans</a>
+          <a href="pages/products.html?cat=spare-parts">Spare Parts</a>
+        </div>
+      </div>
+      <div class="footer-col">
+        <h5 class="footer-col__title">Services</h5>
+        <div class="footer-links">
+          <a href="pages/services.html">Mixer Repair</a>
+          <a href="pages/services.html">Washing Machine</a>
+          <a href="pages/services.html">Gas Stove Repair</a>
+          <a href="pages/services.html">Fan Service</a>
+          <a href="pages/services.html">Cooker Repair</a>
+          <a href="pages/services.html">Book a Service</a>
+        </div>
+      </div>
+      <div class="footer-col">
+        <h5 class="footer-col__title">Contact</h5>
+        <div class="footer-contact-item">
+          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.18 9.84 19.79 19.79 0 01.11 1.23 2 2 0 012.11 1h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.91 8.09a16 16 0 006 6l.91-.91a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 15.4v1.52z"/></svg>
+          <span>+91 85900 04349</span>
+        </div>
+        <div class="footer-contact-item">
+          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          <span>Kerala, India</span>
+        </div>
+        <div class="footer-contact-item">
+          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          <span>Mon – Sat: 9 AM – 7 PM</span>
+        </div>
+      </div>
+    </div>
+    <div class="site-footer__bottom">
+      <p>© 2025 WellFix Appliances. All rights reserved.</p>
+      <div class="footer-bottom-links">
+        <a href="#">Privacy Policy</a>
+        <a href="#">Terms of Use</a>
+        <a href="#">Sitemap</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- WhatsApp FAB -->
+<a href="https://wa.me/918590004349?text=Hi%20WellFix!%20I%20need%20help" class="wa-fab" aria-label="WhatsApp">
+  <svg fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347zM12 2C6.477 2 2 6.477 2 12c0 1.89.525 3.66 1.438 5.168L2 22l4.978-1.413A9.955 9.955 0 0012 22c5.523 0 10-4.477 10-10S17.523 2 12 2z"/></svg>
+</a>
+
+<!-- Mobile Bottom Nav -->
+<nav class="mobile-nav">
+  <a class="mobile-nav__item is-active" href="index.html"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Home</button>
+  <a class="mobile-nav__item" href="pages/products.html"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>Categories</button>
+  <button class="mobile-nav__item"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>Search</button>
+  <button class="mobile-nav__item" style="position:relative;">
+    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+    <span class="mobile-nav__badge" data-cart-badge></span>
+    Cart
+  </button>
+  <button class="mobile-nav__item"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Account</button>
+</nav>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="backend/config/supabase.js"></script>
+<script src="assets/js/app.js"></script>
+
+<script>
+(function(){
+  function waitDB(fn,t){if(typeof db!=='undefined'){fn();return;}if(t>40)return;setTimeout(function(){waitDB(fn,t+1);},100);}
+  function loadBanners(){
+    db.from('banners')
+      .select('id,title,badge_text,cta_url,position,is_active,desktop_image_url,starts_at,ends_at')
+      .order('sort_order')
+      .then(function(res){
+        var data=res.data;
+        if(!data||!data.length)return;
+        var now=new Date();
+        var active=data.filter(function(b){
+          if(!b.is_active)return false;
+          if(b.starts_at&&new Date(b.starts_at)>now)return false;
+          if(b.ends_at&&new Date(b.ends_at)<now)return false;
+          return true;
+        });
+        // Main hero
+        var h=active.find(function(b){return b.position==='hero';});
+        if(h&&h.desktop_image_url){
+          var mi=document.getElementById('heroMainImg');
+          if(mi)mi.src=h.desktop_image_url;
+          var mt=document.getElementById('heroMainTitle');
+          if(mt&&h.title)mt.textContent=h.title;
+          var mg=document.getElementById('heroMainTag');
+          if(mg&&h.badge_text)mg.textContent=h.badge_text;
+          var mc=document.getElementById('heroMainCta');
+          if(mc&&h.cta_url)mc.href=h.cta_url;
+        }
+        // Quad cards
+        var cards=active.filter(function(b){return b.position==='hero_card';});
+        cards.forEach(function(b,i){
+          if(!b.desktop_image_url)return;
+          var el=document.getElementById('quad'+i);
+          if(!el)return;
+          var img=el.querySelector('img');
+          if(img){img.src=b.desktop_image_url;img.alt=b.title||'';}
+          var lbl=el.querySelector('.hero-card__label');
+          if(lbl&&b.badge_text)lbl.textContent=b.badge_text;
+          var ttl=el.querySelector('.hero-card__title');
+          if(ttl&&b.title)ttl.textContent=b.title;
+        });
+      });
+  }
+  document.addEventListener('DOMContentLoaded',function(){waitDB(loadBanners,0);});
+})();
+</script>
+</body>
+</html>
