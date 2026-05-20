@@ -101,7 +101,7 @@
         </svg>
         <span class="label">Cart</span>
         <span class="hdr-cart__count" data-cart-count></span>
-      </button>
+      </a>
     </div>
 
   </div>
@@ -235,43 +235,43 @@
      ══════════════════════════════════════════ -->
 <section class="hero-compact">
   <div class="container">
-    <div class="hero-new-grid" id="heroGrid">
+    <div class="wf-hero-grid" id="heroGrid">
 
-      <!-- Main hero — left col, 380px -->
+      <!-- Main hero — left, 380px tall -->
       <div class="hero-card hero-card--main" id="heroMain">
-        <img class="hero-card__img"
+        <img class="hero-card__img" id="heroMainImg"
           src="https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=1200&q=80&auto=format&fit=crop"
           alt="Premium Kitchen Appliances" loading="eager">
         <div class="hero-card__overlay">
           <div class="hero-card__tag">
             <svg width="10" height="10" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-            New Arrivals 2025
+            <span id="heroMainTag">New Arrivals 2025</span>
           </div>
-          <div class="hero-card__title">Premium<br>Kitchen<br>Appliances</div>
-          <a href="#trending" class="hero-card__cta hero-card__cta--gold">
+          <div class="hero-card__title" id="heroMainTitle">Premium<br>Kitchen<br>Appliances</div>
+          <a href="#trending" class="hero-card__cta hero-card__cta--gold" id="heroMainCta">
             Shop Now
             <svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
           </a>
         </div>
       </div>
 
-      <!-- Right: 2×2 quad grid -->
-      <div class="hero-quad-grid" id="heroQuad">
-        <div class="hero-card hero-card--quad">
-          <img class="hero-card__img" src="https://images.unsplash.com/photo-1585771724684-38269d6639fd?w=600&q=80&auto=format&fit=crop" alt="Mixer Grinders" loading="eager">
-          <div class="hero-card__overlay"><div class="hero-card__label">Top Sellers</div><div class="hero-card__title">Mixer Grinders</div></div>
+      <!-- Right 2×2 quad — 4 cards same total height as main -->
+      <div class="wf-quad-grid" id="heroQuad">
+        <div class="hero-card wf-quad-card" id="quad0">
+          <img src="https://images.unsplash.com/photo-1585771724684-38269d6639fd?w=600&q=80&auto=format&fit=crop" alt="Mixer Grinders" loading="eager">
+          <div class="hero-card__overlay"><div class="hero-card__label">Top Sellers</div><div class="hero-card__title" style="font-size:14px;">Mixer Grinders</div></div>
         </div>
-        <div class="hero-card hero-card--quad">
-          <img class="hero-card__img" src="https://images.unsplash.com/photo-1484154218962-a197022b5858?w=600&q=80&auto=format&fit=crop" alt="Gas Stoves" loading="eager">
-          <div class="hero-card__overlay"><div class="hero-card__label">Best Deals</div><div class="hero-card__title">Gas Stoves</div></div>
+        <div class="hero-card wf-quad-card" id="quad1">
+          <img src="https://images.unsplash.com/photo-1484154218962-a197022b5858?w=600&q=80&auto=format&fit=crop" alt="Gas Stoves" loading="eager">
+          <div class="hero-card__overlay"><div class="hero-card__label">Best Deals</div><div class="hero-card__title" style="font-size:14px;">Gas Stoves</div></div>
         </div>
-        <div class="hero-card hero-card--quad">
-          <img class="hero-card__img" src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&q=80&auto=format&fit=crop" alt="Ceiling Fans" loading="eager">
-          <div class="hero-card__overlay"><div class="hero-card__label">New Stock</div><div class="hero-card__title">Ceiling Fans</div></div>
+        <div class="hero-card wf-quad-card" id="quad2">
+          <img src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&q=80&auto=format&fit=crop" alt="Ceiling Fans" loading="eager">
+          <div class="hero-card__overlay"><div class="hero-card__label">New Stock</div><div class="hero-card__title" style="font-size:14px;">Ceiling Fans</div></div>
         </div>
-        <div class="hero-card hero-card--quad">
-          <img class="hero-card__img" src="https://images.unsplash.com/photo-1556909172-54557c7e4fb7?w=600&q=80&auto=format&fit=crop" alt="Pressure Cookers" loading="eager">
-          <div class="hero-card__overlay"><div class="hero-card__label">Best Value</div><div class="hero-card__title">Pressure Cookers</div></div>
+        <div class="hero-card wf-quad-card" id="quad3">
+          <img src="https://images.unsplash.com/photo-1556909172-54557c7e4fb7?w=600&q=80&auto=format&fit=crop" alt="Pressure Cookers" loading="eager">
+          <div class="hero-card__overlay"><div class="hero-card__label">Best Value</div><div class="hero-card__title" style="font-size:14px;">Pressure Cookers</div></div>
         </div>
       </div>
 
@@ -505,39 +505,43 @@
       </div>
     </div>
 
-    <div class="services-grid" id="servicesGrid">
-      <a class="service-card" href="pages/services.html">
-        <img class="service-card__img" src="https://images.unsplash.com/photo-1585771724684-38269d6639fd?w=400&q=75&auto=format&fit=crop" alt="Mixer Grinder Repair" loading="lazy">
-        <div class="service-card__body">
-          <div class="service-card__icon"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 13l6 6 6-6M6 5l6 6 6-6"/></svg></div>
-          <div class="service-card__name">Mixer &amp; Grinder Repair</div>
-          <div class="service-card__price">From <strong>₹150</strong></div>
+    <div class="services-grid">
+      <div class="service-card">
+        <div class="service-card__icon">
+          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path d="M6 13l6 6 6-6M6 5l6 6 6-6"/>
+          </svg>
         </div>
-      </a>
-      <a class="service-card" href="pages/services.html">
-        <img class="service-card__img" src="https://images.unsplash.com/photo-1558618047-f4e43b30b0cd?w=400&q=75&auto=format&fit=crop" alt="Washing Machine Service" loading="lazy">
-        <div class="service-card__body">
-          <div class="service-card__icon"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 3h18v7a9 9 0 01-18 0V3z"/><line x1="12" y1="17" x2="12" y2="21"/><line x1="8" y1="21" x2="16" y2="21"/></svg></div>
-          <div class="service-card__name">Washing Machine Service</div>
-          <div class="service-card__price">From <strong>₹350</strong></div>
+        <div class="service-card__name">Mixer &amp; Grinder Repair</div>
+        <div class="service-card__price">From <strong>₹150</strong></div>
+      </div>
+      <div class="service-card">
+        <div class="service-card__icon">
+          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path d="M3 3h18v7a9 9 0 01-18 0V3z"/><line x1="12" y1="17" x2="12" y2="21"/><line x1="8" y1="21" x2="16" y2="21"/>
+          </svg>
         </div>
-      </a>
-      <a class="service-card" href="pages/services.html">
-        <img class="service-card__img" src="https://images.unsplash.com/photo-1484154218962-a197022b5858?w=400&q=75&auto=format&fit=crop" alt="Gas Stove Repair" loading="lazy">
-        <div class="service-card__body">
-          <div class="service-card__icon"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2c-4.97 0-9 4.03-9 9 0 2.38.94 4.55 2.47 6.17"/></svg></div>
-          <div class="service-card__name">Gas Stove Repair</div>
-          <div class="service-card__price">From <strong>₹100</strong></div>
+        <div class="service-card__name">Washing Machine Service</div>
+        <div class="service-card__price">From <strong>₹350</strong></div>
+      </div>
+      <div class="service-card">
+        <div class="service-card__icon">
+          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path d="M12 2c-4.97 0-9 4.03-9 9 0 2.38.94 4.55 2.47 6.17M12 2v5M12 22v-5M22 12h-5M2 12h5"/>
+          </svg>
         </div>
-      </a>
-      <a class="service-card" href="pages/services.html">
-        <img class="service-card__img" src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&q=75&auto=format&fit=crop" alt="Fan Repair" loading="lazy">
-        <div class="service-card__body">
-          <div class="service-card__icon"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg></div>
-          <div class="service-card__name">Fan Repair &amp; Service</div>
-          <div class="service-card__price">From <strong>₹120</strong></div>
+        <div class="service-card__name">Gas Stove Repair</div>
+        <div class="service-card__price">From <strong>₹100</strong></div>
+      </div>
+      <div class="service-card">
+        <div class="service-card__icon">
+          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
+          </svg>
         </div>
-      </a>
+        <div class="service-card__name">Fan Repair &amp; Service</div>
+        <div class="service-card__price">From <strong>₹120</strong></div>
+      </div>
     </div>
   </div>
 </section>
@@ -714,47 +718,51 @@
 <script src="assets/js/app.js"></script>
 
 <script>
-// DB banner loader — updates img src only, never replaces DOM
-function waitForDB(fn,t){if(typeof db!=='undefined'){fn();return;}if(t>30)return;setTimeout(()=>waitForDB(fn,t+1),100);}
-async function loadLiveBanners(){
-  try{
-    const{data}=await db.from('banners').select('id,title,badge_text,cta_url,position,is_active,desktop_image_url,starts_at,ends_at').order('sort_order');
-    if(!data||!data.length)return;
-    const now=new Date();
-    const active=data.filter(b=>{
-      if(!b.is_active)return false;
-      if(b.starts_at&&new Date(b.starts_at)>now)return false;
-      if(b.ends_at&&new Date(b.ends_at)<now)return false;
-      return true;
-    });
-    // Update main hero
-    const hero=active.find(b=>b.position==='hero');
-    if(hero){
-      const el=document.getElementById('heroMain');
-      if(el&&hero.desktop_image_url){
-        el.querySelector('img').src=hero.desktop_image_url;
-        if(hero.title)el.querySelector('.hero-card__title').innerHTML=hero.title.replace(/ /g,'<br>');
-        if(hero.badge_text)el.querySelector('.hero-card__tag').lastChild.textContent=hero.badge_text;
-        const cta=el.querySelector('.hero-card__cta');
-        if(cta&&hero.cta_url)cta.href=hero.cta_url;
-      }
-    }
-    // Update quad cards
-    const cards=active.filter(b=>b.position==='hero_card');
-    const quad=document.getElementById('heroQuad');
-    if(quad&&cards.length){
-      const els=quad.querySelectorAll('.hero-card--quad');
-      cards.forEach((b,i)=>{
-        if(els[i]&&b.desktop_image_url){
-          els[i].querySelector('img').src=b.desktop_image_url;
-          if(b.title)els[i].querySelector('.hero-card__title').textContent=b.title;
-          if(b.badge_text)els[i].querySelector('.hero-card__label').textContent=b.badge_text;
+(function(){
+  function waitDB(fn,t){if(typeof db!=='undefined'){fn();return;}if(t>40)return;setTimeout(function(){waitDB(fn,t+1);},100);}
+  function loadBanners(){
+    db.from('banners')
+      .select('id,title,badge_text,cta_url,position,is_active,desktop_image_url,starts_at,ends_at')
+      .order('sort_order')
+      .then(function(res){
+        var data=res.data;
+        if(!data||!data.length)return;
+        var now=new Date();
+        var active=data.filter(function(b){
+          if(!b.is_active)return false;
+          if(b.starts_at&&new Date(b.starts_at)>now)return false;
+          if(b.ends_at&&new Date(b.ends_at)<now)return false;
+          return true;
+        });
+        // Main hero
+        var h=active.find(function(b){return b.position==='hero';});
+        if(h&&h.desktop_image_url){
+          var mi=document.getElementById('heroMainImg');
+          if(mi)mi.src=h.desktop_image_url;
+          var mt=document.getElementById('heroMainTitle');
+          if(mt&&h.title)mt.textContent=h.title;
+          var mg=document.getElementById('heroMainTag');
+          if(mg&&h.badge_text)mg.textContent=h.badge_text;
+          var mc=document.getElementById('heroMainCta');
+          if(mc&&h.cta_url)mc.href=h.cta_url;
         }
+        // Quad cards
+        var cards=active.filter(function(b){return b.position==='hero_card';});
+        cards.forEach(function(b,i){
+          if(!b.desktop_image_url)return;
+          var el=document.getElementById('quad'+i);
+          if(!el)return;
+          var img=el.querySelector('img');
+          if(img){img.src=b.desktop_image_url;img.alt=b.title||'';}
+          var lbl=el.querySelector('.hero-card__label');
+          if(lbl&&b.badge_text)lbl.textContent=b.badge_text;
+          var ttl=el.querySelector('.hero-card__title');
+          if(ttl&&b.title)ttl.textContent=b.title;
+        });
       });
-    }
-  }catch(e){}
-}
-document.addEventListener('DOMContentLoaded',()=>waitForDB(loadLiveBanners));
+  }
+  document.addEventListener('DOMContentLoaded',function(){waitDB(loadBanners,0);});
+})();
 </script>
 </body>
 </html>
