@@ -583,7 +583,7 @@
 /* ─── WF HERO QUAD LAYOUT ────────────────────────────────
    Added: 1 main hero + 2x2 quad grid
    ──────────────────────────────────────────────────────── */
-.wf-hero-grid{display:grid;grid-template-columns:3fr 2fr;gap:12px;align-items:stretch;}
+.wf-hero-grid{display:grid;grid-template-columns:1fr 2fr;gap:var(--sp-3);align-items:stretch;}
 .wf-hero-grid .hero-card--main .hero-card__img{height:380px;object-fit:cover;object-position:center;}
 .wf-quad-grid{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:185px 185px;gap:10px;}
 .wf-quad-card{border-radius:10px;overflow:hidden;position:relative;display:block;}
