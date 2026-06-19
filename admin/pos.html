@@ -495,6 +495,7 @@
 </div></div></div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="../backend/config/supabase.js"></script>
+<script src="../backend/config/transactions.js"></script>
 <script src="assets/js/shell.js"></script>
 <script>
 'use strict';
@@ -733,7 +734,13 @@ function setMode(m,el){
 }
 
 // ── CHARGE ────────────────────────────────────────────────
-async function chargeBill(){
+// ── NEW UNIFIED BILLING CORE (Module 2) ──────────────────
+// createTransaction() is the new POS write engine. It keeps the
+// existing pos_invoices write intact (backward compatible) AND
+// writes a parallel row into the unified `transactions` core.
+// Only backend logic changed — cart UI, calc(), payment UI and
+// mode selector are untouched.
+async function createTransaction(){
   if(!cart.length){toast('Cart empty',true);return;}
   const{sub,da,tax,tot,gstPct,gstOn}=calc();
   const invCode=genInv();
@@ -742,9 +749,12 @@ async function chargeBill(){
   btn.textContent='Processing…';btn.disabled=true;
   try{
     const custName=cust?.name||document.getElementById('custInp').value||'Walk-in';
-    const typeMap={sale:'sale',quote:'quotation',return:'return',refund:'refund'};
-    const statusMap={sale:'completed',quote:'draft',return:'returned',refund:'completed'};
-    const payStMap={sale:'paid',quote:'pending',return:'refunded',refund:'refunded'};
+    const typeMap={sale:'sale',quote:'quotation',return:'return',refund:'refund',service:'service'};
+    const statusMap={sale:'completed',quote:'draft',return:'returned',refund:'completed',service:'completed'};
+    const payStMap={sale:'paid',quote:'pending',return:'refunded',refund:'refunded',service:'paid'};
+    const payRef=payMethod==='emi'
+      ?(document.getElementById('emiPartner').value+':'+(document.getElementById('emiRef').value||''))
+      :(document.getElementById('refInp').value||null);
     const payload={
       invoice_number:invCode,
       invoice_type:typeMap[mode]||'sale',
@@ -758,19 +768,43 @@ async function chargeBill(){
       paid_amount:mode==='quote'?0:tot,
       due_amount:mode==='quote'?tot:0,
       payment_method:payMethod,
-      payment_reference:payMethod==='emi'
-        ?(document.getElementById('emiPartner').value+':'+(document.getElementById('emiRef').value||''))
-        :(document.getElementById('refInp').value||null),
+      payment_reference:payRef,
       payment_status:payStMap[mode]||'paid',
       cashier:AdminShell.user?.profile?.full_name||AdminShell.user?.email||'Admin',
       status:statusMap[mode]||'completed',
     };
+    // ── 1) BACKWARD-COMPAT WRITE: pos_invoices (unchanged) ──
     const{data:inv,error}=await db.from('pos_invoices').insert(payload).select().single();
     if(error)throw new Error(error.message);
     const{error:ie}=await db.from('pos_invoice_items').insert(
       cart.map(i=>({invoice_id:inv.id,product_id:i.id.startsWith('m')?null:i.id,product_name:i.name,sku:i.sku||null,quantity:i.qty,unit_price:i.price,total_price:i.total}))
     );
     if(ie)throw new Error(ie.message);
+    // ── 2) UNIFIED TRANSACTION CORE (parallel · non-fatal) ──
+    // Best-effort: if the transactions table isn't migrated yet
+    // (or the write fails) the legacy flow above still succeeds.
+    if(window.WFTx){
+      const{error:txe}=await WFTx.createTransaction({
+        type:typeMap[mode]||'sale',
+        reference_source:'pos',
+        status:mode==='quote'?'draft':'completed',
+        invoice_number:invCode,
+        source_invoice_id:inv.id,
+        customer_id:cust?.id||null,
+        customer_name:custName,
+        customer_phone:cust?.phone||null,
+        subtotal:sub,
+        discount:da,
+        tax:gstOn?tax:0,
+        total:tot,
+        payment_method:payMethod,
+        payment_status:payStMap[mode]||'paid',
+        payment_reference:payRef,
+        cashier:payload.cashier,
+        items:cart,
+      });
+      if(txe)console.warn('[WFTx] parallel transaction write skipped:',txe.message);
+    }
     // Stock sync
     if(mode==='sale'){
       for(const i of cart){
@@ -805,6 +839,9 @@ async function chargeBill(){
     calc();
   }
 }
+// Backward-compatible alias — existing onclick="chargeBill()" and the
+// Ctrl/Cmd+Enter keybinding still call into the new engine unchanged.
+function chargeBill(){return createTransaction();}
 
 // ── RECEIPT ───────────────────────────────────────────────
 function showReceipt(inv,items,meta,bMode){
