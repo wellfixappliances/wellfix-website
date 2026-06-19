@@ -2,182 +2,163 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>WellFix POS — Premium UI Prototype</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>WellFix POS</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
-/* ============================================================
-   WellFix POS — Premium UI Prototype (UI DIRECTION ONLY)
-   Apple / Stripe / Linear inspired · Manrope · ERP-grade
-   Standalone & self-contained. No production logic wired.
-   Element IDs mirror the live pos.html so logic ports cleanly.
-   ============================================================ */
 :root{
-  --green-900:#022e20; --green-800:#034732; --green-700:#0a5c43;
-  --green-600:#0f7a58; --green-500:#16a34a; --green-50:#eef6f2;
-  --green-100:#dcefe7;
-  --ink:#0c1311; --ink-2:#3b4844; --muted:#6b7975; --faint:#9aa6a2;
-  --line:#e9ecea; --line-2:#f1f4f2; --bg:#f6f8f7; --card:#ffffff;
-  --danger:#dc2626; --danger-50:#fef2f2; --amber:#b45309;
-  --shadow-sm:0 1px 2px rgba(12,19,17,.05);
-  --shadow:0 1px 3px rgba(12,19,17,.06),0 8px 24px -12px rgba(12,19,17,.12);
-  --shadow-lg:0 12px 40px -12px rgba(12,19,17,.22);
-  --r:14px; --r-sm:10px; --r-xs:8px;
+  --green-900:#022e20;--green-800:#034732;--green-700:#0a5c43;--green-600:#0f7a58;--green-500:#16a34a;
+  --green-50:#eef6f2;--green-100:#dcefe7;--gold:#F0C419;--gold-soft:#fbe7a0;
+  --ink:#0c1311;--ink-2:#3b4844;--muted:#6b7975;--faint:#9aa6a2;
+  --line:#e9ecea;--line-2:#f1f4f2;--bg:#f6f8f7;--card:#fff;--danger:#dc2626;--danger-50:#fef2f2;
+  --accent:var(--gold);
+  --shadow-sm:0 1px 2px rgba(12,19,17,.05);--shadow:0 1px 3px rgba(12,19,17,.06),0 8px 24px -12px rgba(12,19,17,.12);
+  --shadow-lg:0 12px 40px -12px rgba(12,19,17,.22);--r:14px;--r-sm:10px;
   font-family:'Manrope',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
 }
 *{margin:0;padding:0;box-sizing:border-box}
 html,body{height:100%}
 body{background:var(--bg);color:var(--ink);font-size:13px;line-height:1.45;-webkit-font-smoothing:antialiased;font-variant-numeric:tabular-nums;letter-spacing:-.01em;overflow:hidden}
 button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
-input{font-family:inherit;font-variant-numeric:tabular-nums}
-.num{font-variant-numeric:tabular-nums;font-feature-settings:"tnum"}
+input,select{font-family:inherit;font-variant-numeric:tabular-nums}
+.num{font-variant-numeric:tabular-nums}
 .eyebrow{font-size:10px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--faint)}
-
-/* ---- App frame ------------------------------------------------ */
+.sidebar,.topbar,.mobile-bottom-nav{display:none!important}
 .app{display:flex;height:100vh}
-.rail{width:60px;background:var(--green-800);display:flex;flex-direction:column;align-items:center;padding:14px 0;gap:6px;flex-shrink:0}
-.rail .logo-dot{width:34px;height:34px;border-radius:9px;background:linear-gradient(135deg,#16a34a,#0a5c43);display:grid;place-items:center;color:#fff;font-weight:800;margin-bottom:10px;box-shadow:0 4px 12px rgba(0,0,0,.2)}
+.rail{width:60px;background:var(--green-800);display:flex;flex-direction:column;align-items:center;padding:12px 0;gap:5px;flex-shrink:0}
+.rail .lg{width:38px;height:38px;border-radius:10px;overflow:hidden;margin-bottom:8px;background:var(--green-900);display:grid;place-items:center}
+.rail .lg img{width:100%;height:100%;object-fit:contain}
 .rail-btn{width:42px;height:42px;border-radius:11px;display:grid;place-items:center;color:#bfe3d4;transition:.18s}
 .rail-btn svg{width:19px;height:19px}
 .rail-btn:hover{background:rgba(255,255,255,.08);color:#fff}
 .rail-btn.on{background:rgba(255,255,255,.14);color:#fff}
+.rail-btn.gold.on,.rail-btn.gold:hover{background:var(--gold);color:var(--green-800)}
 .rail-sp{flex:1}
-
 .main{flex:1;display:flex;flex-direction:column;min-width:0}
-
-/* ---- Top bar -------------------------------------------------- */
-.topbar{height:64px;background:var(--card);border-bottom:1px solid var(--line);display:flex;align-items:center;padding:0 22px;gap:18px;flex-shrink:0}
+.topbar2{height:64px;background:var(--card);border-bottom:1px solid var(--line);display:flex;align-items:center;padding:0 20px;gap:16px;flex-shrink:0}
 .brand{display:flex;align-items:center;gap:10px}
-.brand .mark{width:30px;height:30px;border-radius:8px;background:conic-gradient(from 140deg,#16a34a,#0a5c43,#16a34a);transform:rotate(8deg)}
-.brand b{font-weight:800;font-size:17px;letter-spacing:-.02em}
-.brand span{font-size:9px;font-weight:700;letter-spacing:.16em;color:var(--faint);display:block;margin-top:-2px}
+.brand img{height:34px;width:auto;object-fit:contain}
 .modes{display:flex;gap:2px;background:var(--line-2);padding:4px;border-radius:12px;margin:0 auto}
-.mode{padding:8px 18px;border-radius:9px;font-weight:600;font-size:13px;color:var(--muted);transition:.16s;letter-spacing:-.01em}
+.mode{padding:8px 16px;border-radius:9px;font-weight:600;font-size:13px;color:var(--muted);transition:.16s}
 .mode:hover{color:var(--ink)}
 .mode.on{background:var(--green-800);color:#fff;box-shadow:var(--shadow-sm)}
-.top-right{display:flex;align-items:center;gap:12px}
-.hold-pill{display:flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:11px;padding:8px 14px;font-weight:600;font-size:12px;transition:.16s}
+.top-right{display:flex;align-items:center;gap:10px}
+.hold-pill{display:flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:11px;padding:8px 13px;font-weight:600;font-size:12px}
 .hold-pill:hover{border-color:var(--green-600);color:var(--green-700)}
-.icon-btn{position:relative;width:40px;height:40px;border-radius:11px;display:grid;place-items:center;color:var(--ink-2);transition:.16s}
+.icon-btn{position:relative;width:40px;height:40px;border-radius:11px;display:grid;place-items:center;color:var(--ink-2)}
 .icon-btn:hover{background:var(--line-2)}
-.icon-btn .badge{position:absolute;top:5px;right:5px;background:var(--danger);color:#fff;font-size:9px;font-weight:700;min-width:16px;height:16px;border-radius:8px;display:grid;place-items:center;padding:0 4px;border:2px solid var(--card)}
-.user{display:flex;align-items:center;gap:9px;padding:5px 8px 5px 5px;border-radius:11px;transition:.16s}
+.user{display:flex;align-items:center;gap:9px;padding:5px 8px 5px 5px;border-radius:11px}
 .user:hover{background:var(--line-2)}
-.user .av{width:34px;height:34px;border-radius:9px;background:linear-gradient(135deg,#0a5c43,#16a34a);color:#fff;display:grid;place-items:center;font-weight:700;font-size:13px}
+.user .av{width:34px;height:34px;border-radius:9px;background:linear-gradient(135deg,var(--green-700),var(--green-500));color:#fff;display:grid;place-items:center;font-weight:700;font-size:13px}
 .user .nm{font-weight:700;font-size:12.5px;line-height:1.2}
-.user .rl{font-size:10.5px;color:var(--muted)}
-
-/* ---- Workspace ------------------------------------------------ */
+.user .rl{font-size:10.5px;color:var(--muted);text-transform:capitalize}
 .work{flex:1;display:grid;grid-template-columns:340px 1fr 360px;gap:14px;padding:14px;min-height:0}
 .panel{background:var(--card);border:1px solid var(--line);border-radius:var(--r);display:flex;flex-direction:column;min-height:0;overflow:hidden}
-.panel-hd{padding:16px 18px 12px;display:flex;align-items:center;justify-content:space-between}
+.panel-hd{padding:15px 18px 11px;display:flex;align-items:center;justify-content:space-between}
 .panel-hd h2{font-size:15px;font-weight:800;letter-spacing:-.02em}
 .kebab{width:30px;height:30px;border-radius:8px;display:grid;place-items:center;color:var(--faint)}
 .kebab:hover{background:var(--line-2);color:var(--ink-2)}
-
-/* ---- Products ------------------------------------------------- */
 .search-wrap{padding:0 18px 12px;display:flex;gap:8px}
 .search{flex:1;position:relative}
 .search svg{position:absolute;left:12px;top:50%;transform:translateY(-50%);width:16px;height:16px;color:var(--faint)}
-.search input{width:100%;border:1px solid var(--line);border-radius:var(--r-sm);padding:10px 12px 10px 36px;font-size:13px;background:var(--bg);transition:.16s}
+.search input{width:100%;border:1px solid var(--line);border-radius:var(--r-sm);padding:10px 12px 10px 36px;font-size:13px;background:var(--bg)}
 .search input:focus{outline:none;border-color:var(--green-600);background:#fff;box-shadow:0 0 0 4px var(--green-50)}
 .scan-btn{width:42px;border:1px solid var(--green-600);border-radius:var(--r-sm);display:grid;place-items:center;color:var(--green-700)}
 .scan-btn:hover{background:var(--green-50)}
-.cat-row{padding:2px 18px 10px}
-.cat-row .cat-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:9px}
-.cat-row .cat-top .eyebrow{color:var(--ink-2)}
-.cat-row .view-all{font-size:11px;font-weight:700;color:var(--green-700)}
-.chips{display:flex;flex-wrap:wrap;gap:6px}
+.cat-row{padding:0 18px 10px}
+.cat-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:9px}
+.cat-top .eyebrow{color:var(--ink-2)}
+.view-all{font-size:11px;font-weight:700;color:var(--green-700)}
+.chips{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
 .chip{padding:6px 12px;border-radius:8px;font-size:11.5px;font-weight:600;background:var(--line-2);color:var(--ink-2);transition:.15s;white-space:nowrap}
 .chip:hover{background:var(--green-50);color:var(--green-700)}
 .chip.on{background:var(--green-800);color:#fff}
+.chip-add{width:30px;height:30px;border-radius:8px;background:var(--gold);color:var(--green-800);display:grid;place-items:center;margin-left:auto}
+.chip-add svg{width:17px;height:17px}
 .prod-scroll{flex:1;overflow-y:auto;padding:4px 18px 12px}
 .prod-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
 .pcard{border:1px solid var(--line);border-radius:var(--r-sm);padding:9px;background:#fff;transition:.16s;text-align:left}
 .pcard:hover{border-color:var(--green-600);box-shadow:var(--shadow);transform:translateY(-2px)}
-.pcard .ph{height:64px;border-radius:7px;background:linear-gradient(135deg,#f4f6f5,#e9efec);display:grid;place-items:center;margin-bottom:8px;color:var(--green-700)}
-.pcard .ph svg{width:30px;height:30px;opacity:.7}
+.pcard .ph{height:64px;border-radius:7px;background:var(--green-50);display:grid;place-items:center;margin-bottom:8px;color:var(--green-700);overflow:hidden}
+.pcard .ph img{width:100%;height:100%;object-fit:cover}
+.pcard .ph svg{width:28px;height:28px;opacity:.7}
 .pcard .pn{font-size:11.5px;font-weight:600;line-height:1.3;color:var(--ink);height:30px;overflow:hidden}
 .pcard .pp{font-weight:800;font-size:13px;margin-top:4px}
 .pcard .pst{font-size:10px;font-weight:700;color:var(--green-600);margin-top:1px}
-.prod-ft{padding:12px 18px;border-top:1px solid var(--line-2);display:flex;align-items:center;justify-content:space-between}
+.pcard .pst.low{color:var(--danger)}
+.prod-ft{padding:11px 18px;border-top:1px solid var(--line-2);display:flex;align-items:center;justify-content:space-between}
 .prod-ft .tp{font-size:11.5px;color:var(--muted);font-weight:600}
-.load-btn{border:1px solid var(--line);border-radius:8px;padding:7px 16px;font-size:11.5px;font-weight:700;color:var(--ink-2)}
-.load-btn:hover{background:var(--line-2)}
-
-/* ---- Cart ----------------------------------------------------- */
 .cart-hd-actions{display:flex;gap:8px;align-items:center}
-.mini-btn{display:flex;align-items:center;gap:7px;border:1px solid var(--line);border-radius:9px;padding:8px 13px;font-size:12px;font-weight:600;color:var(--ink-2);transition:.16s}
+.mini-btn{display:flex;align-items:center;gap:7px;border:1px solid var(--line);border-radius:9px;padding:8px 12px;font-size:12px;font-weight:600;color:var(--ink-2)}
 .mini-btn:hover{border-color:var(--green-600);color:var(--green-700);background:var(--green-50)}
 .mini-btn svg{width:15px;height:15px}
+.svc-bar{display:none;padding:0 18px 10px;gap:8px}
+.svc-bar.show{display:flex;flex-wrap:wrap}
+.svc-btn{display:flex;align-items:center;gap:6px;border:1px dashed var(--green-600);color:var(--green-700);border-radius:9px;padding:8px 12px;font-size:12px;font-weight:700;background:var(--green-50)}
+.svc-btn svg{width:15px;height:15px}
 .cart-body{flex:1;overflow-y:auto;padding:0 18px}
-.cart-tablehd{display:grid;grid-template-columns:24px 1fr 96px 78px 86px 64px 84px 28px;gap:8px;padding:10px 4px;border-bottom:1px solid var(--line);position:sticky;top:0;background:var(--card);z-index:2}
+.cart-tablehd{display:grid;grid-template-columns:22px 1fr 92px 74px 80px 58px 80px 26px;gap:8px;padding:10px 4px;border-bottom:1px solid var(--line);position:sticky;top:0;background:var(--card);z-index:2}
 .cart-tablehd span{font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--faint)}
 .cart-tablehd span:nth-child(n+3){text-align:center}
-.crow{display:grid;grid-template-columns:24px 1fr 96px 78px 86px 64px 84px 28px;gap:8px;align-items:center;padding:14px 4px;border-bottom:1px solid var(--line-2)}
+.crow{display:grid;grid-template-columns:22px 1fr 92px 74px 80px 58px 80px 26px;gap:8px;align-items:center;padding:13px 4px;border-bottom:1px solid var(--line-2)}
 .crow .idx{font-weight:700;color:var(--faint);font-size:12px}
 .crow .item{display:flex;gap:10px;align-items:center;min-width:0}
-.crow .item .thumb{width:42px;height:42px;border-radius:8px;background:linear-gradient(135deg,#f4f6f5,#e9efec);display:grid;place-items:center;color:var(--green-700);flex-shrink:0}
-.crow .item .thumb svg{width:20px;height:20px;opacity:.7}
+.crow .item .thumb{width:40px;height:40px;border-radius:8px;background:var(--green-50);display:grid;place-items:center;color:var(--green-700);flex-shrink:0;overflow:hidden}
+.crow .item .thumb img{width:100%;height:100%;object-fit:cover}
+.crow .item .thumb svg{width:18px;height:18px;opacity:.7}
 .crow .item .nm{font-weight:600;font-size:12.5px;line-height:1.3;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.crow .item .sku{font-size:10px;color:var(--faint);font-weight:600;margin-top:2px}
-.stepper{display:flex;align-items:center;justify-content:center;gap:0;border:1px solid var(--line);border-radius:9px;overflow:hidden;height:34px}
-.stepper button{width:30px;height:32px;display:grid;place-items:center;color:var(--ink-2);font-size:15px;transition:.12s}
+.crow .item .sku{font-size:10px;color:var(--faint);font-weight:600;margin-top:2px;text-transform:capitalize}
+.crow .item .tag{font-size:9px;font-weight:700;padding:1px 6px;border-radius:5px;background:var(--gold-soft);color:#7a5b00;margin-left:6px}
+.stepper{display:flex;align-items:center;justify-content:center;border:1px solid var(--line);border-radius:9px;overflow:hidden;height:34px}
+.stepper button{width:28px;height:32px;display:grid;place-items:center;color:var(--ink-2);font-size:15px}
 .stepper button:hover{background:var(--line-2)}
-.stepper .qv{width:34px;text-align:center;font-weight:700;font-size:13px}
-.unit{font-size:9px;color:var(--faint);text-align:center;font-weight:700;letter-spacing:.04em;margin-top:3px}
+.stepper .qv{width:30px;text-align:center;font-weight:700;font-size:13px}
+.unit{font-size:9px;color:var(--faint);text-align:center;font-weight:700;margin-top:3px}
 .cell-c{text-align:center;font-weight:700;font-size:12.5px}
 .disc-in{display:flex;align-items:center;border:1px solid var(--line);border-radius:8px;height:34px;padding:0 4px 0 8px}
-.disc-in input{width:40px;border:none;background:none;font-size:12px;font-weight:600;text-align:right}
+.disc-in input{width:38px;border:none;background:none;font-size:12px;font-weight:600;text-align:right}
 .disc-in input:focus{outline:none}
 .disc-in .cur{font-size:10px;color:var(--faint);font-weight:700;padding-left:4px}
-/* iOS toggle */
-.tgl{position:relative;width:40px;height:23px;border-radius:12px;background:#d4dbd8;transition:.2s;flex-shrink:0;display:inline-block}
-.tgl::after{content:"";position:absolute;top:2px;left:2px;width:19px;height:19px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.2);transition:.2s}
+.tgl{position:relative;width:38px;height:22px;border-radius:12px;background:#d4dbd8;transition:.2s;flex-shrink:0;display:inline-block}
+.tgl::after{content:"";position:absolute;top:2px;left:2px;width:18px;height:18px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.2);transition:.2s}
 .tgl.on{background:var(--green-500)}
-.tgl.on::after{transform:translateX(17px)}
-.tax-cell{display:flex;align-items:center;justify-content:center;gap:6px}
+.tgl.on::after{transform:translateX(16px)}
+.tax-cell{display:flex;align-items:center;justify-content:center;gap:5px}
 .tax-cell .gl{font-size:9px;font-weight:700;color:var(--muted)}
 .rm{width:26px;height:26px;border-radius:7px;display:grid;place-items:center;color:var(--faint);justify-self:center}
 .rm:hover{background:var(--danger-50);color:var(--danger)}
 .rm svg{width:15px;height:15px}
-.note-btn{margin:16px 4px;width:calc(100% - 8px);border:1.5px dashed var(--line);border-radius:var(--r-sm);padding:15px;display:flex;align-items:center;justify-content:center;gap:9px;color:var(--muted);font-weight:600;font-size:12.5px;transition:.16s}
+.note-btn{margin:14px 4px;width:calc(100% - 8px);border:1.5px dashed var(--line);border-radius:var(--r-sm);padding:14px;display:flex;align-items:center;justify-content:center;gap:9px;color:var(--muted);font-weight:600;font-size:12.5px}
 .note-btn:hover{border-color:var(--green-600);color:var(--green-700);background:var(--green-50)}
-.cart-empty{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--faint);gap:12px;padding:40px}
-.cart-empty svg{width:46px;height:46px;opacity:.4}
-/* Cart action bar */
+.cart-empty{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--faint);gap:12px;padding:40px;text-align:center}
+.cart-empty svg{width:44px;height:44px;opacity:.4}
 .cart-actbar{display:flex;border-top:1px solid var(--line);background:var(--card)}
-.cact{flex:1;padding:13px 8px;display:flex;flex-direction:column;align-items:center;gap:4px;color:var(--ink-2);font-size:11px;font-weight:600;transition:.15s;border-right:1px solid var(--line-2)}
+.cact{flex:1;padding:12px 6px;display:flex;flex-direction:column;align-items:center;gap:4px;color:var(--ink-2);font-size:11px;font-weight:600;border-right:1px solid var(--line-2)}
 .cact:last-child{border-right:none}
 .cact:hover{background:var(--line-2)}
 .cact svg{width:17px;height:17px}
 .cact .key{font-size:9px;color:var(--faint);font-weight:700}
 .cact.danger{color:var(--danger)}
 .cact.danger:hover{background:var(--danger-50)}
-
-/* ---- Billing summary ------------------------------------------ */
 .bill{display:flex;flex-direction:column}
 .bill-body{flex:1;overflow-y:auto;padding:4px 18px 0}
 .sumrow{display:flex;align-items:center;justify-content:space-between;padding:11px 0}
 .sumrow .lbl{color:var(--ink-2);font-weight:600;font-size:13px}
 .sumrow .val{font-weight:700;font-size:14px}
-.sumrow.muted .val{color:var(--ink)}
 .divide{height:1px;background:var(--line-2);margin:4px 0}
 .disc-block{padding:8px 0}
-.disc-block .top{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
-.disc-block .top .lbl{font-weight:600;color:var(--ink-2)}
 .radio-group{display:flex;gap:16px;margin-bottom:10px}
 .radio{display:flex;align-items:center;gap:7px;font-size:12.5px;font-weight:600;color:var(--ink-2)}
-.radio .dot{width:16px;height:16px;border-radius:50%;border:2px solid var(--line);display:grid;place-items:center;transition:.15s}
+.radio .dot{width:16px;height:16px;border-radius:50%;border:2px solid var(--line);display:grid;place-items:center}
 .radio.on .dot{border-color:var(--green-600)}
 .radio.on .dot::after{content:"";width:8px;height:8px;border-radius:50%;background:var(--green-600)}
 .disc-input-row{display:flex;align-items:center;gap:10px}
-.field{flex:1;display:flex;align-items:center;border:1px solid var(--line);border-radius:9px;height:38px;padding:0 12px;background:var(--bg);transition:.15s}
+.field{flex:1;display:flex;align-items:center;border:1px solid var(--line);border-radius:9px;height:38px;padding:0 12px;background:var(--bg)}
 .field:focus-within{border-color:var(--green-600);background:#fff;box-shadow:0 0 0 4px var(--green-50)}
 .field .cur{color:var(--faint);font-weight:700;font-size:12px;margin-right:6px}
-.field input{flex:1;border:none;background:none;font-size:13px;font-weight:600}
+.field input{flex:1;border:none;background:none;font-size:13px;font-weight:600;width:100%}
 .field input:focus{outline:none}
 .field.sel{padding:0;position:relative}
 .field.sel select{width:100%;height:100%;border:none;background:none;padding:0 12px;font-size:13px;font-weight:600;-webkit-appearance:none;appearance:none}
@@ -186,72 +167,126 @@ input{font-family:inherit;font-variant-numeric:tabular-nums}
 .disc-amt{font-weight:700;color:var(--danger);font-size:13px;white-space:nowrap}
 .gst-row{display:flex;align-items:center;gap:10px;padding:10px 0}
 .gst-row .lbl{font-weight:600;color:var(--ink-2);display:flex;align-items:center;gap:9px}
-.gst-row .rate{width:90px}
+.gst-row .rate{width:88px}
 .gst-row .gst-amt{margin-left:auto;font-weight:700;font-size:13px}
 .total-card{background:linear-gradient(135deg,var(--green-50),#fff);border:1px solid var(--green-100);border-radius:var(--r);padding:16px 18px;margin:10px 0 16px}
 .total-card .tt{display:flex;align-items:baseline;justify-content:space-between}
 .total-card .tt .lbl{font-size:14px;font-weight:700;color:var(--green-800)}
-.total-card .tt .amt{font-size:28px;font-weight:800;color:var(--green-800);letter-spacing:-.03em}
+.total-card .tt .amt{font-size:27px;font-weight:800;color:var(--green-800);letter-spacing:-.03em}
 .total-card .sub{font-size:11px;color:var(--muted);margin-top:2px}
 .pay-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:10px}
-.pay{border:1px solid var(--line);border-radius:var(--r-sm);padding:11px 4px;display:flex;flex-direction:column;align-items:center;gap:6px;font-size:11px;font-weight:700;color:var(--ink-2);transition:.15s}
+.pay{border:1px solid var(--line);border-radius:var(--r-sm);padding:11px 4px;display:flex;flex-direction:column;align-items:center;gap:6px;font-size:11px;font-weight:700;color:var(--ink-2)}
 .pay svg{width:18px;height:18px}
 .pay:hover{border-color:var(--green-600);color:var(--green-700)}
 .pay.on{background:var(--green-800);color:#fff;border-color:var(--green-800)}
-.split-row{display:flex;align-items:center;justify-content:space-between;border:1px solid var(--line);border-radius:var(--r-sm);padding:13px 14px;margin-top:10px;font-weight:600;font-size:12.5px;color:var(--ink-2);transition:.15s}
+.extra{display:none;padding:10px 0}
+.extra.show{display:block}
+.split-row{display:flex;align-items:center;justify-content:space-between;border:1px solid var(--line);border-radius:var(--r-sm);padding:13px 14px;margin-top:10px;font-weight:600;font-size:12.5px;color:var(--ink-2)}
 .split-row:hover{border-color:var(--green-600);background:var(--green-50)}
-.split-row .l{display:flex;align-items:center;gap:9px}
-.split-row svg{width:16px;height:16px}
 .recv-row{display:flex;align-items:center;justify-content:space-between;padding:13px 0 6px}
 .recv-row .lbl{font-weight:600;color:var(--ink-2)}
 .recv-row .field{max-width:140px}
 .change-row{display:flex;align-items:center;justify-content:space-between;padding:8px 0 14px}
 .change-row .lbl{font-weight:600;color:var(--ink-2)}
 .change-row .val{font-weight:800;font-size:18px;color:var(--green-700)}
-.checkout{margin:0 18px 18px;height:60px;border-radius:var(--r);background:var(--green-800);color:#fff;font-weight:800;font-size:16px;letter-spacing:-.01em;display:flex;align-items:center;justify-content:center;gap:12px;transition:.16s;box-shadow:0 8px 24px -8px rgba(3,71,50,.5)}
-.checkout:hover{background:var(--green-900);transform:translateY(-1px);box-shadow:0 12px 30px -8px rgba(3,71,50,.6)}
+.checkout{margin:0 18px 18px;height:58px;border-radius:var(--r);background:var(--green-800);color:#fff;font-weight:800;font-size:16px;display:flex;align-items:center;justify-content:center;gap:12px;transition:.16s;box-shadow:0 8px 24px -8px rgba(3,71,50,.5)}
+.checkout:hover{background:var(--green-900);transform:translateY(-1px)}
+.checkout:disabled{opacity:.45;cursor:not-allowed;transform:none}
 .checkout svg{width:20px;height:20px}
-
-/* ---- Footer --------------------------------------------------- */
-.footer{height:42px;background:var(--card);border-top:1px solid var(--line);display:flex;align-items:center;padding:0 22px;gap:24px;flex-shrink:0;font-size:11.5px;color:var(--muted);font-weight:600}
+.footer{height:42px;background:var(--card);border-top:1px solid var(--line);display:flex;align-items:center;padding:0 20px;gap:22px;flex-shrink:0;font-size:11.5px;color:var(--muted);font-weight:600}
 .footer .sep{width:1px;height:16px;background:var(--line)}
-.footer .right{margin-left:auto;display:flex;align-items:center;gap:18px}
+.footer .right{margin-left:auto;display:flex;align-items:center;gap:16px}
 .footer .live{display:flex;align-items:center;gap:7px;color:var(--ink-2)}
 .footer .live .dot{width:8px;height:8px;border-radius:50%;background:var(--green-500);box-shadow:0 0 0 3px var(--green-50)}
-.footer .right .it{display:flex;align-items:center;gap:7px}
+.footer .it{display:flex;align-items:center;gap:7px}
 .footer svg{width:14px;height:14px;color:var(--faint)}
-
-/* scrollbars */
+.mtab,.m-only,.m-more{display:none}
+.modal-bg{position:fixed;inset:0;background:rgba(12,19,17,.5);display:none;align-items:center;justify-content:center;z-index:200;padding:20px}
+.modal-bg.show{display:flex}
+.modal{background:#fff;border-radius:var(--r);width:100%;max-width:440px;max-height:86vh;overflow-y:auto;box-shadow:var(--shadow-lg)}
+.modal-hd{display:flex;align-items:center;justify-content:space-between;padding:18px 20px;border-bottom:1px solid var(--line)}
+.modal-hd h3{font-size:16px;font-weight:800}
+.modal-bd{padding:18px 20px}
+.flbl{font-size:12px;font-weight:700;color:var(--ink-2);margin:12px 0 6px;display:block}
+.finp{width:100%;border:1px solid var(--line);border-radius:9px;height:40px;padding:0 12px;font-size:13px;font-weight:600;background:var(--bg)}
+.finp:focus{outline:none;border-color:var(--green-600);background:#fff}
+.btn-primary{width:100%;height:46px;border-radius:11px;background:var(--green-800);color:#fff;font-weight:800;font-size:14px;margin-top:16px}
+.btn-primary:hover{background:var(--green-900)}
+.cat-pick{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.cat-pick .cp{border:1px solid var(--line);border-radius:10px;padding:13px;font-size:13px;font-weight:700;color:var(--ink-2);text-align:center}
+.cat-pick .cp:hover,.cat-pick .cp.on{border-color:var(--green-600);background:var(--green-50);color:var(--green-700)}
+.toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:var(--green-800);color:#fff;padding:12px 22px;border-radius:12px;font-weight:700;font-size:13px;z-index:300;box-shadow:var(--shadow-lg);opacity:0;transition:.25s;pointer-events:none}
+.toast.show{opacity:1;bottom:90px}
+.toast.err{background:var(--danger)}
+.mrow{display:flex;align-items:center;gap:12px;padding:13px 14px;font-size:13px;font-weight:600;border-bottom:1px solid var(--line-2);width:100%;text-align:left}
+.mrow svg{width:18px;height:18px;color:var(--green-700);flex-shrink:0}
+.mrow .ch{margin-left:auto;color:#c0c8c4;width:15px;height:15px}
+.mrow .mc{margin-left:auto;background:var(--line-2);font-size:10px;font-weight:700;padding:2px 8px;border-radius:6px}
+.cust-item{display:flex;align-items:center;gap:10px;padding:10px;border-radius:9px;cursor:pointer}
+.cust-item:hover{background:var(--green-50)}
+.cust-item .ci-av{width:34px;height:34px;border-radius:9px;background:var(--green-50);color:var(--green-700);display:grid;place-items:center;font-weight:700;font-size:12px}
 ::-webkit-scrollbar{width:9px;height:9px}
 ::-webkit-scrollbar-thumb{background:#dde3e0;border-radius:6px;border:2px solid var(--card)}
-::-webkit-scrollbar-thumb:hover{background:#c5cec9}
-
-.proto-tag{position:fixed;bottom:54px;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:6px 14px;border-radius:20px;z-index:50;opacity:.85;box-shadow:var(--shadow-lg)}
-
-@media (max-width:1200px){.work{grid-template-columns:300px 1fr 330px}}
+@media (max-width:1180px){.work{grid-template-columns:300px 1fr 330px}}
+@media (max-width:640px){
+  .rail{display:none}
+  .topbar2{height:56px;padding:0 14px;gap:10px}
+  .brand img{height:28px}
+  .modes{display:none}
+  .top-right{gap:6px}
+  .user .nm,.user .rl,.hold-pill .htxt{display:none}
+  .work{display:block;padding:0;height:calc(100vh - 56px - 60px);overflow:hidden}
+  .panel{border:none;border-radius:0;height:100%;display:none}
+  .footer{display:none}
+  .cart-actbar{display:none}
+  body[data-m="catalog"] .panel--products{display:flex}
+  body[data-m="cart"] .panel--cart{display:flex}
+  body[data-m="pay"] .panel--bill{display:flex}
+  body[data-m="more"] .m-more{display:flex}
+  .prod-grid{grid-template-columns:1fr 1fr}
+  .cart-tablehd{display:none}
+  .crow{grid-template-columns:44px 1fr auto;grid-template-areas:"t n a" "t s s" "t q q";row-gap:8px;padding:14px 2px}
+  .crow .idx{display:none}
+  .crow .item{grid-area:n}
+  .crow .qtywrap{grid-area:q;display:flex;align-items:center;gap:10px}
+  .crow .pricecell{display:none}
+  .crow .unit{display:none}
+  .crow .disccell{grid-area:s;justify-self:start}
+  .crow .taxcell2{grid-area:q;justify-self:end}
+  .crow .amtcell{grid-area:a;justify-self:end;font-size:14px}
+  .crow .rmcell{grid-area:t;align-self:start}
+  .mtab{display:flex;position:fixed;bottom:0;left:0;right:0;height:60px;background:#fff;border-top:1px solid var(--line);z-index:120}
+  .mtab .tb{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:10px;font-weight:700;color:var(--faint);position:relative}
+  .mtab .tb.on{color:var(--green-800)}
+  .mtab .tb svg{width:21px;height:21px}
+  .mtab .tb .b{position:absolute;top:7px;left:50%;margin-left:4px;background:var(--danger);color:#fff;font-size:9px;font-weight:700;min-width:15px;height:15px;border-radius:8px;display:grid;place-items:center;padding:0 3px}
+  .m-only{display:block}
+  .m-more{flex-direction:column;padding:14px;overflow-y:auto;background:var(--bg)}
+  .m-cartbar{position:fixed;bottom:70px;left:0;right:0;margin:0 12px;background:var(--green-800);color:#fff;border-radius:12px;padding:12px 14px;display:flex;align-items:center;gap:10px;z-index:115}
+  .checkout{margin:0}
+  .bill-body{padding-bottom:90px}
+  .modal{max-width:100%;border-radius:18px 18px 0 0;max-height:90vh}
+  .modal-bg{align-items:flex-end;padding:0}
+}
+@media (min-width:641px){.m-cartbar{display:none}}
 </style>
 </head>
-<body>
+<body data-m="catalog">
 <div class="app">
-
-  <!-- icon rail -->
   <aside class="rail">
-    <div class="logo-dot">W</div>
-    <button class="rail-btn on" title="POS"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg></button>
-    <button class="rail-btn" title="Customers"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg></button>
-    <button class="rail-btn" title="Invoices"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6M9 13h6M9 17h4"/></svg></button>
-    <button class="rail-btn" title="New"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v8M8 12h8"/></svg></button>
-    <button class="rail-btn" title="Offers"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><circle cx="7" cy="7" r="1.5"/></svg></button>
-    <button class="rail-btn" title="Reports"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 3v18h18M7 14l4-4 3 3 5-5"/></svg></button>
-    <button class="rail-btn" title="Settings"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg></button>
+    <div class="lg"><img id="railLogo" src="../assets/images/brand/wellfix-icon-white.png" alt="WellFix" onerror="this.style.display='none'"></div>
+    <button class="rail-btn on" title="Sell" onclick="mScreen('catalog')"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg></button>
+    <button class="rail-btn" title="Customers" onclick="openCust()"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></button>
+    <button class="rail-btn" title="Invoices" onclick="goInvoices()"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6M9 13h6M9 17h4"/></svg></button>
+    <button class="rail-btn" title="Held bills" onclick="toast('Held bills: '+held.length)"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 9h6v6H9z"/></svg></button>
+    <button class="rail-btn" title="POS Settings" onclick="openSettings()"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg></button>
     <div class="rail-sp"></div>
-    <button class="rail-btn" title="Exit"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/></svg></button>
+    <button class="rail-btn gold" id="railAdmin" title="Admin Dashboard" style="display:none" onclick="goDashboard()"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 13h8V3H3zM13 21h8V8h-8zM13 3v3h8V3zM3 21h8v-5H3z"/></svg></button>
+    <button class="rail-btn" title="Logout" onclick="doLogout()"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/></svg></button>
   </aside>
-
   <div class="main">
-    <!-- top bar -->
-    <header class="topbar">
-      <div class="brand"><div class="mark"></div><div><b>WellFix</b><span>APPLIANCES</span></div></div>
+    <header class="topbar2">
+      <div class="brand"><img id="topLogo" src="../assets/images/brand/wellfix-logo-green.png" alt="WellFix" onerror="this.style.display='none'"></div>
       <nav class="modes" id="modes">
         <button class="mode on" data-mode="sale" data-label="Checkout">Sale</button>
         <button class="mode" data-mode="quote" data-label="Save Quote">Quotation</button>
@@ -260,64 +295,58 @@ input{font-family:inherit;font-variant-numeric:tabular-nums}
         <button class="mode" data-mode="refund" data-label="Refund">Refund</button>
       </nav>
       <div class="top-right">
-        <button class="hold-pill"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="15" height="15"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 9h6v6H9z"/></svg> Hold Bill (<span id="holdCnt">0</span>)</button>
-        <button class="icon-btn"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0"/></svg><span class="badge">3</span></button>
-        <button class="user"><div class="av">WA</div><div><div class="nm">WellFix Admin</div><div class="rl">Administrator</div></div><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="15" height="15"><path d="M6 9l6 6 6-6"/></svg></button>
+        <button class="hold-pill" onclick="holdBill()"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="15" height="15"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 9h6v6H9z"/></svg> <span class="htxt">Hold (<span id="holdCnt">0</span>)</span></button>
+        <button class="icon-btn"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0"/></svg></button>
+        <button class="user" onclick="openProfile()"><div class="av" id="uAv">··</div><div><div class="nm" id="uName">…</div><div class="rl" id="uRole">…</div></div></button>
       </div>
     </header>
-
-    <!-- workspace -->
     <div class="work">
-
-      <!-- PRODUCTS -->
-      <section class="panel">
+      <section class="panel panel--products">
         <div class="panel-hd"><h2>Products</h2></div>
         <div class="search-wrap">
-          <div class="search"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg><input id="posSearch" placeholder="Search by name, SKU, barcode…" oninput="renderProds()"></div>
-          <button class="scan-btn" title="Scan barcode"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="18" height="18"><path d="M3 5v14M7 5v14M11 5v14M15 5v14M19 5v14"/></svg></button>
+          <div class="search"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg><input id="posSearch" placeholder="Search by name, SKU, barcode…" oninput="applyFilter()"></div>
+          <button class="scan-btn" title="Scan"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="18" height="18"><path d="M3 5v14M7 5v14M11 5v14M15 5v14M19 5v14"/></svg></button>
         </div>
         <div class="cat-row">
-          <div class="cat-top"><span class="eyebrow">Categories</span><button class="view-all">View All</button></div>
+          <div class="cat-top"><span class="eyebrow">Categories</span><button class="view-all" onclick="openCatPicker()">View All</button></div>
           <div class="chips" id="posCats"></div>
         </div>
         <div class="prod-scroll"><div class="prod-grid" id="posProds"></div></div>
-        <div class="prod-ft"><span class="tp">Total Products: 120+</span><button class="load-btn">Load More</button></div>
+        <div class="prod-ft"><span class="tp" id="prodCount">Total Products: 0</span></div>
       </section>
-
-      <!-- CART -->
-      <section class="panel">
+      <section class="panel panel--cart">
         <div class="panel-hd">
           <h2>Cart <span id="cartCount" style="color:var(--muted);font-weight:600;font-size:13px;">(0 Items)</span></h2>
           <div class="cart-hd-actions">
-            <button class="mini-btn"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M19 8v6M22 11h-6"/></svg> Add Customer</button>
-            <button class="mini-btn"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/></svg> Customer Details</button>
-            <button class="kebab"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="16" height="16"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg></button>
+            <button class="mini-btn" onclick="openCust()"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M19 8v6M22 11h-6"/></svg> <span id="custBtnLbl">Add Customer</span></button>
+            <button class="kebab" onclick="clearBill()"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="16" height="16"><path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6"/></svg></button>
           </div>
         </div>
-        <div class="cart-body" id="cartArea">
-          <div class="cart-tablehd">
-            <span>#</span><span style="text-align:left">Item Details</span><span>Qty</span><span>Price</span><span>Discount</span><span>Tax</span><span>Amount</span><span></span>
-          </div>
+        <div class="svc-bar" id="svcBar">
+          <button class="svc-btn" onclick="openManual('service')"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14.7 6.3a4 4 0 00-5.6 5.6L3 18v3h3l6.1-6.1a4 4 0 005.6-5.6l-2.5 2.5-2-2z"/></svg> Service charge</button>
+          <button class="svc-btn" onclick="openManual('labor')"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 21v-2a4 4 0 014-4h4M12 7a3 3 0 11-6 0 3 3 0 016 0zM18 14v6M15 17h6"/></svg> Labour</button>
+          <button class="svc-btn" onclick="mScreen('catalog')"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v8M8 12h8"/></svg> Add product / spare part</button>
+        </div>
+        <div class="cart-body">
+          <div class="cart-tablehd"><span>#</span><span style="text-align:left">Item Details</span><span>Qty</span><span>Price</span><span>Discount</span><span>Tax</span><span>Amount</span><span></span></div>
           <div id="posCart"></div>
-          <button class="note-btn"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="16" height="16"><circle cx="12" cy="12" r="10"/><path d="M12 8v8M8 12h8"/></svg> Add Note / Special Instruction</button>
+          <button class="note-btn" onclick="toast('Note field — coming next')"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="16" height="16"><circle cx="12" cy="12" r="10"/><path d="M12 8v8M8 12h8"/></svg> Add Note / Special Instruction</button>
         </div>
         <div class="cart-actbar">
-          <button class="cact"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 9h6v6H9z"/></svg>Hold Bill<span class="key">F2</span></button>
-          <button class="cact"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 9V2h12v7M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><path d="M6 14h12v8H6z"/></svg>Print A4 Invoice<span class="key">F3</span></button>
-          <button class="cact"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 7h6M9 11h6M9 15h3"/></svg>Print Thermal<span class="key">F4</span></button>
-          <button class="cact"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg>WhatsApp Share<span class="key">F5</span></button>
-          <button class="cact danger" onclick="clearCart()"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>Clear Cart<span class="key">&nbsp;</span></button>
+          <button class="cact" onclick="holdBill()"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 9h6v6H9z"/></svg>Hold Bill<span class="key">F2</span></button>
+          <button class="cact" onclick="printReceipt('a4')"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 9V2h12v7M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><path d="M6 14h12v8H6z"/></svg>Print A4<span class="key">F3</span></button>
+          <button class="cact" onclick="printReceipt('thermal')"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 7h6M9 11h6M9 15h3"/></svg>Thermal<span class="key">F4</span></button>
+          <button class="cact" onclick="waShare()"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg>WhatsApp<span class="key">F5</span></button>
+          <button class="cact danger" onclick="clearBill()"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>Clear<span class="key">&nbsp;</span></button>
         </div>
+        <div class="m-cartbar" onclick="mScreen('pay')"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="18" height="18"><path d="M5 12h14M12 5l7 7-7 7"/></svg><span style="font-weight:700">Review & Pay</span><span style="margin-left:auto;font-weight:800" id="mCartTotal">₹0</span></div>
       </section>
-
-      <!-- BILLING -->
-      <section class="panel bill">
-        <div class="panel-hd"><h2>Billing Summary</h2><button class="kebab"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="16" height="16"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg></button></div>
+      <section class="panel bill panel--bill">
+        <div class="panel-hd"><h2>Billing Summary</h2><button class="kebab" onclick="openSettings()"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="16" height="16"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg></button></div>
         <div class="bill-body">
-          <div class="sumrow muted"><span class="lbl">Sub Total</span><span class="val num" id="sSub">₹0</span></div>
-
+          <div class="sumrow"><span class="lbl">Sub Total</span><span class="val num" id="sSub">₹0</span></div>
           <div class="disc-block">
-            <div class="top"><span class="lbl">Discount</span></div>
+            <div class="eyebrow" style="color:var(--ink-2);margin-bottom:10px">Discount</div>
             <div class="radio-group" id="discType">
               <button class="radio on" data-dt="flat" onclick="setDiscType('flat',this)"><span class="dot"></span>Flat</button>
               <button class="radio" data-dt="pct" onclick="setDiscType('pct',this)"><span class="dot"></span>Percent</button>
@@ -327,195 +356,398 @@ input{font-family:inherit;font-variant-numeric:tabular-nums}
               <span class="disc-amt" id="sDisc">-₹0</span>
             </div>
           </div>
-
           <div class="divide"></div>
           <div class="gst-row">
             <span class="lbl">GST <span class="tgl on" id="gstTgl" onclick="toggleGst(this)"></span></span>
             <div class="field sel rate"><select id="gstRate" onchange="calc()"><option value="18" selected>18%</option><option value="12">12%</option><option value="5">5%</option><option value="28">28%</option><option value="0">0%</option></select></div>
             <span class="gst-amt num" id="sTax">₹0</span>
           </div>
-
-          <div class="total-card">
-            <div class="tt"><span class="lbl">Total Payable</span><span class="amt num" id="sTotal">₹0.00</span></div>
-            <div class="sub">Inclusive of all taxes</div>
-          </div>
-
-          <span class="eyebrow" style="color:var(--ink-2)">Payment Methods</span>
+          <div class="total-card"><div class="tt"><span class="lbl">Total Payable</span><span class="amt num" id="sTotal">₹0.00</span></div><div class="sub">Inclusive of all taxes</div></div>
+          <span class="eyebrow" style="color:var(--ink-2)">Payment Method</span>
           <div class="pay-grid" id="payGrid">
             <button class="pay on" data-pay="cash" onclick="setPay('cash',this)"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="2.5"/></svg>Cash</button>
-            <button class="pay" data-pay="upi" onclick="setPay('upi',this)"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 14h3v3M21 21v-3M17 21h4"/></svg>UPI (QR)</button>
+            <button class="pay" data-pay="upi" onclick="setPay('upi',this)"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 14h7v7h-7z"/></svg>UPI (QR)</button>
             <button class="pay" data-pay="card" onclick="setPay('card',this)"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>Card</button>
             <button class="pay" data-pay="emi" onclick="setPay('emi',this)"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18M7 15h4"/></svg>EMI</button>
           </div>
-
-          <button class="split-row"><span class="l"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M16 3h5v5M21 3l-7 7M8 21H3v-5M3 21l7-7"/></svg> Split Payment</span><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="16" height="16"><path d="M9 18l6-6-6-6"/></svg></button>
-
+          <div class="extra" id="emiExtra">
+            <label class="flbl">EMI partner & reference</label>
+            <div style="display:flex;gap:8px">
+              <div class="field sel" style="flex:1"><select id="emiPartner"><option>Bajaj</option><option>HDB</option><option>IDFC</option><option>TVS</option><option>HomeCred</option></select></div>
+              <div class="field" style="flex:1"><input id="emiRef" placeholder="Loan / ref no"></div>
+            </div>
+          </div>
+          <div class="extra" id="refExtra">
+            <label class="flbl">Payment reference</label>
+            <div class="field"><input id="refInp" placeholder="UPI txn / card / cheque no"></div>
+          </div>
           <div class="recv-row"><span class="lbl">Received From Customer</span><div class="field"><span class="cur">₹</span><input id="recvInp" type="number" placeholder="0" oninput="calcChange()"></div></div>
           <div class="change-row"><span class="lbl">Change</span><span class="val num" id="changeVal">₹0.00</span></div>
         </div>
-        <button class="checkout" id="chargeBtn" onclick="checkout()"><span id="chargeLbl">Checkout (F1)</span><svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button>
+        <button class="checkout" id="chargeBtn" onclick="createTransaction()"><span id="chargeLbl">Checkout (F1)</span><svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button>
       </section>
-
+      <section class="m-more">
+        <div style="background:var(--green-800);border-radius:14px;padding:15px;display:flex;align-items:center;gap:12px;margin-bottom:14px">
+          <div id="mAv" style="width:46px;height:46px;border-radius:11px;background:var(--gold);color:var(--green-800);display:grid;place-items:center;font-weight:800;font-size:16px">··</div>
+          <div style="color:#fff;line-height:1.35"><div id="mName" style="font-size:14px;font-weight:800">…</div><div id="mMeta" style="font-size:11px;color:#bfe3d4;font-weight:600">…</div></div>
+        </div>
+        <div style="background:#fff;border:1px solid var(--line);border-radius:14px;overflow:hidden">
+          <button class="mrow" onclick="holdBill()"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 9h6v6H9z"/></svg>Hold current bill<span class="mc" id="mHold">0</span></button>
+          <button class="mrow" onclick="goInvoices()"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/></svg>Invoices<svg class="ch" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></button>
+          <button class="mrow" onclick="printReceipt('a4')"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 9V2h12v7M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/></svg>Print A4 invoice<svg class="ch" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></button>
+          <button class="mrow" onclick="printReceipt('thermal')"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="5" y="3" width="14" height="18" rx="2"/></svg>Print thermal<svg class="ch" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></button>
+          <button class="mrow" onclick="waShare()"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.5 8.5 0 014.7-11.4 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8z"/></svg>WhatsApp share<svg class="ch" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></button>
+          <button class="mrow" style="border:none" onclick="openSettings()"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82 2 2 0 11-2.83 2.83 1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51 2 2 0 01-4 0 1.65 1.65 0 00-1-1.51 1.65 1.65 0 00-1.82.33 2 2 0 11-2.83-2.83 1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1 2 2 0 010-4 1.65 1.65 0 001.51-1 1.65 1.65 0 00-.33-1.82 2 2 0 112.83-2.83 1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51 2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33 2 2 0 112.83 2.83 1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1 2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>POS Settings & branding<svg class="ch" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></button>
+        </div>
+        <button id="mAdmin" style="display:none;background:var(--gold);border-radius:12px;padding:13px;align-items:center;gap:11px;font-size:13px;font-weight:800;color:var(--green-800);margin-top:12px;width:100%" onclick="goDashboard()"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="18" height="18"><path d="M3 13h8V3H3zM13 21h8V8h-8z"/></svg>Switch to Admin Dashboard<svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="16" height="16" style="margin-left:auto"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button>
+        <button style="display:flex;align-items:center;justify-content:center;gap:8px;padding:13px;font-size:13px;font-weight:700;color:var(--danger);margin-top:6px;width:100%" onclick="doLogout()"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="17" height="17"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/></svg>Logout</button>
+      </section>
     </div>
-
-    <!-- footer -->
     <footer class="footer">
-      <span class="num" id="invNo">WF-2606-589877LBP</span><div class="sep"></div>
-      <span>Cashier: WellFix Admin</span><div class="sep"></div>
-      <span>Session: S001</span>
+      <span class="num" id="invDisp">WF-…</span><div class="sep"></div>
+      <span id="fCashier">Cashier: …</span><div class="sep"></div>
+      <span>Session: <span id="fSession">S001</span></span>
       <div class="right">
-        <div class="live"><span class="dot"></span><span class="num" id="clock">10:45 AM</span></div>
-        <div class="it"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg><span class="num">20 May 2025</span></div>
+        <div class="live"><span class="dot"></span><span class="num" id="clock">—</span></div>
+        <div class="it"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg><span class="num" id="dateDisp">—</span></div>
       </div>
     </footer>
   </div>
 </div>
-<div class="proto-tag">UI Prototype · dummy data · not wired to Supabase</div>
 
+<nav class="mtab">
+  <button class="tb on" data-s="catalog" onclick="mScreen('catalog')"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Catalog</button>
+  <button class="tb" data-s="cart" onclick="mScreen('cart')"><span style="position:relative"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg></span><span class="b" id="mBadge" style="display:none"></span>Cart</button>
+  <button class="tb" data-s="pay" onclick="mScreen('pay')"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>Pay</button>
+  <button class="tb" data-s="more" onclick="mScreen('more')"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/></svg>More</button>
+</nav>
+
+<div class="modal-bg" id="catModal"><div class="modal"><div class="modal-hd"><h3>All categories</h3><button class="kebab" onclick="closeModal('catModal')"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="18" height="18"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div><div class="modal-bd"><div class="cat-pick" id="catPickGrid"></div></div></div></div>
+<div class="modal-bg" id="manualModal"><div class="modal"><div class="modal-hd"><h3 id="manualTitle">Add charge</h3><button class="kebab" onclick="closeModal('manualModal')"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="18" height="18"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div><div class="modal-bd"><label class="flbl">Description</label><input class="finp" id="manName" placeholder="e.g. AC gas refill"><label class="flbl">Amount (₹)</label><input class="finp" id="manAmt" type="number" placeholder="0"><button class="btn-primary" onclick="addManual()">Add to bill</button></div></div></div>
+<div class="modal-bg" id="custModal"><div class="modal"><div class="modal-hd"><h3>Customer</h3><button class="kebab" onclick="closeModal('custModal')"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="18" height="18"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div><div class="modal-bd"><label class="flbl">Search / phone</label><input class="finp" id="custSearch" placeholder="Name or phone" oninput="custFilter()"><div id="custList" style="margin-top:10px;max-height:230px;overflow-y:auto"></div><div class="divide" style="margin:14px 0"></div><label class="flbl">Quick add — name</label><input class="finp" id="qcName"><label class="flbl">Phone</label><input class="finp" id="qcPhone"><button class="btn-primary" onclick="quickAddCust()">Save & attach</button></div></div></div>
+<div class="modal-bg" id="settingsModal"><div class="modal"><div class="modal-hd"><h3>POS Settings & Branding</h3><button class="kebab" onclick="closeModal('settingsModal')"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="18" height="18"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div><div class="modal-bd">
+  <label class="flbl">Top-bar logo</label>
+  <div class="cat-pick"><button class="cp" data-logo="green" onclick="pickLogo('green',this)">Green wordmark</button><button class="cp" data-logo="white" onclick="pickLogo('white',this)">White wordmark</button></div>
+  <label class="flbl">Upload custom logo (this device)</label>
+  <input class="finp" type="file" accept="image/*" id="logoUpload" onchange="uploadLogo(event)" style="padding:7px;height:auto">
+  <label class="flbl">Accent colour</label>
+  <div class="cat-pick"><button class="cp" data-acc="#F0C419" onclick="pickAccent('#F0C419',this)">Gold</button><button class="cp" data-acc="#034732" onclick="pickAccent('#034732',this)">Green</button></div>
+  <label class="flbl">Default GST rate</label>
+  <div class="field sel"><select id="setGst" onchange="setDefaultGst(this.value)"><option value="18">18%</option><option value="12">12%</option><option value="5">5%</option><option value="28">28%</option></select></div>
+  <p style="font-size:11px;color:var(--muted);margin-top:14px;line-height:1.6">Branding is saved on this device. Ask me to enable account-wide branding and I'll store it in <code>site_settings</code> so every terminal picks it up.</p>
+</div></div></div>
+<div class="modal-bg" id="profileModal"><div class="modal"><div class="modal-hd"><h3>Profile</h3><button class="kebab" onclick="closeModal('profileModal')"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="18" height="18"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div><div class="modal-bd" id="profileBody"></div></div></div>
+<div class="toast" id="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../backend/config/supabase.js"></script>
+<script src="../backend/config/transactions.js"></script>
+<script src="assets/js/shell.js"></script>
 <script>
 'use strict';
-/* ---- Dummy catalogue (mirrors reference image) ---------------- */
-const CATS=['All','Gas Stove','Mixer Grinder','Water Motor','Pressure Cooker','Spare Parts','Fans','Cookware & Pans'];
-const PRODS=[
-  {id:'p1',name:'Butterfly Jet Elite 750W Mixer Grinder',sku:'WF-MIXG-001',price:3699,stock:17,cat:'Mixer Grinder',ic:'mixer'},
-  {id:'p2',name:'Butterfly Smart 2 Burner Glass Top Gas Stove',sku:'WF-GAS-014',price:3599,stock:21,cat:'Gas Stove',ic:'stove'},
-  {id:'p3',name:'Havells Ambrose 1200mm Ceiling Fan',sku:'WF-FAN-008',price:2599,stock:30,cat:'Fans',ic:'fan'},
-  {id:'p4',name:'Kirloskar Jalraaj (0.5 HP) Single Phase Water Pump',sku:'WF-WMP-003',price:5450,stock:5,cat:'Water Motor',ic:'pump'},
-  {id:'p5',name:'Kirloskar Jalraaj (1 HP) Single Phase Self Priming',sku:'WF-WMP-007',price:4640,stock:5,cat:'Water Motor',ic:'pump'},
-  {id:'p6',name:'Orient Electric Apex-FX 1200mm Ceiling Fan',sku:'WF-FAN-011',price:1799,stock:50,cat:'Fans',ic:'fan'},
-  {id:'p7',name:'Pigeon By Stovekraft Favourite 3 Burner Gas Stove',sku:'WF-GAS-021',price:2899,stock:12,cat:'Gas Stove',ic:'stove'},
-  {id:'p8',name:'Preethi Blue Leaf Platinum (750W)',sku:'WF-MIXG-009',price:6689,stock:21,cat:'Mixer Grinder',ic:'mixer'},
-  {id:'p9',name:'Preethi Zodiac MG-218 750W Mixer Grinder',sku:'WF-MIXG-012',price:8499,stock:14,cat:'Mixer Grinder',ic:'mixer'},
-  {id:'p10',name:'Prestige Deluxe Alpha Outer Lid SS Cooker 5L',sku:'WF-PRC-002',price:2499,stock:23,cat:'Pressure Cooker',ic:'cooker'},
-];
-const ICONS={
-  mixer:'<path d="M8 2h8l-1 7H9zM7 9h10v3a5 5 0 01-10 0zM10 17h4v5h-4z"/>',
-  stove:'<rect x="3" y="6" width="18" height="14" rx="2"/><circle cx="8" cy="13" r="2.5"/><circle cx="16" cy="13" r="2.5"/>',
-  fan:'<circle cx="12" cy="12" r="2"/><path d="M12 10c0-4-1-7-3-7s-1 5 3 7M14 12c4 0 7-1 7-3s-5-1-7 3M12 14c0 4 1 7 3 7s1-5-3-7M10 12c-4 0-7 1-7 3s5 1 7-3"/>',
-  pump:'<rect x="4" y="9" width="10" height="8" rx="1"/><path d="M14 11h4l2 2v2h-6M7 17v3M11 17v3"/><circle cx="9" cy="6" r="2"/>',
-  cooker:'<path d="M5 10h14v6a4 4 0 01-4 4H9a4 4 0 01-4-4zM4 10h16M9 6h6M12 4v2"/>',
-};
-function pic(ic,big){return '<svg fill="none" stroke="currentColor" stroke-width="1.6" viewBox="0 0 24 24">'+(ICONS[ic]||ICONS.mixer)+'</svg>';}
+let allProds=[],allCats=[],allCusts=[],cart=[],held=[];
+let mode='sale',payMethod='cash',discType='flat',gstOn=true,catFilter='',cust=null;
+let SPARE_CAT_IDS=new Set(),lastBill=null,manualKind='service';
+const BASE='/wellfix-website';
 
-/* ---- State (prototype-local) ---------------------------------- */
-let cart=[],activeCat='All',discType='flat',gstOn=true,payMethod='cash',mode='sale';
+(async()=>{
+  try{ await AdminShell.init('Point of Sale','pos'); }catch(e){ console.error(e); }
+  ['sidebar','topbar','mobile-bottom-nav'].forEach(c=>document.querySelector('.'+c)?.style.setProperty('display','none','important'));
+  applyBranding();
+  renderUser();
+  genInv();
+  tick();setInterval(tick,1000);
+  await Promise.all([loadProds(),loadCats(),loadCusts()]);
+  restoreHeld();
+  document.addEventListener('keydown',hotkeys);
+})();
 
-/* ---- Categories ----------------------------------------------- */
-function renderCats(){
-  document.getElementById('posCats').innerHTML=CATS.map(c=>
-    `<button class="chip ${c===activeCat?'on':''}" onclick="setCat('${c.replace(/'/g,"\\'")}',this)">${c}</button>`).join('')+
-    `<button class="chip">More ⌄</button>`;
+function renderUser(){
+  const p=AdminShell.user?.profile||{};
+  const name=p.full_name||AdminShell.user?.email?.split('@')[0]||'Staff';
+  const role=(p.role||'staff').replace('_',' ');
+  const initials=name.split(' ').map(s=>s[0]).slice(0,2).join('').toUpperCase();
+  document.getElementById('uName').textContent=name;
+  document.getElementById('uRole').textContent=role;
+  document.getElementById('uAv').textContent=initials;
+  document.getElementById('mAv').textContent=initials;
+  document.getElementById('mName').textContent=name;
+  document.getElementById('mMeta').textContent=role+' · '+(AdminShell.user?.email||'');
+  document.getElementById('fCashier').textContent='Cashier: '+name;
+  const canDash=AdminShell.permissions?.dashboard===true||p.role==='super_admin';
+  if(canDash){document.getElementById('railAdmin').style.display='grid';document.getElementById('mAdmin').style.display='flex';}
 }
-function setCat(c){activeCat=c;renderCats();renderProds();}
+function goDashboard(){location.href=BASE+'/admin/dashboard.html';}
+function goInvoices(){location.href=BASE+'/admin/invoice_manager.html';}
+async function doLogout(){if(confirm('Log out of POS?'))await AdminShell.logout();}
+function openProfile(){
+  const p=AdminShell.user?.profile||{};
+  document.getElementById('profileBody').innerHTML=
+    '<div style="display:flex;align-items:center;gap:12px;margin-bottom:14px"><div style="width:52px;height:52px;border-radius:13px;background:var(--green-800);color:#fff;display:grid;place-items:center;font-weight:800;font-size:18px">'+document.getElementById('uAv').textContent+'</div><div><div style="font-size:16px;font-weight:800">'+(p.full_name||'Staff')+'</div><div style="font-size:12px;color:var(--muted);font-weight:600;text-transform:capitalize">'+(p.role||'staff').replace('_',' ')+'</div></div></div>'+
+    '<table style="width:100%;font-size:13px">'+
+    '<tr><td style="color:var(--muted);padding:7px 0;font-weight:600">Email</td><td style="text-align:right;font-weight:600">'+(AdminShell.user?.email||'—')+'</td></tr>'+
+    '<tr><td style="color:var(--muted);padding:7px 0;font-weight:600">Phone</td><td style="text-align:right;font-weight:600">'+(p.phone||'—')+'</td></tr>'+
+    '<tr><td style="color:var(--muted);padding:7px 0;font-weight:600">Staff ID</td><td style="text-align:right;font-weight:600">'+((AdminShell.user?.id||'').slice(0,8)||'—')+'</td></tr>'+
+    '<tr><td style="color:var(--muted);padding:7px 0;font-weight:600">Session</td><td style="text-align:right;font-weight:600">S001</td></tr>'+
+    '<tr><td style="color:var(--muted);padding:7px 0;font-weight:600">Status</td><td style="text-align:right;font-weight:700;color:var(--green-600)">'+(p.is_active?'Active':'Inactive')+'</td></tr>'+
+    '</table><button class="btn-primary" style="background:var(--danger-50);color:var(--danger)" onclick="doLogout()">Logout</button>';
+  openModal('profileModal');
+}
 
-/* ---- Products ------------------------------------------------- */
+async function loadProds(){
+  const{data}=await db.from('products')
+    .select('id,name,sku,price,stock_qty,low_stock_threshold,category_id,images:product_images(url,is_primary)')
+    .eq('is_active',true).order('name');
+  allProds=data||[];
+  document.getElementById('prodCount').textContent='Total Products: '+allProds.length;
+  renderProds();
+}
+async function loadCats(){
+  const{data}=await db.from('categories').select('id,name,slug').eq('is_active',true).order('sort_order');
+  allCats=data||[];
+  SPARE_CAT_IDS=new Set(allCats.filter(c=>/spare/i.test(c.name||'')||/spare/i.test(c.slug||'')).map(c=>c.id));
+  renderCats();renderCatPicker();
+}
+async function loadCusts(){
+  const{data}=await db.from('customers').select('id,name,phone,loyalty_points,loyalty_tier').order('name');
+  allCusts=data||[];
+}
+function genInv(){
+  const d=new Date();
+  const code='WF-'+d.getFullYear().toString().slice(-2)+String(d.getMonth()+1).padStart(2,'0')+'-'+d.getTime().toString().slice(-6)+Math.random().toString(36).slice(2,5).toUpperCase();
+  document.getElementById('invDisp').textContent=code;return code;
+}
+function prodImg(p){const ims=p.images||[];const im=ims.find(x=>x.is_primary)||ims[0];return im?im.url:'';}
+const BOX_SVG='<svg fill="none" stroke="currentColor" stroke-width="1.6" viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 00-1-1.7l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.7l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/></svg>';
+
+function renderCats(){
+  const top=allCats.slice(0,2);
+  let html='<button class="chip '+(catFilter===''?'on':'')+'" onclick="setCat(\'\',this)">All</button>';
+  html+=top.map(c=>'<button class="chip '+(catFilter===c.id?'on':'')+'" onclick="setCat(\''+c.id+'\',this)">'+c.name+'</button>').join('');
+  html+='<button class="chip-add" title="More categories" onclick="openCatPicker()"><svg fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button>';
+  document.getElementById('posCats').innerHTML=html;
+}
+function setCat(id){catFilter=id;renderCats();renderProds();}
+function renderCatPicker(){
+  document.getElementById('catPickGrid').innerHTML=
+    '<button class="cp '+(catFilter===''?'on':'')+'" onclick="pickCat(\'\')">All products</button>'+
+    allCats.map(c=>'<button class="cp '+(catFilter===c.id?'on':'')+'" onclick="pickCat(\''+c.id+'\')">'+c.name+(SPARE_CAT_IDS.has(c.id)?' ·parts':'')+'</button>').join('');
+}
+function openCatPicker(){renderCatPicker();openModal('catModal');}
+function pickCat(id){catFilter=id;renderCats();renderProds();closeModal('catModal');mScreen('catalog');}
+
+function applyFilter(){renderProds();}
 function renderProds(){
   const q=(document.getElementById('posSearch').value||'').toLowerCase();
-  const list=PRODS.filter(p=>(activeCat==='All'||p.cat===activeCat)&&(!q||p.name.toLowerCase().includes(q)||p.sku.toLowerCase().includes(q)));
-  document.getElementById('posProds').innerHTML=list.map(p=>`
-    <button class="pcard" onclick="addItem('${p.id}')">
-      <div class="ph">${pic(p.ic)}</div>
-      <div class="pn">${p.name}</div>
-      <div class="pp num">₹${p.price.toLocaleString('en-IN')}</div>
-      <div class="pst">In Stock: ${p.stock}</div>
-    </button>`).join('')||'<div style="grid-column:1/-1;text-align:center;color:var(--faint);padding:30px;font-size:12px">No products</div>';
+  const list=allProds.filter(p=>(!catFilter||p.category_id===catFilter)&&(!q||(p.name||'').toLowerCase().includes(q)||(p.sku||'').toLowerCase().includes(q)));
+  document.getElementById('posProds').innerHTML=list.map(p=>{
+    const img=prodImg(p),low=(p.stock_qty||0)<=(p.low_stock_threshold||5);
+    const ph=img?'<img src="'+img+'" onerror="this.parentNode.innerHTML=BOX_SVG">':BOX_SVG;
+    return '<button class="pcard" onclick="addItem(\''+p.id+'\')"><div class="ph">'+ph+'</div><div class="pn">'+p.name+'</div><div class="pp num">₹'+(p.price||0).toLocaleString('en-IN')+'</div><div class="pst '+(low?'low':'')+'">In Stock: '+(p.stock_qty||0)+'</div></button>';
+  }).join('')||'<div style="grid-column:1/-1;text-align:center;color:var(--faint);padding:30px;font-size:12px">No products found</div>';
 }
 
-/* ---- Cart ----------------------------------------------------- */
+function itemTypeOf(p){return SPARE_CAT_IDS.has(p.category_id)?'spare_part':'product';}
 function addItem(id){
-  const p=PRODS.find(x=>x.id===id);if(!p)return;
+  const p=allProds.find(x=>x.id===id);if(!p)return;
   const ex=cart.find(i=>i.id===id);
-  if(ex)ex.qty++;else cart.push({id:p.id,name:p.name,sku:p.sku,price:p.price,qty:1,disc:0,gst:true,ic:p.ic});
+  if(ex)ex.qty++;
+  else cart.push({id:p.id,name:p.name,sku:p.sku||'',price:Number(p.price)||0,qty:1,disc:0,gst:true,itemType:itemTypeOf(p),img:prodImg(p)});
   renderCart();calc();
+  if(window.innerWidth<=640)toast(p.name+' added');
 }
-function qtyChg(i,d){const it=cart[i];if(!it)return;it.qty+=d;if(it.qty<=0){cart.splice(i,1);}renderCart();calc();}
+function openManual(kind){manualKind=kind;document.getElementById('manualTitle').textContent=kind==='labor'?'Add labour charge':'Add service charge';document.getElementById('manName').value='';document.getElementById('manAmt').value='';openModal('manualModal');}
+function addManual(){
+  const name=document.getElementById('manName').value.trim();
+  const amt=parseFloat(document.getElementById('manAmt').value)||0;
+  if(!name||amt<=0){toast('Enter description & amount',true);return;}
+  cart.push({id:'m'+Date.now(),name:name,sku:'',price:amt,qty:1,disc:0,gst:false,itemType:manualKind});
+  closeModal('manualModal');renderCart();calc();
+}
+function qtyChg(i,d){const it=cart[i];if(!it)return;it.qty+=d;if(it.qty<=0)cart.splice(i,1);renderCart();calc();}
 function lineDisc(i,v){cart[i].disc=parseFloat(v)||0;calc();}
 function lineGst(i,el){cart[i].gst=!cart[i].gst;el.classList.toggle('on',cart[i].gst);calc();}
 function removeItem(i){cart.splice(i,1);renderCart();calc();}
-function clearCart(){cart=[];renderCart();calc();}
-
 function renderCart(){
-  document.getElementById('cartCount').textContent='('+cart.reduce((s,i)=>s+i.qty,0)+' Items)';
+  const count=cart.reduce((s,i)=>s+i.qty,0);
+  document.getElementById('cartCount').textContent='('+count+' Items)';
+  const badge=document.getElementById('mBadge');if(badge){badge.style.display=count?'grid':'none';badge.textContent=count;}
   const el=document.getElementById('posCart');
-  if(!cart.length){el.innerHTML='<div class="cart-empty"><svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg><div style="text-align:center"><div style="font-weight:700;color:var(--ink-2)">Cart is empty</div><div style="font-size:11.5px;margin-top:2px">Tap a product to add it</div></div></div>';return;}
-  el.innerHTML=cart.map((it,i)=>{
+  if(!cart.length){el.innerHTML='<div class="cart-empty"><svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg><div><div style="font-weight:700;color:var(--ink-2)">Cart is empty</div><div style="font-size:11.5px;margin-top:2px">'+(mode==='service'?'Add a service charge or product':'Tap a product to add it')+'</div></div></div>';return;}
+  el.innerHTML=cart.map(function(it,i){
     const amt=it.qty*it.price-it.disc;
-    return `<div class="crow">
-      <div class="idx">${i+1}</div>
-      <div class="item"><div class="thumb">${pic(it.ic)}</div><div style="min-width:0"><div class="nm">${it.name}</div><div class="sku">SKU: ${it.sku}</div></div></div>
-      <div><div class="stepper"><button onclick="qtyChg(${i},-1)">−</button><span class="qv num">${it.qty}</span><button onclick="qtyChg(${i},1)">+</button></div><div class="unit">PCS</div></div>
-      <div class="cell-c num">₹${it.price.toLocaleString('en-IN')}</div>
-      <div class="disc-in"><input type="number" value="${it.disc}" onchange="lineDisc(${i},this.value)"><span class="cur">₹</span></div>
-      <div class="tax-cell"><span class="gl">GST</span><span class="tgl ${it.gst?'on':''}" onclick="lineGst(${i},this)"></span></div>
-      <div class="cell-c num">₹${amt.toLocaleString('en-IN')}</div>
-      <button class="rm" onclick="removeItem(${i})"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
-    </div>`;}).join('');
+    let tag='';
+    if(it.itemType==='spare_part')tag='<span class="tag">PART</span>';
+    else if(it.itemType==='service')tag='<span class="tag" style="background:#dcefe7;color:#0a5c43">SERVICE</span>';
+    else if(it.itemType==='labor')tag='<span class="tag" style="background:#dcefe7;color:#0a5c43">LABOUR</span>';
+    const thumb=it.img?'<img src="'+it.img+'">':BOX_SVG;
+    return '<div class="crow"><div class="idx">'+(i+1)+'</div>'+
+      '<div class="item"><div class="thumb">'+thumb+'</div><div style="min-width:0"><div class="nm">'+it.name+tag+'</div><div class="sku">'+(it.sku?'SKU: '+it.sku:it.itemType)+'</div></div></div>'+
+      '<div class="qtywrap"><div class="stepper"><button onclick="qtyChg('+i+',-1)">−</button><span class="qv num">'+it.qty+'</span><button onclick="qtyChg('+i+',1)">+</button></div><div class="unit">PCS</div></div>'+
+      '<div class="cell-c num pricecell">₹'+it.price.toLocaleString('en-IN')+'</div>'+
+      '<div class="disc-in disccell"><input type="number" value="'+it.disc+'" onchange="lineDisc('+i+',this.value)"><span class="cur">₹</span></div>'+
+      '<div class="tax-cell taxcell2"><span class="gl">GST</span><span class="tgl '+(it.gst?'on':'')+'" onclick="lineGst('+i+',this)"></span></div>'+
+      '<div class="cell-c num amtcell">₹'+amt.toLocaleString('en-IN')+'</div>'+
+      '<button class="rm rmcell" onclick="removeItem('+i+')"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>';
+  }).join('');
 }
 
-/* ---- Discount / GST controls ---------------------------------- */
 function setDiscType(t,el){discType=t;document.querySelectorAll('#discType .radio').forEach(r=>r.classList.remove('on'));el.classList.add('on');document.getElementById('discCur').textContent=t==='pct'?'%':'₹';calc();}
 function toggleGst(el){gstOn=!gstOn;el.classList.toggle('on',gstOn);calc();}
-function setPay(m,el){payMethod=m;document.querySelectorAll('#payGrid .pay').forEach(p=>p.classList.remove('on'));el.classList.add('on');}
+function setPay(m,el){payMethod=m;document.querySelectorAll('#payGrid .pay').forEach(p=>p.classList.remove('on'));el.classList.add('on');document.getElementById('emiExtra').classList.toggle('show',m==='emi');document.getElementById('refExtra').classList.toggle('show',m==='upi'||m==='card');}
 
-/* ---- Totals --------------------------------------------------- */
 function calc(){
   const sub=cart.reduce((s,i)=>s+(i.qty*i.price-i.disc),0);
   const dn=parseFloat(document.getElementById('discN').value)||0;
   const billDisc=discType==='pct'?sub*(dn/100):Math.min(dn,sub);
-  const afterD=sub-billDisc;
   const rate=parseFloat(document.getElementById('gstRate').value)||0;
-  const taxable=cart.filter(i=>i.gst).reduce((s,i)=>s+(i.qty*i.price-i.disc),0);
-  const taxBase=Math.max(0,taxable-(discType==='pct'?taxable*(dn/100):0));
+  const taxableLines=cart.filter(i=>i.gst).reduce((s,i)=>s+(i.qty*i.price-i.disc),0);
+  const taxBase=discType==='pct'?taxableLines*(1-dn/100):Math.max(0,taxableLines-(sub?billDisc*(taxableLines/sub):0));
   const tax=gstOn?taxBase*(rate/100):0;
-  const tot=afterD+tax;
+  const tot=(sub-billDisc)+tax;
   document.getElementById('sSub').textContent='₹'+sub.toLocaleString('en-IN');
-  document.getElementById('sDisc').textContent='-₹'+billDisc.toLocaleString('en-IN',{maximumFractionDigits:0});
+  document.getElementById('sDisc').textContent='-₹'+Math.round(billDisc).toLocaleString('en-IN');
   document.getElementById('sTax').textContent=gstOn?'₹'+tax.toLocaleString('en-IN',{minimumFractionDigits:2,maximumFractionDigits:2}):'Off';
   document.getElementById('sTotal').textContent='₹'+tot.toLocaleString('en-IN',{minimumFractionDigits:2,maximumFractionDigits:2});
+  const mt=document.getElementById('mCartTotal');if(mt)mt.textContent='₹'+Math.round(tot).toLocaleString('en-IN');
+  const btn=document.getElementById('chargeBtn');if(btn)btn.disabled=!cart.length;
   calcChange();
+  return{sub:sub,billDisc:billDisc,tax:tax,tot:tot,rate:rate};
 }
 function calcChange(){
   const tot=parseFloat((document.getElementById('sTotal').textContent||'0').replace(/[₹,]/g,''))||0;
   const recv=parseFloat(document.getElementById('recvInp').value)||0;
-  const ch=recv>0?Math.max(0,recv-tot):0;
-  document.getElementById('changeVal').textContent='₹'+ch.toLocaleString('en-IN',{minimumFractionDigits:2,maximumFractionDigits:2});
+  document.getElementById('changeVal').textContent='₹'+(recv>0?Math.max(0,recv-tot):0).toLocaleString('en-IN',{minimumFractionDigits:2,maximumFractionDigits:2});
 }
 
-/* ---- Mode ----------------------------------------------------- */
-document.getElementById('modes').addEventListener('click',e=>{
+document.getElementById('modes').addEventListener('click',function(e){
   const b=e.target.closest('.mode');if(!b)return;
   document.querySelectorAll('#modes .mode').forEach(m=>m.classList.remove('on'));b.classList.add('on');
-  mode=b.dataset.mode;
-  document.getElementById('chargeLbl').textContent=b.dataset.label+' (F1)';
+  setMode(b.dataset.mode,b.dataset.label);
 });
-
-/* ---- Checkout (prototype) ------------------------------------- */
-function checkout(){
-  if(!cart.length){flash('Cart is empty');return;}
-  flash(({sale:'Sale billed',quote:'Quotation saved',service:'Service billed',return:'Return processed',refund:'Refund done'}[mode])+' — '+document.getElementById('sTotal').textContent+' (prototype)');
-}
-function flash(msg){
-  const t=document.createElement('div');t.textContent=msg;
-  t.style.cssText='position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:var(--green-800);color:#fff;padding:12px 22px;border-radius:12px;font-weight:700;font-size:13px;z-index:99;box-shadow:var(--shadow-lg);opacity:0;transition:.25s';
-  document.body.appendChild(t);requestAnimationFrame(()=>{t.style.opacity='1';t.style.bottom='100px';});
-  setTimeout(()=>{t.style.opacity='0';setTimeout(()=>t.remove(),300);},1900);
+function setMode(m,label){
+  mode=m;
+  document.getElementById('chargeLbl').textContent=(label||'Checkout')+' (F1)';
+  document.getElementById('svcBar').classList.toggle('show',m==='service');
+  renderCart();
 }
 
-/* ---- Keyboard hints ------------------------------------------- */
-document.addEventListener('keydown',e=>{
-  if(e.key==='F1'){e.preventDefault();checkout();}
-  if(e.key==='F2'){e.preventDefault();flash('Bill held (prototype)');}
-});
+function openCust(){custFilter();openModal('custModal');}
+function custFilter(){
+  const q=(document.getElementById('custSearch').value||'').toLowerCase();
+  const list=allCusts.filter(c=>!q||(c.name||'').toLowerCase().includes(q)||(c.phone||'').includes(q)).slice(0,30);
+  document.getElementById('custList').innerHTML=list.map(c=>'<div class="cust-item" onclick="attachCust(\''+c.id+'\')"><div class="ci-av">'+((c.name||'?')[0]||'?').toUpperCase()+'</div><div><div style="font-weight:700;font-size:13px">'+(c.name||'Unnamed')+'</div><div style="font-size:11px;color:var(--muted)">'+(c.phone||'')+' · '+(c.loyalty_points||0)+' pts</div></div></div>').join('')||'<div style="color:var(--faint);font-size:12px;padding:8px">No matches</div>';
+}
+function attachCust(id){cust=allCusts.find(c=>c.id===id)||null;document.getElementById('custBtnLbl').textContent=cust?cust.name:'Add Customer';closeModal('custModal');toast('Customer: '+(cust?cust.name:''));}
+async function quickAddCust(){
+  const name=document.getElementById('qcName').value.trim(),phone=document.getElementById('qcPhone').value.trim();
+  if(!name){toast('Enter a name',true);return;}
+  const{data,error}=await db.from('customers').insert({name:name,phone:phone}).select().single();
+  if(error){toast('Error: '+error.message,true);return;}
+  allCusts.unshift(data);cust=data;document.getElementById('custBtnLbl').textContent=name;closeModal('custModal');toast('Customer added');
+}
 
-/* ---- Clock ---------------------------------------------------- */
-function tick(){const d=new Date();document.getElementById('clock').textContent=d.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'});}
-setInterval(tick,1000);tick();
+async function createTransaction(){
+  if(!cart.length){toast('Cart empty',true);return;}
+  const c=calc();
+  const invCode=genInv();
+  const btn=document.getElementById('chargeBtn');const orig=btn.innerHTML;btn.disabled=true;
+  const lbl=btn.querySelector('#chargeLbl');if(lbl)lbl.textContent='Processing…';
+  try{
+    const custName=cust&&cust.name?cust.name:'Walk-in';
+    const typeMap={sale:'sale',quote:'quotation',service:'service',return:'return',refund:'refund'};
+    const payStMap={sale:'paid',quote:'pending',service:'paid',return:'refunded',refund:'refunded'};
+    const payRef=payMethod==='emi'?(document.getElementById('emiPartner').value+':'+(document.getElementById('emiRef').value||'')):(document.getElementById('refInp').value||null);
+    const payload={
+      invoice_number:invCode,invoice_type:typeMap[mode]||'sale',
+      customer_id:cust?cust.id:null,customer_name:custName,customer_phone:cust?cust.phone:null,
+      subtotal:c.sub,discount_amount:c.billDisc,tax_amount:gstOn?c.tax:0,tax_pct:gstOn?c.rate:0,total:c.tot,
+      paid_amount:mode==='quote'?0:c.tot,due_amount:mode==='quote'?c.tot:0,
+      payment_method:payMethod,payment_reference:payRef,payment_status:payStMap[mode]||'paid',
+      cashier:(AdminShell.user&&AdminShell.user.profile&&AdminShell.user.profile.full_name)||(AdminShell.user&&AdminShell.user.email)||'Admin',
+      status:mode==='quote'?'draft':'completed'
+    };
+    const r1=await db.from('pos_invoices').insert(payload).select().single();
+    if(r1.error)throw new Error(r1.error.message);
+    const inv=r1.data;
+    const r2=await db.from('pos_invoice_items').insert(cart.map(i=>({invoice_id:inv.id,product_id:String(i.id).startsWith('m')?null:i.id,product_name:i.name,sku:i.sku||null,quantity:i.qty,unit_price:i.price,total_price:i.qty*i.price-i.disc})));
+    if(r2.error)throw new Error(r2.error.message);
+    if(window.WFTx){
+      const txr=await WFTx.createTransaction({
+        type:typeMap[mode]||'sale',reference_source:mode==='service'?'service':'pos',status:mode==='quote'?'draft':'completed',
+        invoice_number:invCode,source_invoice_id:inv.id,customer_id:cust?cust.id:null,customer_name:custName,customer_phone:cust?cust.phone:null,
+        subtotal:c.sub,discount:c.billDisc,tax:gstOn?c.tax:0,total:c.tot,payment_method:payMethod,payment_status:payStMap[mode]||'paid',payment_reference:payRef,cashier:payload.cashier,
+        items:cart.map(i=>({id:i.id,name:i.name,sku:i.sku,price:i.price,qty:i.qty,total:i.qty*i.price-i.disc,itemType:i.itemType}))
+      });
+      if(txr.error)console.warn('[WFTx] parallel write skipped:',txr.error.message);
+    }
+    if(mode==='sale'||mode==='service'){
+      for(const i of cart){if(String(i.id).startsWith('m'))continue;const pr=await db.from('products').select('stock_qty').eq('id',i.id).single();if(pr.data)await db.from('products').update({stock_qty:Math.max(0,(pr.data.stock_qty||0)-i.qty)}).eq('id',i.id);}
+    }else if(mode==='return'){
+      for(const i of cart){if(String(i.id).startsWith('m'))continue;const pr=await db.from('products').select('stock_qty').eq('id',i.id).single();if(pr.data)await db.from('products').update({stock_qty:(pr.data.stock_qty||0)+i.qty}).eq('id',i.id);}
+    }
+    if(mode==='sale'&&cust&&cust.id)await db.from('customers').update({loyalty_points:(cust.loyalty_points||0)+Math.floor(c.tot/100),last_order_at:new Date().toISOString()}).eq('id',cust.id);
+    if(mode==='sale')await db.from('orders').insert({order_number:invCode,customer_name:custName,customer_phone:cust?cust.phone:null,total:c.tot,subtotal:c.sub,payment_method:payMethod,payment_status:'paid',status:'delivered',notes:'POS '+invCode});
+    lastBill={inv:inv,payload:payload,cart:cart.slice(),mode:mode};
+    const done={sale:'Billed ',quote:'Quote saved ',service:'Service billed ',return:'Return ',refund:'Refund '};
+    toast((done[mode]||'Done ')+invCode);
+    maybeReceipt();
+    clearBill();
+  }catch(e){
+    toast('Error: '+e.message,true);
+  }finally{
+    btn.innerHTML=orig;btn.disabled=!cart.length;
+  }
+}
+function clearBill(){cart=[];cust=null;document.getElementById('custBtnLbl').textContent='Add Customer';document.getElementById('discN').value=0;document.getElementById('recvInp').value='';renderCart();calc();}
 
-/* ---- Boot: seed a sample bill so the screen looks alive -------- */
-renderCats();renderProds();
-['p1','p10','p4'].forEach(addItem);
-cart[1].disc=100;
-calc();
+function holdBill(){if(!cart.length){toast('Nothing to hold',true);return;}held.push({cart:cart.slice(),cust:cust,mode:mode,t:Date.now()});saveHeld();clearBill();toast('Bill held');}
+function saveHeld(){localStorage.setItem('wf_held',JSON.stringify(held));document.getElementById('holdCnt').textContent=held.length;document.getElementById('mHold').textContent=held.length;}
+function restoreHeld(){try{held=JSON.parse(localStorage.getItem('wf_held')||'[]');}catch(e){held=[];}document.getElementById('holdCnt').textContent=held.length;document.getElementById('mHold').textContent=held.length;}
+
+function receiptHtml(b){
+  const p=b.payload;
+  const rows=b.cart.map(i=>'<tr><td>'+i.name+'</td><td style="text-align:center">'+i.qty+'</td><td style="text-align:right">₹'+(i.qty*i.price-i.disc).toLocaleString('en-IN')+'</td></tr>').join('');
+  return '<div style="font-family:monospace;max-width:300px;margin:0 auto;color:#000"><h3 style="text-align:center;margin:0">WellFix Appliances</h3><p style="text-align:center;font-size:11px;margin:2px 0 8px">'+p.invoice_number+' · '+new Date().toLocaleString('en-IN')+'</p><p style="font-size:11px">Customer: '+p.customer_name+'</p><table style="width:100%;font-size:11px;border-top:1px dashed #000;border-bottom:1px dashed #000;margin:6px 0"><tr><th style="text-align:left">Item</th><th>Qty</th><th style="text-align:right">Amt</th></tr>'+rows+'</table><p style="font-size:12px;display:flex;justify-content:space-between"><span>Total</span><b>₹'+p.total.toLocaleString('en-IN',{minimumFractionDigits:2})+'</b></p><p style="font-size:11px">Paid via '+(p.payment_method||'').toUpperCase()+'</p><p style="text-align:center;font-size:10px;margin-top:8px">Thank you!</p></div>';
+}
+function maybeReceipt(){if(lastBill&&confirm('Print receipt for '+lastBill.payload.invoice_number+'?'))printReceipt('thermal');}
+function printReceipt(fmt){
+  if(!lastBill){toast('No recent bill',true);return;}
+  const w=window.open('','_blank',fmt==='a4'?'width=800,height=900':'width=360,height=640');
+  if(!w){toast('Allow pop-ups to print',true);return;}
+  w.document.write('<html><head><title>'+lastBill.payload.invoice_number+'</title></head><body>'+receiptHtml(lastBill)+'<scr'+'ipt>window.print()</scr'+'ipt></body></html>');w.document.close();
+}
+function waShare(){
+  if(!lastBill){toast('No recent bill',true);return;}
+  const p=lastBill.payload;
+  const txt='WellFix Appliances%0AInvoice '+p.invoice_number+'%0ATotal ₹'+p.total.toLocaleString('en-IN')+'%0APaid via '+p.payment_method;
+  const ph=(p.customer_phone||'').replace(/\D/g,'');
+  window.open('https://wa.me/'+(ph?'91'+ph:'')+'?text='+txt,'_blank');
+}
+
+function getBranding(){try{return JSON.parse(localStorage.getItem('wf_pos_branding')||'{}');}catch(e){return{};}}
+function applyBranding(){
+  const b=getBranding();
+  if(b.accent)document.documentElement.style.setProperty('--accent',b.accent);
+  const top=document.getElementById('topLogo');
+  if(b.customLogo)top.src=b.customLogo;
+  else top.src='../assets/images/brand/wellfix-logo-'+(b.logo||'green')+'.png';
+  if(b.gst){document.getElementById('gstRate').value=b.gst;document.getElementById('setGst').value=b.gst;}
+}
+function saveBranding(patch){const b=Object.assign(getBranding(),patch);localStorage.setItem('wf_pos_branding',JSON.stringify(b));applyBranding();}
+function openSettings(){const b=getBranding();document.querySelectorAll('#settingsModal .cp[data-logo]').forEach(e=>e.classList.toggle('on',e.dataset.logo===(b.logo||'green')));document.querySelectorAll('#settingsModal .cp[data-acc]').forEach(e=>e.classList.toggle('on',e.dataset.acc===(b.accent||'#F0C419')));openModal('settingsModal');}
+function pickLogo(v,el){document.querySelectorAll('#settingsModal .cp[data-logo]').forEach(e=>e.classList.remove('on'));el.classList.add('on');saveBranding({logo:v,customLogo:null});}
+function pickAccent(v,el){document.querySelectorAll('#settingsModal .cp[data-acc]').forEach(e=>e.classList.remove('on'));el.classList.add('on');saveBranding({accent:v});}
+function uploadLogo(e){const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=function(){saveBranding({customLogo:r.result});toast('Logo updated');};r.readAsDataURL(f);}
+function setDefaultGst(v){saveBranding({gst:v});document.getElementById('gstRate').value=v;calc();}
+
+function mScreen(s){document.body.dataset.m=s;document.querySelectorAll('.mtab .tb').forEach(t=>t.classList.toggle('on',t.dataset.s===s));}
+function openModal(id){document.getElementById(id).classList.add('show');}
+function closeModal(id){document.getElementById(id).classList.remove('show');}
+document.querySelectorAll('.modal-bg').forEach(m=>m.addEventListener('click',function(e){if(e.target===m)m.classList.remove('show');}));
+function toast(msg,err){const t=document.getElementById('toast');t.textContent=msg;t.className='toast show'+(err?' err':'');clearTimeout(t._t);t._t=setTimeout(()=>t.className='toast',1900);}
+function hotkeys(e){if(e.key==='F1'){e.preventDefault();createTransaction();}else if(e.key==='F2'){e.preventDefault();holdBill();}else if(e.key==='F3'){e.preventDefault();printReceipt('a4');}else if(e.key==='F4'){e.preventDefault();printReceipt('thermal');}else if(e.key==='F5'){e.preventDefault();waShare();}}
+function tick(){const d=new Date();document.getElementById('clock').textContent=d.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'});document.getElementById('dateDisp').textContent=d.toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'});}
 </script>
 </body>
 </html>
