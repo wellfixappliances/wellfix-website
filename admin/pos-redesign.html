@@ -274,7 +274,7 @@ input,select{font-family:inherit;font-variant-numeric:tabular-nums}
 <body data-m="catalog">
 <div class="app">
   <aside class="rail">
-    <div class="lg"><img id="railLogo" src="../assets/images/brand/wellfix-icon-white.png" alt="WellFix" onerror="this.style.display='none'"></div>
+    <div class="lg"><img id="railLogo" src="../assets/images/brand/wellfix-icon-white.png" alt="WellFix" onerror="this.outerHTML='<span style=&quot;color:var(--gold);font-weight:800;font-size:18px&quot;>W</span>'"></div>
     <button class="rail-btn on" title="Sell" onclick="mScreen('catalog')"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg></button>
     <button class="rail-btn" title="Customers" onclick="openCust()"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></button>
     <button class="rail-btn" title="Invoices" onclick="goInvoices()"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6M9 13h6M9 17h4"/></svg></button>
@@ -286,7 +286,7 @@ input,select{font-family:inherit;font-variant-numeric:tabular-nums}
   </aside>
   <div class="main">
     <header class="topbar2">
-      <div class="brand"><img id="topLogo" src="../assets/images/brand/wellfix-logo-green.png" alt="WellFix" onerror="this.style.display='none'"></div>
+      <div class="brand"><img id="topLogo" src="../assets/images/brand/wellfix-logo-green.png" alt="WellFix" onerror="this.outerHTML='<span style=&quot;font-weight:800;font-size:19px;letter-spacing:-.02em;color:var(--green-800)&quot;>Well<span style=&quot;color:var(--gold)&quot;>fix</span></span>'"></div>
       <nav class="modes" id="modes">
         <button class="mode on" data-mode="sale" data-label="Checkout">Sale</button>
         <button class="mode" data-mode="quote" data-label="Save Quote">Quotation</button>
@@ -451,30 +451,36 @@ let SPARE_CAT_IDS=new Set(),lastBill=null,manualKind='service';
 const BASE='/wellfix-website';
 
 (async()=>{
-  try{ await AdminShell.init('Point of Sale','pos'); }catch(e){ console.error(e); }
-  ['sidebar','topbar','mobile-bottom-nav'].forEach(c=>document.querySelector('.'+c)?.style.setProperty('display','none','important'));
   applyBranding();
-  renderUser();
   genInv();
   tick();setInterval(tick,1000);
-  await Promise.all([loadProds(),loadCats(),loadCusts()]);
   restoreHeld();
   document.addEventListener('keydown',hotkeys);
+  // Public data first — the screen must work regardless of auth timing
+  await loadProds();
+  await loadCats();
+  await loadCusts();
+  // Auth + user info (non-blocking; CSS already hides any injected admin chrome)
+  try{
+    if(window.AdminShell&&AdminShell.init){ await AdminShell.init('Point of Sale','pos'); }
+  }catch(e){ console.error('AdminShell init failed:',e); }
+  renderUser();
 })();
 
 function renderUser(){
-  const p=AdminShell.user?.profile||{};
-  const name=p.full_name||AdminShell.user?.email?.split('@')[0]||'Staff';
+  const u=(window.AdminShell&&AdminShell.user)||null;
+  const p=(u&&u.profile)||{};
+  const name=p.full_name||(u&&u.email&&u.email.split('@')[0])||'Staff';
   const role=(p.role||'staff').replace('_',' ');
-  const initials=name.split(' ').map(s=>s[0]).slice(0,2).join('').toUpperCase();
+  const initials=name.split(' ').map(s=>s[0]).slice(0,2).join('').toUpperCase()||'WF';
   document.getElementById('uName').textContent=name;
   document.getElementById('uRole').textContent=role;
   document.getElementById('uAv').textContent=initials;
   document.getElementById('mAv').textContent=initials;
   document.getElementById('mName').textContent=name;
-  document.getElementById('mMeta').textContent=role+' · '+(AdminShell.user?.email||'');
+  document.getElementById('mMeta').textContent=role+' · '+((u&&u.email)||'');
   document.getElementById('fCashier').textContent='Cashier: '+name;
-  const canDash=AdminShell.permissions?.dashboard===true||p.role==='super_admin';
+  const canDash=(window.AdminShell&&AdminShell.permissions&&AdminShell.permissions.dashboard===true)||p.role==='super_admin';
   if(canDash){document.getElementById('railAdmin').style.display='grid';document.getElementById('mAdmin').style.display='flex';}
 }
 function goDashboard(){location.href=BASE+'/admin/dashboard.html';}
@@ -495,22 +501,31 @@ function openProfile(){
 }
 
 async function loadProds(){
-  const{data}=await db.from('products')
-    .select('id,name,sku,price,stock_qty,low_stock_threshold,category_id,images:product_images(url,is_primary)')
-    .eq('is_active',true).order('name');
-  allProds=data||[];
+  try{
+    const{data,error}=await db.from('products')
+      .select('id,name,sku,price,stock_qty,low_stock_threshold,category_id,images:product_images(url,is_primary)')
+      .eq('is_active',true).order('name');
+    if(error)throw error;
+    allProds=data||[];
+  }catch(e){ console.error('loadProds',e); toast('Products: '+(e.message||e),true); allProds=[]; }
   document.getElementById('prodCount').textContent='Total Products: '+allProds.length;
   renderProds();
 }
 async function loadCats(){
-  const{data}=await db.from('categories').select('id,name,slug').eq('is_active',true).order('sort_order');
-  allCats=data||[];
+  try{
+    const{data,error}=await db.from('categories').select('id,name,slug').eq('is_active',true).order('sort_order');
+    if(error)throw error;
+    allCats=data||[];
+  }catch(e){ console.error('loadCats',e); toast('Categories: '+(e.message||e),true); allCats=[]; }
   SPARE_CAT_IDS=new Set(allCats.filter(c=>/spare/i.test(c.name||'')||/spare/i.test(c.slug||'')).map(c=>c.id));
   renderCats();renderCatPicker();
 }
 async function loadCusts(){
-  const{data}=await db.from('customers').select('id,name,phone,loyalty_points,loyalty_tier').order('name');
-  allCusts=data||[];
+  try{
+    const{data,error}=await db.from('customers').select('id,name,phone,loyalty_points,loyalty_tier').order('name');
+    if(error)throw error;
+    allCusts=data||[];
+  }catch(e){ console.error('loadCusts',e); allCusts=[]; }
 }
 function genInv(){
   const d=new Date();
