@@ -28,8 +28,8 @@ input,select{font-family:inherit;font-variant-numeric:tabular-nums}
 .sidebar,.topbar,.mobile-bottom-nav{display:none!important}
 .app{display:flex;height:100vh}
 .rail{width:60px;background:var(--green-800);display:flex;flex-direction:column;align-items:center;padding:12px 0;gap:5px;flex-shrink:0}
-.rail .lg{width:38px;height:38px;border-radius:14px;overflow:hidden;margin-bottom:8px;display:grid;place-items:center}
-  .rail .lg img{width:100%;height:100%;object-fit:contain}
+.rail .lg{width:38px;height:38px;border-radius:10px;overflow:hidden;margin-bottom:8px;background:var(--green-900);display:grid;place-items:center}
+.rail .lg img{width:100%;height:100%;object-fit:contain}
 .rail-btn{width:42px;height:42px;border-radius:11px;display:grid;place-items:center;color:#bfe3d4;transition:.18s}
 .rail-btn svg{width:19px;height:19px}
 .rail-btn:hover{background:rgba(255,255,255,.08);color:#fff}
@@ -269,6 +269,28 @@ input,select{font-family:inherit;font-variant-numeric:tabular-nums}
   .modal-bg{align-items:flex-end;padding:0}
 }
 @media (min-width:641px){.m-cartbar{display:none}}
+/* document preview overlay */
+.prev-bg{position:fixed;inset:0;background:rgba(8,14,12,.62);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);z-index:400;display:none;flex-direction:column;align-items:center;padding:18px}
+.prev-bg.show{display:flex}
+.prev-bar{width:100%;max-width:860px;display:flex;align-items:center;gap:8px;color:#fff;margin-bottom:12px;flex-wrap:wrap}
+.prev-bar .t{font-weight:800;font-size:15px;margin-right:auto}
+.prev-bar button{display:flex;align-items:center;gap:7px;background:rgba(255,255,255,.14);color:#fff;border-radius:10px;padding:9px 14px;font-size:13px;font-weight:700}
+.prev-bar button:hover{background:rgba(255,255,255,.26)}
+.prev-bar button.gold{background:var(--gold);color:var(--green-800)}
+.prev-bar button.close{background:rgba(255,255,255,.1)}
+.prev-frame-wrap{flex:1;width:100%;max-width:860px;overflow:auto;border-radius:12px;background:#fff;box-shadow:var(--shadow-lg);display:flex;justify-content:center}
+.prev-frame-wrap.thermal{max-width:340px}
+#prevFrame{width:100%;height:100%;min-height:60vh;border:none;background:#fff}
+.prev-frame-wrap.thermal #prevFrame{width:320px}
+/* mobile mode selector */
+.m-mode{display:none}
+@media (max-width:640px){
+  .m-mode{display:flex;align-items:center;gap:6px;background:var(--green-50);border:1px solid var(--green-100);border-radius:10px;padding:0 4px 0 10px;height:38px;margin:0 auto}
+  .m-mode label{font-size:10px;font-weight:700;color:var(--green-700);text-transform:uppercase}
+  .m-mode select{border:none;background:none;font-weight:800;font-size:13px;color:var(--green-800);height:100%;padding:0 4px}
+  .m-mode select:focus{outline:none}
+  .prev-bar{font-size:13px}
+}
 </style>
 </head>
 <body data-m="catalog">
@@ -294,6 +316,7 @@ input,select{font-family:inherit;font-variant-numeric:tabular-nums}
         <button class="mode" data-mode="return" data-label="Process Return">Return</button>
         <button class="mode" data-mode="refund" data-label="Refund">Refund</button>
       </nav>
+      <div class="m-mode"><label>Mode</label><select id="mModeSel" onchange="switchMode(this.value)"><option value="sale">Sale</option><option value="quote">Quotation</option><option value="service">Service</option><option value="return">Return</option><option value="refund">Refund</option></select></div>
       <div class="top-right">
         <button class="hold-pill" onclick="holdBill()"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="15" height="15"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 9h6v6H9z"/></svg> <span class="htxt">Hold (<span id="holdCnt">0</span>)</span></button>
         <button class="icon-btn"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0"/></svg></button>
@@ -450,6 +473,8 @@ input,select{font-family:inherit;font-variant-numeric:tabular-nums}
   <div style="display:flex;gap:8px"><div style="flex:1"><label class="flbl">UPI ID</label><input class="finp" id="bizUpiId" placeholder="name@bank"></div><div style="flex:1"><label class="flbl">UPI payee name</label><input class="finp" id="bizUpiName"></div></div>
   <label class="flbl">Bank / account details (shown on invoice)</label><input class="finp" id="bizBank" placeholder="A/c 1234 · IFSC ABCD0…">
   <label class="flbl">Invoice terms</label><input class="finp" id="bizTerms">
+  <label class="flbl">Logo path or URL (e.g. assets/images/your-logo.png)</label><input class="finp" id="bizLogoPath" placeholder="assets/images/...png or https://...">
+  <label class="flbl">Thermal/print icon path (optional)</label><input class="finp" id="bizIconPath" placeholder="assets/images/...png">
   <button class="btn-primary" onclick="saveBizForm()">Save business details</button>
   <button class="btn-primary" style="background:var(--gold);color:var(--green-800);margin-top:8px" onclick="downloadUpiQR()">Download UPI QR (current total)</button>
 
@@ -471,6 +496,17 @@ input,select{font-family:inherit;font-variant-numeric:tabular-nums}
   <button class="btn-primary" style="background:#25D366;margin-top:10px" onclick="closeModal('printChoice');waShare()">Share on WhatsApp</button>
   <button class="btn-primary" style="background:var(--line-2);color:var(--ink-2);margin-top:8px" onclick="closeModal('printChoice')">Done</button>
 </div></div></div>
+<div class="prev-bg" id="docPreview">
+  <div class="prev-bar">
+    <span class="t" id="prevTitle">Preview</span>
+    <button onclick="prevPrint()"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="15" height="15"><path d="M6 9V2h12v7M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><path d="M6 14h12v8H6z"/></svg>Print</button>
+    <button onclick="prevPdf()"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="15" height="15"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>Save PDF</button>
+    <button class="gold" onclick="prevWa()"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="15" height="15"><path d="M21 11.5a8.38 8.38 0 01-12.5 7.3L3 21l2.2-5.5A8.5 8.5 0 1121 11.5z"/></svg>WhatsApp</button>
+    <button onclick="prevDownloadQR()"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="15" height="15"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>QR</button>
+    <button class="close" onclick="closePreview()">Close</button>
+  </div>
+  <div class="prev-frame-wrap" id="prevWrap"><iframe id="prevFrame"></iframe></div>
+</div>
 <div class="toast" id="toast"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -478,6 +514,7 @@ input,select{font-family:inherit;font-variant-numeric:tabular-nums}
 <script src="../backend/config/transactions.js"></script>
 <script src="assets/js/shell.js"></script>
 <script src="assets/js/pos-print.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <script>
 'use strict';
 let allProds=[],allCats=[],allCusts=[],cart=[],held=[];
@@ -677,17 +714,20 @@ function calcChange(){
   document.getElementById('changeVal').textContent='₹'+(recv>0?Math.max(0,recv-tot):0).toLocaleString('en-IN',{minimumFractionDigits:2,maximumFractionDigits:2});
 }
 
+var MODE_LABELS={sale:'Checkout',quote:'Save Quote',service:'Bill Service',return:'Process Return',refund:'Refund'};
 document.getElementById('modes').addEventListener('click',function(e){
-  const b=e.target.closest('.mode');if(!b)return;
-  document.querySelectorAll('#modes .mode').forEach(m=>m.classList.remove('on'));b.classList.add('on');
-  setMode(b.dataset.mode,b.dataset.label);
+  const b=e.target.closest('.mode');if(!b)return;switchMode(b.dataset.mode);
 });
-function setMode(m,label){
+function switchMode(m){
   mode=m;
-  document.getElementById('chargeLbl').textContent=(label||'Checkout')+' (F1)';
+  document.querySelectorAll('#modes .mode').forEach(x=>x.classList.toggle('on',x.dataset.mode===m));
+  var sel=document.getElementById('mModeSel');if(sel)sel.value=m;
+  document.getElementById('chargeLbl').textContent=(MODE_LABELS[m]||'Checkout')+' (F1)';
   document.getElementById('svcBar').classList.toggle('show',m==='service');
+  if(m==='service')mScreen('cart');
   renderCart();
 }
+function setMode(m,label){switchMode(m);}
 
 function openCust(){custFilter();openModal('custModal');}
 function custFilter(){
@@ -707,6 +747,10 @@ async function quickAddCust(){
 async function createTransaction(){
   if(!cart.length){toast('Cart empty',true);return;}
   const c=calc();
+  if(mode==='sale'){
+    var short=cart.filter(function(i){if(String(i.id).startsWith('m'))return false;var pr=allProds.find(function(x){return x.id===i.id;});return pr&&(pr.stock_qty||0)<i.qty;});
+    if(short.length){var p0=allProds.find(x=>x.id===short[0].id);toast('Not enough stock: '+short[0].name+' (have '+((p0&&p0.stock_qty)||0)+')',true);return;}
+  }
   const invCode=genInv();
   const btn=document.getElementById('chargeBtn');const orig=btn.innerHTML;btn.disabled=true;
   const lbl=btn.querySelector('#chargeLbl');if(lbl)lbl.textContent='Processing…';
@@ -739,9 +783,11 @@ async function createTransaction(){
       if(txr.error)console.warn('[WFTx] parallel write skipped:',txr.error.message);
     }
     if(mode==='sale'||mode==='service'){
-      for(const i of cart){if(String(i.id).startsWith('m'))continue;const pr=await db.from('products').select('stock_qty').eq('id',i.id).single();if(pr.data)await db.from('products').update({stock_qty:Math.max(0,(pr.data.stock_qty||0)-i.qty)}).eq('id',i.id);}
+      for(const i of cart){if(String(i.id).startsWith('m'))continue;const pr=await db.from('products').select('stock_qty').eq('id',i.id).single();if(pr.data){const nv=Math.max(0,(pr.data.stock_qty||0)-i.qty);await db.from('products').update({stock_qty:nv}).eq('id',i.id);const lp=allProds.find(x=>x.id===i.id);if(lp)lp.stock_qty=nv;}}
+      renderProds();
     }else if(mode==='return'){
-      for(const i of cart){if(String(i.id).startsWith('m'))continue;const pr=await db.from('products').select('stock_qty').eq('id',i.id).single();if(pr.data)await db.from('products').update({stock_qty:(pr.data.stock_qty||0)+i.qty}).eq('id',i.id);}
+      for(const i of cart){if(String(i.id).startsWith('m'))continue;const pr=await db.from('products').select('stock_qty').eq('id',i.id).single();if(pr.data){const nv=(pr.data.stock_qty||0)+i.qty;await db.from('products').update({stock_qty:nv}).eq('id',i.id);const lp=allProds.find(x=>x.id===i.id);if(lp)lp.stock_qty=nv;}}
+      renderProds();
     }
     if(mode==='sale'&&cust&&cust.id)await db.from('customers').update({loyalty_points:(cust.loyalty_points||0)+Math.floor(c.tot/100),last_order_at:new Date().toISOString()}).eq('id',cust.id);
     if(mode==='sale')await db.from('orders').insert({order_number:invCode,customer_name:custName,customer_phone:cust?cust.phone:null,total:c.tot,subtotal:c.sub,payment_method:payMethod,payment_status:'paid',status:'delivered',notes:'POS '+invCode});
@@ -768,11 +814,29 @@ function receiptHtml(b){
   return '<div style="font-family:monospace;max-width:300px;margin:0 auto;color:#000"><h3 style="text-align:center;margin:0">WellFix Appliances</h3><p style="text-align:center;font-size:11px;margin:2px 0 8px">'+p.invoice_number+' · '+new Date().toLocaleString('en-IN')+'</p><p style="font-size:11px">Customer: '+p.customer_name+'</p><table style="width:100%;font-size:11px;border-top:1px dashed #000;border-bottom:1px dashed #000;margin:6px 0"><tr><th style="text-align:left">Item</th><th>Qty</th><th style="text-align:right">Amt</th></tr>'+rows+'</table><p style="font-size:12px;display:flex;justify-content:space-between"><span>Total</span><b>₹'+p.total.toLocaleString('en-IN',{minimumFractionDigits:2})+'</b></p><p style="font-size:11px">Paid via '+(p.payment_method||'').toUpperCase()+'</p><p style="text-align:center;font-size:10px;margin-top:8px">Thank you!</p></div>';
 }
 function maybeReceipt(){if(lastBill)openModal('printChoice');}
-function printReceipt(fmt){
+var curFmt='a4';
+function printReceipt(fmt){openPreview(fmt||'a4');}
+function openPreview(fmt){
   if(!lastBill){toast('No recent bill',true);return;}
   if(!window.WFPrint){toast('Print engine not loaded',true);return;}
-  if(fmt==='a4')WFPrint.printA4(lastBill);else WFPrint.printThermal(lastBill);
+  curFmt=(fmt==='thermal')?'thermal':'a4';
+  document.getElementById('prevWrap').classList.toggle('thermal',curFmt==='thermal');
+  document.getElementById('prevTitle').textContent=(curFmt==='thermal'?'Thermal receipt · ':'A4 invoice · ')+lastBill.payload.invoice_number;
+  document.getElementById('prevFrame').srcdoc=WFPrint.html(lastBill,curFmt);
+  document.getElementById('docPreview').classList.add('show');
 }
+function closePreview(){document.getElementById('docPreview').classList.remove('show');}
+function prevPrint(){var f=document.getElementById('prevFrame');try{f.contentWindow.focus();f.contentWindow.print();}catch(e){toast('Print blocked',true);}}
+function prevPdf(){
+  var f=document.getElementById('prevFrame');var name=(lastBill?lastBill.payload.invoice_number:'invoice');
+  if(!window.html2pdf){toast('Use Print → Save as PDF',true);prevPrint();return;}
+  toast('Generating PDF…');
+  var el=f.contentWindow.document.body;
+  var opt={margin:0,filename:name+'.pdf',image:{type:'jpeg',quality:.98},html2canvas:{scale:2,useCORS:true,backgroundColor:'#ffffff'},jsPDF:{unit:'mm',format:(curFmt==='thermal'?[80,230]:'a4'),orientation:'portrait'}};
+  html2pdf().set(opt).from(el).save();
+}
+function prevWa(){waShare();}
+function prevDownloadQR(){if(window.WFPrint&&lastBill)WFPrint.downloadBrandedQR(lastBill.payload.total,lastBill.payload.invoice_number,'wellfix-pay-qr');}
 function waShare(){
   if(!lastBill){toast('No recent bill',true);return;}
   var p=lastBill.payload;
@@ -784,8 +848,8 @@ function waShare(){
 function downloadUpiQR(){
   if(!window.WFPrint){toast('Engine not loaded',true);return;}
   var amt=parseFloat((document.getElementById('sTotal').textContent||'0').replace(/[₹,]/g,''))||0;
-  WFPrint.downloadQR(amt,'WellFix payment','wellfix-upi-qr');
-  toast('UPI QR downloaded');
+  WFPrint.downloadBrandedQR(amt,'WellFix payment','wellfix-upi-qr');
+  toast('Branded QR downloaded');
 }
 
 function getBranding(){try{return JSON.parse(localStorage.getItem('wf_pos_branding')||'{}');}catch(e){return{};}}
@@ -793,8 +857,7 @@ function applyBranding(){
   const b=getBranding();
   if(b.accent)document.documentElement.style.setProperty('--accent',b.accent);
   const top=document.getElementById('topLogo');
-  if(b.customLogo)top.src=b.customLogo;
-  else top.src='../assets/images/brand/wellfix-logo-'+(b.logo||'green')+'.png';
+  if(top){ if(window.WFPrint){top.src=WFPrint.biz().logoGreen;} else if(b.customLogo){top.src=b.customLogo;} else {top.src='../assets/images/brand/wellfix-logo-'+(b.logo||'green')+'.png';} }
   if(b.gst){document.getElementById('gstRate').value=b.gst;document.getElementById('setGst').value=b.gst;}
 }
 function saveBranding(patch){const b=Object.assign(getBranding(),patch);localStorage.setItem('wf_pos_branding',JSON.stringify(b));applyBranding();}
@@ -807,6 +870,8 @@ function openSettings(){
     const set=(id,v)=>{const el=document.getElementById(id);if(el)el.value=v||'';};
     set('bizName',z.name);set('bizAddr',z.address);set('bizPhone',z.phone);set('bizEmail',z.email);
     set('bizGstin',z.gstin);set('bizUpiId',z.upiId);set('bizUpiName',z.upiName);set('bizBank',z.bank);set('bizTerms',z.terms);
+    set('bizLogoPath',(z.logo&&z.logo.indexOf('data:')!==0)?z.logo:'');
+    set('bizIconPath',(z.icon&&z.icon.indexOf('data:')!==0)?z.icon:'');
     const ti=document.getElementById('tplInvoice');if(ti)ti.value=z.tplInvoice||'classic';
     const tt=document.getElementById('tplThermal');if(tt)tt.value=z.tplThermal||'standard';
   }
@@ -815,13 +880,17 @@ function openSettings(){
 function saveBizForm(){
   if(!window.WFPrint)return;
   const g=id=>document.getElementById(id)?document.getElementById(id).value.trim():'';
-  WFPrint.saveBiz({name:g('bizName'),address:g('bizAddr'),phone:g('bizPhone'),email:g('bizEmail'),gstin:g('bizGstin'),upiId:g('bizUpiId'),upiName:g('bizUpiName'),bank:g('bizBank'),terms:g('bizTerms')});
+  const patch={name:g('bizName'),address:g('bizAddr'),phone:g('bizPhone'),email:g('bizEmail'),gstin:g('bizGstin'),upiId:g('bizUpiId'),upiName:g('bizUpiName'),bank:g('bizBank'),terms:g('bizTerms')};
+  const lp=g('bizLogoPath');if(lp)patch.logo=lp;
+  const ip=g('bizIconPath');if(ip)patch.icon=ip;
+  WFPrint.saveBiz(patch);
+  applyBranding();
   toast('Business details saved');
 }
 function setTpl(key,val){if(window.WFPrint)WFPrint.saveBiz({[key]:val});toast('Template set');}
 function pickLogo(v,el){document.querySelectorAll('#settingsModal .cp[data-logo]').forEach(e=>e.classList.remove('on'));el.classList.add('on');saveBranding({logo:v,customLogo:null});}
 function pickAccent(v,el){document.querySelectorAll('#settingsModal .cp[data-acc]').forEach(e=>e.classList.remove('on'));el.classList.add('on');saveBranding({accent:v});}
-function uploadLogo(e){const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=function(){saveBranding({customLogo:r.result});toast('Logo updated');};r.readAsDataURL(f);}
+function uploadLogo(e){const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=function(){saveBranding({customLogo:r.result});if(window.WFPrint)WFPrint.saveBiz({logo:r.result});applyBranding();toast('Logo updated');};r.readAsDataURL(f);}
 function setDefaultGst(v){saveBranding({gst:v});document.getElementById('gstRate').value=v;calc();}
 
 function mScreen(s){document.body.dataset.m=s;document.querySelectorAll('.mtab .tb').forEach(t=>t.classList.toggle('on',t.dataset.s===s));}
