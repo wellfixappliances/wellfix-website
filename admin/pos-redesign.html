@@ -30,6 +30,7 @@ input,select{font-family:inherit;font-variant-numeric:tabular-nums}
 .rail{width:60px;background:var(--green-800);display:flex;flex-direction:column;align-items:center;padding:12px 0;gap:5px;flex-shrink:0}
 .rail .lg{width:40px;height:40px;margin-bottom:10px;display:grid;place-items:center}
 .rail .lg svg{width:30px;height:30px}
+.rail .lg img{width:38px;height:38px;object-fit:contain;border-radius:8px}
 .rail-btn{width:42px;height:42px;border-radius:11px;display:grid;place-items:center;color:#bfe3d4;transition:.18s}
 .rail-btn svg{width:19px;height:19px}
 .rail-btn:hover{background:rgba(255,255,255,.08);color:#fff}
@@ -300,7 +301,7 @@ input,select{font-family:inherit;font-variant-numeric:tabular-nums}
 <body data-m="catalog">
 <div class="app">
   <aside class="rail">
-    <div class="lg"><svg viewBox="0 0 32 32" fill="none" stroke="#F0C419" stroke-width="2"><polygon points="16,3 27,9.5 27,22.5 16,29 5,22.5 5,9.5"/><circle cx="16" cy="16" r="4.6"/></svg></div>
+    <div class="lg"><img id="railIcon" alt="logo" onerror="this.onerror=null;this.outerHTML='<svg viewBox=&quot;0 0 32 32&quot; fill=&quot;none&quot; stroke=&quot;#F0C419&quot; stroke-width=&quot;2&quot;><polygon points=&quot;16,3 27,9.5 27,22.5 16,29 5,22.5 5,9.5&quot;/><circle cx=&quot;16&quot; cy=&quot;16&quot; r=&quot;4.6&quot;/></svg>'"></div>
     <button class="rail-btn on" title="Sell" onclick="mScreen('catalog')"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg></button>
     <button class="rail-btn" title="Customers" onclick="openCust()"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></button>
     <button class="rail-btn" title="Invoices" onclick="goInvoices()"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6M9 13h6M9 17h4"/></svg></button>
@@ -312,7 +313,7 @@ input,select{font-family:inherit;font-variant-numeric:tabular-nums}
   </aside>
   <div class="main">
     <header class="topbar2">
-      <div class="brand"><span class="brand-ico"><svg viewBox="0 0 32 32" fill="none" stroke="#034732" stroke-width="2"><polygon points="16,3 27,9.5 27,22.5 16,29 5,22.5 5,9.5"/><circle cx="16" cy="16" r="4.6"/></svg></span><div class="brand-tx"><div class="bn" id="brandName">WellFix Appliances</div><div class="bb" id="brandBranch"></div></div></div>
+      <div class="brand"><div class="brand-tx"><div class="bn" id="brandName">WellFix Appliances</div><div class="bb" id="brandBranch"></div></div></div>
       <nav class="modes" id="modes">
         <button class="mode on" data-mode="sale" data-label="Checkout">Sale</button>
         <button class="mode" data-mode="quote" data-label="Save Quote">Quotation</button>
@@ -479,7 +480,7 @@ input,select{font-family:inherit;font-variant-numeric:tabular-nums}
   <label class="flbl">Bank / account details (shown on invoice)</label><input class="finp" id="bizBank" placeholder="A/c 1234 · IFSC ABCD0…">
   <label class="flbl">Invoice terms</label><input class="finp" id="bizTerms">
   <label class="flbl">Logo path or URL (e.g. assets/images/your-logo.png)</label><input class="finp" id="bizLogoPath" placeholder="assets/images/...png or https://...">
-  <label class="flbl">Thermal/print icon path (optional)</label><input class="finp" id="bizIconPath" placeholder="assets/images/...png">
+  <label class="flbl">Nav-bar logo icon path (your icon in assets/images)</label><input class="finp" id="bizIconPath" placeholder="assets/images/your-icon.png">
   <button class="btn-primary" onclick="saveBizForm()">Save business details</button>
   <button class="btn-primary" style="background:var(--gold);color:var(--green-800);margin-top:8px" onclick="downloadUpiQR()">Download UPI QR (current total)</button>
 
@@ -901,6 +902,7 @@ function applyBranding(){
     const z=WFPrint.biz();
     const nm=document.getElementById('brandName');if(nm)nm.textContent=z.name||'WellFix Appliances';
     const br=document.getElementById('brandBranch');if(br){br.textContent=z.branch||'';br.style.display=z.branch?'block':'none';}
+    const ri=document.getElementById('railIcon');if(ri&&z.iconGreen)ri.src=z.iconGreen;
   }
   if(b.gst){document.getElementById('gstRate').value=b.gst;document.getElementById('setGst').value=b.gst;}
 }
