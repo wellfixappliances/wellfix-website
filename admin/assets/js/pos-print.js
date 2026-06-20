@@ -9,7 +9,7 @@
 
   function base(){var b=(typeof POS_BASE!=='undefined'?POS_BASE:'/wellfix-website');return location.origin+b;}
   var BIZ_DEFAULT={
-    name:'WellFix Appliances', tagline:'Home Appliance Sales & Service',
+    name:'WellFix Appliances', tagline:'Home Appliance Sales & Service', branch:'',
     address:'Thrissur, Kerala, India', phone:'8301879406',
     email:'wellfixappliances@gmail.com', gstin:'',
     upiId:'8301879406@ybl', upiName:'WellFix Appliances', bank:'',
@@ -109,7 +109,7 @@
     +'.sign{text-align:center;font-size:11px}.sign .ln{border-top:1px solid #9aa39e;margin-top:40px;padding-top:5px;min-width:170px}'
     +'.ty{text-align:center;color:#0a5c43;font-weight:700;font-size:12px;margin:16px 0 0}'
     +'</style></head><body><div class="sheet">'
-    +'<div class="band"><div class="l"><img src="'+esc(b.logoWhite)+'" onerror="this.style.display=\'none\'"><div><div class="nm">'+esc(b.name)+'</div><div class="tg">'+esc(b.tagline)+'</div></div></div>'
+    +'<div class="band"><div class="l"><img src="'+esc(b.logoWhite)+'" onerror="this.style.display=\'none\'"><div><div class="nm">'+esc(b.name)+'</div><div class="tg">'+esc(b.tagline)+(b.branch?(' · '+esc(b.branch)):'')+'</div></div></div>'
     +'<div class="r"><div class="ti">'+title+'</div><div class="no">'+esc(p.invoice_number)+'</div></div></div><div class="strip"></div>'
     +'<div class="parties"><div><div class="h">Billed To</div><div class="nm2">'+esc(p.customer_name||'Walk-in Customer')+'</div><div class="muted">'+(p.customer_phone?esc(p.customer_phone)+'<br>':'')+'</div></div>'
     +'<div style="text-align:right"><div class="h">Invoice Details</div><div class="muted">Date: '+new Date().toLocaleDateString('en-IN')+'<br>Payment: '+esc((p.payment_method||'').toUpperCase())+(b.gstin?('<br>GSTIN: '+esc(b.gstin)):'')+'</div></div></div>'
