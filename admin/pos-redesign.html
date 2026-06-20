@@ -28,8 +28,8 @@ input,select{font-family:inherit;font-variant-numeric:tabular-nums}
 .sidebar,.topbar,.mobile-bottom-nav{display:none!important}
 .app{display:flex;height:100vh}
 .rail{width:60px;background:var(--green-800);display:flex;flex-direction:column;align-items:center;padding:12px 0;gap:5px;flex-shrink:0}
-.rail .lg{width:38px;height:38px;border-radius:10px;overflow:hidden;margin-bottom:8px;background:var(--green-900);display:grid;place-items:center}
-.rail .lg img{width:100%;height:100%;object-fit:contain}
+.rail .lg{width:40px;height:40px;margin-bottom:10px;display:grid;place-items:center}
+.rail .lg svg{width:30px;height:30px}
 .rail-btn{width:42px;height:42px;border-radius:11px;display:grid;place-items:center;color:#bfe3d4;transition:.18s}
 .rail-btn svg{width:19px;height:19px}
 .rail-btn:hover{background:rgba(255,255,255,.08);color:#fff}
@@ -38,8 +38,10 @@ input,select{font-family:inherit;font-variant-numeric:tabular-nums}
 .rail-sp{flex:1}
 .main{flex:1;display:flex;flex-direction:column;min-width:0}
 .topbar2{height:64px;background:var(--card);border-bottom:1px solid var(--line);display:flex;align-items:center;padding:0 20px;gap:16px;flex-shrink:0}
-.brand{display:flex;align-items:center;gap:10px}
-.brand img{height:34px;width:auto;object-fit:contain}
+.brand{display:flex;align-items:center;gap:11px}
+.brand-ico{display:grid;place-items:center}.brand-ico svg{width:32px;height:32px}
+.brand-tx .bn{font-size:17px;font-weight:800;letter-spacing:-.02em;color:var(--green-800);line-height:1.12}
+.brand-tx .bb{font-size:11px;color:var(--muted);font-weight:600;margin-top:1px}
 .modes{display:flex;gap:2px;background:var(--line-2);padding:4px;border-radius:12px;margin:0 auto}
 .mode{padding:8px 16px;border-radius:9px;font-weight:600;font-size:13px;color:var(--muted);transition:.16s}
 .mode:hover{color:var(--ink)}
@@ -231,7 +233,7 @@ input,select{font-family:inherit;font-variant-numeric:tabular-nums}
 @media (max-width:640px){
   .rail{display:none}
   .topbar2{height:56px;padding:0 14px;gap:10px}
-  .brand img{height:28px}
+  .brand-ico svg{width:26px;height:26px}.brand-tx .bn{font-size:14px}.brand-tx .bb{display:none}
   .modes{display:none}
   .top-right{gap:6px}
   .user .nm,.user .rl,.hold-pill .htxt{display:none}
@@ -264,6 +266,8 @@ input,select{font-family:inherit;font-variant-numeric:tabular-nums}
   .m-more{flex-direction:column;padding:14px;overflow-y:auto;background:var(--bg)}
   .m-cartbar{position:fixed;bottom:70px;left:0;right:0;margin:0 12px;background:var(--green-800);color:#fff;border-radius:12px;padding:12px 14px;display:flex;align-items:center;gap:10px;z-index:115}
   .checkout{margin:0}
+  body[data-m="pay"] .checkout{position:fixed;left:12px;right:12px;bottom:70px;width:auto;z-index:118;box-shadow:0 10px 30px -6px rgba(3,71,50,.55)}
+  body[data-m="pay"] .bill-body{padding-bottom:96px}
   .bill-body{padding-bottom:90px}
   .modal{max-width:100%;border-radius:18px 18px 0 0;max-height:90vh}
   .modal-bg{align-items:flex-end;padding:0}
@@ -296,7 +300,7 @@ input,select{font-family:inherit;font-variant-numeric:tabular-nums}
 <body data-m="catalog">
 <div class="app">
   <aside class="rail">
-    <div class="lg"><img id="railLogo" src="../assets/images/brand/wellfix-icon-white.png" alt="WellFix" onerror="this.outerHTML='<svg viewBox=&quot;0 0 32 32&quot; width=&quot;28&quot; height=&quot;28&quot;><polygon points=&quot;16,3 27,9.5 27,22.5 16,29 5,22.5 5,9.5&quot; fill=&quot;#F0C419&quot;/><polygon points=&quot;16,8 22.5,11.7 22.5,20.3 16,24 9.5,20.3 9.5,11.7&quot; fill=&quot;#034732&quot;/><circle cx=&quot;16&quot; cy=&quot;16&quot; r=&quot;3.2&quot; fill=&quot;#F0C419&quot;/></svg>'"></div>
+    <div class="lg"><svg viewBox="0 0 32 32" fill="none" stroke="#F0C419" stroke-width="2"><polygon points="16,3 27,9.5 27,22.5 16,29 5,22.5 5,9.5"/><circle cx="16" cy="16" r="4.6"/></svg></div>
     <button class="rail-btn on" title="Sell" onclick="mScreen('catalog')"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg></button>
     <button class="rail-btn" title="Customers" onclick="openCust()"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></button>
     <button class="rail-btn" title="Invoices" onclick="goInvoices()"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6M9 13h6M9 17h4"/></svg></button>
@@ -308,7 +312,7 @@ input,select{font-family:inherit;font-variant-numeric:tabular-nums}
   </aside>
   <div class="main">
     <header class="topbar2">
-      <div class="brand"><img id="topLogo" src="../assets/images/brand/wellfix-logo-green.png" alt="WellFix" onerror="this.outerHTML='<span style=&quot;font-weight:800;font-size:19px;letter-spacing:-.02em;color:var(--green-800)&quot;>Well<span style=&quot;color:var(--gold)&quot;>fix</span></span>'"></div>
+      <div class="brand"><span class="brand-ico"><svg viewBox="0 0 32 32" fill="none" stroke="#034732" stroke-width="2"><polygon points="16,3 27,9.5 27,22.5 16,29 5,22.5 5,9.5"/><circle cx="16" cy="16" r="4.6"/></svg></span><div class="brand-tx"><div class="bn" id="brandName">WellFix Appliances</div><div class="bb" id="brandBranch"></div></div></div>
       <nav class="modes" id="modes">
         <button class="mode on" data-mode="sale" data-label="Checkout">Sale</button>
         <button class="mode" data-mode="quote" data-label="Save Quote">Quotation</button>
@@ -467,6 +471,7 @@ input,select{font-family:inherit;font-variant-numeric:tabular-nums}
   <div class="divide" style="margin:18px 0 6px"></div>
   <div class="eyebrow" style="color:var(--ink-2)">Business details (used on invoices &amp; receipts)</div>
   <label class="flbl">Business name</label><input class="finp" id="bizName">
+  <label class="flbl">Branch / sub-line (shown under the name)</label><input class="finp" id="bizBranch" placeholder="e.g. Venkitangu Branch">
   <label class="flbl">Address</label><input class="finp" id="bizAddr">
   <div style="display:flex;gap:8px"><div style="flex:1"><label class="flbl">Phone</label><input class="finp" id="bizPhone"></div><div style="flex:1"><label class="flbl">Email</label><input class="finp" id="bizEmail"></div></div>
   <label class="flbl">GSTIN</label><input class="finp" id="bizGstin">
@@ -485,9 +490,45 @@ input,select{font-family:inherit;font-variant-numeric:tabular-nums}
   <label class="flbl">Thermal receipt style</label>
   <div class="field sel"><select id="tplThermal" onchange="setTpl('tplThermal',this.value)"><option value="standard">Standard 80mm</option><option value="compact">Compact</option><option value="branded">Branded</option></select></div>
 
+  <div class="divide" style="margin:18px 0 6px"></div>
+  <div class="eyebrow" style="color:var(--ink-2)">Service items &amp; prices (used in the Service popup)</div>
+  <label class="flbl">Appliance</label>
+  <div class="field sel"><select id="svcEditCat" onchange="renderSvcEditor()"></select></div>
+  <div id="svcEditList" style="margin-top:8px"></div>
+  <button class="mini-btn" style="margin-top:6px" onclick="svcAddItem()">+ Add service item</button>
+  <div style="display:flex;gap:8px;margin-top:10px"><input class="finp" id="svcNewCat" placeholder="New appliance name" style="flex:1"><button class="mini-btn" onclick="svcAddCat()">+ Appliance</button></div>
+
   <p style="font-size:11px;color:var(--muted);margin-top:16px;line-height:1.6">Saved on this device. Ask me to enable account-wide settings and I'll sync these to <code>site_settings</code> for every terminal. Email/SMS/WhatsApp-PDF sending &amp; printer/scanner connect are the next phase.</p>
 </div></div></div>
 <div class="modal-bg" id="profileModal"><div class="modal"><div class="modal-hd"><h3>Profile</h3><button class="kebab" onclick="closeModal('profileModal')"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="18" height="18"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div><div class="modal-bd" id="profileBody"></div></div></div>
+<style>
+.svc-cats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.svc-cat{border:1px solid var(--line);border-radius:11px;padding:13px 6px;font-weight:700;font-size:12px;color:var(--ink-2);display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center}
+.svc-cat svg{width:22px;height:22px;color:var(--green-600)}
+.svc-cat:hover,.svc-cat.on{border-color:var(--green-600);background:var(--green-50);color:var(--green-700)}
+.svc-items{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.svc-item{display:flex;justify-content:space-between;align-items:center;gap:8px;border:1px solid var(--line);border-radius:10px;padding:11px 12px;font-size:12.5px;font-weight:600;color:var(--ink-2);text-align:left}
+.svc-item:hover{border-color:#2563eb;background:#eef4ff;color:#1d4ed8}
+.svc-item .p{font-weight:800;color:var(--green-700);white-space:nowrap}
+.svc-quick{flex:1;border:1px dashed var(--green-600);color:var(--green-700);background:var(--green-50);border-radius:10px;padding:11px;font-weight:700;font-size:12.5px}
+.svc-quick:hover{background:var(--green-100)}
+.svc-edit-row{display:flex;gap:6px;margin:6px 0;align-items:center}
+.svc-edit-row .finp{height:36px}
+@media (max-width:640px){.svc-cats{grid-template-columns:repeat(2,1fr)}.svc-items{grid-template-columns:1fr}}
+</style>
+<div class="modal-bg" id="serviceModal"><div class="modal" style="max-width:560px"><div class="modal-hd"><h3>New Service Bill</h3><button class="kebab" onclick="closeModal('serviceModal')"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="18" height="18"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div><div class="modal-bd">
+  <label class="flbl">Reason</label>
+  <div class="field sel"><select id="svcReason"><option value="">— Select reason —</option><option>Warranty</option><option>New Install</option><option>Emergency</option><option>Routine</option></select></div>
+  <label class="flbl">1 · Choose appliance</label>
+  <div class="svc-cats" id="svcCats"></div>
+  <div id="svcComplaintWrap" style="display:none">
+    <label class="flbl">2 · Tap the complaint — it adds to the bill automatically</label>
+    <div class="svc-items" id="svcItems"></div>
+  </div>
+  <div class="divide" style="margin:14px 0"></div>
+  <div style="display:flex;gap:8px"><button class="svc-quick" onclick="openManual('service')">+ Custom charge</button><button class="svc-quick" onclick="openManual('labor')">+ Labour</button></div>
+  <button class="btn-primary" onclick="closeModal('serviceModal')">Done — review &amp; bill</button>
+</div></div></div>
 <div class="modal-bg" id="printChoice"><div class="modal" style="max-width:380px"><div class="modal-hd"><h3>Bill saved — print?</h3><button class="kebab" onclick="closeModal('printChoice')"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="18" height="18"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div><div class="modal-bd">
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
     <button class="cp" style="display:flex;flex-direction:column;gap:8px;align-items:center;padding:18px" onclick="closeModal('printChoice');printReceipt('a4')"><svg fill="none" stroke="currentColor" stroke-width="1.7" viewBox="0 0 24 24" width="26" height="26"><path d="M6 9V2h12v7M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><path d="M6 14h12v8H6z"/></svg>A4 Invoice / PDF</button>
@@ -724,7 +765,7 @@ function switchMode(m){
   var sel=document.getElementById('mModeSel');if(sel)sel.value=m;
   document.getElementById('chargeLbl').textContent=(MODE_LABELS[m]||'Checkout')+' (F1)';
   document.getElementById('svcBar').classList.toggle('show',m==='service');
-  if(m==='service')mScreen('cart');
+  if(m==='service'){mScreen('cart');openServiceModal();}
   renderCart();
 }
 function setMode(m,label){switchMode(m);}
@@ -856,8 +897,11 @@ function getBranding(){try{return JSON.parse(localStorage.getItem('wf_pos_brandi
 function applyBranding(){
   const b=getBranding();
   if(b.accent)document.documentElement.style.setProperty('--accent',b.accent);
-  const top=document.getElementById('topLogo');
-  if(top){ if(window.WFPrint){top.src=WFPrint.biz().logoGreen;} else if(b.customLogo){top.src=b.customLogo;} else {top.src='../assets/images/brand/wellfix-logo-'+(b.logo||'green')+'.png';} }
+  if(window.WFPrint){
+    const z=WFPrint.biz();
+    const nm=document.getElementById('brandName');if(nm)nm.textContent=z.name||'WellFix Appliances';
+    const br=document.getElementById('brandBranch');if(br){br.textContent=z.branch||'';br.style.display=z.branch?'block':'none';}
+  }
   if(b.gst){document.getElementById('gstRate').value=b.gst;document.getElementById('setGst').value=b.gst;}
 }
 function saveBranding(patch){const b=Object.assign(getBranding(),patch);localStorage.setItem('wf_pos_branding',JSON.stringify(b));applyBranding();}
@@ -868,19 +912,20 @@ function openSettings(){
   if(window.WFPrint){
     const z=WFPrint.biz();
     const set=(id,v)=>{const el=document.getElementById(id);if(el)el.value=v||'';};
-    set('bizName',z.name);set('bizAddr',z.address);set('bizPhone',z.phone);set('bizEmail',z.email);
+    set('bizName',z.name);set('bizBranch',z.branch);set('bizAddr',z.address);set('bizPhone',z.phone);set('bizEmail',z.email);
     set('bizGstin',z.gstin);set('bizUpiId',z.upiId);set('bizUpiName',z.upiName);set('bizBank',z.bank);set('bizTerms',z.terms);
     set('bizLogoPath',(z.logo&&z.logo.indexOf('data:')!==0)?z.logo:'');
     set('bizIconPath',(z.icon&&z.icon.indexOf('data:')!==0)?z.icon:'');
     const ti=document.getElementById('tplInvoice');if(ti)ti.value=z.tplInvoice||'classic';
     const tt=document.getElementById('tplThermal');if(tt)tt.value=z.tplThermal||'standard';
   }
+  initSvcEditor();
   openModal('settingsModal');
 }
 function saveBizForm(){
   if(!window.WFPrint)return;
   const g=id=>document.getElementById(id)?document.getElementById(id).value.trim():'';
-  const patch={name:g('bizName'),address:g('bizAddr'),phone:g('bizPhone'),email:g('bizEmail'),gstin:g('bizGstin'),upiId:g('bizUpiId'),upiName:g('bizUpiName'),bank:g('bizBank'),terms:g('bizTerms')};
+  const patch={name:g('bizName'),branch:g('bizBranch'),address:g('bizAddr'),phone:g('bizPhone'),email:g('bizEmail'),gstin:g('bizGstin'),upiId:g('bizUpiId'),upiName:g('bizUpiName'),bank:g('bizBank'),terms:g('bizTerms')};
   const lp=g('bizLogoPath');if(lp)patch.logo=lp;
   const ip=g('bizIconPath');if(ip)patch.icon=ip;
   WFPrint.saveBiz(patch);
@@ -892,6 +937,61 @@ function pickLogo(v,el){document.querySelectorAll('#settingsModal .cp[data-logo]
 function pickAccent(v,el){document.querySelectorAll('#settingsModal .cp[data-acc]').forEach(e=>e.classList.remove('on'));el.classList.add('on');saveBranding({accent:v});}
 function uploadLogo(e){const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=function(){saveBranding({customLogo:r.result});if(window.WFPrint)WFPrint.saveBiz({logo:r.result});applyBranding();toast('Logo updated');};r.readAsDataURL(f);}
 function setDefaultGst(v){saveBranding({gst:v});document.getElementById('gstRate').value=v;calc();}
+
+/* ── SERVICE CATALOG (Zero-Type) ─────────────────────────── */
+var SVC_DEFAULT={
+ "Gas Stove":[{n:"Burner repair",p:150},{n:"Gas leak fix",p:200},{n:"Auto-ignition repair",p:250},{n:"Full service",p:300}],
+ "Mixer / Grinder":[{n:"Coil winding",p:400},{n:"New coil",p:550},{n:"Armature winding",p:450},{n:"Coupler change",p:120},{n:"Jar complaint",p:200},{n:"Blade change",p:150}],
+ "Pressure Cooker":[{n:"Gasket change",p:120},{n:"Safety valve",p:100},{n:"Handle repair",p:150},{n:"Whistle weight",p:80}],
+ "Water Motor":[{n:"Coil winding",p:600},{n:"Capacitor change",p:250},{n:"Bearing change",p:300},{n:"Impeller change",p:350},{n:"Full service",p:500}],
+ "Fan":[{n:"Coil winding",p:350},{n:"Capacitor change",p:150},{n:"Bearing / bush change",p:200},{n:"Regulator change",p:120},{n:"Blade balancing",p:100}],
+ "Washing Machine":[{n:"Motor winding",p:700},{n:"Timer change",p:350},{n:"Belt change",p:200},{n:"Drain pump repair",p:400}],
+ "Other":[{n:"Inspection charge",p:100},{n:"Service charge",p:150},{n:"Home visit",p:200}]
+};
+function svcCatalog(){try{var c=JSON.parse(localStorage.getItem('wf_service_catalog')||'null');return c&&Object.keys(c).length?c:SVC_DEFAULT;}catch(e){return SVC_DEFAULT;}}
+function saveSvcCatalog(c){localStorage.setItem('wf_service_catalog',JSON.stringify(c));}
+var svcActiveCat='';
+function openServiceModal(){svcActiveCat='';renderSvcCats();document.getElementById('svcComplaintWrap').style.display='none';document.getElementById('svcReason').value='';openModal('serviceModal');}
+function svcIcon(){return '<svg fill="none" stroke="currentColor" stroke-width="1.7" viewBox="0 0 24 24"><path d="M14.7 6.3a4 4 0 00-5.6 5.6L3 18v3h3l6.1-6.1a4 4 0 005.6-5.6l-2.5 2.5-2-2z"/></svg>';}
+function renderSvcCats(){
+  var c=svcCatalog();
+  document.getElementById('svcCats').innerHTML=Object.keys(c).map(function(k){
+    return '<button class="svc-cat'+(svcActiveCat===k?' on':'')+'" onclick="pickSvcCat(this.getAttribute(\'data-k\'))" data-k="'+k.replace(/"/g,'&quot;')+'">'+svcIcon()+'<span>'+k+'</span></button>';
+  }).join('');
+}
+function pickSvcCat(k){
+  svcActiveCat=k;renderSvcCats();
+  var items=svcCatalog()[k]||[];
+  document.getElementById('svcItems').innerHTML=items.map(function(it,i){
+    return '<button class="svc-item" onclick="addSvcLine(this.getAttribute(\'data-k\'),'+i+')" data-k="'+k.replace(/"/g,'&quot;')+'"><span>'+it.n+'</span><span class="p">₹'+it.p+'</span></button>';
+  }).join('')+'<button class="svc-item" style="border-style:dashed" onclick="openManual(\'service\')"><span>+ Other / custom</span><span class="p">›</span></button>';
+  document.getElementById('svcComplaintWrap').style.display='block';
+}
+function addSvcLine(cat,i){
+  var it=(svcCatalog()[cat]||[])[i];if(!it)return;
+  var reason=document.getElementById('svcReason').value;
+  var name=cat+' — '+it.n+(reason?(' ('+reason+')'):'');
+  cart.push({id:'msvc'+Date.now()+Math.random().toString(36).slice(2,5),name:name,sku:'',price:Number(it.p)||0,qty:1,disc:0,gst:false,itemType:'service'});
+  renderCart();calc();toast('+ '+it.n+' ₹'+it.p);
+}
+/* settings editor */
+function initSvcEditor(){
+  var sel=document.getElementById('svcEditCat');if(!sel)return;
+  var cats=Object.keys(svcCatalog());
+  sel.innerHTML=cats.map(function(k){return '<option>'+k+'</option>';}).join('');
+  renderSvcEditor();
+}
+function renderSvcEditor(){
+  var sel=document.getElementById('svcEditCat');if(!sel)return;
+  var c=svcCatalog();var cat=sel.value;var items=c[cat]||[];
+  document.getElementById('svcEditList').innerHTML=items.map(function(it,i){
+    return '<div class="svc-edit-row"><input class="finp" style="flex:2" value="'+String(it.n).replace(/"/g,'&quot;')+'" onchange="svcEdit(this.getAttribute(\'data-c\'),'+i+',\'n\',this.value)" data-c="'+cat.replace(/"/g,'&quot;')+'"><input class="finp" type="number" style="flex:1" value="'+it.p+'" onchange="svcEdit(this.getAttribute(\'data-c\'),'+i+',\'p\',this.value)" data-c="'+cat.replace(/"/g,'&quot;')+'"><button class="rm" onclick="svcDel(this.getAttribute(\'data-c\'),'+i+')" data-c="'+cat.replace(/"/g,'&quot;')+'"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div>';
+  }).join('')||'<div style="color:var(--faint);font-size:12px;padding:6px">No items yet</div>';
+}
+function svcEdit(cat,i,f,v){var c=svcCatalog();if(!c[cat]||!c[cat][i])return;if(f==='p')c[cat][i].p=Number(v)||0;else c[cat][i].n=v;saveSvcCatalog(c);}
+function svcDel(cat,i){var c=svcCatalog();if(c[cat]){c[cat].splice(i,1);saveSvcCatalog(c);renderSvcEditor();}}
+function svcAddItem(){var sel=document.getElementById('svcEditCat');var c=svcCatalog();var cat=sel.value;c[cat]=c[cat]||[];c[cat].push({n:'New service',p:0});saveSvcCatalog(c);renderSvcEditor();}
+function svcAddCat(){var v=document.getElementById('svcNewCat').value.trim();if(!v)return;var c=svcCatalog();if(!c[v])c[v]=[{n:'Service charge',p:150}];saveSvcCatalog(c);document.getElementById('svcNewCat').value='';initSvcEditor();document.getElementById('svcEditCat').value=v;renderSvcEditor();}
 
 function mScreen(s){document.body.dataset.m=s;document.querySelectorAll('.mtab .tb').forEach(t=>t.classList.toggle('on',t.dataset.s===s));}
 function openModal(id){document.getElementById(id).classList.add('show');}
