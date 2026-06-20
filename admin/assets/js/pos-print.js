@@ -82,7 +82,7 @@
 
   function invoiceDoc(bill,kind){
     var b=biz(),p=bill.payload,items=bill.cart||[];
-    var title=kind==='service'?'SERVICE INVOICE':'TAX INVOICE';
+    var title=kind==='service'?'SERVICE INVOICE':(kind==='credit'?'CREDIT NOTE':'TAX INVOICE');
     var cgst=(p.tax_amount||0)/2, half=(p.tax_pct||0)/2;
     var rows=items.map(function(it,i){var amt=it.qty*it.price-(it.disc||0);
       return '<tr><td class="c">'+(i+1)+'</td><td><b>'+esc(it.name)+'</b>'+(it.sku?'<div class="sub">'+esc(it.sku)+'</div>':'')+'</td>'
@@ -248,7 +248,7 @@
   }
 
   function openPrint(html){var w=window.open('','_blank','width=460,height=760');if(!w){alert('Allow pop-ups to print / save as PDF.');return;}w.document.open();w.document.write(html);w.document.close();w.focus();setTimeout(function(){try{w.print();}catch(e){}},500);}
-  function docFor(bill){var t=bill.payload.invoice_type;if(t==='quotation')return quotationDoc(bill);if(t==='service')return invoiceDoc(bill,'service');return invoiceDoc(bill,'invoice');}
+  function docFor(bill){var t=bill.payload.invoice_type;if(t==='quotation')return quotationDoc(bill);if(t==='service')return invoiceDoc(bill,'service');if(t==='return'||t==='refund')return invoiceDoc(bill,'credit');return invoiceDoc(bill,'invoice');}
   function downloadQR(amount,note,filename){var url=upiQR(amount,note,420);var a=document.createElement('a');a.href=url;a.download=(filename||'wellfix-upi-qr')+'.png';a.target='_blank';document.body.appendChild(a);a.click();a.remove();return url;}
   function downloadBrandedQR(amount,note,filename){
     var b=biz();var qrUrl=upiQR(amount,note,300);
