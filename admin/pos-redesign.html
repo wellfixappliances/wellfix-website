@@ -448,7 +448,7 @@ input,select{font-family:inherit;font-variant-numeric:tabular-nums}
 let allProds=[],allCats=[],allCusts=[],cart=[],held=[];
 let mode='sale',payMethod='cash',discType='flat',gstOn=true,catFilter='',cust=null;
 let SPARE_CAT_IDS=new Set(),lastBill=null,manualKind='service';
-const BASE='/wellfix-website';
+const POS_BASE=(typeof BASE!=='undefined'?BASE:'/wellfix-website');
 
 (async()=>{
   applyBranding();
@@ -483,8 +483,8 @@ function renderUser(){
   const canDash=(window.AdminShell&&AdminShell.permissions&&AdminShell.permissions.dashboard===true)||p.role==='super_admin';
   if(canDash){document.getElementById('railAdmin').style.display='grid';document.getElementById('mAdmin').style.display='flex';}
 }
-function goDashboard(){location.href=BASE+'/admin/dashboard.html';}
-function goInvoices(){location.href=BASE+'/admin/invoice_manager.html';}
+function goDashboard(){location.href=POS_BASE+'/admin/dashboard.html';}
+function goInvoices(){location.href=POS_BASE+'/admin/invoice_manager.html';}
 async function doLogout(){if(confirm('Log out of POS?'))await AdminShell.logout();}
 function openProfile(){
   const p=AdminShell.user?.profile||{};
