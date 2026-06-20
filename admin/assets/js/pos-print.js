@@ -134,7 +134,7 @@
     +".barbtm .rgt{display:flex;align-items:center;gap:8px;font-size:8.5px;color:#bfe3d4;text-align:right}.barbtm .soc{display:flex;gap:6px}.barbtm .soc span{width:20px;height:20px;border-radius:50%;background:rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center}.barbtm .soc svg{width:11px;height:11px}";
     return '<!DOCTYPE html><html><head><meta charset="utf-8"><title>'+esc(p.invoice_number)+'</title><style>'+css+'</style></head><body><div class="pg">'
     +'<div class="hd"><div class="badge-l">'+(b.iconGreen?'<img src="'+esc(b.iconGreen)+'" onerror="this.outerHTML=\''+HEX.replace(/"/g,'&quot;')+'\'">':HEX)+'</div>'
-    +'<div class="mid"><div class="bn">'+esc(b.name).toUpperCase()+'</div><div class="tg">'+esc(b.tagline)+'</div>'+contactRows(b)+'<div class="gstin">GSTIN: '+esc(b.gstin)+'</div></div>'
+    +'<div class="mid"><div class="bn">'+esc(b.name).toUpperCase()+'</div><div class="tg">'+esc(b.tagline)+'</div>'+contactRows(b)+(b.gstin?('<div class="gstin">GSTIN: '+esc(b.gstin)+'</div>'):'')+'</div>'
     +'<div class="rt"><div class="ti">'+title+'</div><div class="ob">ORIGINAL FOR RECIPIENT</div><div class="meta">'
     +'<div><span>Invoice No.</span><b>'+esc(p.invoice_number)+'</b></div><div><span>Date</span><b>'+new Date().toLocaleDateString('en-GB')+'</b></div>'
     +'<div><span>Time</span><b>'+new Date().toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'})+'</b></div>'
@@ -169,8 +169,9 @@
     var why=[['shield','Genuine Products'],['box','Expert Installation'],['head','Service Support'],['box','Fast Delivery'],['shield','6+ Years Experience']]
       .map(function(w){return '<div class="wc"><div class="cir">'+ic(w[0])+'</div><span>'+w[1]+'</span></div>';}).join('');
     var css=headCSS()
-    +".hd{display:flex;min-height:150px;background:#034732;position:relative;overflow:hidden}"
-    +".hd:after{content:'';position:absolute;top:0;right:128px;width:56px;height:100%;background:#F0C419;transform:skewX(-20deg)}"
+    +".hd{display:flex;min-height:150px;background:#034732;position:relative;overflow:hidden;border-bottom:5px solid #F0C419}"
+    +".hd:after{content:'';position:absolute;top:0;right:0;width:210px;height:100px;background:#F0C419;clip-path:polygon(52% 0,100% 0,100% 100%);z-index:0}"
+    +".hd .rt .ribbon,.hd .rt .meta{position:relative;z-index:2}"
     +".hd .badge-l{width:175px;display:flex;align-items:center;justify-content:center;z-index:2}.hd .badge-l svg,.hd .badge-l img{width:108px;height:108px;object-fit:contain}"
     +".hd .mid{flex:1;padding:18px 14px;color:#fff;z-index:2}"
     +".hd .bn{font-size:25px;font-weight:800;letter-spacing:-.5px}.hd .tg{font-size:11px;color:#bfe3d4;border-bottom:2px solid #F0C419;display:inline-block;padding-bottom:4px;margin:3px 0 9px}"
