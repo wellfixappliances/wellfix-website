@@ -16,13 +16,14 @@
     logo:'', tplInvoice:'classic', tplThermal:'standard',
     terms:'Goods once sold are taken back / exchanged within 7 days with the original bill. Warranty as per manufacturer.'
   };
+  function resolveAsset(l){if(!l)return '';if(l.indexOf('data:')===0||l.indexOf('http')===0)return l;return base()+'/'+l.replace(/^\/+/,'');}
   function biz(){
     var b={};try{b=JSON.parse(localStorage.getItem('wf_pos_biz')||'{}');}catch(e){b={};}
     var m=Object.assign({},BIZ_DEFAULT,b);
-    m.logoGreen=base()+'/assets/images/brand/wellfix-logo-green.png';
-    m.logoWhite=base()+'/assets/images/brand/wellfix-logo-white.png';
-    m.iconGreen=base()+'/assets/images/brand/wellfix-icon-green.png';
-    if(m.logo&&m.logo.indexOf('data:')===0){m.logoGreen=m.logo;m.logoWhite=m.logo;}
+    var custom=resolveAsset(m.logo);
+    m.logoGreen=custom||(base()+'/assets/images/brand/wellfix-logo-green.png');
+    m.logoWhite=custom||(base()+'/assets/images/brand/wellfix-logo-white.png');
+    m.iconGreen=resolveAsset(m.icon)||custom||(base()+'/assets/images/brand/wellfix-icon-green.png');
     return m;
   }
   function saveBiz(patch){var b={};try{b=JSON.parse(localStorage.getItem('wf_pos_biz')||'{}');}catch(e){}Object.assign(b,patch);localStorage.setItem('wf_pos_biz',JSON.stringify(b));}
@@ -71,7 +72,7 @@
     var title=kind==='service'?'SERVICE INVOICE':'TAX INVOICE';
     var qr=upiQR(p.total,p.invoice_number,150);
     return '<!DOCTYPE html><html><head><meta charset="utf-8"><title>'+esc(p.invoice_number)+'</title><style>'
-    +'@page{size:A4;margin:0}*{margin:0;padding:0;box-sizing:border-box}'
+    +'@page{size:A4;margin:0}*{margin:0;padding:0;box-sizing:border-box;-webkit-print-color-adjust:exact;print-color-adjust:exact}'
     +'body{font-family:"Segoe UI",Arial,sans-serif;color:#1d2421;font-size:12px}'
     +'.sheet{padding:0 0 24px}'
     +'.band{background:#034732;color:#fff;padding:22px 32px;display:flex;justify-content:space-between;align-items:center}'
@@ -130,7 +131,7 @@
     var b=biz(),p=bill.payload,items=bill.cart||[];
     var valid=new Date(Date.now()+7*864e5).toLocaleDateString('en-IN');
     return '<!DOCTYPE html><html><head><meta charset="utf-8"><title>'+esc(p.invoice_number)+'</title><style>'
-    +'@page{size:A4;margin:0}*{margin:0;padding:0;box-sizing:border-box}'
+    +'@page{size:A4;margin:0}*{margin:0;padding:0;box-sizing:border-box;-webkit-print-color-adjust:exact;print-color-adjust:exact}'
     +'body{font-family:"Segoe UI",Arial,sans-serif;color:#1d2421;font-size:12px}'
     +'.sheet{padding:34px 34px 24px;border-top:7px solid #F0C419}'
     +'.top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px}'
@@ -176,7 +177,7 @@
       return '<tr><td class="l">'+esc(it.name)+'<br><span class="d">'+it.qty+' x '+money(it.price)+'</span></td><td class="r">'+money(amt)+'</td></tr>';}).join('');
     var showQR=(p.invoice_type!=='quotation');
     return '<!DOCTYPE html><html><head><meta charset="utf-8"><title>'+esc(p.invoice_number)+'</title><style>'
-    +'@page{size:80mm auto;margin:0}*{margin:0;padding:0;box-sizing:border-box}'
+    +'@page{size:80mm auto;margin:0}*{margin:0;padding:0;box-sizing:border-box;-webkit-print-color-adjust:exact;print-color-adjust:exact}'
     +'body{width:80mm;padding:5mm 4mm;font-family:"Courier New",monospace;color:#000;font-size:11px;line-height:1.45}'
     +'.c{text-align:center}.b{font-weight:bold}.lg{height:38px;margin:0 auto 4px;display:block}'
     +'.hr{border-top:1px dashed #000;margin:5px 0}table{width:100%;border-collapse:collapse}td{padding:2px 0;vertical-align:top}'
@@ -214,9 +215,36 @@
     document.body.appendChild(a);a.click();a.remove();return url;
   }
 
+  function downloadBrandedQR(amount,note,filename){
+    var b=biz();
+    var qrUrl=upiQR(amount,note,300);
+    var canvas=document.createElement('canvas');canvas.width=620;canvas.height=780;
+    var ctx=canvas.getContext('2d');
+    ctx.fillStyle='#ffffff';ctx.fillRect(0,0,620,780);
+    ctx.fillStyle='#034732';ctx.fillRect(0,0,620,130);
+    ctx.fillStyle='#F0C419';ctx.fillRect(0,130,620,8);
+    ctx.textAlign='center';
+    ctx.fillStyle='#ffffff';ctx.font='bold 36px Arial';ctx.fillText(b.name,310,62);
+    ctx.font='16px Arial';ctx.fillStyle='#bfe3d4';ctx.fillText('Scan & Pay with any UPI app',310,98);
+    ctx.fillStyle='#5e6a65';ctx.font='17px Arial';ctx.fillText('Amount to pay',310,185);
+    ctx.fillStyle='#034732';ctx.font='bold 50px Arial';ctx.fillText('₹'+Number(amount||0).toLocaleString('en-IN'),310,235);
+    var img=new Image();img.crossOrigin='anonymous';
+    img.onload=function(){
+      ctx.drawImage(img,160,270,300,300);
+      ctx.fillStyle='#1d2421';ctx.font='15px Arial';if(note)ctx.fillText(note,310,610);
+      ctx.fillStyle='#F0C419';ctx.fillRect(0,650,620,6);
+      ctx.fillStyle='#5e6a65';ctx.font='15px Arial';ctx.fillText(b.address,310,695);ctx.fillText('Ph: '+b.phone,310,722);
+      try{var a=document.createElement('a');a.download=(filename||'wellfix-pay-qr')+'.png';a.href=canvas.toDataURL('image/png');a.click();}
+      catch(e){var a2=document.createElement('a');a2.href=qrUrl;a2.download='wellfix-qr.png';a2.target='_blank';a2.click();}
+    };
+    img.onerror=function(){var a=document.createElement('a');a.href=qrUrl;a.download='wellfix-qr.png';a.target='_blank';a.click();};
+    img.src=qrUrl;
+  }
+
   global.WFPrint={
-    biz:biz,saveBiz:saveBiz,upiQR:upiQR,downloadQR:downloadQR,inWords:inWords,
+    biz:biz,saveBiz:saveBiz,upiQR:upiQR,downloadQR:downloadQR,downloadBrandedQR:downloadBrandedQR,inWords:inWords,
     a4:docFor,thermal:thermalDoc,
+    html:function(bill,fmt){return fmt==='thermal'?thermalDoc(bill):docFor(bill);},
     printA4:function(bill){openPrint(docFor(bill));},
     printThermal:function(bill){openPrint(thermalDoc(bill));},
     DEFAULT:BIZ_DEFAULT
