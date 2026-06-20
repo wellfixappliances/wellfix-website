@@ -434,7 +434,27 @@ input,select{font-family:inherit;font-variant-numeric:tabular-nums}
   <div class="cat-pick"><button class="cp" data-acc="#F0C419" onclick="pickAccent('#F0C419',this)">Gold</button><button class="cp" data-acc="#034732" onclick="pickAccent('#034732',this)">Green</button></div>
   <label class="flbl">Default GST rate</label>
   <div class="field sel"><select id="setGst" onchange="setDefaultGst(this.value)"><option value="18">18%</option><option value="12">12%</option><option value="5">5%</option><option value="28">28%</option></select></div>
-  <p style="font-size:11px;color:var(--muted);margin-top:14px;line-height:1.6">Branding is saved on this device. Ask me to enable account-wide branding and I'll store it in <code>site_settings</code> so every terminal picks it up.</p>
+
+  <div class="divide" style="margin:18px 0 6px"></div>
+  <div class="eyebrow" style="color:var(--ink-2)">Business details (used on invoices &amp; receipts)</div>
+  <label class="flbl">Business name</label><input class="finp" id="bizName">
+  <label class="flbl">Address</label><input class="finp" id="bizAddr">
+  <div style="display:flex;gap:8px"><div style="flex:1"><label class="flbl">Phone</label><input class="finp" id="bizPhone"></div><div style="flex:1"><label class="flbl">Email</label><input class="finp" id="bizEmail"></div></div>
+  <label class="flbl">GSTIN</label><input class="finp" id="bizGstin">
+  <div style="display:flex;gap:8px"><div style="flex:1"><label class="flbl">UPI ID</label><input class="finp" id="bizUpiId" placeholder="name@bank"></div><div style="flex:1"><label class="flbl">UPI payee name</label><input class="finp" id="bizUpiName"></div></div>
+  <label class="flbl">Bank / account details (shown on invoice)</label><input class="finp" id="bizBank" placeholder="A/c 1234 · IFSC ABCD0…">
+  <label class="flbl">Invoice terms</label><input class="finp" id="bizTerms">
+  <button class="btn-primary" onclick="saveBizForm()">Save business details</button>
+  <button class="btn-primary" style="background:var(--gold);color:var(--green-800);margin-top:8px" onclick="downloadUpiQR()">Download UPI QR (current total)</button>
+
+  <div class="divide" style="margin:18px 0 6px"></div>
+  <div class="eyebrow" style="color:var(--ink-2)">Templates</div>
+  <label class="flbl">A4 invoice / quotation style</label>
+  <div class="field sel"><select id="tplInvoice" onchange="setTpl('tplInvoice',this.value)"><option value="classic">Classic (green header)</option><option value="modern">Modern (slim)</option><option value="minimal">Minimal (B/W)</option></select></div>
+  <label class="flbl">Thermal receipt style</label>
+  <div class="field sel"><select id="tplThermal" onchange="setTpl('tplThermal',this.value)"><option value="standard">Standard 80mm</option><option value="compact">Compact</option><option value="branded">Branded</option></select></div>
+
+  <p style="font-size:11px;color:var(--muted);margin-top:16px;line-height:1.6">Saved on this device. Ask me to enable account-wide settings and I'll sync these to <code>site_settings</code> for every terminal. Email/SMS/WhatsApp-PDF sending &amp; printer/scanner connect are the next phase.</p>
 </div></div></div>
 <div class="modal-bg" id="profileModal"><div class="modal"><div class="modal-hd"><h3>Profile</h3><button class="kebab" onclick="closeModal('profileModal')"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="18" height="18"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div><div class="modal-bd" id="profileBody"></div></div></div>
 <div class="toast" id="toast"></div>
@@ -443,6 +463,7 @@ input,select{font-family:inherit;font-variant-numeric:tabular-nums}
 <script src="../backend/config/supabase.js"></script>
 <script src="../backend/config/transactions.js"></script>
 <script src="assets/js/shell.js"></script>
+<script src="assets/js/pos-print.js"></script>
 <script>
 'use strict';
 let allProds=[],allCats=[],allCusts=[],cart=[],held=[];
@@ -728,16 +749,22 @@ function receiptHtml(b){
 function maybeReceipt(){if(lastBill&&confirm('Print receipt for '+lastBill.payload.invoice_number+'?'))printReceipt('thermal');}
 function printReceipt(fmt){
   if(!lastBill){toast('No recent bill',true);return;}
-  const w=window.open('','_blank',fmt==='a4'?'width=800,height=900':'width=360,height=640');
-  if(!w){toast('Allow pop-ups to print',true);return;}
-  w.document.write('<html><head><title>'+lastBill.payload.invoice_number+'</title></head><body>'+receiptHtml(lastBill)+'<scr'+'ipt>window.print()</scr'+'ipt></body></html>');w.document.close();
+  if(!window.WFPrint){toast('Print engine not loaded',true);return;}
+  if(fmt==='a4')WFPrint.printA4(lastBill);else WFPrint.printThermal(lastBill);
 }
 function waShare(){
   if(!lastBill){toast('No recent bill',true);return;}
-  const p=lastBill.payload;
-  const txt='WellFix Appliances%0AInvoice '+p.invoice_number+'%0ATotal ₹'+p.total.toLocaleString('en-IN')+'%0APaid via '+p.payment_method;
-  const ph=(p.customer_phone||'').replace(/\D/g,'');
+  var p=lastBill.payload;
+  var lines=lastBill.cart.map(function(i){return '• '+i.name+'  '+i.qty+'x  ₹'+(i.qty*i.price-i.disc).toLocaleString('en-IN');}).join('%0A');
+  var txt=encodeURIComponent((WFPrint?WFPrint.biz().name:'WellFix Appliances'))+'%0AInvoice '+p.invoice_number+'%0A'+lines+'%0A%0ATotal ₹'+p.total.toLocaleString('en-IN')+'%0APaid via '+p.payment_method+'%0AThank you!';
+  var ph=(p.customer_phone||'').replace(/\D/g,'');
   window.open('https://wa.me/'+(ph?'91'+ph:'')+'?text='+txt,'_blank');
+}
+function downloadUpiQR(){
+  if(!window.WFPrint){toast('Engine not loaded',true);return;}
+  var amt=parseFloat((document.getElementById('sTotal').textContent||'0').replace(/[₹,]/g,''))||0;
+  WFPrint.downloadQR(amt,'WellFix payment','wellfix-upi-qr');
+  toast('UPI QR downloaded');
 }
 
 function getBranding(){try{return JSON.parse(localStorage.getItem('wf_pos_branding')||'{}');}catch(e){return{};}}
@@ -750,7 +777,27 @@ function applyBranding(){
   if(b.gst){document.getElementById('gstRate').value=b.gst;document.getElementById('setGst').value=b.gst;}
 }
 function saveBranding(patch){const b=Object.assign(getBranding(),patch);localStorage.setItem('wf_pos_branding',JSON.stringify(b));applyBranding();}
-function openSettings(){const b=getBranding();document.querySelectorAll('#settingsModal .cp[data-logo]').forEach(e=>e.classList.toggle('on',e.dataset.logo===(b.logo||'green')));document.querySelectorAll('#settingsModal .cp[data-acc]').forEach(e=>e.classList.toggle('on',e.dataset.acc===(b.accent||'#F0C419')));openModal('settingsModal');}
+function openSettings(){
+  const b=getBranding();
+  document.querySelectorAll('#settingsModal .cp[data-logo]').forEach(e=>e.classList.toggle('on',e.dataset.logo===(b.logo||'green')));
+  document.querySelectorAll('#settingsModal .cp[data-acc]').forEach(e=>e.classList.toggle('on',e.dataset.acc===(b.accent||'#F0C419')));
+  if(window.WFPrint){
+    const z=WFPrint.biz();
+    const set=(id,v)=>{const el=document.getElementById(id);if(el)el.value=v||'';};
+    set('bizName',z.name);set('bizAddr',z.address);set('bizPhone',z.phone);set('bizEmail',z.email);
+    set('bizGstin',z.gstin);set('bizUpiId',z.upiId);set('bizUpiName',z.upiName);set('bizBank',z.bank);set('bizTerms',z.terms);
+    const ti=document.getElementById('tplInvoice');if(ti)ti.value=z.tplInvoice||'classic';
+    const tt=document.getElementById('tplThermal');if(tt)tt.value=z.tplThermal||'standard';
+  }
+  openModal('settingsModal');
+}
+function saveBizForm(){
+  if(!window.WFPrint)return;
+  const g=id=>document.getElementById(id)?document.getElementById(id).value.trim():'';
+  WFPrint.saveBiz({name:g('bizName'),address:g('bizAddr'),phone:g('bizPhone'),email:g('bizEmail'),gstin:g('bizGstin'),upiId:g('bizUpiId'),upiName:g('bizUpiName'),bank:g('bizBank'),terms:g('bizTerms')});
+  toast('Business details saved');
+}
+function setTpl(key,val){if(window.WFPrint)WFPrint.saveBiz({[key]:val});toast('Template set');}
 function pickLogo(v,el){document.querySelectorAll('#settingsModal .cp[data-logo]').forEach(e=>e.classList.remove('on'));el.classList.add('on');saveBranding({logo:v,customLogo:null});}
 function pickAccent(v,el){document.querySelectorAll('#settingsModal .cp[data-acc]').forEach(e=>e.classList.remove('on'));el.classList.add('on');saveBranding({accent:v});}
 function uploadLogo(e){const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=function(){saveBranding({customLogo:r.result});toast('Logo updated');};r.readAsDataURL(f);}
