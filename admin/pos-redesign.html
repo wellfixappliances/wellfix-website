@@ -28,7 +28,7 @@ input,select{font-family:inherit;font-variant-numeric:tabular-nums}
 .sidebar,.topbar,.mobile-bottom-nav{display:none!important}
 .app{display:flex;height:100vh}
 .rail{width:60px;background:var(--green-800);display:flex;flex-direction:column;align-items:center;padding:12px 0;gap:5px;flex-shrink:0}
-.rail .lg{width:40px;height:40px;margin-bottom:14px;display:grid;place-items:center}
+.rail .lg{width:40px;height:40px;margin-bottom:10px;display:grid;place-items:center}
 .rail .lg svg{width:30px;height:30px}
 .rail .lg img{width:38px;height:38px;object-fit:contain;border-radius:8px}
 .rail-btn{width:42px;height:42px;border-radius:11px;display:grid;place-items:center;color:#bfe3d4;transition:.18s}
@@ -476,6 +476,7 @@ input,select{font-family:inherit;font-variant-numeric:tabular-nums}
   <label class="flbl">Address</label><input class="finp" id="bizAddr">
   <div style="display:flex;gap:8px"><div style="flex:1"><label class="flbl">Phone</label><input class="finp" id="bizPhone"></div><div style="flex:1"><label class="flbl">Email</label><input class="finp" id="bizEmail"></div></div>
   <label class="flbl">GSTIN</label><input class="finp" id="bizGstin">
+  <label class="flbl">Website</label><input class="finp" id="bizWebsite" placeholder="www.yoursite.com">
   <div style="display:flex;gap:8px"><div style="flex:1"><label class="flbl">UPI ID</label><input class="finp" id="bizUpiId" placeholder="name@bank"></div><div style="flex:1"><label class="flbl">UPI payee name</label><input class="finp" id="bizUpiName"></div></div>
   <label class="flbl">Bank / account details (shown on invoice)</label><input class="finp" id="bizBank" placeholder="A/c 1234 · IFSC ABCD0…">
   <label class="flbl">Invoice terms</label><input class="finp" id="bizTerms">
@@ -915,7 +916,7 @@ function openSettings(){
     const z=WFPrint.biz();
     const set=(id,v)=>{const el=document.getElementById(id);if(el)el.value=v||'';};
     set('bizName',z.name);set('bizBranch',z.branch);set('bizAddr',z.address);set('bizPhone',z.phone);set('bizEmail',z.email);
-    set('bizGstin',z.gstin);set('bizUpiId',z.upiId);set('bizUpiName',z.upiName);set('bizBank',z.bank);set('bizTerms',z.terms);
+    set('bizGstin',z.gstin);set('bizWebsite',z.website);set('bizUpiId',z.upiId);set('bizUpiName',z.upiName);set('bizBank',z.bank);set('bizTerms',z.terms);
     set('bizLogoPath',(z.logo&&z.logo.indexOf('data:')!==0)?z.logo:'');
     set('bizIconPath',(z.icon&&z.icon.indexOf('data:')!==0)?z.icon:'');
     const ti=document.getElementById('tplInvoice');if(ti)ti.value=z.tplInvoice||'classic';
@@ -927,7 +928,7 @@ function openSettings(){
 function saveBizForm(){
   if(!window.WFPrint)return;
   const g=id=>document.getElementById(id)?document.getElementById(id).value.trim():'';
-  const patch={name:g('bizName'),branch:g('bizBranch'),address:g('bizAddr'),phone:g('bizPhone'),email:g('bizEmail'),gstin:g('bizGstin'),upiId:g('bizUpiId'),upiName:g('bizUpiName'),bank:g('bizBank'),terms:g('bizTerms')};
+  const patch={name:g('bizName'),branch:g('bizBranch'),address:g('bizAddr'),phone:g('bizPhone'),email:g('bizEmail'),gstin:g('bizGstin'),website:g('bizWebsite'),upiId:g('bizUpiId'),upiName:g('bizUpiName'),bank:g('bizBank'),terms:g('bizTerms')};
   const lp=g('bizLogoPath');if(lp)patch.logo=lp;
   const ip=g('bizIconPath');if(ip)patch.icon=ip;
   WFPrint.saveBiz(patch);
