@@ -285,9 +285,10 @@ input,select{font-family:inherit;font-variant-numeric:tabular-nums}
     <button class="rail-btn" title="Logout" onclick="doLogout()"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/></svg></button>
   </aside>
   <div class="main">
-    <header class="topbar2">
-      <div class="brand"><img id="topLogo" src="../assets/images/brand/wellfix-logo-green.png" alt="WellFix" onerror="this.outerHTML='<span style=&quot;font-weight:800;font-size:19px;letter-spacing:-.02em;color:var(--green-800)&quot;>Well<span style=&quot;color:var(--gold)&quot;>fix</span></span>'"></div>
-      <nav class="modes" id="modes">
+   <header class="topbar2">
+      <div class="brand">
+        <span class="brand-text">Well<span class="brand-accent">Fix</span> <span class="brand-sub">Appliances</span></span>
+      </div>
         <button class="mode on" data-mode="sale" data-label="Checkout">Sale</button>
         <button class="mode" data-mode="quote" data-label="Save Quote">Quotation</button>
         <button class="mode" data-mode="service" data-label="Bill Service">Service</button>
