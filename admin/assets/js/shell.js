@@ -176,10 +176,10 @@ const AdminShell = {
       <aside class="sidebar" id="sidebar">
         <div class="sidebar__brand">
           <div class="sidebar__logo">
-            <img src="${BASE}/frontend/assets/images/WELLFIX-MAIN-LOGO.png" alt="W"
+            <img src="${BASE}/assets/images/wellfix-icon-white.png" alt="W"
               onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"
-              style="width:22px;height:22px;">
-            <span style="display:none;font-family:var(--font-display);font-size:13px;font-weight:800;color:#fff;align-items:center;justify-content:center;">W</span>
+              style="width:24px;height:24px;">
+            <span style="display:none;font-family:var(--font-display);font-size:13px;font-weight:800;color:var(--gold-400);align-items:center;justify-content:center;">W</span>
           </div>
           <div class="sidebar__brand-info">
             <div class="sidebar__brand-name">WellFix</div>
