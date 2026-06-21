@@ -3,13 +3,13 @@
    Fixes: layout full width, mobile friendly, image handling
    ============================================================ */
 
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap');
 
 :root {
   --green-900:#012a1c;--green-800:#023d29;--green-700:#034732;
   --green-600:#045a3f;--green-500:#056b4b;--green-400:#068a60;
   --green-100:#d4f0e6;--green-50:#f0faf5;
-  --gold-400:#e8b429;--gold-300:#f0c842;--gold-100:#fef9e7;
+  --gold-400:#F0C419;--gold-300:#f6d34a;--gold-100:#fdf6df;
   --red-600:#c0392b;--red-500:#e74c3c;--red-100:#fdecea;
   --blue-500:#3b82f6;--blue-100:#eff6ff;
   --purple-500:#8b5cf6;--purple-100:#f5f3ff;
@@ -18,9 +18,9 @@
   --gray-600:#404040;--gray-500:#5c5c5c;--gray-400:#767676;
   --gray-300:#a0a0a0;--gray-200:#c8c8c8;--gray-150:#dedede;
   --gray-100:#ebebeb;--gray-50:#f5f5f5;--gray-25:#fafafa;--white:#fff;
-  --font-display:'Plus Jakarta Sans',sans-serif;
-  --font-body:'Outfit',sans-serif;
-  --r-xs:4px;--r-sm:6px;--r-md:10px;--r-lg:14px;--r-xl:18px;--r-2xl:24px;--r-full:9999px;
+  --font-display:'Manrope',sans-serif;
+  --font-body:'Manrope',sans-serif;
+  --r-xs:4px;--r-sm:8px;--r-md:11px;--r-lg:16px;--r-xl:20px;--r-2xl:24px;--r-full:9999px;
   --shadow-sm:0 1px 4px rgba(0,0,0,.06),0 2px 8px rgba(0,0,0,.04);
   --shadow-md:0 4px 12px rgba(0,0,0,.08);
   --shadow-lg:0 10px 32px rgba(0,0,0,.1);
@@ -48,7 +48,7 @@ img{display:block;max-width:100%;}
 
 /* ── SIDEBAR ── */
 .sidebar{
-  width:var(--sidebar-w);background:var(--green-900);
+  width:var(--sidebar-w);background:linear-gradient(180deg,var(--green-800),var(--green-900));
   display:flex;flex-direction:column;
   position:fixed;top:0;left:0;bottom:0;
   z-index:300;transition:width var(--t),transform var(--t);
@@ -66,7 +66,7 @@ img{display:block;max-width:100%;}
   background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.1);
   display:flex;align-items:center;justify-content:center;flex-shrink:0;overflow:hidden;
 }
-.sidebar__logo img{width:22px;height:22px;object-fit:contain;filter:brightness(0) invert(1);}
+.sidebar__logo img{width:24px;height:24px;object-fit:contain;}
 .sidebar__brand-info{overflow:hidden;white-space:nowrap;}
 .sidebar__brand-name{font-family:var(--font-display);font-size:14px;font-weight:800;color:#fff;line-height:1;}
 .sidebar__brand-role{font-size:10px;color:rgba(255,255,255,.3);margin-top:2px;text-transform:uppercase;letter-spacing:.06em;}
@@ -86,7 +86,8 @@ img{display:block;max-width:100%;}
   border-right:2px solid transparent;text-decoration:none;position:relative;
 }
 .nav-link:hover{background:rgba(255,255,255,.05);color:rgba(255,255,255,.9);}
-.nav-link.is-active{background:var(--green-700);color:#fff;border-right-color:var(--gold-400);}
+.nav-link.is-active{background:rgba(240,196,25,.15);color:#fff;border-right-color:var(--gold-400);}
+.nav-link.is-active svg{color:var(--gold-400);}
 .nav-link svg{width:15px;height:15px;flex-shrink:0;}
 .nav-link__text{overflow:hidden;flex:1;}
 .nav-badge{
@@ -241,7 +242,7 @@ img{display:block;max-width:100%;}
   display:flex;flex-direction:column;gap:8px;
   transition:box-shadow var(--t);
 }
-.stat-card:hover{box-shadow:var(--shadow-md);}
+.stat-card:hover{box-shadow:var(--shadow-lg);transform:translateY(-2px);}
 .stat-card__top{display:flex;align-items:flex-start;justify-content:space-between;}
 .stat-card__icon{width:36px;height:36px;border-radius:var(--r-md);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
 .stat-card__icon svg{width:17px;height:17px;}
@@ -271,11 +272,11 @@ img{display:block;max-width:100%;}
 .btn{
   display:inline-flex;align-items:center;gap:5px;
   font-family:var(--font-display);font-size:12px;font-weight:600;
-  padding:0 14px;height:34px;border-radius:var(--r-sm);
+  padding:0 14px;height:36px;border-radius:var(--r-md);
   cursor:pointer;border:none;transition:all var(--t);white-space:nowrap;
 }
-.btn-primary{background:var(--green-700);color:#fff;}
-.btn-primary:hover{background:var(--green-600);}
+.btn-primary{background:linear-gradient(135deg,var(--green-700),var(--green-500));color:#fff;box-shadow:0 6px 16px rgba(3,71,50,.22);}
+.btn-primary:hover{box-shadow:0 10px 22px rgba(3,71,50,.32);transform:translateY(-1px);}
 .btn-secondary{background:var(--white);color:var(--gray-700);border:1.5px solid var(--gray-150);}
 .btn-secondary:hover{border-color:var(--green-400);color:var(--green-700);}
 .btn-danger{background:var(--red-100);color:var(--red-600);}
