@@ -5,164 +5,217 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>WellFix Admin — Login</title>
 <link rel="icon" href="/wellfix-website/assets/images/WELLFIX-FAVICON.png" type="image/png">
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --green-900:#012a1c;--green-700:#034732;--green-600:#045a3f;--green-500:#056b4b;
-  --gold-400:#e8b429;--gray-900:#111;--gray-700:#2d2d2d;--gray-400:#767676;
-  --gray-200:#c8c8c8;--gray-100:#ebebeb;--gray-50:#f5f5f5;--white:#fff;
-  --red-500:#e74c3c;--red-100:#fdecea;
-  --font-display:'Plus Jakarta Sans',sans-serif;--font-body:'Outfit',sans-serif;
+  --green-900:#012a1c;--green-800:#023728;--green-700:#034732;--green-600:#045a3f;--green-500:#0a6b4b;
+  --gold:#F0C419;--gold-soft:#e8b429;
+  --ink:#11201b;--ink-2:#3a4944;--muted:#8a978f;--line:#e7ede9;--field:#f5f9f7;
+  --white:#fff;--red:#e23d2e;--red-bg:#fdeceb;
+  --font:'Manrope',-apple-system,BlinkMacSystemFont,sans-serif;
 }
-html,body{height:100%;font-family:var(--font-body);-webkit-font-smoothing:antialiased;}
-body{display:flex;min-height:100vh;overflow:hidden;background:#f0faf5;}
+html{height:100%}
+body{min-height:100vh;font-family:var(--font);-webkit-font-smoothing:antialiased;color:var(--ink);background:#eef5f1;display:flex}
 
-.left-panel{
-  width:380px;flex-shrink:0;
-  background:linear-gradient(160deg,var(--green-900) 0%,var(--green-700) 60%,var(--green-500) 100%);
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
-  padding:48px 36px;position:relative;overflow:hidden;
+/* ============ LEFT BRAND PANEL ============ */
+.brand-panel{
+  width:46%;max-width:560px;flex-shrink:0;position:relative;overflow:hidden;
+  background:linear-gradient(155deg,var(--green-900) 0%,var(--green-700) 55%,var(--green-600) 100%);
+  display:flex;flex-direction:column;justify-content:center;padding:56px 52px;color:#fff;
 }
-.left-panel::before{content:'';position:absolute;width:350px;height:350px;border-radius:50%;background:rgba(255,255,255,.04);top:-100px;left:-80px;}
-.left-panel::after{content:'';position:absolute;width:250px;height:250px;border-radius:50%;background:rgba(232,180,41,.07);bottom:-60px;right:-60px;}
-.brand-logo{width:72px;height:72px;background:rgba(255,255,255,.1);border:1.5px solid rgba(255,255,255,.15);border-radius:18px;display:flex;align-items:center;justify-content:center;margin-bottom:20px;z-index:1;}
-.brand-logo img{width:48px;height:48px;object-fit:contain;filter:brightness(0) invert(1);}
-.brand-name{font-family:var(--font-display);font-size:26px;font-weight:800;color:#fff;margin-bottom:6px;z-index:1;}
-.brand-tagline{font-size:13px;color:rgba(255,255,255,.5);z-index:1;text-align:center;line-height:1.6;margin-bottom:36px;}
-.features{display:flex;flex-direction:column;gap:12px;z-index:1;width:100%;}
-.feature{display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:10px 14px;}
-.feature-icon{width:32px;height:32px;border-radius:8px;background:rgba(232,180,41,.15);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
-.feature-text{font-size:12px;font-weight:600;color:#fff;}
-.feature-sub{font-size:10px;color:rgba(255,255,255,.4);margin-top:1px;}
+/* gold glow + hex motif + grain */
+.brand-panel::before{content:'';position:absolute;inset:0;
+  background:
+    radial-gradient(420px 420px at 85% 18%,rgba(240,196,25,.16),transparent 70%),
+    radial-gradient(520px 520px at -10% 90%,rgba(10,107,75,.5),transparent 70%);
+  pointer-events:none;}
+.hexbg{position:absolute;inset:0;opacity:.06;pointer-events:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='104' viewBox='0 0 120 104'%3E%3Cpath d='M30 2 58 18 58 52 30 68 2 52 2 18Z M90 2 118 18 118 52 90 68 62 52 62 18Z M60 54 88 70 88 104 60 120 32 104 32 70Z' fill='none' stroke='%23ffffff' stroke-width='1.5'/%3E%3C/svg%3E");
+  background-size:150px 130px;}
+.brand-inner{position:relative;z-index:2;display:flex;flex-direction:column;height:100%;justify-content:space-between}
+.brand-top{display:flex;flex-direction:column}
+.logo-tile{width:78px;height:78px;border-radius:20px;background:rgba(255,255,255,.08);border:1.5px solid rgba(255,255,255,.16);
+  display:flex;align-items:center;justify-content:center;backdrop-filter:blur(6px);margin-bottom:26px;
+  box-shadow:0 12px 34px rgba(0,0,0,.28)}
+.logo-tile img{width:48px;height:48px;object-fit:contain}
+.wordmark{font-size:34px;font-weight:800;letter-spacing:-.5px;line-height:1}
+.wordmark span{color:var(--gold)}
+.subbrand{font-size:11px;font-weight:700;letter-spacing:3.5px;color:rgba(255,255,255,.55);margin-top:8px;text-transform:uppercase}
+.tagline{font-size:15px;color:rgba(255,255,255,.62);margin-top:22px;line-height:1.65;max-width:330px}
+.tagline b{color:#fff;font-weight:700}
 
-.right-panel{flex:1;display:flex;align-items:center;justify-content:center;padding:32px 24px;background:#fff;position:relative;overflow-y:auto;}
-.right-panel::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(to right,var(--green-700),var(--gold-400));}
-.login-box{width:100%;max-width:380px;}
-.login-title{font-family:var(--font-display);font-size:24px;font-weight:800;color:var(--gray-900);margin-bottom:5px;}
-.login-sub{font-size:13px;color:var(--gray-400);margin-bottom:28px;}
+.features{display:flex;flex-direction:column;gap:11px;margin-top:38px}
+.feature{display:flex;align-items:center;gap:13px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.09);
+  border-radius:13px;padding:13px 15px;transition:.25s;opacity:0;transform:translateY(10px);animation:rise .6s forwards}
+.feature:hover{background:rgba(255,255,255,.1);transform:translateX(3px)}
+.feature:nth-child(1){animation-delay:.15s}.feature:nth-child(2){animation-delay:.25s}
+.feature:nth-child(3){animation-delay:.35s}.feature:nth-child(4){animation-delay:.45s}
+.f-ic{width:38px;height:38px;border-radius:10px;background:rgba(240,196,25,.16);color:var(--gold);
+  display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.f-ic svg{width:19px;height:19px}
+.f-tx{font-size:13.5px;font-weight:700;color:#fff}
+.f-sub{font-size:11px;color:rgba(255,255,255,.45);margin-top:1px;font-weight:500}
 
-.alert-box{padding:11px 13px;border-radius:8px;font-size:12px;margin-bottom:14px;display:none;align-items:center;gap:7px;}
-.alert-box.show{display:flex;}
-.alert-box.error{background:var(--red-100);color:var(--red-500);border:1px solid #f5c6c2;}
-.alert-box svg{width:14px;height:14px;flex-shrink:0;}
+.brand-foot{font-size:11.5px;color:rgba(255,255,255,.4);font-weight:600;display:flex;align-items:center;gap:7px;margin-top:34px}
+.brand-foot svg{width:13px;height:13px;color:var(--gold)}
 
-.form-group{margin-bottom:16px;}
-.form-label{display:block;font-size:11px;font-weight:700;color:var(--gray-700);margin-bottom:6px;text-transform:uppercase;letter-spacing:.03em;}
-.input-wrap{position:relative;}
-.input-icon{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--gray-400);pointer-events:none;}
-.input-icon svg{width:15px;height:15px;}
-.form-input{width:100%;height:46px;border:1.5px solid var(--gray-100);border-radius:9px;padding:0 42px;font-family:var(--font-body);font-size:14px;color:var(--gray-900);background:var(--gray-50);transition:all .2s;outline:none;}
-.form-input:focus{border-color:var(--green-600);background:#fff;box-shadow:0 0 0 3px rgba(3,71,50,.07);}
-.form-input::placeholder{color:var(--gray-200);}
-.toggle-pw{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--gray-400);padding:4px;}
-.toggle-pw:hover{color:var(--green-700);}
-.toggle-pw svg{width:15px;height:15px;}
-.forgot-row{text-align:right;margin-top:-8px;margin-bottom:18px;}
-.forgot-link{font-size:12px;color:var(--green-700);font-weight:600;text-decoration:none;}
+/* ============ RIGHT FORM PANEL ============ */
+.form-panel{flex:1;display:flex;align-items:center;justify-content:center;padding:40px 28px;background:var(--white);position:relative;overflow-y:auto}
+.form-panel::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,var(--green-700),var(--gold))}
+.box{width:100%;max-width:392px}
+.title{font-size:27px;font-weight:800;letter-spacing:-.5px;margin-bottom:6px}
+.sub{font-size:14px;color:var(--muted);margin-bottom:30px}
 
-.btn-login{width:100%;height:48px;background:linear-gradient(135deg,var(--green-700),var(--green-500));color:#fff;border:none;border-radius:9px;font-family:var(--font-display);font-size:14px;font-weight:700;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 4px 14px rgba(3,71,50,.25);}
-.btn-login:hover{box-shadow:0 6px 20px rgba(3,71,50,.35);transform:translateY(-1px);}
-.btn-login:disabled{background:var(--gray-100);color:var(--gray-400);cursor:not-allowed;box-shadow:none;transform:none;}
-.btn-login svg{width:15px;height:15px;}
-.spinner{width:16px;height:16px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;}
-@keyframes spin{to{transform:rotate(360deg);}}
+.alert{padding:12px 14px;border-radius:10px;font-size:12.5px;font-weight:600;margin-bottom:16px;display:none;align-items:center;gap:8px;line-height:1.4}
+.alert.show{display:flex}
+.alert.error{background:var(--red-bg);color:var(--red);border:1px solid #f6cbc6}
+.alert.success{background:#e7f6ef;color:var(--green-600);border:1px solid #bfe6d4}
+.alert svg{width:15px;height:15px;flex-shrink:0}
 
-.panel{display:none;}
-.panel.active{display:block;}
+.group{margin-bottom:17px}
+.lbl{display:block;font-size:11px;font-weight:700;color:var(--ink-2);margin-bottom:7px;text-transform:uppercase;letter-spacing:.04em}
+.wrap{position:relative}
+.ic{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--muted);pointer-events:none}
+.ic svg{width:16px;height:16px}
+.inp{width:100%;height:50px;border:1.5px solid var(--line);border-radius:12px;padding:0 46px;font-family:var(--font);font-size:14.5px;font-weight:500;color:var(--ink);background:var(--field);transition:.2s;outline:none}
+.inp:focus{border-color:var(--green-600);background:#fff;box-shadow:0 0 0 4px rgba(4,90,63,.1)}
+.inp::placeholder{color:#b7c2bc;font-weight:500}
+.eye{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--muted);padding:6px;border-radius:8px;transition:.2s}
+.eye:hover{color:var(--green-700);background:var(--field)}
+.eye svg{width:16px;height:16px;display:block}
 
-.footer-note{text-align:center;font-size:12px;color:var(--gray-400);padding-top:20px;border-top:1px solid var(--gray-50);margin-top:20px;}
-.footer-note a{color:var(--green-700);font-weight:600;text-decoration:none;}
+.forgot{text-align:right;margin:-4px 0 20px}
+.forgot a{font-size:12.5px;color:var(--green-700);font-weight:700;text-decoration:none}
+.forgot a:hover{color:var(--green-500)}
 
-@media(max-width:768px){
-  body{flex-direction:column;}
-  .left-panel{width:100%;padding:24px 20px;flex-direction:row;align-items:center;gap:14px;border-radius:0;}
-  .brand-logo{width:44px;height:44px;border-radius:12px;margin-bottom:0;flex-shrink:0;}
-  .brand-logo img{width:30px;height:30px;}
-  .brand-name{font-size:18px;margin-bottom:2px;}
-  .brand-tagline{font-size:11px;margin-bottom:0;text-align:left;}
-  .features{display:none;}
-  .right-panel{padding:20px 16px 32px;}
-  .right-panel::before{display:none;}
+.btn{width:100%;height:52px;background:linear-gradient(135deg,var(--green-700),var(--green-500));color:#fff;border:none;border-radius:12px;
+  font-family:var(--font);font-size:15px;font-weight:700;cursor:pointer;transition:.22s;display:flex;align-items:center;justify-content:center;gap:9px;
+  box-shadow:0 8px 22px rgba(3,71,50,.28)}
+.btn:hover{box-shadow:0 12px 30px rgba(3,71,50,.38);transform:translateY(-1px)}
+.btn:active{transform:translateY(0)}
+.btn:disabled{background:#dfe7e3;color:#9fb0a8;cursor:not-allowed;box-shadow:none;transform:none}
+.btn svg{width:16px;height:16px}
+.spinner{width:17px;height:17px;border:2.5px solid rgba(255,255,255,.35);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes rise{to{opacity:1;transform:none}}
+
+.panel{display:none;animation:fade .35s ease}
+.panel.active{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+.foot{text-align:center;font-size:12.5px;color:var(--muted);padding-top:22px;border-top:1px solid var(--line);margin-top:24px}
+.foot a{color:var(--green-700);font-weight:700;text-decoration:none}
+
+/* ============ RESPONSIVE ============ */
+@media(max-width:860px){
+  body{flex-direction:column;overflow:auto}
+  .brand-panel{width:100%;max-width:none;flex-direction:row;align-items:center;gap:16px;padding:20px 22px;justify-content:flex-start}
+  .brand-inner{flex-direction:row;align-items:center;gap:16px;height:auto;width:100%}
+  .brand-top{flex-direction:row;align-items:center;gap:15px}
+  .logo-tile{width:50px;height:50px;border-radius:14px;margin-bottom:0}
+  .logo-tile img{width:32px;height:32px}
+  .wordmark{font-size:21px}
+  .subbrand{font-size:9px;letter-spacing:2.5px;margin-top:3px}
+  .tagline,.features,.brand-foot{display:none}
+  .form-panel{padding:34px 22px 44px;align-items:flex-start}
+  .form-panel::before{display:none}
+  .box{max-width:440px;margin:0 auto}
+  .title{font-size:24px;margin-top:6px}
 }
+@media(max-width:380px){.form-panel{padding:26px 16px 36px}}
 </style>
 </head>
 <body>
 
-<div class="left-panel">
-  <div class="brand-logo">
-    <img src="/wellfix-website/assets/images/WELLFIX-MAIN-LOGO.png" alt="WellFix" onerror="this.style.display='none'">
+<aside class="brand-panel">
+  <div class="hexbg"></div>
+  <div class="brand-inner">
+    <div class="brand-top">
+      <div class="logo-tile">
+        <img src="/wellfix-website/assets/images/WELLFIX-MAIN-LOGO.png" alt="WellFix"
+          onerror="this.outerHTML='&lt;svg viewBox=\'0 0 100 100\' xmlns=\'http://www.w3.org/2000/svg\' width=\'48\' height=\'48\'&gt;&lt;polygon points=\'50,6 88,28 88,72 50,94 12,72 12,28\' fill=\'none\' stroke=\'%23F0C419\' stroke-width=\'8\'/&gt;&lt;polygon points=\'50,24 73,37 73,63 50,76 27,63 27,37\' fill=\'%23fff\'/&gt;&lt;circle cx=\'50\' cy=\'50\' r=\'9\' fill=\'%23034732\'/&gt;&lt;/svg&gt;'">
+      </div>
+      <div>
+        <div class="wordmark">Well<span>Fix</span></div>
+        <div class="subbrand">Appliances</div>
+      </div>
+    </div>
+    <div style="display:flex;flex-direction:column">
+      <p class="tagline"><b>Kerala's trusted appliance store.</b> Sign in to manage products, orders, service bookings and live insights — all in one place.</p>
+      <div class="features">
+        <div class="feature"><div class="f-ic"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 00-1-1.7l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.7l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/><path d="M3.3 7L12 12l8.7-5M12 22V12"/></svg></div><div><div class="f-tx">Product Management</div><div class="f-sub">Add, edit & manage your catalogue</div></div></div>
+        <div class="feature"><div class="f-ic"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 2h6a1 1 0 011 1v1h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2V3a1 1 0 011-1z"/><path d="M9 12h6M9 16h4"/></svg></div><div><div class="f-tx">Order Management</div><div class="f-sub">Track & update every order</div></div></div>
+        <div class="feature"><div class="f-ic"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14.7 6.3a4 4 0 00-5.4 5.4L3 18v3h3l6.3-6.3a4 4 0 005.4-5.4l-2.6 2.6-2-2 2.6-2.6z"/></svg></div><div><div class="f-tx">Service Bookings</div><div class="f-sub">Manage repair bookings</div></div></div>
+        <div class="feature"><div class="f-ic"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="M7 14l4-4 3 3 5-6"/></svg></div><div><div class="f-tx">Live Analytics</div><div class="f-sub">Real-time sales & insights</div></div></div>
+      </div>
+    </div>
+    <div class="brand-foot"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg> Venkitangu, Thrissur · Kerala</div>
   </div>
-  <div class="brand-name">WellFix</div>
-  <div class="brand-tagline">Kerala's Trusted Appliance Store<br>Admin Control Panel</div>
-  <div class="features">
-    <div class="feature"><div class="feature-icon">📦</div><div><div class="feature-text">Product Management</div><div class="feature-sub">Add, edit, manage your catalogue</div></div></div>
-    <div class="feature"><div class="feature-icon">📋</div><div><div class="feature-text">Order Management</div><div class="feature-sub">Track and update all orders</div></div></div>
-    <div class="feature"><div class="feature-icon">🔧</div><div><div class="feature-text">Service Bookings</div><div class="feature-sub">Manage repair bookings</div></div></div>
-    <div class="feature"><div class="feature-icon">📊</div><div><div class="feature-text">Live Analytics</div><div class="feature-sub">Real-time sales and insights</div></div></div>
-  </div>
-</div>
+</aside>
 
-<div class="right-panel">
-  <div class="login-box">
+<main class="form-panel">
+  <div class="box">
 
     <div id="loginPanel" class="panel active">
-      <div class="login-title">Welcome back</div>
-      <div class="login-sub">Sign in to your WellFix admin dashboard</div>
+      <div class="title">Welcome back</div>
+      <div class="sub">Sign in to your WellFix admin dashboard</div>
 
-      <div class="alert-box error" id="loginAlert">
+      <div class="alert error" id="loginAlert">
         <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
         <span id="loginAlertMsg"></span>
       </div>
 
-      <div class="form-group">
-        <label class="form-label">Email Address</label>
-        <div class="input-wrap">
-          <span class="input-icon"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></span>
-          <input class="form-input" type="email" id="emailInput" placeholder="wellfixappliances@gmail.com" autocomplete="email">
+      <div class="group">
+        <label class="lbl">Email Address</label>
+        <div class="wrap">
+          <span class="ic"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></span>
+          <input class="inp" type="email" id="emailInput" placeholder="wellfixappliances@gmail.com" autocomplete="email">
         </div>
       </div>
 
-      <div class="form-group">
-        <label class="form-label">Password</label>
-        <div class="input-wrap">
-          <span class="input-icon"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg></span>
-          <input class="form-input" type="password" id="passwordInput" placeholder="Your password" autocomplete="current-password">
-          <button class="toggle-pw" id="togglePw" type="button" tabindex="-1">
+      <div class="group">
+        <label class="lbl">Password</label>
+        <div class="wrap">
+          <span class="ic"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg></span>
+          <input class="inp" type="password" id="passwordInput" placeholder="Your password" autocomplete="current-password">
+          <button class="eye" id="togglePw" type="button" tabindex="-1">
             <svg id="eyeIcon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
           </button>
         </div>
       </div>
 
-      <div class="forgot-row">
-        <a href="#" class="forgot-link" onclick="showForgot(event)">Forgot password?</a>
+      <div class="forgot">
+        <a href="#" onclick="showForgot(event)">Forgot password?</a>
       </div>
 
-      <button class="btn-login" id="loginBtn" onclick="handleLogin()">
+      <button class="btn" id="loginBtn" onclick="handleLogin()">
         <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M15 3h4a2 2 0 012 2v14a2 2 0 01-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
         Sign In to Dashboard
       </button>
 
-      <div class="footer-note">Having issues? <a href="mailto:wellfixappliances@gmail.com">Contact support</a></div>
+      <div class="foot">Having issues? <a href="mailto:wellfixappliances@gmail.com">Contact support</a></div>
     </div>
 
     <div id="forgotPanel" class="panel">
-      <div class="login-title">Reset Password</div>
-      <div class="login-sub">Enter your email and we will send a reset link.</div>
-      <div class="alert-box" id="forgotAlert"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg><span id="forgotAlertMsg"></span></div>
-      <div class="form-group">
-        <label class="form-label">Email Address</label>
-        <div class="input-wrap">
-          <span class="input-icon"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></span>
-          <input class="form-input" type="email" id="forgotEmail" placeholder="wellfixappliances@gmail.com">
+      <div class="title">Reset Password</div>
+      <div class="sub">Enter your email and we will send a reset link.</div>
+      <div class="alert" id="forgotAlert"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg><span id="forgotAlertMsg"></span></div>
+      <div class="group">
+        <label class="lbl">Email Address</label>
+        <div class="wrap">
+          <span class="ic"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></span>
+          <input class="inp" type="email" id="forgotEmail" placeholder="wellfixappliances@gmail.com">
         </div>
       </div>
-      <button class="btn-login" id="forgotBtn" onclick="handleForgot()">Send Reset Link</button>
-      <div class="footer-note"><a href="#" onclick="showLogin(event)">Back to Sign In</a></div>
+      <button class="btn" id="forgotBtn" onclick="handleForgot()">Send Reset Link</button>
+      <div class="foot"><a href="#" onclick="showLogin(event)">Back to Sign In</a></div>
     </div>
 
   </div>
-</div>
+</main>
 
 <!-- Load Supabase FIRST, then config, then page script -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -202,9 +255,9 @@ function showAlert(id, msg, type) {
   const el = document.getElementById(id);
   const msgEl = document.getElementById(id + 'Msg');
   if (msgEl) msgEl.textContent = msg;
-  el.className = 'alert-box ' + type + ' show';
+  el.className = 'alert ' + type + ' show';
 }
-function hideAlert(id) { document.getElementById(id).className = 'alert-box error'; }
+function hideAlert(id) { document.getElementById(id).className = 'alert error'; }
 
 async function handleLogin() {
   hideAlert('loginAlert');
