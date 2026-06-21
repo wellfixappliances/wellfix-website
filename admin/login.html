@@ -36,9 +36,25 @@ body::after{content:'';position:fixed;inset:0;z-index:0;background:radial-gradie
   color:#fff;animation:pop .55s cubic-bezier(.2,.8,.2,1)}
 @keyframes pop{from{opacity:0;transform:translateY(16px) scale(.98)}to{opacity:1;transform:none}}
 
-.avatar{width:108px;height:108px;border-radius:50%;margin:0 auto 30px;display:flex;align-items:center;justify-content:center;
-  background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.28);box-shadow:0 12px 34px rgba(0,0,0,.3),inset 0 0 22px rgba(240,196,25,.12)}
-.avatar img{width:64px;height:64px;object-fit:contain}
+.avatar {
+    width: 108px;
+    height: 108px;
+    border-radius: 50%;
+    margin: 0 auto 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, .1);
+    border: 1px solid rgba(255, 255, 255, .28);
+    box-shadow: 0 12px 34px rgba(0, 0, 0, .3), inset 0 0 22px rgba(240, 196, 25, .12);
+}
+
+.avatar img {
+    /* Increased from 64px to 90px to fill more of the container */
+    width: 90px;
+    height: 90px;
+    object-fit: contain;
+}
 
 .alert{display:none;align-items:center;gap:8px;font-size:12.5px;font-weight:600;padding:10px 13px;border-radius:11px;margin-bottom:18px;line-height:1.45}
 .alert.show{display:flex}
